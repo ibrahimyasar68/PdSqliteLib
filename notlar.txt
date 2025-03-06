@@ -1,0 +1,35 @@
+## Ui dosyalarını py dosyalarına çevirme ##
+===========================================
+python -m PyQt5.uic.pyuic -x login_ui.ui -o login_py.py
+
+
+
+## medya(.qrc) dosyalarını py dosyasına çevirme ##
+==================================================
+pyrcc5 media.qrc -o media_rc.py
+
+
+=====================
+## Çerçeveyi kaldırma 
+====================== 
+login_py.py dosyasına [MainWindow.resize(850, 680)] 
+satırından sonra 17 ve 18 satırlar olarak;
+-------------------------------------------
+MainWindow.setGeometry(260,20,800,700)
+MainWindow.setWindowFlags(QtCore.Qt.FramelessWindowHint)
+MainWindow.setAttribute(QtCore.Qt.WA_TranslucentBackground)
+
+
+
+user_py.py dosyasına [MainWindow.resize(900, 680)] 
+satırından sonra 17 ve 18 satırlar olarak;
+-------------------------------------------
+MainWindow.setGeometry(240,20,1020,680)
+MainWindow.setWindowFlags(QtCore.Qt.FramelessWindowHint)
+MainWindow.setAttribute(QtCore.Qt.WA_TranslucentBackground)
+
+veya
+
+login.py ie user.py dosyalarına;
+---------------------------------
+self.setWindowFlags(Qt.FramelessWindowHint)
