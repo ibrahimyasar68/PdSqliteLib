@@ -156,4 +156,4 @@ class Ui_MainWindow(object):
         self.label_4.setText(_translate("MainWindow", "Parola"))
         self.lineEdit_parola.setToolTip(_translate("MainWindow", "Parolayı Girin"))
         self.pushButton_giris.setText(_translate("MainWindow", "G i r i ş"))
-import media.media_rc
+import bforms.media_rc

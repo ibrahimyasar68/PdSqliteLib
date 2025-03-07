@@ -1798,4 +1798,4 @@ class Ui_MainWindow(object):
         self.tabWidget_4.setTabText(self.tabWidget_4.indexOf(self.tab_5_1), _translate("MainWindow", "Çizelgeler"))
         self.tabWidget_4.setTabText(self.tabWidget_4.indexOf(self.tab_5_2), _translate("MainWindow", "Grafikler"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_5), _translate("MainWindow", "İstatistik"))
-import media.media_rc
+import bforms.media_rc

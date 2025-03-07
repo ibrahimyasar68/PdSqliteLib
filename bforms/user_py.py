@@ -183,4 +183,4 @@ class Ui_MainWindow(object):
         self.lineEdit_soyadi.setPlaceholderText(_translate("MainWindow", "Soyadı"))
         self.lineEdit_mail.setPlaceholderText(_translate("MainWindow", "Mail Adresi"))
         self.lineEdit_tel.setPlaceholderText(_translate("MainWindow", "Telefon"))
-import media.media_rc
+import bforms.media_rc

@@ -22,7 +22,7 @@ import subprocess
 ## Resim Dönüştürme
 
 sfile="media/media.qrc"
-tfile="media/media_rc.py"
+tfile="bforms/media_rc.py"
 command2 = ["pyrcc5", sfile, "-o", tfile]
 subprocess.run(command2, check=True)
 print(f"{sfile} başarıyla dönüştürüldü.")
