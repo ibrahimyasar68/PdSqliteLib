@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1300</width>
-    <height>720</height>
+    <width>1518</width>
+    <height>744</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -23,7 +23,7 @@
    <property name="styleSheet">
     <string notr="true">#centralwidget{background-color: rgb(85, 255, 255);}</string>
    </property>
-   <layout class="QGridLayout" name="gridLayout">
+   <layout class="QGridLayout" name="gridLayout_7">
     <item row="0" column="0">
      <widget class="QTabWidget" name="tabWidget">
       <property name="font">
@@ -58,7 +58,14 @@
 #tab_5{background-color: rgb(255, 255, 0);}
 
 #tab_5_1{background-color: rgb(255, 255, 150);}
-#tab_5_2{background-color: rgb(255, 255,200);}</string>
+#tab_5_2{background-color: rgb(255, 255,200);}
+
+#tab_6{background-color: rgb(255, 170, 255);}
+
+
+#tab_6_1{background-color: rgb(255, 190, 255);}
+#tab_6_2{background-color: rgb(255, 220,255);}
+#tab_6_3{background-color: rgb(255, 240,255);}</string>
       </property>
       <property name="currentIndex">
        <number>0</number>
@@ -415,7 +422,7 @@ border-radius:10px;}
        </attribute>
        <layout class="QGridLayout" name="gridLayout_2">
         <item row="0" column="0">
-         <widget class="QTabWidget" name="tabWidget_2">
+         <widget class="QTabWidget" name="tabWidget_3">
           <property name="font">
            <font>
             <family>Monotype Corsiva</family>
@@ -1531,7 +1538,7 @@ S i l</string>
        </attribute>
        <layout class="QGridLayout" name="gridLayout_3">
         <item row="0" column="0">
-         <widget class="QTabWidget" name="tabWidget_3">
+         <widget class="QTabWidget" name="tabWidget_4">
           <property name="font">
            <font>
             <family>Monotype Corsiva</family>
@@ -2627,7 +2634,7 @@ Temizle</string>
        </attribute>
        <layout class="QGridLayout" name="gridLayout_4">
         <item row="0" column="0">
-         <widget class="QTabWidget" name="tabWidget_4">
+         <widget class="QTabWidget" name="tabWidget_5">
           <property name="font">
            <font>
             <family>Monotype Corsiva</family>
@@ -2806,6 +2813,1739 @@ Temizle</string>
              </widget>
             </item>
            </layout>
+          </widget>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="tab_6">
+       <attribute name="title">
+        <string>Kitap Verme</string>
+       </attribute>
+       <layout class="QGridLayout" name="gridLayout">
+        <item row="0" column="0">
+         <widget class="QTabWidget" name="tabWidget_6">
+          <property name="font">
+           <font>
+            <family>Monotype Corsiva</family>
+            <pointsize>14</pointsize>
+            <italic>true</italic>
+           </font>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">
+#tab_3_1{background-color: rgb(150, 255, 0);}
+#tab_3_2{background-color: rgb(150, 170, 0);}
+#tab_3_3{background-color: rgb(150, 85, 0);}</string>
+          </property>
+          <property name="tabPosition">
+           <enum>QTabWidget::South</enum>
+          </property>
+          <property name="currentIndex">
+           <number>0</number>
+          </property>
+          <widget class="QWidget" name="tab_6_1">
+           <attribute name="title">
+            <string>Verme Kaydı</string>
+           </attribute>
+           <widget class="QPushButton" name="pushButton_6_1_1_bul_kitap">
+            <property name="geometry">
+             <rect>
+              <x>60</x>
+              <y>170</y>
+              <width>94</width>
+              <height>50</height>
+             </rect>
+            </property>
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>80</width>
+              <height>50</height>
+             </size>
+            </property>
+            <property name="font">
+             <font>
+              <family>Monotype Corsiva</family>
+              <pointsize>13</pointsize>
+              <weight>50</weight>
+              <italic>true</italic>
+              <bold>false</bold>
+             </font>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">QPushButton#pushButton_6_1_1_bul_kitap{	
+background-color: rgba(6, 211, 166, 150);
+border-radius:10px;}
+
+QPushButton#pushButton_6_1_1_bul_kitap:hover{
+background-color: rgba(0, 248, 49, 150);
+border-radius:10px;}
+
+QPushButton#pushButton_6_1_1_bul_kitap:pressed{
+background-color: rgba(6, 211, 166,150);
+padding-left:5px;
+padding-top:6px;
+border-radius:10px;}
+
+
+</string>
+            </property>
+            <property name="text">
+             <string>Aranan Kaydı
+B u l</string>
+            </property>
+           </widget>
+           <widget class="QWidget" name="formLayoutWidget_11">
+            <property name="geometry">
+             <rect>
+              <x>228</x>
+              <y>30</y>
+              <width>381</width>
+              <height>501</height>
+             </rect>
+            </property>
+            <layout class="QFormLayout" name="formLayout_11">
+             <property name="formAlignment">
+              <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+             </property>
+             <property name="horizontalSpacing">
+              <number>10</number>
+             </property>
+             <property name="verticalSpacing">
+              <number>30</number>
+             </property>
+             <property name="leftMargin">
+              <number>10</number>
+             </property>
+             <property name="rightMargin">
+              <number>10</number>
+             </property>
+             <item row="1" column="0">
+              <widget class="QLabel" name="label_39">
+               <property name="font">
+                <font>
+                 <family>Monotype Corsiva</family>
+                 <pointsize>12</pointsize>
+                 <italic>true</italic>
+                </font>
+               </property>
+               <property name="text">
+                <string>Kitap Adı</string>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="1">
+              <widget class="QLineEdit" name="lineEdit_6_1_adi">
+               <property name="font">
+                <font>
+                 <family>Monotype Corsiva</family>
+                 <pointsize>14</pointsize>
+                 <italic>true</italic>
+                </font>
+               </property>
+              </widget>
+             </item>
+             <item row="2" column="0">
+              <widget class="QLabel" name="label_40">
+               <property name="font">
+                <font>
+                 <family>Monotype Corsiva</family>
+                 <pointsize>12</pointsize>
+                 <italic>true</italic>
+                </font>
+               </property>
+               <property name="text">
+                <string>Yazarı</string>
+               </property>
+              </widget>
+             </item>
+             <item row="2" column="1">
+              <widget class="QLineEdit" name="lineEdit_6_1_yazari">
+               <property name="font">
+                <font>
+                 <family>Monotype Corsiva</family>
+                 <pointsize>14</pointsize>
+                 <italic>true</italic>
+                </font>
+               </property>
+              </widget>
+             </item>
+             <item row="3" column="0">
+              <widget class="QLabel" name="label_41">
+               <property name="font">
+                <font>
+                 <family>Monotype Corsiva</family>
+                 <pointsize>12</pointsize>
+                 <italic>true</italic>
+                </font>
+               </property>
+               <property name="text">
+                <string>Çeviren</string>
+               </property>
+              </widget>
+             </item>
+             <item row="3" column="1">
+              <widget class="QLineEdit" name="lineEdit_6_1_ceviren">
+               <property name="font">
+                <font>
+                 <family>Monotype Corsiva</family>
+                 <pointsize>14</pointsize>
+                 <italic>true</italic>
+                </font>
+               </property>
+              </widget>
+             </item>
+             <item row="4" column="0">
+              <widget class="QLabel" name="label_42">
+               <property name="font">
+                <font>
+                 <family>Monotype Corsiva</family>
+                 <pointsize>12</pointsize>
+                 <italic>true</italic>
+                </font>
+               </property>
+               <property name="text">
+                <string>Türü</string>
+               </property>
+              </widget>
+             </item>
+             <item row="4" column="1">
+              <widget class="QLineEdit" name="lineEdit_6_1_turu">
+               <property name="font">
+                <font>
+                 <family>Monotype Corsiva</family>
+                 <pointsize>14</pointsize>
+                 <italic>true</italic>
+                </font>
+               </property>
+              </widget>
+             </item>
+             <item row="5" column="0">
+              <widget class="QLabel" name="label_43">
+               <property name="font">
+                <font>
+                 <family>Monotype Corsiva</family>
+                 <pointsize>12</pointsize>
+                 <italic>true</italic>
+                </font>
+               </property>
+               <property name="text">
+                <string>Yayınevi</string>
+               </property>
+              </widget>
+             </item>
+             <item row="5" column="1">
+              <widget class="QLineEdit" name="lineEdit_6_1_yayinevi">
+               <property name="font">
+                <font>
+                 <family>Monotype Corsiva</family>
+                 <pointsize>14</pointsize>
+                 <italic>true</italic>
+                </font>
+               </property>
+              </widget>
+             </item>
+             <item row="6" column="0">
+              <widget class="QLabel" name="label_44">
+               <property name="font">
+                <font>
+                 <family>Monotype Corsiva</family>
+                 <pointsize>12</pointsize>
+                 <italic>true</italic>
+                </font>
+               </property>
+               <property name="text">
+                <string>Yılı</string>
+               </property>
+              </widget>
+             </item>
+             <item row="6" column="1">
+              <widget class="QLineEdit" name="lineEdit_6_1_yili">
+               <property name="font">
+                <font>
+                 <family>Monotype Corsiva</family>
+                 <pointsize>14</pointsize>
+                 <italic>true</italic>
+                </font>
+               </property>
+              </widget>
+             </item>
+             <item row="7" column="0">
+              <widget class="QLabel" name="label_45">
+               <property name="font">
+                <font>
+                 <family>Monotype Corsiva</family>
+                 <pointsize>12</pointsize>
+                 <italic>true</italic>
+                </font>
+               </property>
+               <property name="text">
+                <string>Sayfa</string>
+               </property>
+              </widget>
+             </item>
+             <item row="7" column="1">
+              <widget class="QLineEdit" name="lineEdit_6_1_sayfa">
+               <property name="font">
+                <font>
+                 <family>Monotype Corsiva</family>
+                 <pointsize>14</pointsize>
+                 <italic>true</italic>
+                </font>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="1">
+              <widget class="QLineEdit" name="lineEdit_6_1_id">
+               <property name="font">
+                <font>
+                 <family>Monotype Corsiva</family>
+                 <pointsize>14</pointsize>
+                 <italic>true</italic>
+                </font>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="0">
+              <widget class="QLabel" name="label_46">
+               <property name="font">
+                <font>
+                 <family>Monotype Corsiva</family>
+                 <pointsize>12</pointsize>
+                 <italic>true</italic>
+                </font>
+               </property>
+               <property name="text">
+                <string>Kayıt No</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+           <widget class="QPushButton" name="pushButton_6_1_islemi_kaydet">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
+            <property name="geometry">
+             <rect>
+              <x>1080</x>
+              <y>460</y>
+              <width>191</width>
+              <height>71</height>
+             </rect>
+            </property>
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>80</width>
+              <height>50</height>
+             </size>
+            </property>
+            <property name="font">
+             <font>
+              <family>Monotype Corsiva</family>
+              <pointsize>13</pointsize>
+              <weight>50</weight>
+              <italic>true</italic>
+              <bold>false</bold>
+             </font>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">QPushButton#pushButton_6_1_islemi_kaydet{	
+background-color: rgba(6, 211, 166, 150);
+border-radius:10px;}
+
+QPushButton#pushButton_6_1_islemi_kaydet:hover{
+background-color: rgba(0, 248, 49, 150);
+border-radius:10px;}
+
+QPushButton#pushButton_6_1_islemi_kaydet:pressed{
+background-color: rgba(6, 211, 166,150);
+padding-left:5px;
+padding-top:6px;
+border-radius:10px;}
+
+
+</string>
+            </property>
+            <property name="text">
+             <string>İşlemi
+Kaydet</string>
+            </property>
+           </widget>
+           <widget class="QComboBox" name="comboBox_6_1_1_liste_kitap">
+            <property name="geometry">
+             <rect>
+              <x>20</x>
+              <y>90</y>
+              <width>200</width>
+              <height>35</height>
+             </rect>
+            </property>
+            <property name="font">
+             <font>
+              <family>Monotype Corsiva</family>
+              <pointsize>14</pointsize>
+              <italic>true</italic>
+             </font>
+            </property>
+           </widget>
+           <widget class="QLabel" name="label_47">
+            <property name="geometry">
+             <rect>
+              <x>40</x>
+              <y>20</y>
+              <width>151</width>
+              <height>51</height>
+             </rect>
+            </property>
+            <property name="font">
+             <font>
+              <family>Monotype Corsiva</family>
+              <pointsize>13</pointsize>
+              <italic>true</italic>
+             </font>
+            </property>
+            <property name="text">
+             <string>Ödünç Verilecek  Kitap</string>
+            </property>
+           </widget>
+           <widget class="QPushButton" name="pushButton_6_1_2_bul_kisi">
+            <property name="geometry">
+             <rect>
+              <x>720</x>
+              <y>170</y>
+              <width>94</width>
+              <height>50</height>
+             </rect>
+            </property>
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>80</width>
+              <height>50</height>
+             </size>
+            </property>
+            <property name="font">
+             <font>
+              <family>Monotype Corsiva</family>
+              <pointsize>13</pointsize>
+              <weight>50</weight>
+              <italic>true</italic>
+              <bold>false</bold>
+             </font>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">QPushButton#pushButton_6_1_2_bul_kisi{	
+background-color: rgba(6, 211, 166, 150);
+border-radius:10px;}
+
+QPushButton#pushButton_6_1_2_bul_kisi:hover{
+background-color: rgba(0, 248, 49, 150);
+border-radius:10px;}
+
+QPushButton#pushButton_6_1_2_bul_kisi:pressed{
+background-color: rgba(6, 211, 166,150);
+padding-left:5px;
+padding-top:6px;
+border-radius:10px;}
+
+
+</string>
+            </property>
+            <property name="text">
+             <string>Aranan Kaydı
+B u l</string>
+            </property>
+           </widget>
+           <widget class="QComboBox" name="comboBox_6_1_2_liste_kisi">
+            <property name="geometry">
+             <rect>
+              <x>670</x>
+              <y>90</y>
+              <width>200</width>
+              <height>35</height>
+             </rect>
+            </property>
+            <property name="font">
+             <font>
+              <family>Monotype Corsiva</family>
+              <pointsize>14</pointsize>
+              <italic>true</italic>
+             </font>
+            </property>
+           </widget>
+           <widget class="QLabel" name="label_78">
+            <property name="geometry">
+             <rect>
+              <x>680</x>
+              <y>20</y>
+              <width>131</width>
+              <height>41</height>
+             </rect>
+            </property>
+            <property name="font">
+             <font>
+              <family>Monotype Corsiva</family>
+              <pointsize>13</pointsize>
+              <italic>true</italic>
+             </font>
+            </property>
+            <property name="text">
+             <string>Ödünç Alacak Kişi</string>
+            </property>
+           </widget>
+           <widget class="QWidget" name="formLayoutWidget_17">
+            <property name="geometry">
+             <rect>
+              <x>890</x>
+              <y>30</y>
+              <width>371</width>
+              <height>331</height>
+             </rect>
+            </property>
+            <layout class="QFormLayout" name="formLayout_18">
+             <property name="formAlignment">
+              <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+             </property>
+             <property name="horizontalSpacing">
+              <number>10</number>
+             </property>
+             <property name="verticalSpacing">
+              <number>30</number>
+             </property>
+             <property name="leftMargin">
+              <number>10</number>
+             </property>
+             <property name="rightMargin">
+              <number>10</number>
+             </property>
+             <property name="bottomMargin">
+              <number>0</number>
+             </property>
+             <item row="0" column="0">
+              <widget class="QLabel" name="label_94">
+               <property name="font">
+                <font>
+                 <family>Monotype Corsiva</family>
+                 <pointsize>12</pointsize>
+                 <italic>true</italic>
+                </font>
+               </property>
+               <property name="text">
+                <string>Kullanıcı Adı</string>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="1">
+              <widget class="QLineEdit" name="lineEdit_6_1_kullanici">
+               <property name="font">
+                <font>
+                 <family>Monotype Corsiva</family>
+                 <pointsize>14</pointsize>
+                 <italic>true</italic>
+                </font>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="0">
+              <widget class="QLabel" name="label_87">
+               <property name="font">
+                <font>
+                 <family>Monotype Corsiva</family>
+                 <pointsize>12</pointsize>
+                 <italic>true</italic>
+                </font>
+               </property>
+               <property name="text">
+                <string>Adı Soyadı</string>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="1">
+              <widget class="QLineEdit" name="lineEdit_6_1_adi_soyadi">
+               <property name="font">
+                <font>
+                 <family>Monotype Corsiva</family>
+                 <pointsize>14</pointsize>
+                 <italic>true</italic>
+                </font>
+               </property>
+              </widget>
+             </item>
+             <item row="2" column="0">
+              <widget class="QLabel" name="label_88">
+               <property name="font">
+                <font>
+                 <family>Monotype Corsiva</family>
+                 <pointsize>12</pointsize>
+                 <italic>true</italic>
+                </font>
+               </property>
+               <property name="text">
+                <string>Telefon</string>
+               </property>
+              </widget>
+             </item>
+             <item row="2" column="1">
+              <widget class="QLineEdit" name="lineEdit_6_1_telefon">
+               <property name="font">
+                <font>
+                 <family>Monotype Corsiva</family>
+                 <pointsize>14</pointsize>
+                 <italic>true</italic>
+                </font>
+               </property>
+              </widget>
+             </item>
+             <item row="3" column="0">
+              <widget class="QLabel" name="label_89">
+               <property name="font">
+                <font>
+                 <family>Monotype Corsiva</family>
+                 <pointsize>12</pointsize>
+                 <italic>true</italic>
+                </font>
+               </property>
+               <property name="text">
+                <string>Mail</string>
+               </property>
+              </widget>
+             </item>
+             <item row="3" column="1">
+              <widget class="QLineEdit" name="lineEdit_6_1_mail">
+               <property name="font">
+                <font>
+                 <family>Monotype Corsiva</family>
+                 <pointsize>14</pointsize>
+                 <italic>true</italic>
+                </font>
+               </property>
+              </widget>
+             </item>
+             <item row="4" column="0">
+              <widget class="QLabel" name="label_90">
+               <property name="font">
+                <font>
+                 <family>Monotype Corsiva</family>
+                 <pointsize>12</pointsize>
+                 <italic>true</italic>
+                </font>
+               </property>
+               <property name="text">
+                <string>Yetki</string>
+               </property>
+              </widget>
+             </item>
+             <item row="4" column="1">
+              <widget class="QLineEdit" name="lineEdit_6_1_yetki">
+               <property name="font">
+                <font>
+                 <family>Monotype Corsiva</family>
+                 <pointsize>14</pointsize>
+                 <italic>true</italic>
+                </font>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+           <widget class="QPushButton" name="pushButton_6_1_1_bul_kitap_temizle">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
+            <property name="geometry">
+             <rect>
+              <x>60</x>
+              <y>270</y>
+              <width>94</width>
+              <height>50</height>
+             </rect>
+            </property>
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>80</width>
+              <height>50</height>
+             </size>
+            </property>
+            <property name="font">
+             <font>
+              <family>Monotype Corsiva</family>
+              <pointsize>13</pointsize>
+              <weight>50</weight>
+              <italic>true</italic>
+              <bold>false</bold>
+             </font>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">QPushButton#pushButton_6_1_1_bul_kitap_temizle{	
+background-color: rgba(6, 211, 166, 150);
+border-radius:10px;}
+
+QPushButton#pushButton_6_1_1_bul_kitap_temizle:hover{
+background-color: rgba(0, 248, 49, 150);
+border-radius:10px;}
+
+QPushButton#pushButton_6_1_1_bul_kitap_temizle:pressed{
+background-color: rgba(6, 211, 166,150);
+padding-left:5px;
+padding-top:6px;
+border-radius:10px;}
+
+
+</string>
+            </property>
+            <property name="text">
+             <string>Kaydı
+Temizle</string>
+            </property>
+           </widget>
+           <widget class="QPushButton" name="pushButton_6_1_2_bul_kisi_temizle">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
+            <property name="geometry">
+             <rect>
+              <x>720</x>
+              <y>260</y>
+              <width>94</width>
+              <height>50</height>
+             </rect>
+            </property>
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>80</width>
+              <height>50</height>
+             </size>
+            </property>
+            <property name="font">
+             <font>
+              <family>Monotype Corsiva</family>
+              <pointsize>13</pointsize>
+              <weight>50</weight>
+              <italic>true</italic>
+              <bold>false</bold>
+             </font>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">QPushButton#pushButton_6_1_2_bul_kisi_temizle{	
+background-color: rgba(6, 211, 166, 150);
+border-radius:10px;}
+
+QPushButton#pushButton_6_1_2_bul_kisi_temizle:hover{
+background-color: rgba(0, 248, 49, 150);
+border-radius:10px;}
+
+QPushButton#pushButton_6_1_2_bul_kisi_temizle:pressed{
+background-color: rgba(6, 211, 166,150);
+padding-left:5px;
+padding-top:6px;
+border-radius:10px;}
+
+
+</string>
+            </property>
+            <property name="text">
+             <string>Kaydı
+Temizle</string>
+            </property>
+           </widget>
+          </widget>
+          <widget class="QWidget" name="tab_6_2">
+           <attribute name="title">
+            <string>Alma Kaydı</string>
+           </attribute>
+           <widget class="QLabel" name="label_79">
+            <property name="geometry">
+             <rect>
+              <x>50</x>
+              <y>20</y>
+              <width>131</width>
+              <height>41</height>
+             </rect>
+            </property>
+            <property name="font">
+             <font>
+              <family>Monotype Corsiva</family>
+              <pointsize>13</pointsize>
+              <italic>true</italic>
+             </font>
+            </property>
+            <property name="text">
+             <string>Teslim Edecek Kişi</string>
+            </property>
+           </widget>
+           <widget class="QPushButton" name="pushButton_6_2_1_bul_kisi">
+            <property name="geometry">
+             <rect>
+              <x>90</x>
+              <y>170</y>
+              <width>94</width>
+              <height>50</height>
+             </rect>
+            </property>
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>80</width>
+              <height>50</height>
+             </size>
+            </property>
+            <property name="font">
+             <font>
+              <family>Monotype Corsiva</family>
+              <pointsize>13</pointsize>
+              <weight>50</weight>
+              <italic>true</italic>
+              <bold>false</bold>
+             </font>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">QPushButton#pushButton_6_2_1_bul_kisi{	
+background-color: rgba(6, 211, 166, 150);
+border-radius:10px;}
+
+QPushButton#pushButton_6_2_1_bul_kisi:hover{
+background-color: rgba(0, 248, 49, 150);
+border-radius:10px;}
+
+QPushButton#pushButton_6_2_1_bul_kisi:pressed{
+background-color: rgba(6, 211, 166,150);
+padding-left:5px;
+padding-top:6px;
+border-radius:10px;}
+
+
+</string>
+            </property>
+            <property name="text">
+             <string>Aranan Kaydı
+B u l</string>
+            </property>
+           </widget>
+           <widget class="QComboBox" name="comboBox_6_2_1_liste_kisi">
+            <property name="geometry">
+             <rect>
+              <x>40</x>
+              <y>90</y>
+              <width>200</width>
+              <height>35</height>
+             </rect>
+            </property>
+            <property name="font">
+             <font>
+              <family>Monotype Corsiva</family>
+              <pointsize>14</pointsize>
+              <italic>true</italic>
+             </font>
+            </property>
+           </widget>
+           <widget class="QWidget" name="formLayoutWidget_18">
+            <property name="geometry">
+             <rect>
+              <x>260</x>
+              <y>30</y>
+              <width>371</width>
+              <height>331</height>
+             </rect>
+            </property>
+            <layout class="QFormLayout" name="formLayout_19">
+             <property name="formAlignment">
+              <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+             </property>
+             <property name="horizontalSpacing">
+              <number>10</number>
+             </property>
+             <property name="verticalSpacing">
+              <number>30</number>
+             </property>
+             <property name="leftMargin">
+              <number>10</number>
+             </property>
+             <property name="rightMargin">
+              <number>10</number>
+             </property>
+             <property name="bottomMargin">
+              <number>0</number>
+             </property>
+             <item row="0" column="0">
+              <widget class="QLabel" name="label_95">
+               <property name="font">
+                <font>
+                 <family>Monotype Corsiva</family>
+                 <pointsize>12</pointsize>
+                 <italic>true</italic>
+                </font>
+               </property>
+               <property name="text">
+                <string>Kullanıcı Adı</string>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="1">
+              <widget class="QLineEdit" name="lineEdit_6_2_kullanici">
+               <property name="font">
+                <font>
+                 <family>Monotype Corsiva</family>
+                 <pointsize>14</pointsize>
+                 <italic>true</italic>
+                </font>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="0">
+              <widget class="QLabel" name="label_91">
+               <property name="font">
+                <font>
+                 <family>Monotype Corsiva</family>
+                 <pointsize>12</pointsize>
+                 <italic>true</italic>
+                </font>
+               </property>
+               <property name="text">
+                <string>Adı Soyadı</string>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="1">
+              <widget class="QLineEdit" name="lineEdit_6_2_adi_soyadi">
+               <property name="font">
+                <font>
+                 <family>Monotype Corsiva</family>
+                 <pointsize>14</pointsize>
+                 <italic>true</italic>
+                </font>
+               </property>
+              </widget>
+             </item>
+             <item row="2" column="0">
+              <widget class="QLabel" name="label_92">
+               <property name="font">
+                <font>
+                 <family>Monotype Corsiva</family>
+                 <pointsize>12</pointsize>
+                 <italic>true</italic>
+                </font>
+               </property>
+               <property name="text">
+                <string>Telefon</string>
+               </property>
+              </widget>
+             </item>
+             <item row="2" column="1">
+              <widget class="QLineEdit" name="lineEdit_6_2_telefon">
+               <property name="font">
+                <font>
+                 <family>Monotype Corsiva</family>
+                 <pointsize>14</pointsize>
+                 <italic>true</italic>
+                </font>
+               </property>
+              </widget>
+             </item>
+             <item row="3" column="0">
+              <widget class="QLabel" name="label_93">
+               <property name="font">
+                <font>
+                 <family>Monotype Corsiva</family>
+                 <pointsize>12</pointsize>
+                 <italic>true</italic>
+                </font>
+               </property>
+               <property name="text">
+                <string>Mail</string>
+               </property>
+              </widget>
+             </item>
+             <item row="3" column="1">
+              <widget class="QLineEdit" name="lineEdit_6_2_mail">
+               <property name="font">
+                <font>
+                 <family>Monotype Corsiva</family>
+                 <pointsize>14</pointsize>
+                 <italic>true</italic>
+                </font>
+               </property>
+              </widget>
+             </item>
+             <item row="4" column="0">
+              <widget class="QLabel" name="label_96">
+               <property name="font">
+                <font>
+                 <family>Monotype Corsiva</family>
+                 <pointsize>12</pointsize>
+                 <italic>true</italic>
+                </font>
+               </property>
+               <property name="text">
+                <string>Yetki</string>
+               </property>
+              </widget>
+             </item>
+             <item row="4" column="1">
+              <widget class="QLineEdit" name="lineEdit_6_2_yetki">
+               <property name="font">
+                <font>
+                 <family>Monotype Corsiva</family>
+                 <pointsize>14</pointsize>
+                 <italic>true</italic>
+                </font>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+           <widget class="QPushButton" name="pushButton_6_2_1_bul_kisi_temizle">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
+            <property name="geometry">
+             <rect>
+              <x>90</x>
+              <y>260</y>
+              <width>94</width>
+              <height>50</height>
+             </rect>
+            </property>
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>80</width>
+              <height>50</height>
+             </size>
+            </property>
+            <property name="font">
+             <font>
+              <family>Monotype Corsiva</family>
+              <pointsize>13</pointsize>
+              <weight>50</weight>
+              <italic>true</italic>
+              <bold>false</bold>
+             </font>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">QPushButton#pushButton_6_2_1_bul_kisi_temizle{	
+background-color: rgba(6, 211, 166, 150);
+border-radius:10px;}
+
+QPushButton#pushButton_6_2_1_bul_kisi_temizle:hover{
+background-color: rgba(0, 248, 49, 150);
+border-radius:10px;}
+
+QPushButton#pushButton_6_2_1_bul_kisi_temizle:pressed{
+background-color: rgba(6, 211, 166,150);
+padding-left:5px;
+padding-top:6px;
+border-radius:10px;}
+
+
+</string>
+            </property>
+            <property name="text">
+             <string>Kaydı
+Temizle</string>
+            </property>
+           </widget>
+           <widget class="QComboBox" name="comboBox_6_2_2_liste_kitap">
+            <property name="enabled">
+             <bool>true</bool>
+            </property>
+            <property name="geometry">
+             <rect>
+              <x>680</x>
+              <y>90</y>
+              <width>200</width>
+              <height>35</height>
+             </rect>
+            </property>
+            <property name="font">
+             <font>
+              <family>Monotype Corsiva</family>
+              <pointsize>14</pointsize>
+              <italic>true</italic>
+             </font>
+            </property>
+           </widget>
+           <widget class="QWidget" name="formLayoutWidget_12">
+            <property name="geometry">
+             <rect>
+              <x>888</x>
+              <y>30</y>
+              <width>381</width>
+              <height>501</height>
+             </rect>
+            </property>
+            <layout class="QFormLayout" name="formLayout_12">
+             <property name="formAlignment">
+              <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+             </property>
+             <property name="horizontalSpacing">
+              <number>10</number>
+             </property>
+             <property name="verticalSpacing">
+              <number>30</number>
+             </property>
+             <property name="leftMargin">
+              <number>10</number>
+             </property>
+             <property name="rightMargin">
+              <number>10</number>
+             </property>
+             <item row="1" column="0">
+              <widget class="QLabel" name="label_48">
+               <property name="font">
+                <font>
+                 <family>Monotype Corsiva</family>
+                 <pointsize>12</pointsize>
+                 <italic>true</italic>
+                </font>
+               </property>
+               <property name="text">
+                <string>Kitap Adı</string>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="1">
+              <widget class="QLineEdit" name="lineEdit_6_2_adi">
+               <property name="font">
+                <font>
+                 <family>Monotype Corsiva</family>
+                 <pointsize>14</pointsize>
+                 <italic>true</italic>
+                </font>
+               </property>
+              </widget>
+             </item>
+             <item row="2" column="0">
+              <widget class="QLabel" name="label_49">
+               <property name="font">
+                <font>
+                 <family>Monotype Corsiva</family>
+                 <pointsize>12</pointsize>
+                 <italic>true</italic>
+                </font>
+               </property>
+               <property name="text">
+                <string>Yazarı</string>
+               </property>
+              </widget>
+             </item>
+             <item row="2" column="1">
+              <widget class="QLineEdit" name="lineEdit_6_2_yazari">
+               <property name="font">
+                <font>
+                 <family>Monotype Corsiva</family>
+                 <pointsize>14</pointsize>
+                 <italic>true</italic>
+                </font>
+               </property>
+              </widget>
+             </item>
+             <item row="3" column="0">
+              <widget class="QLabel" name="label_50">
+               <property name="font">
+                <font>
+                 <family>Monotype Corsiva</family>
+                 <pointsize>12</pointsize>
+                 <italic>true</italic>
+                </font>
+               </property>
+               <property name="text">
+                <string>Çeviren</string>
+               </property>
+              </widget>
+             </item>
+             <item row="3" column="1">
+              <widget class="QLineEdit" name="lineEdit_6_2_ceviren">
+               <property name="font">
+                <font>
+                 <family>Monotype Corsiva</family>
+                 <pointsize>14</pointsize>
+                 <italic>true</italic>
+                </font>
+               </property>
+              </widget>
+             </item>
+             <item row="4" column="0">
+              <widget class="QLabel" name="label_51">
+               <property name="font">
+                <font>
+                 <family>Monotype Corsiva</family>
+                 <pointsize>12</pointsize>
+                 <italic>true</italic>
+                </font>
+               </property>
+               <property name="text">
+                <string>Türü</string>
+               </property>
+              </widget>
+             </item>
+             <item row="4" column="1">
+              <widget class="QLineEdit" name="lineEdit_6_2_turu">
+               <property name="font">
+                <font>
+                 <family>Monotype Corsiva</family>
+                 <pointsize>14</pointsize>
+                 <italic>true</italic>
+                </font>
+               </property>
+              </widget>
+             </item>
+             <item row="5" column="0">
+              <widget class="QLabel" name="label_52">
+               <property name="font">
+                <font>
+                 <family>Monotype Corsiva</family>
+                 <pointsize>12</pointsize>
+                 <italic>true</italic>
+                </font>
+               </property>
+               <property name="text">
+                <string>Yayınevi</string>
+               </property>
+              </widget>
+             </item>
+             <item row="5" column="1">
+              <widget class="QLineEdit" name="lineEdit_6_2_yayinevi">
+               <property name="font">
+                <font>
+                 <family>Monotype Corsiva</family>
+                 <pointsize>14</pointsize>
+                 <italic>true</italic>
+                </font>
+               </property>
+              </widget>
+             </item>
+             <item row="6" column="0">
+              <widget class="QLabel" name="label_53">
+               <property name="font">
+                <font>
+                 <family>Monotype Corsiva</family>
+                 <pointsize>12</pointsize>
+                 <italic>true</italic>
+                </font>
+               </property>
+               <property name="text">
+                <string>Yılı</string>
+               </property>
+              </widget>
+             </item>
+             <item row="6" column="1">
+              <widget class="QLineEdit" name="lineEdit_6_2_yili">
+               <property name="font">
+                <font>
+                 <family>Monotype Corsiva</family>
+                 <pointsize>14</pointsize>
+                 <italic>true</italic>
+                </font>
+               </property>
+              </widget>
+             </item>
+             <item row="7" column="0">
+              <widget class="QLabel" name="label_54">
+               <property name="font">
+                <font>
+                 <family>Monotype Corsiva</family>
+                 <pointsize>12</pointsize>
+                 <italic>true</italic>
+                </font>
+               </property>
+               <property name="text">
+                <string>Sayfa</string>
+               </property>
+              </widget>
+             </item>
+             <item row="7" column="1">
+              <widget class="QLineEdit" name="lineEdit_6_2_sayfa">
+               <property name="font">
+                <font>
+                 <family>Monotype Corsiva</family>
+                 <pointsize>14</pointsize>
+                 <italic>true</italic>
+                </font>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="1">
+              <widget class="QLineEdit" name="lineEdit_6_2_id">
+               <property name="font">
+                <font>
+                 <family>Monotype Corsiva</family>
+                 <pointsize>14</pointsize>
+                 <italic>true</italic>
+                </font>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="0">
+              <widget class="QLabel" name="label_55">
+               <property name="font">
+                <font>
+                 <family>Monotype Corsiva</family>
+                 <pointsize>12</pointsize>
+                 <italic>true</italic>
+                </font>
+               </property>
+               <property name="text">
+                <string>Kayıt No</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+           <widget class="QLabel" name="label_57">
+            <property name="geometry">
+             <rect>
+              <x>700</x>
+              <y>20</y>
+              <width>151</width>
+              <height>51</height>
+             </rect>
+            </property>
+            <property name="font">
+             <font>
+              <family>Monotype Corsiva</family>
+              <pointsize>13</pointsize>
+              <italic>true</italic>
+             </font>
+            </property>
+            <property name="text">
+             <string>Alınacak Kitap</string>
+            </property>
+           </widget>
+           <widget class="QPushButton" name="pushButton_6_2_2_bul_kitap_temizle">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
+            <property name="geometry">
+             <rect>
+              <x>720</x>
+              <y>270</y>
+              <width>94</width>
+              <height>50</height>
+             </rect>
+            </property>
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>80</width>
+              <height>50</height>
+             </size>
+            </property>
+            <property name="font">
+             <font>
+              <family>Monotype Corsiva</family>
+              <pointsize>13</pointsize>
+              <weight>50</weight>
+              <italic>true</italic>
+              <bold>false</bold>
+             </font>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">QPushButton#pushButton_6_2_2_bul_kitap_temizle{	
+background-color: rgba(6, 211, 166, 150);
+border-radius:10px;}
+
+QPushButton#pushButton_6_2_2_bul_kitap_temizle:hover{
+background-color: rgba(0, 248, 49, 150);
+border-radius:10px;}
+
+QPushButton#pushButton_6_2_2_bul_kitap_temizle:pressed{
+background-color: rgba(6, 211, 166,150);
+padding-left:5px;
+padding-top:6px;
+border-radius:10px;}
+
+
+</string>
+            </property>
+            <property name="text">
+             <string>Kaydı
+Temizle</string>
+            </property>
+           </widget>
+           <widget class="QPushButton" name="pushButton_6_2_2_bul_kitap">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
+            <property name="geometry">
+             <rect>
+              <x>720</x>
+              <y>170</y>
+              <width>94</width>
+              <height>50</height>
+             </rect>
+            </property>
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>80</width>
+              <height>50</height>
+             </size>
+            </property>
+            <property name="font">
+             <font>
+              <family>Monotype Corsiva</family>
+              <pointsize>13</pointsize>
+              <weight>50</weight>
+              <italic>true</italic>
+              <bold>false</bold>
+             </font>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">QPushButton#pushButton_6_2_2_bul_kitap{	
+background-color: rgba(6, 211, 166, 150);
+border-radius:10px;}
+
+QPushButton#pushButton_6_2_2_bul_kitap:hover{
+background-color: rgba(0, 248, 49, 150);
+border-radius:10px;}
+
+QPushButton#pushButton_6_2_2_bul_kitap:pressed{
+background-color: rgba(6, 211, 166,150);
+padding-left:5px;
+padding-top:6px;
+border-radius:10px;}
+
+
+</string>
+            </property>
+            <property name="text">
+             <string>Aranan Kaydı
+B u l</string>
+            </property>
+           </widget>
+           <widget class="QPushButton" name="pushButton_6_2_islemi_kaydet">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
+            <property name="geometry">
+             <rect>
+              <x>260</x>
+              <y>460</y>
+              <width>191</width>
+              <height>71</height>
+             </rect>
+            </property>
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>80</width>
+              <height>50</height>
+             </size>
+            </property>
+            <property name="font">
+             <font>
+              <family>Monotype Corsiva</family>
+              <pointsize>13</pointsize>
+              <weight>50</weight>
+              <italic>true</italic>
+              <bold>false</bold>
+             </font>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">QPushButton#pushButton_6_2_islemi_kaydet{	
+background-color: rgba(6, 211, 166, 150);
+border-radius:10px;}
+
+QPushButton#pushButton_6_2_islemi_kaydet:hover{
+background-color: rgba(0, 248, 49, 150);
+border-radius:10px;}
+
+QPushButton#pushButton_6_2_islemi_kaydet:pressed{
+background-color: rgba(6, 211, 166,150);
+padding-left:5px;
+padding-top:6px;
+border-radius:10px;}
+
+
+</string>
+            </property>
+            <property name="text">
+             <string>İşlemi
+Kaydet</string>
+            </property>
+           </widget>
+          </widget>
+          <widget class="QWidget" name="tab_6_3">
+           <attribute name="title">
+            <string>Dışardaki  Kitaplar</string>
+           </attribute>
+           <widget class="QPushButton" name="pushButton_3_3_Sil_2">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
+            <property name="geometry">
+             <rect>
+              <x>1000</x>
+              <y>280</y>
+              <width>80</width>
+              <height>61</height>
+             </rect>
+            </property>
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>80</width>
+              <height>50</height>
+             </size>
+            </property>
+            <property name="font">
+             <font>
+              <family>Monotype Corsiva</family>
+              <pointsize>13</pointsize>
+              <weight>50</weight>
+              <italic>true</italic>
+              <bold>false</bold>
+             </font>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">QPushButton#pushButton_3_3_Sil{	
+background-color: rgba(6, 211, 166, 150);
+border-radius:10px;}
+
+QPushButton#pushButton_3_3_Sil:hover{
+background-color: rgba(0, 248, 49, 150);
+border-radius:10px;}
+
+QPushButton#pushButton_3_3_Sil:pressed{
+background-color: rgba(6, 211, 166,150);
+padding-left:5px;
+padding-top:6px;
+border-radius:10px;}
+
+
+</string>
+            </property>
+            <property name="text">
+             <string>Kaydı
+S i l</string>
+            </property>
+           </widget>
+           <widget class="QPushButton" name="pushButton_6_3_temizle">
+            <property name="geometry">
+             <rect>
+              <x>40</x>
+              <y>340</y>
+              <width>100</width>
+              <height>60</height>
+             </rect>
+            </property>
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>100</width>
+              <height>60</height>
+             </size>
+            </property>
+            <property name="font">
+             <font>
+              <family>Monotype Corsiva</family>
+              <pointsize>12</pointsize>
+              <weight>75</weight>
+              <bold>true</bold>
+             </font>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">QPushButton#pushButton_6_3_temizle{	
+background-color: rgba(6, 211, 166, 150);
+border-radius:10px;}
+
+QPushButton#pushButton_6_3_temizle:hover{
+background-color: rgba(0, 248, 49, 150);
+border-radius:10px;}
+
+QPushButton#pushButton_6_3_temizle:pressed{
+background-color: rgba(6, 211, 166,150);
+padding-left:5px;
+padding-top:6px;
+border-radius:10px;}
+
+
+</string>
+            </property>
+            <property name="text">
+             <string>T e m i z l e</string>
+            </property>
+           </widget>
+           <widget class="QPushButton" name="pushButton_6_3_listele">
+            <property name="geometry">
+             <rect>
+              <x>40</x>
+              <y>210</y>
+              <width>100</width>
+              <height>60</height>
+             </rect>
+            </property>
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>100</width>
+              <height>60</height>
+             </size>
+            </property>
+            <property name="font">
+             <font>
+              <family>Monotype Corsiva</family>
+              <pointsize>12</pointsize>
+              <weight>75</weight>
+              <bold>true</bold>
+             </font>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">QPushButton#pushButton_6_3_listele{	
+background-color: rgba(6, 211, 166, 150);
+border-radius:10px;}
+
+QPushButton#pushButton_6_3_listele:hover{
+background-color: rgba(6, 211, 166,150);
+border-radius:10px;}
+
+QPushButton#pushButton_6_3_listele:pressed{
+
+background-color: rgba(0, 248, 49, 150);
+padding-left:5px;
+padding-top:6px;
+border-radius:10px;}
+
+
+</string>
+            </property>
+            <property name="text">
+             <string>L i s t e l e</string>
+            </property>
+           </widget>
+           <widget class="QTableWidget" name="tableWidget_6_2">
+            <property name="geometry">
+             <rect>
+              <x>160</x>
+              <y>0</y>
+              <width>1160</width>
+              <height>590</height>
+             </rect>
+            </property>
+            <property name="font">
+             <font>
+              <family>Monotype Corsiva</family>
+              <pointsize>14</pointsize>
+              <weight>50</weight>
+              <italic>true</italic>
+              <bold>false</bold>
+             </font>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">font: italic 14pt &quot;Monotype Corsiva&quot;;</string>
+            </property>
+            <property name="showGrid">
+             <bool>true</bool>
+            </property>
+            <property name="columnCount">
+             <number>7</number>
+            </property>
+            <column>
+             <property name="text">
+              <string>New Column</string>
+             </property>
+            </column>
+            <column>
+             <property name="text">
+              <string>New Column</string>
+             </property>
+            </column>
+            <column>
+             <property name="text">
+              <string>New Column</string>
+             </property>
+            </column>
+            <column>
+             <property name="text">
+              <string>New Column</string>
+             </property>
+            </column>
+            <column>
+             <property name="text">
+              <string>New Column</string>
+             </property>
+            </column>
+            <column>
+             <property name="text">
+              <string>New Column</string>
+             </property>
+            </column>
+            <column>
+             <property name="text">
+              <string>New Column</string>
+             </property>
+            </column>
+           </widget>
           </widget>
          </widget>
         </item>

@@ -30,10 +30,21 @@ def sil_adi(adi):
 
 # kullanıcı ekleme (users)
 def user_ekle(user):
-    ekle="Insert Into users ( kullanıcı_adı, sifre, adi, soyadi, telefon, mail, sehir) values (?,?,?,?,?,?,?)"
-    islem.execute(ekle,((user[0]),(user[1]),(user[2]),(user[3]),(user[4]),(user[5]),(user[6])))
+    ekle="Insert Into users ( kullanici, sifre, adi_soyadi, telefon, mail, yetki) values (?,?,?,?,?,?)"
+    islem.execute(ekle,((user[0]),(user[1]),(user[2]),(user[3]),(user[4]),(user[5])))
     baglantı.commit()
 
+
+def save_work_to_db(kayit):
+    ekle="Insert Into follow (userId,bookId,outdate,outtime,status,indate,intime) values (?,?,?,?,?,?,?)"
+    islem.execute(ekle,((kayit[0]),(kayit[1]),(kayit[2]),(kayit[3]),(kayit[4]),(kayit[5]),(kayit[6])))
+    baglantı.commit()
+
+def uptate_work_to_db(kayit):
+    dgsm =(f"Update follow Set status='{kayit[4]}', indate='{kayit[5]}', intime='{kayit[6]}' where ((userId=='{kayit[0]}') and (bookId=='{kayit[1]}'))")
+    islem.execute(dgsm)
+    baglantı.commit()
+    
 
 if __name__=="__main__": 
     pass

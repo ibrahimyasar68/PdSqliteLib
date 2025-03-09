@@ -2,7 +2,7 @@
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import Qt
 from bforms.user_py import Ui_MainWindow
-from database.dbframe import df_user_list, df_passw_list
+from database.dbframe import df_user_list
 from database.dbbase import user_ekle
 
 

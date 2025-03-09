@@ -23,7 +23,7 @@
    <widget class="QLabel" name="label">
     <property name="geometry">
      <rect>
-      <x>9</x>
+      <x>10</x>
       <y>9</y>
       <width>1000</width>
       <height>680</height>
@@ -72,10 +72,10 @@
    <widget class="QWidget" name="layoutWidget">
     <property name="geometry">
      <rect>
-      <x>270</x>
-      <y>560</y>
-      <width>421</width>
-      <height>101</height>
+      <x>320</x>
+      <y>530</y>
+      <width>331</width>
+      <height>91</height>
      </rect>
     </property>
     <layout class="QGridLayout">
@@ -173,7 +173,7 @@ border-radius:10px;}
       <x>320</x>
       <y>100</y>
       <width>331</width>
-      <height>431</height>
+      <height>371</height>
      </rect>
     </property>
     <property name="styleSheet">
@@ -248,7 +248,7 @@ border-radius:10px;}
       <string>Şifre</string>
      </property>
     </widget>
-    <widget class="QLineEdit" name="lineEdit_adi">
+    <widget class="QLineEdit" name="lineEdit_adi_soyadi">
      <property name="geometry">
       <rect>
        <x>10</x>
@@ -278,40 +278,10 @@ border-radius:10px;}
       <string/>
      </property>
      <property name="placeholderText">
-      <string>Adı</string>
+      <string>Adı Soyadı</string>
      </property>
     </widget>
-    <widget class="QLineEdit" name="lineEdit_sehir">
-     <property name="geometry">
-      <rect>
-       <x>10</x>
-       <y>370</y>
-       <width>300</width>
-       <height>30</height>
-      </rect>
-     </property>
-     <property name="minimumSize">
-      <size>
-       <width>300</width>
-       <height>30</height>
-      </size>
-     </property>
-     <property name="maximumSize">
-      <size>
-       <width>200</width>
-       <height>20</height>
-      </size>
-     </property>
-     <property name="font">
-      <font>
-       <pointsize>11</pointsize>
-      </font>
-     </property>
-     <property name="placeholderText">
-      <string>Şehir</string>
-     </property>
-    </widget>
-    <widget class="QLineEdit" name="lineEdit_soyadi">
+    <widget class="QLineEdit" name="lineEdit_telefon">
      <property name="geometry">
       <rect>
        <x>10</x>
@@ -338,7 +308,7 @@ border-radius:10px;}
       </font>
      </property>
      <property name="placeholderText">
-      <string>Soyadı</string>
+      <string>Telefon</string>
      </property>
     </widget>
     <widget class="QLineEdit" name="lineEdit_mail">
@@ -371,10 +341,10 @@ border-radius:10px;}
       <string/>
      </property>
      <property name="placeholderText">
-      <string>Mail Adresi</string>
+      <string>Yetki</string>
      </property>
     </widget>
-    <widget class="QLineEdit" name="lineEdit_tel">
+    <widget class="QLineEdit" name="lineEdit_m">
      <property name="geometry">
       <rect>
        <x>10</x>
@@ -401,7 +371,7 @@ border-radius:10px;}
       </font>
      </property>
      <property name="placeholderText">
-      <string>Telefon</string>
+      <string>Mail Adresi</string>
      </property>
     </widget>
    </widget>

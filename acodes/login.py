@@ -1,9 +1,9 @@
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import Qt
 # from PyQt5 import QtWidgets
-from bforms.login_py import Ui_MainWindow
 from acodes.library import Library
-from database.dbframe import df_user_list, df_passw_list
+from bforms.login_py import Ui_MainWindow
+from database.dbframe import df_user_list
 
 
 class Login(QMainWindow):
@@ -25,8 +25,8 @@ class Login(QMainWindow):
         # ad=str(f"{self.QtLogin.lineEdit_kullanci_adi.text()}")
         # sifre=str(f"{self.QtLogin.lineEdit_parola.text()}")
                
-        # kullanıcılar=df_user_list()  
-        # sifreler=df_passw_list()
+        # kullanıcılar=df_user_list('kullanici')  
+        # sifreler=df_user_list('sifre')
 
         # if ad=="" or sifre=="":
         #     self.QtMainEkran.statusBar.showMessage("Kullanıcı adı ve parola bilgilerini giriniz!")
