@@ -2,8 +2,8 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import sqlite3
 
-
 baglantı= sqlite3.connect("C:\\Database\\DBL_Kayit.db")
+
 dfbook=pd.read_sql_query("SELECT * FROM kayitlistesi",baglantı)
 dfuser=pd.read_sql_query("SELECT * FROM users",baglantı)
 dfwork=pd.read_sql_query("SELECT * FROM follow where status='out'",baglantı)
@@ -75,11 +75,14 @@ def df_user_list(key):
     snc=list(dfuser[key])
     return snc
 
-
 def df_user_find(name):   
     snc=dfuser.query(f"adi_soyadi=='{name}'")
     kyt=([*snc.iloc[0]])
     return kyt
+
+def authority(name):
+    snc=(dfuser.query(f"kullanici=='{name}'")['yetki']).values[0]
+    return snc
 
 ######################
 ###  Work Table   ####
@@ -119,6 +122,7 @@ def df_work_perbook(id):
     liste.sort()
     return liste
 
+## Kitap vermede tablo döküm listesi
 def df_work_table_book():
     bks=dfwork[['bookId','userId','outdate']]
     kayit=[]

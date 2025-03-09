@@ -164,6 +164,18 @@ class Ui_MainWindow(object):
 
         self.verticalLayout.addWidget(self.pushButton_1_cikis)
 
+        self.label_32 = QLabel(self.tab_1)
+        self.label_32.setObjectName(u"label_32")
+        self.label_32.setGeometry(QRect(30, 30, 91, 61))
+        font3 = QFont()
+        font3.setFamilies([u"Monotype Corsiva"])
+        font3.setPointSize(20)
+        font3.setBold(False)
+        font3.setItalic(True)
+        self.label_32.setFont(font3)
+        self.label_32.setStyleSheet(u"\n"
+"color: rgb(255, 85, 255);\n"
+"font: italic 20pt \"Monotype Corsiva\";")
         self.tabWidget.addTab(self.tab_1, "")
         self.tab_2 = QWidget()
         self.tab_2.setObjectName(u"tab_2")
@@ -188,12 +200,12 @@ class Ui_MainWindow(object):
         self.tableWidget_2.setHorizontalHeaderItem(7, __qtablewidgetitem7)
         self.tableWidget_2.setObjectName(u"tableWidget_2")
         self.tableWidget_2.setGeometry(QRect(160, 10, 1160, 590))
-        font3 = QFont()
-        font3.setFamilies([u"Monotype Corsiva"])
-        font3.setPointSize(14)
-        font3.setBold(False)
-        font3.setItalic(True)
-        self.tableWidget_2.setFont(font3)
+        font4 = QFont()
+        font4.setFamilies([u"Monotype Corsiva"])
+        font4.setPointSize(14)
+        font4.setBold(False)
+        font4.setItalic(True)
+        self.tableWidget_2.setFont(font4)
         self.tableWidget_2.setStyleSheet(u"font: italic 14pt \"Monotype Corsiva\";")
         self.tableWidget_2.setShowGrid(True)
         self.tableWidget_2.setColumnCount(8)
@@ -206,11 +218,11 @@ class Ui_MainWindow(object):
         sizePolicy.setHeightForWidth(self.pushButton_2_temizle.sizePolicy().hasHeightForWidth())
         self.pushButton_2_temizle.setSizePolicy(sizePolicy)
         self.pushButton_2_temizle.setMinimumSize(QSize(100, 60))
-        font4 = QFont()
-        font4.setFamilies([u"Monotype Corsiva"])
-        font4.setPointSize(12)
-        font4.setBold(True)
-        self.pushButton_2_temizle.setFont(font4)
+        font5 = QFont()
+        font5.setFamilies([u"Monotype Corsiva"])
+        font5.setPointSize(12)
+        font5.setBold(True)
+        self.pushButton_2_temizle.setFont(font5)
         self.pushButton_2_temizle.setStyleSheet(u"QPushButton#pushButton_2_temizle{	\n"
 "background-color: rgba(6, 211, 166, 150);\n"
 "border-radius:10px;}\n"
@@ -233,7 +245,7 @@ class Ui_MainWindow(object):
         sizePolicy.setHeightForWidth(self.pushButton_2_listele.sizePolicy().hasHeightForWidth())
         self.pushButton_2_listele.setSizePolicy(sizePolicy)
         self.pushButton_2_listele.setMinimumSize(QSize(100, 60))
-        self.pushButton_2_listele.setFont(font4)
+        self.pushButton_2_listele.setFont(font5)
         self.pushButton_2_listele.setStyleSheet(u"QPushButton#pushButton_2_listele{	\n"
 "background-color: rgba(6, 211, 166, 150);\n"
 "border-radius:10px;}\n"
@@ -278,89 +290,89 @@ class Ui_MainWindow(object):
         self.formLayout.setContentsMargins(8, 0, 5, 0)
         self.label_2 = QLabel(self.formLayoutWidget)
         self.label_2.setObjectName(u"label_2")
-        font5 = QFont()
-        font5.setFamilies([u"Monotype Corsiva"])
-        font5.setPointSize(12)
-        font5.setItalic(True)
-        self.label_2.setFont(font5)
+        font6 = QFont()
+        font6.setFamilies([u"Monotype Corsiva"])
+        font6.setPointSize(12)
+        font6.setItalic(True)
+        self.label_2.setFont(font6)
 
         self.formLayout.setWidget(1, QFormLayout.LabelRole, self.label_2)
 
         self.lineEdit_3_1_adi = QLineEdit(self.formLayoutWidget)
         self.lineEdit_3_1_adi.setObjectName(u"lineEdit_3_1_adi")
-        self.lineEdit_3_1_adi.setFont(font5)
+        self.lineEdit_3_1_adi.setFont(font6)
 
         self.formLayout.setWidget(1, QFormLayout.FieldRole, self.lineEdit_3_1_adi)
 
         self.label_3 = QLabel(self.formLayoutWidget)
         self.label_3.setObjectName(u"label_3")
-        self.label_3.setFont(font5)
+        self.label_3.setFont(font6)
 
         self.formLayout.setWidget(2, QFormLayout.LabelRole, self.label_3)
 
         self.lineEdit_3_1_yazari = QLineEdit(self.formLayoutWidget)
         self.lineEdit_3_1_yazari.setObjectName(u"lineEdit_3_1_yazari")
-        self.lineEdit_3_1_yazari.setFont(font5)
+        self.lineEdit_3_1_yazari.setFont(font6)
 
         self.formLayout.setWidget(2, QFormLayout.FieldRole, self.lineEdit_3_1_yazari)
 
         self.label_4 = QLabel(self.formLayoutWidget)
         self.label_4.setObjectName(u"label_4")
-        self.label_4.setFont(font5)
+        self.label_4.setFont(font6)
 
         self.formLayout.setWidget(3, QFormLayout.LabelRole, self.label_4)
 
         self.label_5 = QLabel(self.formLayoutWidget)
         self.label_5.setObjectName(u"label_5")
-        self.label_5.setFont(font5)
+        self.label_5.setFont(font6)
 
         self.formLayout.setWidget(4, QFormLayout.LabelRole, self.label_5)
 
         self.label_6 = QLabel(self.formLayoutWidget)
         self.label_6.setObjectName(u"label_6")
-        self.label_6.setFont(font5)
+        self.label_6.setFont(font6)
 
         self.formLayout.setWidget(5, QFormLayout.LabelRole, self.label_6)
 
         self.label_7 = QLabel(self.formLayoutWidget)
         self.label_7.setObjectName(u"label_7")
-        self.label_7.setFont(font5)
+        self.label_7.setFont(font6)
 
         self.formLayout.setWidget(6, QFormLayout.LabelRole, self.label_7)
 
         self.label_8 = QLabel(self.formLayoutWidget)
         self.label_8.setObjectName(u"label_8")
-        self.label_8.setFont(font5)
+        self.label_8.setFont(font6)
 
         self.formLayout.setWidget(7, QFormLayout.LabelRole, self.label_8)
 
         self.lineEdit_3_1_ceviren = QLineEdit(self.formLayoutWidget)
         self.lineEdit_3_1_ceviren.setObjectName(u"lineEdit_3_1_ceviren")
-        self.lineEdit_3_1_ceviren.setFont(font5)
+        self.lineEdit_3_1_ceviren.setFont(font6)
 
         self.formLayout.setWidget(3, QFormLayout.FieldRole, self.lineEdit_3_1_ceviren)
 
         self.lineEdit_3_1_turu = QLineEdit(self.formLayoutWidget)
         self.lineEdit_3_1_turu.setObjectName(u"lineEdit_3_1_turu")
-        self.lineEdit_3_1_turu.setFont(font5)
+        self.lineEdit_3_1_turu.setFont(font6)
 
         self.formLayout.setWidget(4, QFormLayout.FieldRole, self.lineEdit_3_1_turu)
 
         self.lineEdit_3_1_yayinevi = QLineEdit(self.formLayoutWidget)
         self.lineEdit_3_1_yayinevi.setObjectName(u"lineEdit_3_1_yayinevi")
-        self.lineEdit_3_1_yayinevi.setFont(font5)
+        self.lineEdit_3_1_yayinevi.setFont(font6)
 
         self.formLayout.setWidget(5, QFormLayout.FieldRole, self.lineEdit_3_1_yayinevi)
 
         self.lineEdit_3_1_yili = QLineEdit(self.formLayoutWidget)
         self.lineEdit_3_1_yili.setObjectName(u"lineEdit_3_1_yili")
-        self.lineEdit_3_1_yili.setFont(font5)
+        self.lineEdit_3_1_yili.setFont(font6)
 
         self.formLayout.setWidget(6, QFormLayout.FieldRole, self.lineEdit_3_1_yili)
 
         self.lineEdit_3_1_sayfa = QLineEdit(self.formLayoutWidget)
         self.lineEdit_3_1_sayfa.setObjectName(u"lineEdit_3_1_sayfa")
-        self.lineEdit_3_1_sayfa.setFont(font5)
+        self.lineEdit_3_1_sayfa.setFont(font6)
 
         self.formLayout.setWidget(7, QFormLayout.FieldRole, self.lineEdit_3_1_sayfa)
 
@@ -370,7 +382,7 @@ class Ui_MainWindow(object):
         sizePolicy.setHeightForWidth(self.pushButton_3_1_kaydet.sizePolicy().hasHeightForWidth())
         self.pushButton_3_1_kaydet.setSizePolicy(sizePolicy)
         self.pushButton_3_1_kaydet.setMinimumSize(QSize(100, 60))
-        self.pushButton_3_1_kaydet.setFont(font4)
+        self.pushButton_3_1_kaydet.setFont(font5)
         self.pushButton_3_1_kaydet.setStyleSheet(u"QPushButton#pushButton_3_1_kaydet{	\n"
 "background-color: rgba(6, 211, 166, 150);\n"
 "border-radius:10px;}\n"
@@ -394,7 +406,7 @@ class Ui_MainWindow(object):
         sizePolicy.setHeightForWidth(self.pushButton_3_1_temizle.sizePolicy().hasHeightForWidth())
         self.pushButton_3_1_temizle.setSizePolicy(sizePolicy)
         self.pushButton_3_1_temizle.setMinimumSize(QSize(100, 60))
-        self.pushButton_3_1_temizle.setFont(font4)
+        self.pushButton_3_1_temizle.setFont(font5)
         self.pushButton_3_1_temizle.setStyleSheet(u"QPushButton#pushButton_3_1_temizle{	\n"
 "background-color: rgba(6, 211, 166, 150);\n"
 "border-radius:10px;}\n"
@@ -421,12 +433,12 @@ class Ui_MainWindow(object):
         sizePolicy.setHeightForWidth(self.pushButton_3_2_bul.sizePolicy().hasHeightForWidth())
         self.pushButton_3_2_bul.setSizePolicy(sizePolicy)
         self.pushButton_3_2_bul.setMinimumSize(QSize(80, 50))
-        font6 = QFont()
-        font6.setFamilies([u"Monotype Corsiva"])
-        font6.setPointSize(13)
-        font6.setBold(False)
-        font6.setItalic(True)
-        self.pushButton_3_2_bul.setFont(font6)
+        font7 = QFont()
+        font7.setFamilies([u"Monotype Corsiva"])
+        font7.setPointSize(13)
+        font7.setBold(False)
+        font7.setItalic(True)
+        self.pushButton_3_2_bul.setFont(font7)
         self.pushButton_3_2_bul.setStyleSheet(u"QPushButton#pushButton_3_2_bul{	\n"
 "background-color: rgba(6, 211, 166, 150);\n"
 "border-radius:10px;}\n"
@@ -454,7 +466,7 @@ class Ui_MainWindow(object):
         self.formLayout_2.setContentsMargins(8, 0, 5, 0)
         self.label_9 = QLabel(self.formLayoutWidget_2)
         self.label_9.setObjectName(u"label_9")
-        self.label_9.setFont(font5)
+        self.label_9.setFont(font6)
 
         self.formLayout_2.setWidget(1, QFormLayout.LabelRole, self.label_9)
 
@@ -466,7 +478,7 @@ class Ui_MainWindow(object):
 
         self.label_10 = QLabel(self.formLayoutWidget_2)
         self.label_10.setObjectName(u"label_10")
-        self.label_10.setFont(font5)
+        self.label_10.setFont(font6)
 
         self.formLayout_2.setWidget(2, QFormLayout.LabelRole, self.label_10)
 
@@ -478,7 +490,7 @@ class Ui_MainWindow(object):
 
         self.label_11 = QLabel(self.formLayoutWidget_2)
         self.label_11.setObjectName(u"label_11")
-        self.label_11.setFont(font5)
+        self.label_11.setFont(font6)
 
         self.formLayout_2.setWidget(3, QFormLayout.LabelRole, self.label_11)
 
@@ -490,7 +502,7 @@ class Ui_MainWindow(object):
 
         self.label_12 = QLabel(self.formLayoutWidget_2)
         self.label_12.setObjectName(u"label_12")
-        self.label_12.setFont(font5)
+        self.label_12.setFont(font6)
 
         self.formLayout_2.setWidget(4, QFormLayout.LabelRole, self.label_12)
 
@@ -502,7 +514,7 @@ class Ui_MainWindow(object):
 
         self.label_13 = QLabel(self.formLayoutWidget_2)
         self.label_13.setObjectName(u"label_13")
-        self.label_13.setFont(font5)
+        self.label_13.setFont(font6)
 
         self.formLayout_2.setWidget(5, QFormLayout.LabelRole, self.label_13)
 
@@ -514,7 +526,7 @@ class Ui_MainWindow(object):
 
         self.label_14 = QLabel(self.formLayoutWidget_2)
         self.label_14.setObjectName(u"label_14")
-        self.label_14.setFont(font5)
+        self.label_14.setFont(font6)
 
         self.formLayout_2.setWidget(6, QFormLayout.LabelRole, self.label_14)
 
@@ -526,7 +538,7 @@ class Ui_MainWindow(object):
 
         self.label_15 = QLabel(self.formLayoutWidget_2)
         self.label_15.setObjectName(u"label_15")
-        self.label_15.setFont(font5)
+        self.label_15.setFont(font6)
 
         self.formLayout_2.setWidget(7, QFormLayout.LabelRole, self.label_15)
 
@@ -544,7 +556,7 @@ class Ui_MainWindow(object):
 
         self.label_30 = QLabel(self.formLayoutWidget_2)
         self.label_30.setObjectName(u"label_30")
-        self.label_30.setFont(font5)
+        self.label_30.setFont(font6)
 
         self.formLayout_2.setWidget(0, QFormLayout.LabelRole, self.label_30)
 
@@ -556,7 +568,7 @@ class Ui_MainWindow(object):
         self.formLayout_3.setContentsMargins(0, 0, 0, 0)
         self.label_16 = QLabel(self.formLayoutWidget_3)
         self.label_16.setObjectName(u"label_16")
-        self.label_16.setFont(font5)
+        self.label_16.setFont(font6)
 
         self.formLayout_3.setWidget(0, QFormLayout.LabelRole, self.label_16)
 
@@ -573,7 +585,7 @@ class Ui_MainWindow(object):
         sizePolicy.setHeightForWidth(self.pushButton_3_2_deg_kaydet.sizePolicy().hasHeightForWidth())
         self.pushButton_3_2_deg_kaydet.setSizePolicy(sizePolicy)
         self.pushButton_3_2_deg_kaydet.setMinimumSize(QSize(80, 50))
-        self.pushButton_3_2_deg_kaydet.setFont(font6)
+        self.pushButton_3_2_deg_kaydet.setFont(font7)
         self.pushButton_3_2_deg_kaydet.setStyleSheet(u"QPushButton#pushButton_3_2_deg_kaydet{	\n"
 "background-color: rgba(6, 211, 166, 150);\n"
 "border-radius:10px;}\n"
@@ -599,7 +611,7 @@ class Ui_MainWindow(object):
         sizePolicy.setHeightForWidth(self.pushButton_3_3_bul.sizePolicy().hasHeightForWidth())
         self.pushButton_3_3_bul.setSizePolicy(sizePolicy)
         self.pushButton_3_3_bul.setMinimumSize(QSize(80, 50))
-        self.pushButton_3_3_bul.setFont(font6)
+        self.pushButton_3_3_bul.setFont(font7)
         self.pushButton_3_3_bul.setStyleSheet(u"QPushButton#pushButton_3_3_bul{	\n"
 "background-color: rgba(6, 211, 166, 150);\n"
 "border-radius:10px;}\n"
@@ -627,7 +639,7 @@ class Ui_MainWindow(object):
         self.formLayout_4.setContentsMargins(8, 0, 5, 0)
         self.label_17 = QLabel(self.formLayoutWidget_4)
         self.label_17.setObjectName(u"label_17")
-        self.label_17.setFont(font5)
+        self.label_17.setFont(font6)
 
         self.formLayout_4.setWidget(1, QFormLayout.LabelRole, self.label_17)
 
@@ -639,7 +651,7 @@ class Ui_MainWindow(object):
 
         self.label_18 = QLabel(self.formLayoutWidget_4)
         self.label_18.setObjectName(u"label_18")
-        self.label_18.setFont(font5)
+        self.label_18.setFont(font6)
 
         self.formLayout_4.setWidget(2, QFormLayout.LabelRole, self.label_18)
 
@@ -651,7 +663,7 @@ class Ui_MainWindow(object):
 
         self.label_19 = QLabel(self.formLayoutWidget_4)
         self.label_19.setObjectName(u"label_19")
-        self.label_19.setFont(font5)
+        self.label_19.setFont(font6)
 
         self.formLayout_4.setWidget(3, QFormLayout.LabelRole, self.label_19)
 
@@ -663,7 +675,7 @@ class Ui_MainWindow(object):
 
         self.label_20 = QLabel(self.formLayoutWidget_4)
         self.label_20.setObjectName(u"label_20")
-        self.label_20.setFont(font5)
+        self.label_20.setFont(font6)
 
         self.formLayout_4.setWidget(4, QFormLayout.LabelRole, self.label_20)
 
@@ -675,7 +687,7 @@ class Ui_MainWindow(object):
 
         self.label_21 = QLabel(self.formLayoutWidget_4)
         self.label_21.setObjectName(u"label_21")
-        self.label_21.setFont(font5)
+        self.label_21.setFont(font6)
 
         self.formLayout_4.setWidget(5, QFormLayout.LabelRole, self.label_21)
 
@@ -687,7 +699,7 @@ class Ui_MainWindow(object):
 
         self.label_22 = QLabel(self.formLayoutWidget_4)
         self.label_22.setObjectName(u"label_22")
-        self.label_22.setFont(font5)
+        self.label_22.setFont(font6)
 
         self.formLayout_4.setWidget(6, QFormLayout.LabelRole, self.label_22)
 
@@ -699,7 +711,7 @@ class Ui_MainWindow(object):
 
         self.label_23 = QLabel(self.formLayoutWidget_4)
         self.label_23.setObjectName(u"label_23")
-        self.label_23.setFont(font5)
+        self.label_23.setFont(font6)
 
         self.formLayout_4.setWidget(7, QFormLayout.LabelRole, self.label_23)
 
@@ -717,7 +729,7 @@ class Ui_MainWindow(object):
 
         self.label_31 = QLabel(self.formLayoutWidget_4)
         self.label_31.setObjectName(u"label_31")
-        self.label_31.setFont(font5)
+        self.label_31.setFont(font6)
 
         self.formLayout_4.setWidget(0, QFormLayout.LabelRole, self.label_31)
 
@@ -745,7 +757,7 @@ class Ui_MainWindow(object):
         self.formLayout_5.setContentsMargins(0, 0, 0, 0)
         self.label_24 = QLabel(self.formLayoutWidget_5)
         self.label_24.setObjectName(u"label_24")
-        self.label_24.setFont(font5)
+        self.label_24.setFont(font6)
 
         self.formLayout_5.setWidget(0, QFormLayout.LabelRole, self.label_24)
 
@@ -762,7 +774,7 @@ class Ui_MainWindow(object):
         sizePolicy.setHeightForWidth(self.pushButton_3_3_Sil.sizePolicy().hasHeightForWidth())
         self.pushButton_3_3_Sil.setSizePolicy(sizePolicy)
         self.pushButton_3_3_Sil.setMinimumSize(QSize(80, 50))
-        self.pushButton_3_3_Sil.setFont(font6)
+        self.pushButton_3_3_Sil.setFont(font7)
         self.pushButton_3_3_Sil.setStyleSheet(u"QPushButton#pushButton_3_3_Sil{	\n"
 "background-color: rgba(6, 211, 166, 150);\n"
 "border-radius:10px;}\n"
@@ -797,7 +809,7 @@ class Ui_MainWindow(object):
         self.label_26 = QLabel(self.tab_4_1)
         self.label_26.setObjectName(u"label_26")
         self.label_26.setGeometry(QRect(46, 160, 181, 40))
-        self.label_26.setFont(font5)
+        self.label_26.setFont(font6)
         self.label_26.setAlignment(Qt.AlignCenter)
         self.tableWidget_4_1_1 = QTableWidget(self.tab_4_1)
         if (self.tableWidget_4_1_1.columnCount() < 1):
@@ -808,12 +820,12 @@ class Ui_MainWindow(object):
         self.tableWidget_4_1_1.setGeometry(QRect(40, 200, 200, 176))
         self.tableWidget_4_1_1.setMinimumSize(QSize(100, 100))
         self.tableWidget_4_1_1.setMaximumSize(QSize(200, 300))
-        font7 = QFont()
-        font7.setFamilies([u"Monotype Corsiva"])
-        font7.setPointSize(12)
-        font7.setBold(False)
-        font7.setItalic(True)
-        self.tableWidget_4_1_1.setFont(font7)
+        font8 = QFont()
+        font8.setFamilies([u"Monotype Corsiva"])
+        font8.setPointSize(12)
+        font8.setBold(False)
+        font8.setItalic(True)
+        self.tableWidget_4_1_1.setFont(font8)
         self.tableWidget_4_1_1.setStyleSheet(u"font: italic 12pt \"Monotype Corsiva\";\n"
 "")
         self.tableWidget_4_1_2 = QTableWidget(self.tab_4_1)
@@ -837,7 +849,7 @@ class Ui_MainWindow(object):
         self.tableWidget_4_1_2.setHorizontalHeaderItem(7, __qtablewidgetitem16)
         self.tableWidget_4_1_2.setObjectName(u"tableWidget_4_1_2")
         self.tableWidget_4_1_2.setGeometry(QRect(294, 10, 990, 545))
-        self.tableWidget_4_1_2.setFont(font7)
+        self.tableWidget_4_1_2.setFont(font8)
         self.tableWidget_4_1_2.setStyleSheet(u"font: italic 12pt \"Monotype Corsiva\";")
         self.tableWidget_4_1_2.setShowGrid(True)
         self.tableWidget_4_1_2.setColumnCount(8)
@@ -847,7 +859,7 @@ class Ui_MainWindow(object):
         sizePolicy.setHeightForWidth(self.pushButton_4_1_listele.sizePolicy().hasHeightForWidth())
         self.pushButton_4_1_listele.setSizePolicy(sizePolicy)
         self.pushButton_4_1_listele.setMinimumSize(QSize(80, 50))
-        self.pushButton_4_1_listele.setFont(font6)
+        self.pushButton_4_1_listele.setFont(font7)
         self.pushButton_4_1_listele.setStyleSheet(u"QPushButton#pushButton_4_1_listele{	\n"
 "background-color: rgba(6, 211, 166, 150);\n"
 "border-radius:10px;}\n"
@@ -872,11 +884,11 @@ class Ui_MainWindow(object):
         self.formLayout_6.setContentsMargins(0, 0, 0, 0)
         self.comboBox_4_1_turu = QComboBox(self.formLayoutWidget_6)
         self.comboBox_4_1_turu.setObjectName(u"comboBox_4_1_turu")
-        font8 = QFont()
-        font8.setFamilies([u"Monotype Corsiva"])
-        font8.setPointSize(13)
-        font8.setItalic(True)
-        self.comboBox_4_1_turu.setFont(font8)
+        font9 = QFont()
+        font9.setFamilies([u"Monotype Corsiva"])
+        font9.setPointSize(13)
+        font9.setItalic(True)
+        self.comboBox_4_1_turu.setFont(font9)
 
         self.formLayout_6.setWidget(0, QFormLayout.FieldRole, self.comboBox_4_1_turu)
 
@@ -887,7 +899,7 @@ class Ui_MainWindow(object):
         sizePolicy.setHeightForWidth(self.pushButton_4_1_temizle.sizePolicy().hasHeightForWidth())
         self.pushButton_4_1_temizle.setSizePolicy(sizePolicy)
         self.pushButton_4_1_temizle.setMinimumSize(QSize(80, 50))
-        self.pushButton_4_1_temizle.setFont(font6)
+        self.pushButton_4_1_temizle.setFont(font7)
         self.pushButton_4_1_temizle.setStyleSheet(u"QPushButton#pushButton_4_1_temizle{	\n"
 "background-color: rgba(6, 211, 166, 150);\n"
 "border-radius:10px;}\n"
@@ -910,7 +922,7 @@ class Ui_MainWindow(object):
         self.label_27 = QLabel(self.tab_4_2)
         self.label_27.setObjectName(u"label_27")
         self.label_27.setGeometry(QRect(46, 160, 181, 40))
-        self.label_27.setFont(font5)
+        self.label_27.setFont(font6)
         self.label_27.setAlignment(Qt.AlignCenter)
         self.tableWidget_4_2_1 = QTableWidget(self.tab_4_2)
         if (self.tableWidget_4_2_1.columnCount() < 1):
@@ -921,7 +933,7 @@ class Ui_MainWindow(object):
         self.tableWidget_4_2_1.setGeometry(QRect(40, 200, 200, 176))
         self.tableWidget_4_2_1.setMinimumSize(QSize(100, 100))
         self.tableWidget_4_2_1.setMaximumSize(QSize(200, 300))
-        self.tableWidget_4_2_1.setFont(font7)
+        self.tableWidget_4_2_1.setFont(font8)
         self.tableWidget_4_2_1.setStyleSheet(u"font: italic 12pt \"Monotype Corsiva\";\n"
 "")
         self.tableWidget_4_2_2 = QTableWidget(self.tab_4_2)
@@ -945,7 +957,7 @@ class Ui_MainWindow(object):
         self.tableWidget_4_2_2.setHorizontalHeaderItem(7, __qtablewidgetitem25)
         self.tableWidget_4_2_2.setObjectName(u"tableWidget_4_2_2")
         self.tableWidget_4_2_2.setGeometry(QRect(294, 10, 990, 545))
-        self.tableWidget_4_2_2.setFont(font7)
+        self.tableWidget_4_2_2.setFont(font8)
         self.tableWidget_4_2_2.setStyleSheet(u"font: italic 12pt \"Monotype Corsiva\";")
         self.tableWidget_4_2_2.setShowGrid(True)
         self.tableWidget_4_2_2.setColumnCount(8)
@@ -955,7 +967,7 @@ class Ui_MainWindow(object):
         sizePolicy.setHeightForWidth(self.pushButton_4_2_listele.sizePolicy().hasHeightForWidth())
         self.pushButton_4_2_listele.setSizePolicy(sizePolicy)
         self.pushButton_4_2_listele.setMinimumSize(QSize(80, 50))
-        self.pushButton_4_2_listele.setFont(font6)
+        self.pushButton_4_2_listele.setFont(font7)
         self.pushButton_4_2_listele.setStyleSheet(u"QPushButton#pushButton_4_2_listele{	\n"
 "background-color: rgba(6, 211, 166, 150);\n"
 "border-radius:10px;}\n"
@@ -980,7 +992,7 @@ class Ui_MainWindow(object):
         self.formLayout_7.setContentsMargins(0, 0, 0, 0)
         self.comboBox_4_2_turu = QComboBox(self.formLayoutWidget_7)
         self.comboBox_4_2_turu.setObjectName(u"comboBox_4_2_turu")
-        self.comboBox_4_2_turu.setFont(font8)
+        self.comboBox_4_2_turu.setFont(font9)
 
         self.formLayout_7.setWidget(0, QFormLayout.FieldRole, self.comboBox_4_2_turu)
 
@@ -991,7 +1003,7 @@ class Ui_MainWindow(object):
         sizePolicy.setHeightForWidth(self.pushButton_4_2_temizle.sizePolicy().hasHeightForWidth())
         self.pushButton_4_2_temizle.setSizePolicy(sizePolicy)
         self.pushButton_4_2_temizle.setMinimumSize(QSize(80, 50))
-        self.pushButton_4_2_temizle.setFont(font6)
+        self.pushButton_4_2_temizle.setFont(font7)
         self.pushButton_4_2_temizle.setStyleSheet(u"QPushButton#pushButton_4_2_temizle{	\n"
 "background-color: rgba(6, 211, 166, 150);\n"
 "border-radius:10px;}\n"
@@ -1014,7 +1026,7 @@ class Ui_MainWindow(object):
         self.label_28 = QLabel(self.tab_4_3)
         self.label_28.setObjectName(u"label_28")
         self.label_28.setGeometry(QRect(46, 160, 181, 40))
-        self.label_28.setFont(font5)
+        self.label_28.setFont(font6)
         self.label_28.setAlignment(Qt.AlignCenter)
         self.tableWidget_4_3_1 = QTableWidget(self.tab_4_3)
         if (self.tableWidget_4_3_1.columnCount() < 1):
@@ -1025,7 +1037,7 @@ class Ui_MainWindow(object):
         self.tableWidget_4_3_1.setGeometry(QRect(40, 200, 200, 176))
         self.tableWidget_4_3_1.setMinimumSize(QSize(100, 100))
         self.tableWidget_4_3_1.setMaximumSize(QSize(200, 300))
-        self.tableWidget_4_3_1.setFont(font7)
+        self.tableWidget_4_3_1.setFont(font8)
         self.tableWidget_4_3_1.setStyleSheet(u"font: italic 12pt \"Monotype Corsiva\";\n"
 "")
         self.tableWidget_4_3_2 = QTableWidget(self.tab_4_3)
@@ -1049,7 +1061,7 @@ class Ui_MainWindow(object):
         self.tableWidget_4_3_2.setHorizontalHeaderItem(7, __qtablewidgetitem34)
         self.tableWidget_4_3_2.setObjectName(u"tableWidget_4_3_2")
         self.tableWidget_4_3_2.setGeometry(QRect(294, 10, 990, 545))
-        self.tableWidget_4_3_2.setFont(font7)
+        self.tableWidget_4_3_2.setFont(font8)
         self.tableWidget_4_3_2.setStyleSheet(u"font: italic 12pt \"Monotype Corsiva\";")
         self.tableWidget_4_3_2.setShowGrid(True)
         self.tableWidget_4_3_2.setColumnCount(8)
@@ -1059,7 +1071,7 @@ class Ui_MainWindow(object):
         sizePolicy.setHeightForWidth(self.pushButton_4_3_listele.sizePolicy().hasHeightForWidth())
         self.pushButton_4_3_listele.setSizePolicy(sizePolicy)
         self.pushButton_4_3_listele.setMinimumSize(QSize(80, 50))
-        self.pushButton_4_3_listele.setFont(font6)
+        self.pushButton_4_3_listele.setFont(font7)
         self.pushButton_4_3_listele.setStyleSheet(u"QPushButton#pushButton_4_3_listele{	\n"
 "background-color: rgba(6, 211, 166, 150);\n"
 "border-radius:10px;}\n"
@@ -1084,7 +1096,7 @@ class Ui_MainWindow(object):
         self.formLayout_8.setContentsMargins(0, 0, 0, 0)
         self.comboBox_4_3_turu = QComboBox(self.formLayoutWidget_8)
         self.comboBox_4_3_turu.setObjectName(u"comboBox_4_3_turu")
-        self.comboBox_4_3_turu.setFont(font8)
+        self.comboBox_4_3_turu.setFont(font9)
 
         self.formLayout_8.setWidget(0, QFormLayout.FieldRole, self.comboBox_4_3_turu)
 
@@ -1095,7 +1107,7 @@ class Ui_MainWindow(object):
         sizePolicy.setHeightForWidth(self.pushButton_4_3_temizle.sizePolicy().hasHeightForWidth())
         self.pushButton_4_3_temizle.setSizePolicy(sizePolicy)
         self.pushButton_4_3_temizle.setMinimumSize(QSize(80, 50))
-        self.pushButton_4_3_temizle.setFont(font6)
+        self.pushButton_4_3_temizle.setFont(font7)
         self.pushButton_4_3_temizle.setStyleSheet(u"QPushButton#pushButton_4_3_temizle{	\n"
 "background-color: rgba(6, 211, 166, 150);\n"
 "border-radius:10px;}\n"
@@ -1118,7 +1130,7 @@ class Ui_MainWindow(object):
         self.label_29 = QLabel(self.tab_4_4)
         self.label_29.setObjectName(u"label_29")
         self.label_29.setGeometry(QRect(46, 160, 181, 40))
-        self.label_29.setFont(font5)
+        self.label_29.setFont(font6)
         self.label_29.setAlignment(Qt.AlignCenter)
         self.tableWidget_4_4_1 = QTableWidget(self.tab_4_4)
         if (self.tableWidget_4_4_1.columnCount() < 1):
@@ -1129,7 +1141,7 @@ class Ui_MainWindow(object):
         self.tableWidget_4_4_1.setGeometry(QRect(40, 200, 200, 176))
         self.tableWidget_4_4_1.setMinimumSize(QSize(100, 100))
         self.tableWidget_4_4_1.setMaximumSize(QSize(200, 300))
-        self.tableWidget_4_4_1.setFont(font7)
+        self.tableWidget_4_4_1.setFont(font8)
         self.tableWidget_4_4_1.setStyleSheet(u"font: italic 12pt \"Monotype Corsiva\";\n"
 "")
         self.tableWidget_4_4_2 = QTableWidget(self.tab_4_4)
@@ -1153,7 +1165,7 @@ class Ui_MainWindow(object):
         self.tableWidget_4_4_2.setHorizontalHeaderItem(7, __qtablewidgetitem43)
         self.tableWidget_4_4_2.setObjectName(u"tableWidget_4_4_2")
         self.tableWidget_4_4_2.setGeometry(QRect(294, 10, 990, 545))
-        self.tableWidget_4_4_2.setFont(font7)
+        self.tableWidget_4_4_2.setFont(font8)
         self.tableWidget_4_4_2.setStyleSheet(u"font: italic 12pt \"Monotype Corsiva\";")
         self.tableWidget_4_4_2.setShowGrid(True)
         self.tableWidget_4_4_2.setColumnCount(8)
@@ -1163,7 +1175,7 @@ class Ui_MainWindow(object):
         sizePolicy.setHeightForWidth(self.pushButton_4_4_listele.sizePolicy().hasHeightForWidth())
         self.pushButton_4_4_listele.setSizePolicy(sizePolicy)
         self.pushButton_4_4_listele.setMinimumSize(QSize(80, 50))
-        self.pushButton_4_4_listele.setFont(font6)
+        self.pushButton_4_4_listele.setFont(font7)
         self.pushButton_4_4_listele.setStyleSheet(u"QPushButton#pushButton_4_4_listele{	\n"
 "background-color: rgba(6, 211, 166, 150);\n"
 "border-radius:10px;}\n"
@@ -1188,7 +1200,7 @@ class Ui_MainWindow(object):
         self.formLayout_9.setContentsMargins(0, 0, 0, 0)
         self.comboBox_4_4_turu = QComboBox(self.formLayoutWidget_9)
         self.comboBox_4_4_turu.setObjectName(u"comboBox_4_4_turu")
-        self.comboBox_4_4_turu.setFont(font8)
+        self.comboBox_4_4_turu.setFont(font9)
 
         self.formLayout_9.setWidget(0, QFormLayout.FieldRole, self.comboBox_4_4_turu)
 
@@ -1199,7 +1211,7 @@ class Ui_MainWindow(object):
         sizePolicy.setHeightForWidth(self.pushButton_4_4_temizle.sizePolicy().hasHeightForWidth())
         self.pushButton_4_4_temizle.setSizePolicy(sizePolicy)
         self.pushButton_4_4_temizle.setMinimumSize(QSize(80, 50))
-        self.pushButton_4_4_temizle.setFont(font6)
+        self.pushButton_4_4_temizle.setFont(font7)
         self.pushButton_4_4_temizle.setStyleSheet(u"QPushButton#pushButton_4_4_temizle{	\n"
 "background-color: rgba(6, 211, 166, 150);\n"
 "border-radius:10px;}\n"
@@ -1236,25 +1248,25 @@ class Ui_MainWindow(object):
         self.gridLayout_5.setObjectName(u"gridLayout_5")
         self.label_25 = QLabel(self.tab_5_1)
         self.label_25.setObjectName(u"label_25")
-        self.label_25.setFont(font5)
+        self.label_25.setFont(font6)
 
         self.gridLayout_5.addWidget(self.label_25, 0, 0, 1, 1)
 
         self.label_56 = QLabel(self.tab_5_1)
         self.label_56.setObjectName(u"label_56")
-        self.label_56.setFont(font5)
+        self.label_56.setFont(font6)
 
         self.gridLayout_5.addWidget(self.label_56, 0, 1, 1, 1)
 
         self.label_58 = QLabel(self.tab_5_1)
         self.label_58.setObjectName(u"label_58")
-        self.label_58.setFont(font5)
+        self.label_58.setFont(font6)
 
         self.gridLayout_5.addWidget(self.label_58, 0, 2, 1, 1)
 
         self.label_59 = QLabel(self.tab_5_1)
         self.label_59.setObjectName(u"label_59")
-        self.label_59.setFont(font5)
+        self.label_59.setFont(font6)
 
         self.gridLayout_5.addWidget(self.label_59, 0, 3, 1, 1)
 
@@ -1345,7 +1357,7 @@ class Ui_MainWindow(object):
         sizePolicy.setHeightForWidth(self.pushButton_6_1_1_bul_kitap.sizePolicy().hasHeightForWidth())
         self.pushButton_6_1_1_bul_kitap.setSizePolicy(sizePolicy)
         self.pushButton_6_1_1_bul_kitap.setMinimumSize(QSize(80, 50))
-        self.pushButton_6_1_1_bul_kitap.setFont(font6)
+        self.pushButton_6_1_1_bul_kitap.setFont(font7)
         self.pushButton_6_1_1_bul_kitap.setStyleSheet(u"QPushButton#pushButton_6_1_1_bul_kitap{	\n"
 "background-color: rgba(6, 211, 166, 150);\n"
 "border-radius:10px;}\n"
@@ -1373,7 +1385,7 @@ class Ui_MainWindow(object):
         self.formLayout_11.setContentsMargins(10, 0, 10, 0)
         self.label_39 = QLabel(self.formLayoutWidget_11)
         self.label_39.setObjectName(u"label_39")
-        self.label_39.setFont(font5)
+        self.label_39.setFont(font6)
 
         self.formLayout_11.setWidget(1, QFormLayout.LabelRole, self.label_39)
 
@@ -1385,7 +1397,7 @@ class Ui_MainWindow(object):
 
         self.label_40 = QLabel(self.formLayoutWidget_11)
         self.label_40.setObjectName(u"label_40")
-        self.label_40.setFont(font5)
+        self.label_40.setFont(font6)
 
         self.formLayout_11.setWidget(2, QFormLayout.LabelRole, self.label_40)
 
@@ -1397,7 +1409,7 @@ class Ui_MainWindow(object):
 
         self.label_41 = QLabel(self.formLayoutWidget_11)
         self.label_41.setObjectName(u"label_41")
-        self.label_41.setFont(font5)
+        self.label_41.setFont(font6)
 
         self.formLayout_11.setWidget(3, QFormLayout.LabelRole, self.label_41)
 
@@ -1409,7 +1421,7 @@ class Ui_MainWindow(object):
 
         self.label_42 = QLabel(self.formLayoutWidget_11)
         self.label_42.setObjectName(u"label_42")
-        self.label_42.setFont(font5)
+        self.label_42.setFont(font6)
 
         self.formLayout_11.setWidget(4, QFormLayout.LabelRole, self.label_42)
 
@@ -1421,7 +1433,7 @@ class Ui_MainWindow(object):
 
         self.label_43 = QLabel(self.formLayoutWidget_11)
         self.label_43.setObjectName(u"label_43")
-        self.label_43.setFont(font5)
+        self.label_43.setFont(font6)
 
         self.formLayout_11.setWidget(5, QFormLayout.LabelRole, self.label_43)
 
@@ -1433,7 +1445,7 @@ class Ui_MainWindow(object):
 
         self.label_44 = QLabel(self.formLayoutWidget_11)
         self.label_44.setObjectName(u"label_44")
-        self.label_44.setFont(font5)
+        self.label_44.setFont(font6)
 
         self.formLayout_11.setWidget(6, QFormLayout.LabelRole, self.label_44)
 
@@ -1445,7 +1457,7 @@ class Ui_MainWindow(object):
 
         self.label_45 = QLabel(self.formLayoutWidget_11)
         self.label_45.setObjectName(u"label_45")
-        self.label_45.setFont(font5)
+        self.label_45.setFont(font6)
 
         self.formLayout_11.setWidget(7, QFormLayout.LabelRole, self.label_45)
 
@@ -1463,7 +1475,7 @@ class Ui_MainWindow(object):
 
         self.label_46 = QLabel(self.formLayoutWidget_11)
         self.label_46.setObjectName(u"label_46")
-        self.label_46.setFont(font5)
+        self.label_46.setFont(font6)
 
         self.formLayout_11.setWidget(0, QFormLayout.LabelRole, self.label_46)
 
@@ -1474,7 +1486,7 @@ class Ui_MainWindow(object):
         sizePolicy.setHeightForWidth(self.pushButton_6_1_islemi_kaydet.sizePolicy().hasHeightForWidth())
         self.pushButton_6_1_islemi_kaydet.setSizePolicy(sizePolicy)
         self.pushButton_6_1_islemi_kaydet.setMinimumSize(QSize(80, 50))
-        self.pushButton_6_1_islemi_kaydet.setFont(font6)
+        self.pushButton_6_1_islemi_kaydet.setFont(font7)
         self.pushButton_6_1_islemi_kaydet.setStyleSheet(u"QPushButton#pushButton_6_1_islemi_kaydet{	\n"
 "background-color: rgba(6, 211, 166, 150);\n"
 "border-radius:10px;}\n"
@@ -1498,14 +1510,14 @@ class Ui_MainWindow(object):
         self.label_47 = QLabel(self.tab_6_1)
         self.label_47.setObjectName(u"label_47")
         self.label_47.setGeometry(QRect(40, 20, 151, 51))
-        self.label_47.setFont(font8)
+        self.label_47.setFont(font9)
         self.pushButton_6_1_2_bul_kisi = QPushButton(self.tab_6_1)
         self.pushButton_6_1_2_bul_kisi.setObjectName(u"pushButton_6_1_2_bul_kisi")
         self.pushButton_6_1_2_bul_kisi.setGeometry(QRect(720, 170, 94, 50))
         sizePolicy.setHeightForWidth(self.pushButton_6_1_2_bul_kisi.sizePolicy().hasHeightForWidth())
         self.pushButton_6_1_2_bul_kisi.setSizePolicy(sizePolicy)
         self.pushButton_6_1_2_bul_kisi.setMinimumSize(QSize(80, 50))
-        self.pushButton_6_1_2_bul_kisi.setFont(font6)
+        self.pushButton_6_1_2_bul_kisi.setFont(font7)
         self.pushButton_6_1_2_bul_kisi.setStyleSheet(u"QPushButton#pushButton_6_1_2_bul_kisi{	\n"
 "background-color: rgba(6, 211, 166, 150);\n"
 "border-radius:10px;}\n"
@@ -1529,7 +1541,7 @@ class Ui_MainWindow(object):
         self.label_78 = QLabel(self.tab_6_1)
         self.label_78.setObjectName(u"label_78")
         self.label_78.setGeometry(QRect(680, 20, 131, 41))
-        self.label_78.setFont(font8)
+        self.label_78.setFont(font9)
         self.formLayoutWidget_17 = QWidget(self.tab_6_1)
         self.formLayoutWidget_17.setObjectName(u"formLayoutWidget_17")
         self.formLayoutWidget_17.setGeometry(QRect(890, 30, 371, 331))
@@ -1541,7 +1553,7 @@ class Ui_MainWindow(object):
         self.formLayout_18.setContentsMargins(10, 0, 10, 0)
         self.label_94 = QLabel(self.formLayoutWidget_17)
         self.label_94.setObjectName(u"label_94")
-        self.label_94.setFont(font5)
+        self.label_94.setFont(font6)
 
         self.formLayout_18.setWidget(0, QFormLayout.LabelRole, self.label_94)
 
@@ -1553,7 +1565,7 @@ class Ui_MainWindow(object):
 
         self.label_87 = QLabel(self.formLayoutWidget_17)
         self.label_87.setObjectName(u"label_87")
-        self.label_87.setFont(font5)
+        self.label_87.setFont(font6)
 
         self.formLayout_18.setWidget(1, QFormLayout.LabelRole, self.label_87)
 
@@ -1565,7 +1577,7 @@ class Ui_MainWindow(object):
 
         self.label_88 = QLabel(self.formLayoutWidget_17)
         self.label_88.setObjectName(u"label_88")
-        self.label_88.setFont(font5)
+        self.label_88.setFont(font6)
 
         self.formLayout_18.setWidget(2, QFormLayout.LabelRole, self.label_88)
 
@@ -1577,7 +1589,7 @@ class Ui_MainWindow(object):
 
         self.label_89 = QLabel(self.formLayoutWidget_17)
         self.label_89.setObjectName(u"label_89")
-        self.label_89.setFont(font5)
+        self.label_89.setFont(font6)
 
         self.formLayout_18.setWidget(3, QFormLayout.LabelRole, self.label_89)
 
@@ -1589,7 +1601,7 @@ class Ui_MainWindow(object):
 
         self.label_90 = QLabel(self.formLayoutWidget_17)
         self.label_90.setObjectName(u"label_90")
-        self.label_90.setFont(font5)
+        self.label_90.setFont(font6)
 
         self.formLayout_18.setWidget(4, QFormLayout.LabelRole, self.label_90)
 
@@ -1606,7 +1618,7 @@ class Ui_MainWindow(object):
         sizePolicy.setHeightForWidth(self.pushButton_6_1_1_bul_kitap_temizle.sizePolicy().hasHeightForWidth())
         self.pushButton_6_1_1_bul_kitap_temizle.setSizePolicy(sizePolicy)
         self.pushButton_6_1_1_bul_kitap_temizle.setMinimumSize(QSize(80, 50))
-        self.pushButton_6_1_1_bul_kitap_temizle.setFont(font6)
+        self.pushButton_6_1_1_bul_kitap_temizle.setFont(font7)
         self.pushButton_6_1_1_bul_kitap_temizle.setStyleSheet(u"QPushButton#pushButton_6_1_1_bul_kitap_temizle{	\n"
 "background-color: rgba(6, 211, 166, 150);\n"
 "border-radius:10px;}\n"
@@ -1630,7 +1642,7 @@ class Ui_MainWindow(object):
         sizePolicy.setHeightForWidth(self.pushButton_6_1_2_bul_kisi_temizle.sizePolicy().hasHeightForWidth())
         self.pushButton_6_1_2_bul_kisi_temizle.setSizePolicy(sizePolicy)
         self.pushButton_6_1_2_bul_kisi_temizle.setMinimumSize(QSize(80, 50))
-        self.pushButton_6_1_2_bul_kisi_temizle.setFont(font6)
+        self.pushButton_6_1_2_bul_kisi_temizle.setFont(font7)
         self.pushButton_6_1_2_bul_kisi_temizle.setStyleSheet(u"QPushButton#pushButton_6_1_2_bul_kisi_temizle{	\n"
 "background-color: rgba(6, 211, 166, 150);\n"
 "border-radius:10px;}\n"
@@ -1653,14 +1665,14 @@ class Ui_MainWindow(object):
         self.label_79 = QLabel(self.tab_6_2)
         self.label_79.setObjectName(u"label_79")
         self.label_79.setGeometry(QRect(50, 20, 131, 41))
-        self.label_79.setFont(font8)
+        self.label_79.setFont(font9)
         self.pushButton_6_2_1_bul_kisi = QPushButton(self.tab_6_2)
         self.pushButton_6_2_1_bul_kisi.setObjectName(u"pushButton_6_2_1_bul_kisi")
         self.pushButton_6_2_1_bul_kisi.setGeometry(QRect(90, 170, 94, 50))
         sizePolicy.setHeightForWidth(self.pushButton_6_2_1_bul_kisi.sizePolicy().hasHeightForWidth())
         self.pushButton_6_2_1_bul_kisi.setSizePolicy(sizePolicy)
         self.pushButton_6_2_1_bul_kisi.setMinimumSize(QSize(80, 50))
-        self.pushButton_6_2_1_bul_kisi.setFont(font6)
+        self.pushButton_6_2_1_bul_kisi.setFont(font7)
         self.pushButton_6_2_1_bul_kisi.setStyleSheet(u"QPushButton#pushButton_6_2_1_bul_kisi{	\n"
 "background-color: rgba(6, 211, 166, 150);\n"
 "border-radius:10px;}\n"
@@ -1692,7 +1704,7 @@ class Ui_MainWindow(object):
         self.formLayout_19.setContentsMargins(10, 0, 10, 0)
         self.label_95 = QLabel(self.formLayoutWidget_18)
         self.label_95.setObjectName(u"label_95")
-        self.label_95.setFont(font5)
+        self.label_95.setFont(font6)
 
         self.formLayout_19.setWidget(0, QFormLayout.LabelRole, self.label_95)
 
@@ -1704,7 +1716,7 @@ class Ui_MainWindow(object):
 
         self.label_91 = QLabel(self.formLayoutWidget_18)
         self.label_91.setObjectName(u"label_91")
-        self.label_91.setFont(font5)
+        self.label_91.setFont(font6)
 
         self.formLayout_19.setWidget(1, QFormLayout.LabelRole, self.label_91)
 
@@ -1716,7 +1728,7 @@ class Ui_MainWindow(object):
 
         self.label_92 = QLabel(self.formLayoutWidget_18)
         self.label_92.setObjectName(u"label_92")
-        self.label_92.setFont(font5)
+        self.label_92.setFont(font6)
 
         self.formLayout_19.setWidget(2, QFormLayout.LabelRole, self.label_92)
 
@@ -1728,7 +1740,7 @@ class Ui_MainWindow(object):
 
         self.label_93 = QLabel(self.formLayoutWidget_18)
         self.label_93.setObjectName(u"label_93")
-        self.label_93.setFont(font5)
+        self.label_93.setFont(font6)
 
         self.formLayout_19.setWidget(3, QFormLayout.LabelRole, self.label_93)
 
@@ -1740,7 +1752,7 @@ class Ui_MainWindow(object):
 
         self.label_96 = QLabel(self.formLayoutWidget_18)
         self.label_96.setObjectName(u"label_96")
-        self.label_96.setFont(font5)
+        self.label_96.setFont(font6)
 
         self.formLayout_19.setWidget(4, QFormLayout.LabelRole, self.label_96)
 
@@ -1757,7 +1769,7 @@ class Ui_MainWindow(object):
         sizePolicy.setHeightForWidth(self.pushButton_6_2_1_bul_kisi_temizle.sizePolicy().hasHeightForWidth())
         self.pushButton_6_2_1_bul_kisi_temizle.setSizePolicy(sizePolicy)
         self.pushButton_6_2_1_bul_kisi_temizle.setMinimumSize(QSize(80, 50))
-        self.pushButton_6_2_1_bul_kisi_temizle.setFont(font6)
+        self.pushButton_6_2_1_bul_kisi_temizle.setFont(font7)
         self.pushButton_6_2_1_bul_kisi_temizle.setStyleSheet(u"QPushButton#pushButton_6_2_1_bul_kisi_temizle{	\n"
 "background-color: rgba(6, 211, 166, 150);\n"
 "border-radius:10px;}\n"
@@ -1790,7 +1802,7 @@ class Ui_MainWindow(object):
         self.formLayout_12.setContentsMargins(10, 0, 10, 0)
         self.label_48 = QLabel(self.formLayoutWidget_12)
         self.label_48.setObjectName(u"label_48")
-        self.label_48.setFont(font5)
+        self.label_48.setFont(font6)
 
         self.formLayout_12.setWidget(1, QFormLayout.LabelRole, self.label_48)
 
@@ -1802,7 +1814,7 @@ class Ui_MainWindow(object):
 
         self.label_49 = QLabel(self.formLayoutWidget_12)
         self.label_49.setObjectName(u"label_49")
-        self.label_49.setFont(font5)
+        self.label_49.setFont(font6)
 
         self.formLayout_12.setWidget(2, QFormLayout.LabelRole, self.label_49)
 
@@ -1814,7 +1826,7 @@ class Ui_MainWindow(object):
 
         self.label_50 = QLabel(self.formLayoutWidget_12)
         self.label_50.setObjectName(u"label_50")
-        self.label_50.setFont(font5)
+        self.label_50.setFont(font6)
 
         self.formLayout_12.setWidget(3, QFormLayout.LabelRole, self.label_50)
 
@@ -1826,7 +1838,7 @@ class Ui_MainWindow(object):
 
         self.label_51 = QLabel(self.formLayoutWidget_12)
         self.label_51.setObjectName(u"label_51")
-        self.label_51.setFont(font5)
+        self.label_51.setFont(font6)
 
         self.formLayout_12.setWidget(4, QFormLayout.LabelRole, self.label_51)
 
@@ -1838,7 +1850,7 @@ class Ui_MainWindow(object):
 
         self.label_52 = QLabel(self.formLayoutWidget_12)
         self.label_52.setObjectName(u"label_52")
-        self.label_52.setFont(font5)
+        self.label_52.setFont(font6)
 
         self.formLayout_12.setWidget(5, QFormLayout.LabelRole, self.label_52)
 
@@ -1850,7 +1862,7 @@ class Ui_MainWindow(object):
 
         self.label_53 = QLabel(self.formLayoutWidget_12)
         self.label_53.setObjectName(u"label_53")
-        self.label_53.setFont(font5)
+        self.label_53.setFont(font6)
 
         self.formLayout_12.setWidget(6, QFormLayout.LabelRole, self.label_53)
 
@@ -1862,7 +1874,7 @@ class Ui_MainWindow(object):
 
         self.label_54 = QLabel(self.formLayoutWidget_12)
         self.label_54.setObjectName(u"label_54")
-        self.label_54.setFont(font5)
+        self.label_54.setFont(font6)
 
         self.formLayout_12.setWidget(7, QFormLayout.LabelRole, self.label_54)
 
@@ -1880,14 +1892,14 @@ class Ui_MainWindow(object):
 
         self.label_55 = QLabel(self.formLayoutWidget_12)
         self.label_55.setObjectName(u"label_55")
-        self.label_55.setFont(font5)
+        self.label_55.setFont(font6)
 
         self.formLayout_12.setWidget(0, QFormLayout.LabelRole, self.label_55)
 
         self.label_57 = QLabel(self.tab_6_2)
         self.label_57.setObjectName(u"label_57")
         self.label_57.setGeometry(QRect(700, 20, 151, 51))
-        self.label_57.setFont(font8)
+        self.label_57.setFont(font9)
         self.pushButton_6_2_2_bul_kitap_temizle = QPushButton(self.tab_6_2)
         self.pushButton_6_2_2_bul_kitap_temizle.setObjectName(u"pushButton_6_2_2_bul_kitap_temizle")
         self.pushButton_6_2_2_bul_kitap_temizle.setEnabled(False)
@@ -1895,7 +1907,7 @@ class Ui_MainWindow(object):
         sizePolicy.setHeightForWidth(self.pushButton_6_2_2_bul_kitap_temizle.sizePolicy().hasHeightForWidth())
         self.pushButton_6_2_2_bul_kitap_temizle.setSizePolicy(sizePolicy)
         self.pushButton_6_2_2_bul_kitap_temizle.setMinimumSize(QSize(80, 50))
-        self.pushButton_6_2_2_bul_kitap_temizle.setFont(font6)
+        self.pushButton_6_2_2_bul_kitap_temizle.setFont(font7)
         self.pushButton_6_2_2_bul_kitap_temizle.setStyleSheet(u"QPushButton#pushButton_6_2_2_bul_kitap_temizle{	\n"
 "background-color: rgba(6, 211, 166, 150);\n"
 "border-radius:10px;}\n"
@@ -1919,7 +1931,7 @@ class Ui_MainWindow(object):
         sizePolicy.setHeightForWidth(self.pushButton_6_2_2_bul_kitap.sizePolicy().hasHeightForWidth())
         self.pushButton_6_2_2_bul_kitap.setSizePolicy(sizePolicy)
         self.pushButton_6_2_2_bul_kitap.setMinimumSize(QSize(80, 50))
-        self.pushButton_6_2_2_bul_kitap.setFont(font6)
+        self.pushButton_6_2_2_bul_kitap.setFont(font7)
         self.pushButton_6_2_2_bul_kitap.setStyleSheet(u"QPushButton#pushButton_6_2_2_bul_kitap{	\n"
 "background-color: rgba(6, 211, 166, 150);\n"
 "border-radius:10px;}\n"
@@ -1943,7 +1955,7 @@ class Ui_MainWindow(object):
         sizePolicy.setHeightForWidth(self.pushButton_6_2_islemi_kaydet.sizePolicy().hasHeightForWidth())
         self.pushButton_6_2_islemi_kaydet.setSizePolicy(sizePolicy)
         self.pushButton_6_2_islemi_kaydet.setMinimumSize(QSize(80, 50))
-        self.pushButton_6_2_islemi_kaydet.setFont(font6)
+        self.pushButton_6_2_islemi_kaydet.setFont(font7)
         self.pushButton_6_2_islemi_kaydet.setStyleSheet(u"QPushButton#pushButton_6_2_islemi_kaydet{	\n"
 "background-color: rgba(6, 211, 166, 150);\n"
 "border-radius:10px;}\n"
@@ -1970,7 +1982,7 @@ class Ui_MainWindow(object):
         sizePolicy.setHeightForWidth(self.pushButton_3_3_Sil_2.sizePolicy().hasHeightForWidth())
         self.pushButton_3_3_Sil_2.setSizePolicy(sizePolicy)
         self.pushButton_3_3_Sil_2.setMinimumSize(QSize(80, 50))
-        self.pushButton_3_3_Sil_2.setFont(font6)
+        self.pushButton_3_3_Sil_2.setFont(font7)
         self.pushButton_3_3_Sil_2.setStyleSheet(u"QPushButton#pushButton_3_3_Sil{	\n"
 "background-color: rgba(6, 211, 166, 150);\n"
 "border-radius:10px;}\n"
@@ -1993,7 +2005,7 @@ class Ui_MainWindow(object):
         sizePolicy.setHeightForWidth(self.pushButton_6_3_temizle.sizePolicy().hasHeightForWidth())
         self.pushButton_6_3_temizle.setSizePolicy(sizePolicy)
         self.pushButton_6_3_temizle.setMinimumSize(QSize(100, 60))
-        self.pushButton_6_3_temizle.setFont(font4)
+        self.pushButton_6_3_temizle.setFont(font5)
         self.pushButton_6_3_temizle.setStyleSheet(u"QPushButton#pushButton_6_3_temizle{	\n"
 "background-color: rgba(6, 211, 166, 150);\n"
 "border-radius:10px;}\n"
@@ -2016,7 +2028,7 @@ class Ui_MainWindow(object):
         sizePolicy.setHeightForWidth(self.pushButton_6_3_listele.sizePolicy().hasHeightForWidth())
         self.pushButton_6_3_listele.setSizePolicy(sizePolicy)
         self.pushButton_6_3_listele.setMinimumSize(QSize(100, 60))
-        self.pushButton_6_3_listele.setFont(font4)
+        self.pushButton_6_3_listele.setFont(font5)
         self.pushButton_6_3_listele.setStyleSheet(u"QPushButton#pushButton_6_3_listele{	\n"
 "background-color: rgba(6, 211, 166, 150);\n"
 "border-radius:10px;}\n"
@@ -2034,31 +2046,29 @@ class Ui_MainWindow(object):
 "\n"
 "\n"
 "")
-        self.tableWidget_6_3 = QTableWidget(self.tab_6_3)
-        if (self.tableWidget_6_3.columnCount() < 8):
-            self.tableWidget_6_3.setColumnCount(8)
+        self.tableWidget_6_2 = QTableWidget(self.tab_6_3)
+        if (self.tableWidget_6_2.columnCount() < 7):
+            self.tableWidget_6_2.setColumnCount(7)
         __qtablewidgetitem52 = QTableWidgetItem()
-        self.tableWidget_6_3.setHorizontalHeaderItem(0, __qtablewidgetitem52)
+        self.tableWidget_6_2.setHorizontalHeaderItem(0, __qtablewidgetitem52)
         __qtablewidgetitem53 = QTableWidgetItem()
-        self.tableWidget_6_3.setHorizontalHeaderItem(1, __qtablewidgetitem53)
+        self.tableWidget_6_2.setHorizontalHeaderItem(1, __qtablewidgetitem53)
         __qtablewidgetitem54 = QTableWidgetItem()
-        self.tableWidget_6_3.setHorizontalHeaderItem(2, __qtablewidgetitem54)
+        self.tableWidget_6_2.setHorizontalHeaderItem(2, __qtablewidgetitem54)
         __qtablewidgetitem55 = QTableWidgetItem()
-        self.tableWidget_6_3.setHorizontalHeaderItem(3, __qtablewidgetitem55)
+        self.tableWidget_6_2.setHorizontalHeaderItem(3, __qtablewidgetitem55)
         __qtablewidgetitem56 = QTableWidgetItem()
-        self.tableWidget_6_3.setHorizontalHeaderItem(4, __qtablewidgetitem56)
+        self.tableWidget_6_2.setHorizontalHeaderItem(4, __qtablewidgetitem56)
         __qtablewidgetitem57 = QTableWidgetItem()
-        self.tableWidget_6_3.setHorizontalHeaderItem(5, __qtablewidgetitem57)
+        self.tableWidget_6_2.setHorizontalHeaderItem(5, __qtablewidgetitem57)
         __qtablewidgetitem58 = QTableWidgetItem()
-        self.tableWidget_6_3.setHorizontalHeaderItem(6, __qtablewidgetitem58)
-        __qtablewidgetitem59 = QTableWidgetItem()
-        self.tableWidget_6_3.setHorizontalHeaderItem(7, __qtablewidgetitem59)
-        self.tableWidget_6_3.setObjectName(u"tableWidget_6_3")
-        self.tableWidget_6_3.setGeometry(QRect(160, 0, 1160, 590))
-        self.tableWidget_6_3.setFont(font3)
-        self.tableWidget_6_3.setStyleSheet(u"font: italic 14pt \"Monotype Corsiva\";")
-        self.tableWidget_6_3.setShowGrid(True)
-        self.tableWidget_6_3.setColumnCount(8)
+        self.tableWidget_6_2.setHorizontalHeaderItem(6, __qtablewidgetitem58)
+        self.tableWidget_6_2.setObjectName(u"tableWidget_6_2")
+        self.tableWidget_6_2.setGeometry(QRect(160, 0, 1160, 590))
+        self.tableWidget_6_2.setFont(font4)
+        self.tableWidget_6_2.setStyleSheet(u"font: italic 14pt \"Monotype Corsiva\";")
+        self.tableWidget_6_2.setShowGrid(True)
+        self.tableWidget_6_2.setColumnCount(7)
         self.tabWidget_6.addTab(self.tab_6_3, "")
 
         self.gridLayout.addWidget(self.tabWidget_6, 0, 0, 1, 1)
@@ -2075,11 +2085,11 @@ class Ui_MainWindow(object):
 
         self.retranslateUi(MainWindow)
 
-        self.tabWidget.setCurrentIndex(5)
+        self.tabWidget.setCurrentIndex(0)
         self.tabWidget_3.setCurrentIndex(0)
         self.tabWidget_4.setCurrentIndex(0)
         self.tabWidget_5.setCurrentIndex(0)
-        self.tabWidget_6.setCurrentIndex(2)
+        self.tabWidget_6.setCurrentIndex(0)
 
 
         QMetaObject.connectSlotsByName(MainWindow)
@@ -2090,6 +2100,7 @@ class Ui_MainWindow(object):
         self.label.setText(QCoreApplication.translate("MainWindow", u"Ya\u015far K\u00fct\u00fcphanesi", None))
         self.pushButton_1_yeni_kullanici.setText(QCoreApplication.translate("MainWindow", u"Yeni Kullan\u0131c\u0131 Giri\u015fi", None))
         self.pushButton_1_cikis.setText(QCoreApplication.translate("MainWindow", u"\u00c7 \u0131 k \u0131 \u015f", None))
+        self.label_32.setText(QCoreApplication.translate("MainWindow", u"Y\u00f6netici", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_1), QCoreApplication.translate("MainWindow", u"Giri\u015f", None))
         ___qtablewidgetitem = self.tableWidget_2.horizontalHeaderItem(0)
         ___qtablewidgetitem.setText(QCoreApplication.translate("MainWindow", u"New Column", None));
@@ -2325,22 +2336,20 @@ class Ui_MainWindow(object):
 "S i l", None))
         self.pushButton_6_3_temizle.setText(QCoreApplication.translate("MainWindow", u"T e m i z l e", None))
         self.pushButton_6_3_listele.setText(QCoreApplication.translate("MainWindow", u"L i s t e l e", None))
-        ___qtablewidgetitem52 = self.tableWidget_6_3.horizontalHeaderItem(0)
+        ___qtablewidgetitem52 = self.tableWidget_6_2.horizontalHeaderItem(0)
         ___qtablewidgetitem52.setText(QCoreApplication.translate("MainWindow", u"New Column", None));
-        ___qtablewidgetitem53 = self.tableWidget_6_3.horizontalHeaderItem(1)
+        ___qtablewidgetitem53 = self.tableWidget_6_2.horizontalHeaderItem(1)
         ___qtablewidgetitem53.setText(QCoreApplication.translate("MainWindow", u"New Column", None));
-        ___qtablewidgetitem54 = self.tableWidget_6_3.horizontalHeaderItem(2)
+        ___qtablewidgetitem54 = self.tableWidget_6_2.horizontalHeaderItem(2)
         ___qtablewidgetitem54.setText(QCoreApplication.translate("MainWindow", u"New Column", None));
-        ___qtablewidgetitem55 = self.tableWidget_6_3.horizontalHeaderItem(3)
+        ___qtablewidgetitem55 = self.tableWidget_6_2.horizontalHeaderItem(3)
         ___qtablewidgetitem55.setText(QCoreApplication.translate("MainWindow", u"New Column", None));
-        ___qtablewidgetitem56 = self.tableWidget_6_3.horizontalHeaderItem(4)
+        ___qtablewidgetitem56 = self.tableWidget_6_2.horizontalHeaderItem(4)
         ___qtablewidgetitem56.setText(QCoreApplication.translate("MainWindow", u"New Column", None));
-        ___qtablewidgetitem57 = self.tableWidget_6_3.horizontalHeaderItem(5)
+        ___qtablewidgetitem57 = self.tableWidget_6_2.horizontalHeaderItem(5)
         ___qtablewidgetitem57.setText(QCoreApplication.translate("MainWindow", u"New Column", None));
-        ___qtablewidgetitem58 = self.tableWidget_6_3.horizontalHeaderItem(6)
+        ___qtablewidgetitem58 = self.tableWidget_6_2.horizontalHeaderItem(6)
         ___qtablewidgetitem58.setText(QCoreApplication.translate("MainWindow", u"New Column", None));
-        ___qtablewidgetitem59 = self.tableWidget_6_3.horizontalHeaderItem(7)
-        ___qtablewidgetitem59.setText(QCoreApplication.translate("MainWindow", u"New Column", None));
         self.tabWidget_6.setTabText(self.tabWidget_6.indexOf(self.tab_6_3), QCoreApplication.translate("MainWindow", u"D\u0131\u015fardaki  Kitaplar", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_6), QCoreApplication.translate("MainWindow", u"Kitap Verme", None))
     # retranslateUi

@@ -239,6 +239,33 @@ padding-top:6px;}
          </item>
         </layout>
        </widget>
+       <widget class="QLabel" name="label_32">
+        <property name="geometry">
+         <rect>
+          <x>30</x>
+          <y>30</y>
+          <width>91</width>
+          <height>61</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <family>Monotype Corsiva</family>
+          <pointsize>20</pointsize>
+          <weight>50</weight>
+          <italic>true</italic>
+          <bold>false</bold>
+         </font>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">
+color: rgb(255, 85, 255);
+font: italic 20pt &quot;Monotype Corsiva&quot;;</string>
+        </property>
+        <property name="text">
+         <string>Yönetici</string>
+        </property>
+       </widget>
       </widget>
       <widget class="QWidget" name="tab_2">
        <attribute name="title">

@@ -271,8 +271,10 @@ border-bottom-right-radius:20px
    <property name="font">
     <font>
      <family>Monotype Corsiva</family>
-     <pointsize>12</pointsize>
+     <pointsize>14</pointsize>
+     <weight>75</weight>
      <italic>true</italic>
+     <bold>true</bold>
     </font>
    </property>
   </widget>

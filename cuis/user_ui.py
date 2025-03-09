@@ -15,9 +15,9 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QFont, QFontDatabase, QGradient, QIcon,
     QImage, QKeySequence, QLinearGradient, QPainter,
     QPalette, QPixmap, QRadialGradient, QTransform)
-from PySide6.QtWidgets import (QApplication, QGridLayout, QGroupBox, QLabel,
-    QLineEdit, QMainWindow, QPushButton, QSizePolicy,
-    QStatusBar, QWidget)
+from PySide6.QtWidgets import (QApplication, QComboBox, QGridLayout, QGroupBox,
+    QLabel, QLineEdit, QMainWindow, QPushButton,
+    QSizePolicy, QStatusBar, QWidget)
 import media_rc
 
 class Ui_MainWindow(object):
@@ -98,7 +98,7 @@ class Ui_MainWindow(object):
 
         self.groupBox = QGroupBox(self.centralwidget)
         self.groupBox.setObjectName(u"groupBox")
-        self.groupBox.setGeometry(QRect(320, 100, 331, 371))
+        self.groupBox.setGeometry(QRect(340, 100, 331, 371))
         self.groupBox.setStyleSheet(u"border-color: rgba(255,255,255,0);")
         self.lineEdit_kullanici_adi = QLineEdit(self.groupBox)
         self.lineEdit_kullanici_adi.setObjectName(u"lineEdit_kullanici_adi")
@@ -130,22 +130,23 @@ class Ui_MainWindow(object):
         self.lineEdit_telefon.setFont(font2)
         self.lineEdit_mail = QLineEdit(self.groupBox)
         self.lineEdit_mail.setObjectName(u"lineEdit_mail")
-        self.lineEdit_mail.setGeometry(QRect(10, 310, 300, 30))
+        self.lineEdit_mail.setGeometry(QRect(10, 250, 300, 30))
         self.lineEdit_mail.setMinimumSize(QSize(300, 30))
         self.lineEdit_mail.setMaximumSize(QSize(200, 20))
         self.lineEdit_mail.setFont(font2)
-        self.lineEdit_m = QLineEdit(self.groupBox)
-        self.lineEdit_m.setObjectName(u"lineEdit_m")
-        self.lineEdit_m.setGeometry(QRect(10, 250, 300, 30))
-        self.lineEdit_m.setMinimumSize(QSize(300, 30))
-        self.lineEdit_m.setMaximumSize(QSize(200, 20))
-        self.lineEdit_m.setFont(font2)
+        self.comboBox_yetki = QComboBox(self.groupBox)
+        self.comboBox_yetki.setObjectName(u"comboBox_yetki")
+        self.comboBox_yetki.setGeometry(QRect(10, 310, 300, 30))
+        self.comboBox_yetki.setMinimumSize(QSize(300, 30))
+        self.comboBox_yetki.setMaximumSize(QSize(200, 20))
+        self.comboBox_yetki.setFont(font2)
         MainWindow.setCentralWidget(self.centralwidget)
         self.statusbar = QStatusBar(MainWindow)
         self.statusbar.setObjectName(u"statusbar")
         font3 = QFont()
         font3.setFamilies([u"Monotype Corsiva"])
-        font3.setPointSize(12)
+        font3.setPointSize(14)
+        font3.setBold(True)
         font3.setItalic(True)
         self.statusbar.setFont(font3)
         MainWindow.setStatusBar(self.statusbar)
@@ -167,8 +168,6 @@ class Ui_MainWindow(object):
         self.lineEdit_adi_soyadi.setText("")
         self.lineEdit_adi_soyadi.setPlaceholderText(QCoreApplication.translate("MainWindow", u"Ad\u0131 Soyad\u0131", None))
         self.lineEdit_telefon.setPlaceholderText(QCoreApplication.translate("MainWindow", u"Telefon", None))
-        self.lineEdit_mail.setText("")
-        self.lineEdit_mail.setPlaceholderText(QCoreApplication.translate("MainWindow", u"Yetki", None))
-        self.lineEdit_m.setPlaceholderText(QCoreApplication.translate("MainWindow", u"Mail Adresi", None))
+        self.lineEdit_mail.setPlaceholderText(QCoreApplication.translate("MainWindow", u"Mail Adresi", None))
     # retranslateUi
 

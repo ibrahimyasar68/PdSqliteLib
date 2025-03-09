@@ -18,6 +18,7 @@ ui_files = [
     "cuis/library.ui",
     "cuis/login.ui",
     "cuis/user.ui",
+    "cuis/guest.ui",
 ]
 
 for ui_file in ui_files:

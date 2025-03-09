@@ -170,7 +170,7 @@ border-radius:10px;}
    <widget class="QGroupBox" name="groupBox">
     <property name="geometry">
      <rect>
-      <x>320</x>
+      <x>340</x>
       <y>100</y>
       <width>331</width>
       <height>371</height>
@@ -315,39 +315,6 @@ border-radius:10px;}
      <property name="geometry">
       <rect>
        <x>10</x>
-       <y>310</y>
-       <width>300</width>
-       <height>30</height>
-      </rect>
-     </property>
-     <property name="minimumSize">
-      <size>
-       <width>300</width>
-       <height>30</height>
-      </size>
-     </property>
-     <property name="maximumSize">
-      <size>
-       <width>200</width>
-       <height>20</height>
-      </size>
-     </property>
-     <property name="font">
-      <font>
-       <pointsize>11</pointsize>
-      </font>
-     </property>
-     <property name="text">
-      <string/>
-     </property>
-     <property name="placeholderText">
-      <string>Yetki</string>
-     </property>
-    </widget>
-    <widget class="QLineEdit" name="lineEdit_m">
-     <property name="geometry">
-      <rect>
-       <x>10</x>
        <y>250</y>
        <width>300</width>
        <height>30</height>
@@ -374,14 +341,43 @@ border-radius:10px;}
       <string>Mail Adresi</string>
      </property>
     </widget>
+    <widget class="QComboBox" name="comboBox_yetki">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>310</y>
+       <width>300</width>
+       <height>30</height>
+      </rect>
+     </property>
+     <property name="minimumSize">
+      <size>
+       <width>300</width>
+       <height>30</height>
+      </size>
+     </property>
+     <property name="maximumSize">
+      <size>
+       <width>200</width>
+       <height>20</height>
+      </size>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>11</pointsize>
+      </font>
+     </property>
+    </widget>
    </widget>
   </widget>
   <widget class="QStatusBar" name="statusbar">
    <property name="font">
     <font>
      <family>Monotype Corsiva</family>
-     <pointsize>12</pointsize>
+     <pointsize>14</pointsize>
+     <weight>75</weight>
      <italic>true</italic>
+     <bold>true</bold>
     </font>
    </property>
   </widget>
