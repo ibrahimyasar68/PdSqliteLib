@@ -205,8 +205,15 @@ border-radius:10px;}
      </property>
      <property name="font">
       <font>
+       <family>Verdana</family>
        <pointsize>11</pointsize>
+       <weight>50</weight>
+       <italic>false</italic>
+       <bold>false</bold>
       </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">font: 11pt &quot;Verdana&quot;;</string>
      </property>
      <property name="echoMode">
       <enum>QLineEdit::Normal</enum>
@@ -238,8 +245,15 @@ border-radius:10px;}
      </property>
      <property name="font">
       <font>
+       <family>Verdana</family>
        <pointsize>11</pointsize>
+       <weight>50</weight>
+       <italic>false</italic>
+       <bold>false</bold>
       </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">font: 11pt &quot;Verdana&quot;;</string>
      </property>
      <property name="echoMode">
       <enum>QLineEdit::PasswordEchoOnEdit</enum>
@@ -271,8 +285,15 @@ border-radius:10px;}
      </property>
      <property name="font">
       <font>
+       <family>Verdana</family>
        <pointsize>11</pointsize>
+       <weight>50</weight>
+       <italic>false</italic>
+       <bold>false</bold>
       </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">font: 11pt &quot;Verdana&quot;;</string>
      </property>
      <property name="text">
       <string/>
@@ -304,8 +325,15 @@ border-radius:10px;}
      </property>
      <property name="font">
       <font>
+       <family>Verdana</family>
        <pointsize>11</pointsize>
+       <weight>50</weight>
+       <italic>false</italic>
+       <bold>false</bold>
       </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">font: 11pt &quot;Verdana&quot;;</string>
      </property>
      <property name="placeholderText">
       <string>Telefon</string>
@@ -334,8 +362,15 @@ border-radius:10px;}
      </property>
      <property name="font">
       <font>
+       <family>Verdana</family>
        <pointsize>11</pointsize>
+       <weight>50</weight>
+       <italic>false</italic>
+       <bold>false</bold>
       </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">font: 11pt &quot;Verdana&quot;;</string>
      </property>
      <property name="placeholderText">
       <string>Mail Adresi</string>
@@ -364,8 +399,15 @@ border-radius:10px;}
      </property>
      <property name="font">
       <font>
+       <family>Verdana</family>
        <pointsize>11</pointsize>
+       <weight>50</weight>
+       <italic>false</italic>
+       <bold>false</bold>
       </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">font: 11pt &quot;Verdana&quot;;</string>
      </property>
     </widget>
    </widget>

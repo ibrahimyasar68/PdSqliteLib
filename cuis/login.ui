@@ -73,21 +73,20 @@ border-radius:10px;}</string>
        <rect>
         <x>9</x>
         <y>10</y>
-        <width>101</width>
+        <width>121</width>
         <height>51</height>
        </rect>
       </property>
       <property name="font">
        <font>
         <family>Monotype Corsiva</family>
-        <pointsize>17</pointsize>
+        <pointsize>14</pointsize>
         <weight>75</weight>
         <bold>true</bold>
        </font>
       </property>
       <property name="text">
-       <string>Kullanıcı
-     Adı</string>
+       <string>Kullanıcı Adı</string>
       </property>
      </widget>
      <widget class="QLineEdit" name="lineEdit_kullanci_adi">
@@ -96,9 +95,9 @@ border-radius:10px;}</string>
       </property>
       <property name="geometry">
        <rect>
-        <x>110</x>
+        <x>140</x>
         <y>9</y>
-        <width>231</width>
+        <width>220</width>
         <height>41</height>
        </rect>
       </property>
@@ -134,7 +133,7 @@ border-radius:10px;}</string>
       <property name="font">
        <font>
         <family>Monotype Corsiva</family>
-        <pointsize>20</pointsize>
+        <pointsize>14</pointsize>
         <weight>75</weight>
         <italic>false</italic>
         <bold>true</bold>
@@ -150,9 +149,9 @@ border-radius:10px;}</string>
      <widget class="QLineEdit" name="lineEdit_parola">
       <property name="geometry">
        <rect>
-        <x>110</x>
+        <x>140</x>
         <y>60</y>
-        <width>231</width>
+        <width>220</width>
         <height>41</height>
        </rect>
       </property>

@@ -9,9 +9,6 @@ dfuser=pd.read_sql_query("SELECT * FROM users",baglantı)
 dfwork=pd.read_sql_query("SELECT * FROM follow where status='out'",baglantı)
 
 
-
-
-
 ######################
 ###  Book Table   ####
 ######################
@@ -53,7 +50,6 @@ def rapor(sor,cnt): ###İstatistik için####
     snc=dfbook.groupby(sor)['Yili'].count().sort_values().tail(cnt)[::-1]   
     return snc
 
-
 def piegraf():
     liste=rapor('Turu',15)
     names=liste.index[::]
@@ -84,6 +80,15 @@ def authority(name):
     snc=(dfuser.query(f"kullanici=='{name}'")['yetki']).values[0]
     return snc
 
+def df_user_query(a,b):
+    result =(dfuser.query(f"{a}=='{b}'"))
+    if len(result)==0:
+        return False
+    elif len(result)==1:
+        return True
+    else:
+        return None
+
 ######################
 ###  Work Table   ####
 ######################
@@ -98,7 +103,6 @@ def df_work_user_list():
         liste.append(kyt[3])
     liste.sort()
     return liste
-
 
 ## kitap verme işlemlerinde kitap listesi
 def df_work_book_list():
@@ -140,6 +144,4 @@ if __name__ == "__main__":
 
     # x=piegraf()
     # x.show()
-
-
     pass
