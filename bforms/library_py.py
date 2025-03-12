@@ -695,6 +695,39 @@ class Ui_MainWindow(object):
 "\n"
 "")
         self.pushButton_3_2_deg_kaydet.setObjectName("pushButton_3_2_deg_kaydet")
+        self.pushButton_3_2_iptal = QtWidgets.QPushButton(self.tab_3_2)
+        self.pushButton_3_2_iptal.setEnabled(False)
+        self.pushButton_3_2_iptal.setGeometry(QtCore.QRect(1000, 400, 80, 61))
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Fixed)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.pushButton_3_2_iptal.sizePolicy().hasHeightForWidth())
+        self.pushButton_3_2_iptal.setSizePolicy(sizePolicy)
+        self.pushButton_3_2_iptal.setMinimumSize(QtCore.QSize(80, 50))
+        font = QtGui.QFont()
+        font.setFamily("Monotype Corsiva")
+        font.setPointSize(13)
+        font.setBold(False)
+        font.setItalic(True)
+        font.setWeight(50)
+        self.pushButton_3_2_iptal.setFont(font)
+        self.pushButton_3_2_iptal.setStyleSheet("QPushButton#pushButton_3_2_iptal{    \n"
+"background-color: rgba(6, 211, 166, 150);\n"
+"border-radius:10px;}\n"
+"\n"
+"QPushButton#pushButton_3_2_iptal:hover{\n"
+"background-color: rgba(0, 248, 49, 150);\n"
+"border-radius:10px;}\n"
+"\n"
+"QPushButton#pushButton_3_2_iptal:pressed{\n"
+"background-color: rgba(6, 211, 166,150);\n"
+"padding-left:5px;\n"
+"padding-top:6px;\n"
+"border-radius:10px;}\n"
+"\n"
+"\n"
+"")
+        self.pushButton_3_2_iptal.setObjectName("pushButton_3_2_iptal")
         self.tabWidget_3.addTab(self.tab_3_2, "")
         self.tab_3_3 = QtWidgets.QWidget()
         self.tab_3_3.setObjectName("tab_3_3")
@@ -938,6 +971,39 @@ class Ui_MainWindow(object):
 "\n"
 "")
         self.pushButton_3_3_Sil.setObjectName("pushButton_3_3_Sil")
+        self.pushButton_3_3_iptal = QtWidgets.QPushButton(self.tab_3_3)
+        self.pushButton_3_3_iptal.setEnabled(False)
+        self.pushButton_3_3_iptal.setGeometry(QtCore.QRect(1000, 390, 80, 61))
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Fixed)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.pushButton_3_3_iptal.sizePolicy().hasHeightForWidth())
+        self.pushButton_3_3_iptal.setSizePolicy(sizePolicy)
+        self.pushButton_3_3_iptal.setMinimumSize(QtCore.QSize(80, 50))
+        font = QtGui.QFont()
+        font.setFamily("Monotype Corsiva")
+        font.setPointSize(13)
+        font.setBold(False)
+        font.setItalic(True)
+        font.setWeight(50)
+        self.pushButton_3_3_iptal.setFont(font)
+        self.pushButton_3_3_iptal.setStyleSheet("QPushButton#pushButton_3_3_iptal{    \n"
+"background-color: rgba(6, 211, 166, 150);\n"
+"border-radius:10px;}\n"
+"\n"
+"QPushButton#pushButton_3_3_iptal:hover{\n"
+"background-color: rgba(0, 248, 49, 150);\n"
+"border-radius:10px;}\n"
+"\n"
+"QPushButton#pushButton_3_3_iptal:pressed{\n"
+"background-color: rgba(6, 211, 166,150);\n"
+"padding-left:5px;\n"
+"padding-top:6px;\n"
+"border-radius:10px;}\n"
+"\n"
+"\n"
+"")
+        self.pushButton_3_3_iptal.setObjectName("pushButton_3_3_iptal")
         self.tabWidget_3.addTab(self.tab_3_3, "")
         self.gridLayout_2.addWidget(self.tabWidget_3, 0, 0, 1, 1)
         self.tabWidget.addTab(self.tab_3, "")
@@ -2679,6 +2745,7 @@ class Ui_MainWindow(object):
         self.label_16.setText(_translate("MainWindow", "Bulunacak Kitap Adı"))
         self.pushButton_3_2_deg_kaydet.setText(_translate("MainWindow", "Değişikliği\n"
 "Kaydet"))
+        self.pushButton_3_2_iptal.setText(_translate("MainWindow", "İ p t a l"))
         self.tabWidget_3.setTabText(self.tabWidget_3.indexOf(self.tab_3_2), _translate("MainWindow", "Kayıt Düzenleme"))
         self.pushButton_3_3_bul.setText(_translate("MainWindow", "Aranan Kaydı\n"
 "B u l"))
@@ -2693,6 +2760,7 @@ class Ui_MainWindow(object):
         self.label_24.setText(_translate("MainWindow", "Bulunacak Kitap Adı"))
         self.pushButton_3_3_Sil.setText(_translate("MainWindow", "Kaydı\n"
 "S i l"))
+        self.pushButton_3_3_iptal.setText(_translate("MainWindow", "İ p t a l"))
         self.tabWidget_3.setTabText(self.tabWidget_3.indexOf(self.tab_3_3), _translate("MainWindow", "Kayıt Silme"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_3), _translate("MainWindow", "Kitap Kayıt"))
         self.label_26.setText(_translate("MainWindow", "Listelenecek Kayıt "))

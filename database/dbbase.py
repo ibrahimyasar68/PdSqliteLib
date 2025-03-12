@@ -9,8 +9,8 @@ baglantı.commit()
 
 #Kayıt ekleme (ActifLibrary)
 def ekle_kayit(kayit):
-    ekle="Insert Into kayitlistesi (id, adi, yazari, ceviren, turu, yayinevi, yili, sayfa) values (?,?,?,?,?,?,?,?)"
-    islem.execute(ekle,((kayit[0]),(kayit[1]),(kayit[2]),(kayit[3]),(kayit[4]),(kayit[5]),(kayit[6]),(kayit[7])))
+    ekle="Insert Into kayitlistesi (adi, yazari, ceviren, turu, yayinevi, yili, sayfa) values (?,?,?,?,?,?,?)"
+    islem.execute(ekle,((kayit[0]),(kayit[1]),(kayit[2]),(kayit[3]),(kayit[4]),(kayit[5]),(kayit[6])))
     baglantı.commit()
 
 
@@ -22,9 +22,9 @@ def degistir_kayit(kayit):
 
 
 #isme göre kayıt silme (ActifLibrary)  
-def sil_adi(adi):
-    sorgu=("Delete From kayitlistesi where adi=?")
-    islem.execute(sorgu,(adi,))
+def sil_kayit(id):
+    sorgu=("Delete From kayitlistesi where Id=?")
+    islem.execute(sorgu,(id,))
     baglantı.commit() 
 
 
@@ -36,14 +36,22 @@ def user_ekle(user):
 
 
 def save_work_to_db(kayit):
+    baglantı = sqlite3.connect("C:\\Database\\DBL_Kayit.db")
+    islem=baglantı.cursor()
+    baglantı.commit()
     ekle="Insert Into follow (userId,bookId,outdate,outtime,status,indate,intime) values (?,?,?,?,?,?,?)"
     islem.execute(ekle,((kayit[0]),(kayit[1]),(kayit[2]),(kayit[3]),(kayit[4]),(kayit[5]),(kayit[6])))
     baglantı.commit()
+    baglantı.close()
 
 def uptate_work_to_db(kayit):
+    baglantı = sqlite3.connect("C:\\Database\\DBL_Kayit.db")
+    islem=baglantı.cursor()
+    baglantı.commit()
     dgsm =(f"Update follow Set status='{kayit[4]}', indate='{kayit[5]}', intime='{kayit[6]}' where ((userId=='{kayit[0]}') and (bookId=='{kayit[1]}'))")
     islem.execute(dgsm)
     baglantı.commit()
+    baglantı.close()
     
 
 if __name__=="__main__": 

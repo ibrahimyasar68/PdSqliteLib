@@ -107,11 +107,9 @@ class Guest(QMainWindow):
 ### Tablo 1 İşlemleri  ###         
 
     def list_type_4_1(self):
-
-        ###  DB'den Tür Listesini alma  ###
-        
+        ###  DB'den Tür Listesini alma  ###        
         tur_liste=df_sort_list('Turu')
-        tur_liste[0]=(' Seçiniz...')
+        tur_liste.insert(0,' Seçiniz...')
         cmb=tur_liste 
         self.QtLibrary.comboBox_4_1_turu.addItems(cmb)
 
@@ -193,7 +191,7 @@ class Guest(QMainWindow):
     def list_author_4_2(self):
         ###  DB'den Yazar Listesini alma  ###
         yazar_liste=df_sort_list('Yazari')
-        yazar_liste[0]=(' Seçiniz...')
+        yazar_liste.insert (0,' Seçiniz...')
         cmb=yazar_liste 
         self.QtLibrary.comboBox_4_2_turu.addItems(cmb)
 
@@ -275,7 +273,7 @@ class Guest(QMainWindow):
     def list_publish_4_3(self):        
         ###  DB'den Yayınevi Listesini alma  ###       
         yayin_liste=df_sort_list('Yayinevi')
-        yayin_liste[0]=(' Seçiniz...')
+        yayin_liste.insert(0,' Seçiniz...')
         cmb=yayin_liste 
         self.QtLibrary.comboBox_4_3_turu.addItems(cmb)
 
@@ -357,7 +355,7 @@ class Guest(QMainWindow):
     def list_year_4_4(self):
         ###  DB'den Yıl Listesini alma  ###
         yil_liste=df_sort_list('Yili')
-        yil_liste[0]=(' Seçiniz...')
+        yil_liste.insert(0,' Seçiniz...')
         cmb=yil_liste 
         self.QtLibrary.comboBox_4_4_turu.addItems(cmb)
 
@@ -507,6 +505,6 @@ class Guest(QMainWindow):
 # Uygulamanın sürekli çalışması
 if __name__=="__main__":
     app=QApplication([])
-    pencere = Library()
+    pencere = Guest()
     pencere.show()
     app.exec_()

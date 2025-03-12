@@ -40,9 +40,11 @@ class Library(QMainWindow):
         self.list_items_3_2()
         self.QtLibrary.pushButton_3_2_bul.clicked.connect(self.find_item_3_2)
         self.QtLibrary.pushButton_3_2_deg_kaydet.clicked.connect(self.update_item_3_2)
+        self.QtLibrary.pushButton_3_2_iptal.clicked.connect(self.clear_form_3_2)
         self.list_items_3_3()  
         self.QtLibrary.pushButton_3_3_bul.clicked.connect(self.find_item_3_3)    
-        self.QtLibrary.pushButton_3_3_Sil.clicked.connect(self.delete_item_3_3)     
+        self.QtLibrary.pushButton_3_3_Sil.clicked.connect(self.delete_item_3_3)
+        self.QtLibrary.pushButton_3_3_iptal.clicked.connect(self.clear_form_3_3)    
 
         ###  Tab_4 Olaylar  ######### 
         self.create_tab_4()
@@ -127,10 +129,8 @@ class Library(QMainWindow):
     ##################################
 
 ### Tablo 1 İşlemleri  ###
-    def save_book(self):
-        id=(df_count_items())+1      
-        kayit=[]
-        kayit.append(id)        
+    def save_book(self):     
+        kayit=[]     
         kayit.append(self.QtLibrary.lineEdit_3_1_adi.text())
         kayit.append(self.QtLibrary.lineEdit_3_1_yazari.text())   
         kayit.append(self.QtLibrary.lineEdit_3_1_ceviren.text())
@@ -138,14 +138,12 @@ class Library(QMainWindow):
         kayit.append(self.QtLibrary.lineEdit_3_1_yayinevi.text())
         kayit.append(self.QtLibrary.lineEdit_3_1_yili.text())
         kayit.append(self.QtLibrary.lineEdit_3_1_sayfa.text())
-
         if (self.QtLibrary.lineEdit_3_1_adi.text())=="":
             self.QtLibrary.statusbar.showMessage("Kayıt oluşturun",self.dur_msj) 
         else:          
             cvb=onay(f"{(self.QtLibrary.lineEdit_3_1_adi.text())} kaydedilsin mi?")
             if cvb==QMessageBox.Yes:        
-                # ekle_kayit(kayit)
-                print(kayit)
+                ekle_kayit(kayit)
                 self.QtLibrary.statusbar.showMessage(f"'{(self.QtLibrary.lineEdit_3_1_adi.text())}' kaydedildi",self.dur_msj)
             else:pass  
 
@@ -160,7 +158,7 @@ class Library(QMainWindow):
 ### Tablo 2 İşlemleri  ###
     def list_items_3_2 (self):
         cmb=list(df_sort_list('Adi'))
-        cmb[0]=(' Seçiniz...')
+        cmb.insert(0,' Seçiniz...')
         self.QtLibrary.comboBox_3_2_bul_adi.addItems(cmb)
 
     def find_item_3_2(self):
@@ -181,18 +179,6 @@ class Library(QMainWindow):
                 else:
                     self.show_items_3_2(kyt)  
 
-    def clear_form_3_2(self):
-        self.QtLibrary.lineEdit_3_2_id.clear()
-        self.QtLibrary.lineEdit_3_2_ceviren.clear()
-        self.QtLibrary.lineEdit_3_2_yazari.clear()
-        self.QtLibrary.lineEdit_3_2_adi.clear()
-        self.QtLibrary.lineEdit_3_2_turu.clear()
-        self.QtLibrary.lineEdit_3_2_yayinevi.clear()
-        self.QtLibrary.lineEdit_3_2_yili.clear()
-        self.QtLibrary.lineEdit_3_2_sayfa.clear()
-        self.QtLibrary.pushButton_3_2_deg_kaydet.setEnabled(False)
-        self.QtLibrary.comboBox_3_2_bul_adi.setCurrentIndex(0) 
-        
     def show_items_3_2(self,kyt):
         degisecek=kyt 
         self.QtLibrary.lineEdit_3_2_id.setText(str(degisecek[0]))    
@@ -205,6 +191,7 @@ class Library(QMainWindow):
         self.QtLibrary.lineEdit_3_2_sayfa.setText(degisecek[7])
         self.QtLibrary.statusbar.showMessage(f"{self.QtLibrary.comboBox_3_2_bul_adi.currentText()} bilgileri yazıldı.",self.dur_msj)
         self.QtLibrary.pushButton_3_2_deg_kaydet.setEnabled(True)
+        self.QtLibrary.pushButton_3_2_iptal.setEnabled(True)
             
     def update_item_3_2(self):
         kayit=[]
@@ -219,19 +206,31 @@ class Library(QMainWindow):
         if len(self.QtLibrary.lineEdit_3_2_adi.text())!=0:
             cvb=onay("Kayıt değiştirilsin mi?")
             if cvb==QMessageBox.Yes:
-                # degistir_kayit(kayit)
-                print(kayit)
+                degistir_kayit(kayit)
                 self.QtLibrary.statusbar.showMessage(f"'{kayit[1]}' güncellendi.",self.dur_msj)
                 self.clear_form_3_2()               
             else:pass
         else:
             self.QtLibrary.statusbar.showMessage("Kayıtta değişiklik yapılmadı.Kontrol edin",self.dur_msj)
 
+    def clear_form_3_2(self):
+        self.QtLibrary.lineEdit_3_2_id.clear()
+        self.QtLibrary.lineEdit_3_2_ceviren.clear()
+        self.QtLibrary.lineEdit_3_2_yazari.clear()
+        self.QtLibrary.lineEdit_3_2_adi.clear()
+        self.QtLibrary.lineEdit_3_2_turu.clear()
+        self.QtLibrary.lineEdit_3_2_yayinevi.clear()
+        self.QtLibrary.lineEdit_3_2_yili.clear()
+        self.QtLibrary.lineEdit_3_2_sayfa.clear()
+        self.QtLibrary.pushButton_3_2_deg_kaydet.setEnabled(False)
+        self.QtLibrary.pushButton_3_2_iptal.setEnabled(False)
+        self.QtLibrary.comboBox_3_2_bul_adi.setCurrentIndex(0) 
+
 ### Tablo 3 İşlemleri  ###
 
     def list_items_3_3 (self):
         cmb=(df_sort_list('Adi'))
-        cmb[0]=(' Seçiniz...')
+        cmb.insert(0,' Seçiniz...')
         self.QtLibrary.comboBox_3_3_bul_adi.addItems(cmb)
 
     def find_item_3_3(self):
@@ -251,6 +250,28 @@ class Library(QMainWindow):
                         self.show_items_3_3(kyt)    
                 else:
                     self.show_items_3_3(kyt)  
+        
+    def show_items_3_3(self,kyt):
+        silinecek=kyt 
+        self.QtLibrary.lineEdit_3_3_id.setText(str(silinecek[0]))    
+        self.QtLibrary.lineEdit_3_3_adi.setText(silinecek[1])
+        self.QtLibrary.lineEdit_3_3_yazari.setText(silinecek[2])
+        self.QtLibrary.lineEdit_3_3_ceviren.setText(silinecek[3])
+        self.QtLibrary.lineEdit_3_3_turu.setText(silinecek[4])
+        self.QtLibrary.lineEdit_3_3_yayinevi.setText(silinecek[5])
+        self.QtLibrary.lineEdit_3_3_yili.setText(silinecek[6])
+        self.QtLibrary.lineEdit_3_3_sayfa.setText(silinecek[7])
+        self.QtLibrary.statusbar.showMessage(f"{self.QtLibrary.comboBox_3_3_bul_adi.currentText()} bilgileri yazıldı.",self.dur_msj)
+        self.QtLibrary.pushButton_3_3_Sil.setEnabled(True)
+        self.QtLibrary.pushButton_3_3_iptal.setEnabled(True)
+            
+    def delete_item_3_3(self):
+        cvb=onay("Kayıt silinsin mi?")
+        if cvb==QMessageBox.Yes:
+            sil_kayit(int(self.QtLibrary.lineEdit_3_3_id.text()))            
+            self.QtLibrary.statusbar.showMessage(f"{self.QtLibrary.comboBox_3_3_bul_adi.currentText()} silindi",self.dur_msj)
+            self.clear_form_3_3()
+        else:pass
 
     def clear_form_3_3(self):
         self.QtLibrary.lineEdit_3_3_id.clear()
@@ -262,29 +283,8 @@ class Library(QMainWindow):
         self.QtLibrary.lineEdit_3_3_yili.clear()
         self.QtLibrary.lineEdit_3_3_sayfa.clear()
         self.QtLibrary.pushButton_3_3_Sil.setEnabled(False)
+        self.QtLibrary.pushButton_3_3_iptal.setEnabled(False)
         self.QtLibrary.comboBox_3_3_bul_adi.setCurrentIndex(0) 
-        
-    def show_items_3_3(self,kyt):
-        degisecek=kyt 
-        self.QtLibrary.lineEdit_3_3_id.setText(str(degisecek[0]))    
-        self.QtLibrary.lineEdit_3_3_adi.setText(degisecek[1])
-        self.QtLibrary.lineEdit_3_3_yazari.setText(degisecek[2])
-        self.QtLibrary.lineEdit_3_3_ceviren.setText(degisecek[3])
-        self.QtLibrary.lineEdit_3_3_turu.setText(degisecek[4])
-        self.QtLibrary.lineEdit_3_3_yayinevi.setText(degisecek[5])
-        self.QtLibrary.lineEdit_3_3_yili.setText(degisecek[6])
-        self.QtLibrary.lineEdit_3_3_sayfa.setText(degisecek[7])
-        self.QtLibrary.statusbar.showMessage(f"{self.QtLibrary.comboBox_3_3_bul_adi.currentText()} bilgileri yazıldı.",self.dur_msj)
-        self.QtLibrary.pushButton_3_3_Sil.setEnabled(True)
-            
-    def delete_item_3_3(self):
-        cvb=onay("Kayıt silinsin mi?")
-        if cvb==QMessageBox.Yes:
-            # sil_adi(kayit)
-            print(self.QtLibrary.lineEdit_3_3_adi.text())            
-            self.QtLibrary.statusbar.showMessage(f"{self.QtLibrary.comboBox_3_3_bul_adi.currentText()} silindi",self.dur_msj)
-            self.clear_form_3_3()
-        else:pass
 
     ##################################
     #####   Tab_4 Fonksiyonlar   #####
@@ -298,11 +298,9 @@ class Library(QMainWindow):
 ### Tablo 1 İşlemleri  ###         
 
     def list_type_4_1(self):
-
-        ###  DB'den Tür Listesini alma  ###
-        
+        ###  DB'den Tür Listesini alma  ###        
         tur_liste=df_sort_list('Turu')
-        tur_liste[0]=(' Seçiniz...')
+        tur_liste.insert (0,' Seçiniz...')
         cmb=tur_liste 
         self.QtLibrary.comboBox_4_1_turu.addItems(cmb)
 
@@ -384,7 +382,7 @@ class Library(QMainWindow):
     def list_author_4_2(self):
         ###  DB'den Yazar Listesini alma  ###
         yazar_liste=df_sort_list('Yazari')
-        yazar_liste[0]=(' Seçiniz...')
+        yazar_liste.insert(0,' Seçiniz...')
         cmb=yazar_liste 
         self.QtLibrary.comboBox_4_2_turu.addItems(cmb)
 
@@ -466,7 +464,7 @@ class Library(QMainWindow):
     def list_publish_4_3(self):        
         ###  DB'den Yayınevi Listesini alma  ###       
         yayin_liste=df_sort_list('Yayinevi')
-        yayin_liste[0]=(' Seçiniz...')
+        yayin_liste.insert(0,' Seçiniz...')
         cmb=yayin_liste 
         self.QtLibrary.comboBox_4_3_turu.addItems(cmb)
 
@@ -548,7 +546,7 @@ class Library(QMainWindow):
     def list_year_4_4(self):
         ###  DB'den Yıl Listesini alma  ###
         yil_liste=df_sort_list('Yili')
-        yil_liste[0]=(' Seçiniz...')
+        yil_liste.insert(0,' Seçiniz...')
         cmb=yil_liste 
         self.QtLibrary.comboBox_4_4_turu.addItems(cmb)
 
@@ -694,18 +692,22 @@ class Library(QMainWindow):
         if txt==(' Seçiniz...'):
             self.QtLibrary.statusbar.showMessage("Seçim yapınız",self.dur_msj)
         else:
-            sayi,kyt=df_find_by_sort('Adi',txt)
-            if sayi==0: 
-                self.QtLibrary.statusbar.showMessage(f"'{txt}' kaydı bulunamadı",self.dur_msj)
-            else:
-                if sayi>1:
-                    cvb=onay(f"'{txt}' adında {sayi} kayıt bulundu.\nİlk kayıt gösterilsin mi?")
-                    if cvb==QMessageBox.No:
-                        self.QtLibrary.statusbar.showMessage("Yeniden kayıt girin")
-                    else:
-                        self.show_items_6_1_1(kyt)    
+            verlis=df_work_book_list()
+            if txt not in verlis:
+                sayi,kyt=df_find_by_sort('Adi',txt)
+                if sayi==0: 
+                    self.QtLibrary.statusbar.showMessage(f"'{txt}' kaydı bulunamadı",self.dur_msj)
                 else:
-                    self.show_items_6_1_1(kyt)  
+                    if sayi>1:
+                        cvb=onay(f"'{txt}' adında {sayi} kayıt bulundu.\nİlk kayıt gösterilsin mi?")
+                        if cvb==QMessageBox.No:
+                            self.QtLibrary.statusbar.showMessage("Yeniden kayıt girin")
+                        else:
+                            self.show_items_6_1_1(kyt)    
+                    else:
+                        self.show_items_6_1_1(kyt)  
+            else:
+                QMessageBox.information(self,"Uyarı!","Bu kitap başka bir üyededir!")
 
     def show_items_6_1_1(self,kyt):
         kayit=kyt 
@@ -786,7 +788,6 @@ class Library(QMainWindow):
                 kayit=[str((df_user_find(self.QtLibrary.comboBox_6_1_2_liste_kisi.currentText()))[0]),
                         self.QtLibrary.lineEdit_6_1_id.text(),
                         tdy.date(), datetime.datetime.strftime(tdy, '%X '),"out","",""]  
-                print(kayit)
                 save_work_to_db(kayit)
                 self.QtLibrary.statusbar.showMessage("İşlem kaydedildi.",self.dur_msj)
                 self.clear_form_6_1_1()
@@ -905,7 +906,6 @@ class Library(QMainWindow):
                 kayit=[str((df_user_find(self.QtLibrary.comboBox_6_2_1_liste_kisi.currentText()))[0]),
                         self.QtLibrary.lineEdit_6_2_id.text(),"","","in",
                         tdy.date(), datetime.datetime.strftime(tdy, '%X ')]  
-                print(kayit)
                 uptate_work_to_db(kayit)
                 self.QtLibrary.statusbar.showMessage("İşlem kaydedildi.",self.dur_msj)
                 self.clear_form_6_2_1()
@@ -937,9 +937,6 @@ class Library(QMainWindow):
         self.QtLibrary.tableWidget_6_2.clear()
         self.create_form_tab_6()
         self.QtLibrary.statusbar.showMessage("Liste temizlendi.",self.dur_msj)
-        
-
-
 
 # Uygulamanın sürekli çalışması
 # if __name__ == "__main__":
