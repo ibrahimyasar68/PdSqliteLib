@@ -3,7 +3,7 @@ from PyQt5.QtCore import Qt
 from acodes.library import Library
 from acodes.guest import Guest
 from bforms.login_py import Ui_MainWindow
-from database.dbframe import df_user_list,authority
+from database.dbframe import df_user_list,authority,df_pasw_query_by_name
 
 
 class Login(QMainWindow):
@@ -26,20 +26,20 @@ class Login(QMainWindow):
         ad=str(f"{self.QtLogin.lineEdit_kullanci_adi.text()}")
         sifre=str(f"{self.QtLogin.lineEdit_parola.text()}")
                
-        kullanıcılar=df_user_list('kullanici')  
+        kullanicilar=df_user_list('kullanici')  
         sifreler=df_user_list('sifre')
 
         if ad=="" or sifre=="":
             self.QtLogin.statusbar.showMessage("Kullanıcı adı ve parola bilgilerini giriniz!",self.msj_tm)
            
         else:
-            if (ad not in kullanıcılar) and (sifre not in sifreler): 
+            if (ad not in kullanicilar) and (sifre not in sifreler): 
                 self.QtLogin.statusbar.showMessage("Kullanıcı adı ve parola yanlış!", self.msj_tm)
             else:           
-                if (ad not in kullanıcılar) :
+                if (ad not in kullanicilar):
                     self.QtLogin.statusbar.showMessage("Kullanıcı adı yanlış!", self.msj_tm)
                 else:            
-                    if (sifre not in sifreler):
+                    if df_pasw_query_by_name(ad,sifre):
                         self.QtLogin.statusbar.showMessage("Şifre yanlış!", self.msj_tm)
                     else:
                         if authority(ad)=='admin':                                            

@@ -27,6 +27,7 @@ class User(QMainWindow):
         self.QtUser.pushButton_kaydet.clicked.connect(self.save_user)
 
     def user_exit(self):
+        self.clear_form()
         self.close()
 
     def chk_kullanici_adi(self):
@@ -66,12 +67,7 @@ class User(QMainWindow):
         cvb=onay(f"{kayit[0]} kaydı yapılsın mı?")
         if cvb==QMessageBox.Yes:   
             print(kayit)
-            self.QtUser.lineEdit_kullanici_adi.clear()       
-            self.QtUser.lineEdit_sifre.clear()
-            self.QtUser.lineEdit_adi_soyadi.clear()
-            self.QtUser.lineEdit_telefon.clear()
-            self.QtUser.lineEdit_mail.clear()
-            self.QtUser.comboBox_yetki.setCurrentIndex(0)
+            self.clear_form()
 
         else:pass
 
@@ -79,7 +75,19 @@ class User(QMainWindow):
     def cmb_yetki(self):
         cmb=["Yetki Seçin...","admin","guest"]
         self.QtUser.comboBox_yetki.addItems(cmb)
-        
+
+    def clear_form(self):
+        self.QtUser.lineEdit_kullanici_adi.clear()       
+        self.QtUser.lineEdit_sifre.clear()
+        self.QtUser.lineEdit_adi_soyadi.clear()
+        self.QtUser.lineEdit_telefon.clear()
+        self.QtUser.lineEdit_mail.clear()
+        self.QtUser.comboBox_yetki.setCurrentIndex(0)
+
+
+
+
+
 # Uygulamanın sürekli çalışması
 if __name__=="__main__":
     app=QApplication([])

@@ -89,6 +89,16 @@ def df_user_query(a,b):
     else:
         return None
 
+
+def df_pasw_query_by_name(name,paw):
+    res= (dfuser.query(f"kullanici=='{name}'")['sifre']).values[0]
+    if res==paw:
+        return False
+    elif res!=paw:
+        return True
+    else:
+        return None
+
 ######################
 ###  Work Table   ####
 ######################
