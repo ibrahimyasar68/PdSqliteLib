@@ -4,31 +4,30 @@ import sqlite3
 
 baglantı= sqlite3.connect("C:\\Database\\DBL_Kayit.db")
 
-dfbook=pd.read_sql_query("SELECT * FROM kayitlistesi",baglantı)
-dfuser=pd.read_sql_query("SELECT * FROM users",baglantı)
-dfwork=pd.read_sql_query("SELECT * FROM follow where status='out'",baglantı)
-
-
 ######################
 ###  Book Table   ####
 ######################
 
 def df_count_items():
+    dfbook=pd.read_sql_query("SELECT * FROM kayitlistesi",baglantı)
     sayi=len(dfbook['Id'])
     return sayi
 
 def df_all_list():
+    dfbook=pd.read_sql_query("SELECT * FROM kayitlistesi",baglantı)
     snc=[]
     for i in range(df_count_items()):
         snc.append((dfbook.iloc[i]).values)
     return snc    
 
 def df_sort_list(sort):
+    dfbook=pd.read_sql_query("SELECT * FROM kayitlistesi",baglantı)
     snc=list(dfbook[sort].unique())
     snc.sort()
     return snc
 
 def df_srt_fltr(sort,name):
+    dfbook=pd.read_sql_query("SELECT * FROM kayitlistesi",baglantı)
     sayi=(len(dfbook.query(f"{sort}=='{name}'")))
     snc=dfbook.query(f"{sort}=='{name}'")
     sn=[]
@@ -36,7 +35,8 @@ def df_srt_fltr(sort,name):
         sn.append(([*(snc.iloc[i])]))
     return sayi,sn
 
-def df_find_by_sort(sort,name):   
+def df_find_by_sort(sort,name):
+    dfbook=pd.read_sql_query("SELECT * FROM kayitlistesi",baglantı)   
     sayi=len(dfbook.query(f"{sort}=='{name}'"))
     if sayi<1:        
         kyt=[]
@@ -47,6 +47,7 @@ def df_find_by_sort(sort,name):
         return sayi,kyt
 
 def rapor(sor,cnt): ###İstatistik için####
+    dfbook=pd.read_sql_query("SELECT * FROM kayitlistesi",baglantı)
     snc=dfbook.groupby(sor)['Yili'].count().sort_values().tail(cnt)[::-1]   
     return snc
 
@@ -68,19 +69,23 @@ def piegraf():
 ######################
 
 def df_user_list(key):
+    dfuser=pd.read_sql_query("SELECT * FROM users",baglantı)
     snc=list(dfuser[key])
     return snc
 
-def df_user_find(name):   
+def df_user_find(name):
+    dfuser=pd.read_sql_query("SELECT * FROM users",baglantı)   
     snc=dfuser.query(f"adi_soyadi=='{name}'")
     kyt=([*snc.iloc[0]])
     return kyt
 
 def authority(name):
+    dfuser=pd.read_sql_query("SELECT * FROM users",baglantı)
     snc=(dfuser.query(f"kullanici=='{name}'")['yetki']).values[0]
     return snc
 
 def df_user_query(a,b):
+    dfuser=pd.read_sql_query("SELECT * FROM users",baglantı)
     result =(dfuser.query(f"{a}=='{b}'"))
     if len(result)==0:
         return False
@@ -91,6 +96,7 @@ def df_user_query(a,b):
 
 
 def df_pasw_query_by_name(name,paw):
+    dfuser=pd.read_sql_query("SELECT * FROM users",baglantı)
     res= (dfuser.query(f"kullanici=='{name}'")['sifre']).values[0]
     if res==paw:
         return False
@@ -105,6 +111,8 @@ def df_pasw_query_by_name(name,paw):
 
 ## Kitap verme işlemlerinde kullanıcı listesi
 def df_work_user_list():
+    dfuser=pd.read_sql_query("SELECT * FROM users",baglantı)
+    dfwork=pd.read_sql_query("SELECT * FROM follow where status='out'",baglantı)
     persid=list(dfwork['userId'].unique())
     liste=[]
     for per in persid:
@@ -116,6 +124,8 @@ def df_work_user_list():
 
 ## kitap verme işlemlerinde kitap listesi
 def df_work_book_list():
+    dfwork=pd.read_sql_query("SELECT * FROM follow where status='out'",baglantı)
+    dfbook=pd.read_sql_query("SELECT * FROM kayitlistesi",baglantı)
     bks=list(dfwork['bookId'].unique())
     liste=[]
     for bk in bks:
@@ -127,6 +137,8 @@ def df_work_book_list():
   
 ## Kitap vermede kullanıcıya göre kitap listesi
 def df_work_perbook(id):
+    dfwork=pd.read_sql_query("SELECT * FROM follow where status='out'",baglantı)
+    dfbook=pd.read_sql_query("SELECT * FROM kayitlistesi",baglantı)
     bks=dfwork.query(f"userId=='{id}'")['bookId'] 
     liste=[]
     for bk in bks:
@@ -138,6 +150,9 @@ def df_work_perbook(id):
 
 ## Kitap vermede tablo döküm listesi
 def df_work_table_book():
+    dfwork=pd.read_sql_query("SELECT * FROM follow where status='out'",baglantı)
+    dfbook=pd.read_sql_query("SELECT * FROM kayitlistesi",baglantı)
+    dfuser=pd.read_sql_query("SELECT * FROM users",baglantı)
     bks=dfwork[['bookId','userId','outdate']]
     kayit=[]
     for a,b,c in bks.values:
