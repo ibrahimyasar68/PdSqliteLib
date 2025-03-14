@@ -5,6 +5,7 @@ from bforms.user_py import Ui_MainWindow
 from database.dbframe import df_user_list,df_user_query
 from database.dbbase import user_ekle
 from bforms.onay import onay
+import re
 
 
 class User(QMainWindow):
@@ -22,6 +23,8 @@ class User(QMainWindow):
         self.QtUser.lineEdit_kullanici_adi.editingFinished.connect(self.chk_kullanici_adi)
         self.QtUser.lineEdit_sifre.editingFinished.connect(self.chk_sifre)
         self.QtUser.lineEdit_adi_soyadi.editingFinished.connect(self.chk_adi_soyadi)
+        self.QtUser.lineEdit_telefon.editingFinished.connect(self.chk_telefon)
+        self.QtUser.lineEdit_mail.editingFinished.connect(self.chk_mail)
 
         self.QtUser.pushButton_cikis.clicked.connect(self.user_exit)
         self.QtUser.pushButton_kaydet.clicked.connect(self.save_user)
@@ -53,6 +56,29 @@ class User(QMainWindow):
             else:pass
         else:pass      
 
+    def chk_telefon(self):
+        txt=(self.QtUser.lineEdit_telefon.text())
+        if not txt.isdigit():
+            QMessageBox.information(self,"Uyarı!", "Telefon numarası olarak rakam girin!")
+        elif len(txt) != 10:
+            QMessageBox.information(self,"Uyarı!", "Telefon numarası eksik. Kontrol edin!")
+        else:
+            pass
+
+    def chk_mail(self):
+        mail=self.QtUser.lineEdit_mail.text()
+        if '@' not in  mail:
+            QMessageBox.information(self,"Uyarı!","Uygun mail adresi girilmedi.Kontrol edin!")
+        else:
+            if len((mail.split("@")[1]))==0:
+                QMessageBox.information(self,"Uyarı!","Mail domain kısmını kontrol edin!")
+            else:
+                snc=((((mail.split("@"))[1]).split(".")))
+                if  len(snc)==0 or  len(snc)>2:
+                    QMessageBox.information(self,"Uyarı!","Mail domain kısmını kontrol edin!")
+                else:
+                    pass
+
     def save_user(self):
         kayit=[]      
         kayit.append(self.QtUser.lineEdit_kullanici_adi.text())       
@@ -68,9 +94,7 @@ class User(QMainWindow):
         if cvb==QMessageBox.Yes:   
             print(kayit)
             self.clear_form()
-
         else:pass
-
 
     def cmb_yetki(self):
         cmb=["Yetki Seçin...","admin","guest"]
@@ -83,10 +107,6 @@ class User(QMainWindow):
         self.QtUser.lineEdit_telefon.clear()
         self.QtUser.lineEdit_mail.clear()
         self.QtUser.comboBox_yetki.setCurrentIndex(0)
-
-
-
-
 
 # Uygulamanın sürekli çalışması
 if __name__=="__main__":

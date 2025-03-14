@@ -98,9 +98,11 @@ class Library(QMainWindow):
 
     def new_user(self):
         self.user.show()
+   
     ##################################
     #####   Tab_2 Fonksiyonlar   #####
     ##################################
+
     def create_form_tab2(self):
         self.QtLibrary.tableWidget_2.setRowCount(1)
                 #Kolon aralıklarını ayarlama
@@ -129,13 +131,14 @@ class Library(QMainWindow):
     ##################################
 
 ### Tablo 1 İşlemleri  ###
+
     def save_book(self):     
         kayit=[]     
-        kayit.append(self.QtLibrary.lineEdit_3_1_adi.text())
-        kayit.append(self.QtLibrary.lineEdit_3_1_yazari.text())   
-        kayit.append(self.QtLibrary.lineEdit_3_1_ceviren.text())
-        kayit.append(self.QtLibrary.lineEdit_3_1_turu.text())
-        kayit.append(self.QtLibrary.lineEdit_3_1_yayinevi.text())
+        kayit.append((self.QtLibrary.lineEdit_3_1_adi.text()).title())
+        kayit.append((self.QtLibrary.lineEdit_3_1_yazari.text()).title()) 
+        kayit.append((self.QtLibrary.lineEdit_3_1_ceviren.text()).title())
+        kayit.append((self.QtLibrary.lineEdit_3_1_turu.text()).title())
+        kayit.append((self.QtLibrary.lineEdit_3_1_yayinevi.text()).title())
         kayit.append(self.QtLibrary.lineEdit_3_1_yili.text())
         kayit.append(self.QtLibrary.lineEdit_3_1_sayfa.text())
         if (self.QtLibrary.lineEdit_3_1_adi.text())=="":
@@ -156,6 +159,7 @@ class Library(QMainWindow):
         self.QtLibrary.lineEdit_3_1_yili.clear()
 
 ### Tablo 2 İşlemleri  ###
+
     def list_items_3_2 (self):
         cmb=list(df_sort_list('Adi'))
         cmb.insert(0,' Seçiniz...')
@@ -196,11 +200,11 @@ class Library(QMainWindow):
     def update_item_3_2(self):
         kayit=[]
         kayit.append(self.QtLibrary.lineEdit_3_2_id.text())       
-        kayit.append(self.QtLibrary.lineEdit_3_2_adi.text())
-        kayit.append(self.QtLibrary.lineEdit_3_2_yazari.text())      
-        kayit.append(self.QtLibrary.lineEdit_3_2_ceviren.text())
-        kayit.append(self.QtLibrary.lineEdit_3_2_turu.text())
-        kayit.append(self.QtLibrary.lineEdit_3_2_yayinevi.text())
+        kayit.append(self.QtLibrary.lineEdit_3_2_adi.text().title())
+        kayit.append(self.QtLibrary.lineEdit_3_2_yazari.text().title())      
+        kayit.append(self.QtLibrary.lineEdit_3_2_ceviren.text().title())
+        kayit.append(self.QtLibrary.lineEdit_3_2_turu.text().title())
+        kayit.append(self.QtLibrary.lineEdit_3_2_yayinevi.text().title())
         kayit.append(self.QtLibrary.lineEdit_3_2_yili.text())
         kayit.append(self.QtLibrary.lineEdit_3_2_sayfa.text())
         if len(self.QtLibrary.lineEdit_3_2_adi.text())!=0:
@@ -289,6 +293,7 @@ class Library(QMainWindow):
     ##################################
     #####   Tab_4 Fonksiyonlar   #####
     ##################################
+
     def create_tab_4(self):
          self.list_type_4_1()
          self.list_author_4_2()
@@ -682,6 +687,7 @@ class Library(QMainWindow):
     ##################################
 
 ### Tablo 1 İşlemleri  ###
+
     def list_items_6_1_1 (self):
         cmb=(df_sort_list('Adi'))
         cmb.insert(0,' Seçiniz...')
