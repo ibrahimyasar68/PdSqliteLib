@@ -243,9 +243,9 @@ padding-top:6px;}
         <property name="geometry">
          <rect>
           <x>30</x>
-          <y>30</y>
+          <y>60</y>
           <width>91</width>
-          <height>61</height>
+          <height>31</height>
          </rect>
         </property>
         <property name="font">
@@ -264,6 +264,33 @@ font: italic 20pt &quot;Monotype Corsiva&quot;;</string>
         </property>
         <property name="text">
          <string>Yönetici</string>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_log_on">
+        <property name="geometry">
+         <rect>
+          <x>30</x>
+          <y>20</y>
+          <width>91</width>
+          <height>31</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <family>Monotype Corsiva</family>
+          <pointsize>20</pointsize>
+          <weight>50</weight>
+          <italic>true</italic>
+          <bold>false</bold>
+         </font>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">
+color: rgb(255, 85, 255);
+font: italic 20pt &quot;Monotype Corsiva&quot;;</string>
+        </property>
+        <property name="text">
+         <string/>
         </property>
        </widget>
       </widget>

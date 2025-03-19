@@ -1,13 +1,13 @@
 # from PyQt5 import QtWidgets
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import Qt
-from bforms.user_py import Ui_MainWindow
+from bforms.user2_py import Ui_MainWindow
 from database.dbframe import df_user_query
 from database.dbbase import user_ekle
 from bforms.onay import onay
 import re
 
-class User(QMainWindow):
+class User2(QMainWindow):
     def __init__(self):
         super().__init__()
         self.QtUser = Ui_MainWindow()
@@ -101,7 +101,7 @@ class User(QMainWindow):
                 else:pass
 
     def cmb_yetki(self):
-        cmb=["Yetki Seçin...","admin","guest"]
+        cmb=["Yetki Seçin...","guest"]
         self.QtUser.comboBox_yetki.addItems(cmb)
 
     def clear_form(self):
@@ -114,8 +114,9 @@ class User(QMainWindow):
 
 # Uygulamanın sürekli çalışması
 if __name__=="__main__":
+    
     app=QApplication([])
-    pencere = User()
+    pencere = User2()
     pencere.show()
     app.exec_()
 

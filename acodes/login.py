@@ -2,6 +2,7 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtCore import Qt
 from acodes.library import Library
 from acodes.guest import Guest
+from acodes.user2 import User2
 from bforms.login_py import Ui_MainWindow
 from database.dbframe import df_user_list,authority,df_pasw_query_by_name
 
@@ -11,15 +12,18 @@ class Login(QMainWindow):
         super().__init__()
         self.QtLogin = Ui_MainWindow()
         self.QtLogin.setupUi(self)
-        self.setWindowFlags(Qt.FramelessWindowHint)   
+        self.setWindowFlags(Qt.FramelessWindowHint) 
         self.library=Library()
         self.guest=Guest()
-        self.msj_tm=2000       
+        self.user2=User2()
+        self.msj_tm=2000 
 
+        
         self.QtLogin.pushButton_giris.clicked.connect(self.giris)
-  
+        self.QtLogin.pushButton_yeni_kayit.clicked.connect(self.yeni_kayit)
+        self.QtLogin.pushButton_cikis.clicked.connect(self.cikis)
 
-
+     
 
     def giris(self):
 
@@ -43,15 +47,23 @@ class Login(QMainWindow):
                         self.QtLogin.statusbar.showMessage("Şifre yanlış!", self.msj_tm)
                     else:
                         if authority(ad)=='admin':                                            
-                            self.library.showFullScreen()    
+                            self.library.showFullScreen()
+                            self.library.user_name(self.QtLogin.lineEdit_kullanci_adi.text())
                             self.close()
                         elif authority(ad)=='guest': 
                             self.guest.showFullScreen()
+                            self.guest.user_name(self.QtLogin.lineEdit_kullanci_adi.text())
                             self.close()
                         else:
                             self.QtLogin.statusbar.showMessage("Yetkiniz yok!", self.msj_tm)
      
-   
+    def yeni_kayit(self):
+        self.user2.show()
+
+    def cikis(self):
+        self.close()
+
+
 
 
 # Uygulamanın sürekli çalışması

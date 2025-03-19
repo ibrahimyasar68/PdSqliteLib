@@ -90,7 +90,7 @@ class Ui_MainWindow(object):
         self.lineEdit_parola.setAlignment(QtCore.Qt.AlignCenter)
         self.lineEdit_parola.setObjectName("lineEdit_parola")
         self.pushButton_giris = QtWidgets.QPushButton(self.widget)
-        self.pushButton_giris.setGeometry(QtCore.QRect(570, 410, 121, 81))
+        self.pushButton_giris.setGeometry(QtCore.QRect(560, 360, 121, 81))
         self.pushButton_giris.setMinimumSize(QtCore.QSize(90, 60))
         font = QtGui.QFont()
         font.setFamily("Monotype Corsiva")
@@ -128,11 +128,66 @@ class Ui_MainWindow(object):
 "")
         self.label_2.setText("")
         self.label_2.setObjectName("label_2")
+        self.pushButton_yeni_kayit = QtWidgets.QPushButton(self.widget)
+        self.pushButton_yeni_kayit.setGeometry(QtCore.QRect(560, 490, 111, 41))
+        font = QtGui.QFont()
+        font.setFamily("Monotype Corsiva")
+        font.setPointSize(18)
+        font.setItalic(True)
+        self.pushButton_yeni_kayit.setFont(font)
+        self.pushButton_yeni_kayit.setStyleSheet("\n"
+"QPushButton#pushButton_yeni_kayit{\n"
+"background-color: rgba(254, 254, 254, 0);\n"
+"color: rgb(255, 255, 0);}\n"
+"\n"
+"QPushButton#pushButton_yeni_kayit:hover{\n"
+"padding-left:10px;\n"
+"padding-top:12px; }\n"
+"\n"
+"QPushButton#pushButton_yeni_kayit:pressed{\n"
+"padding-left:5px;\n"
+"padding-top:6px;}\n"
+"")
+        self.pushButton_yeni_kayit.setObjectName("pushButton_yeni_kayit")
+        self.pushButton_cikis = QtWidgets.QPushButton(self.widget)
+        self.pushButton_cikis.setGeometry(QtCore.QRect(750, 560, 61, 61))
+        self.pushButton_cikis.setMaximumSize(QtCore.QSize(100, 80))
+        font = QtGui.QFont()
+        font.setFamily("Monotype Corsiva")
+        font.setPointSize(12)
+        font.setBold(False)
+        font.setItalic(True)
+        font.setWeight(50)
+        self.pushButton_cikis.setFont(font)
+        self.pushButton_cikis.setLayoutDirection(QtCore.Qt.LeftToRight)
+        self.pushButton_cikis.setAutoFillBackground(False)
+        self.pushButton_cikis.setStyleSheet("QPushButton#pushButton_cikis{\n"
+"background-color: rgb(255, 0, 0);\n"
+"border-radius:30px;}\n"
+"\n"
+"\n"
+"QPushButton#pushButton_cikis:hover{\n"
+"background-color: qlineargradient(spread:pad, x1:1, y1:0.880682, x2:0.955, y2:0.0284091, stop:0.5 rgba(212, 75, 45, 255), stop:1 rgba(255, 255, 255, 255));\n"
+"border-radius:30px;}\n"
+"QPushButton#pushButton_cikis:pressed{\n"
+"background-color:qlineargradient(spread:repeat, x1:0, y1:1, x2:0, y2:0, stop:0.301136 rgba(135, 88, 255, 255), stop:1 rgba(255, 255, 255, 255));\n"
+"padding-left:3px;\n"
+"padding-top:4px;\n"
+"border-radius:30px;}\n"
+"")
+        self.pushButton_cikis.setText("")
+        icon = QtGui.QIcon()
+        icon.addPixmap(QtGui.QPixmap("cuis\\../../Media/icon/sekiller/8666692_power_icon.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.pushButton_cikis.setIcon(icon)
+        self.pushButton_cikis.setIconSize(QtCore.QSize(26, 22))
+        self.pushButton_cikis.setObjectName("pushButton_cikis")
         self.label.raise_()
         self.label_2.raise_()
         self.formFrame.raise_()
         self.pushButton_giris.raise_()
         self.label_5.raise_()
+        self.pushButton_yeni_kayit.raise_()
+        self.pushButton_cikis.raise_()
         MainWindow.setCentralWidget(self.centralwidget)
         self.statusbar = QtWidgets.QStatusBar(MainWindow)
         font = QtGui.QFont()
@@ -157,4 +212,5 @@ class Ui_MainWindow(object):
         self.label_4.setText(_translate("MainWindow", "Parola"))
         self.lineEdit_parola.setToolTip(_translate("MainWindow", "Parolayı Girin"))
         self.pushButton_giris.setText(_translate("MainWindow", "G i r i ş"))
+        self.pushButton_yeni_kayit.setText(_translate("MainWindow", "Yeni Kayıt"))
 import bforms.media_rc

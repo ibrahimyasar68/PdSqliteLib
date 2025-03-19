@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'cuis/user.ui'
+# Form implementation generated from reading ui file 'cuis/user2.ui'
 #
 # Created by: PyQt5 UI code generator 5.15.11
 #

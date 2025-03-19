@@ -1,12 +1,8 @@
 from PyQt5.QtWidgets import *
 from bforms.guest_py import Ui_MainWindow
-
-
 from bforms.onay import onay
-
 from database.dbframe import *
 from database.dbbase import *
-
 
 class Guest(QMainWindow):
     def __init__(self):
@@ -63,6 +59,9 @@ class Guest(QMainWindow):
 
     def lib_exit (self):
         self.close()
+
+    def user_name(self,name):
+        self.QtLibrary.label_log_on.setText(name)
 
     ##################################
     #####   Tab_2 Fonksiyonlar   #####

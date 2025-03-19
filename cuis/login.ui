@@ -182,8 +182,8 @@ border-radius:10px;}</string>
     <widget class="QPushButton" name="pushButton_giris">
      <property name="geometry">
       <rect>
-       <x>570</x>
-       <y>410</y>
+       <x>560</x>
+       <y>360</y>
        <width>121</width>
        <height>81</height>
       </rect>
@@ -259,11 +259,108 @@ border-bottom-right-radius:20px
       <string/>
      </property>
     </widget>
+    <widget class="QPushButton" name="pushButton_yeni_kayit">
+     <property name="geometry">
+      <rect>
+       <x>560</x>
+       <y>490</y>
+       <width>111</width>
+       <height>41</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Monotype Corsiva</family>
+       <pointsize>18</pointsize>
+       <italic>true</italic>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">
+QPushButton#pushButton_yeni_kayit{
+background-color: rgba(254, 254, 254, 0);
+color: rgb(255, 255, 0);}
+
+QPushButton#pushButton_yeni_kayit:hover{
+padding-left:10px;
+padding-top:12px; }
+
+QPushButton#pushButton_yeni_kayit:pressed{
+padding-left:5px;
+padding-top:6px;}
+</string>
+     </property>
+     <property name="text">
+      <string>Yeni Kayıt</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="pushButton_cikis">
+     <property name="geometry">
+      <rect>
+       <x>750</x>
+       <y>560</y>
+       <width>61</width>
+       <height>61</height>
+      </rect>
+     </property>
+     <property name="maximumSize">
+      <size>
+       <width>100</width>
+       <height>80</height>
+      </size>
+     </property>
+     <property name="font">
+      <font>
+       <family>Monotype Corsiva</family>
+       <pointsize>12</pointsize>
+       <weight>50</weight>
+       <italic>true</italic>
+       <bold>false</bold>
+      </font>
+     </property>
+     <property name="layoutDirection">
+      <enum>Qt::LeftToRight</enum>
+     </property>
+     <property name="autoFillBackground">
+      <bool>false</bool>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QPushButton#pushButton_cikis{
+background-color: rgb(255, 0, 0);
+border-radius:30px;}
+
+
+QPushButton#pushButton_cikis:hover{
+background-color: qlineargradient(spread:pad, x1:1, y1:0.880682, x2:0.955, y2:0.0284091, stop:0.5 rgba(212, 75, 45, 255), stop:1 rgba(255, 255, 255, 255));
+border-radius:30px;}
+QPushButton#pushButton_cikis:pressed{
+background-color:qlineargradient(spread:repeat, x1:0, y1:1, x2:0, y2:0, stop:0.301136 rgba(135, 88, 255, 255), stop:1 rgba(255, 255, 255, 255));
+padding-left:3px;
+padding-top:4px;
+border-radius:30px;}
+</string>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+     <property name="icon">
+      <iconset>
+       <normaloff>../../Media/icon/sekiller/8666692_power_icon.png</normaloff>../../Media/icon/sekiller/8666692_power_icon.png</iconset>
+     </property>
+     <property name="iconSize">
+      <size>
+       <width>26</width>
+       <height>22</height>
+      </size>
+     </property>
+    </widget>
     <zorder>label</zorder>
     <zorder>label_2</zorder>
     <zorder>formFrame</zorder>
     <zorder>pushButton_giris</zorder>
     <zorder>label_5</zorder>
+    <zorder>pushButton_yeni_kayit</zorder>
+    <zorder>pushButton_cikis</zorder>
    </widget>
   </widget>
   <widget class="QStatusBar" name="statusbar">

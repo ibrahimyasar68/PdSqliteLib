@@ -6,6 +6,7 @@ from database.dbframe import *
 from database.dbbase import *
 import datetime 
 
+
 class Library(QMainWindow):
     def __init__(self):
         super().__init__()
@@ -24,6 +25,7 @@ class Library(QMainWindow):
         self.list44=[]
         self.flag_book=False
         self.flag_user=False
+        
 
         ###  Tab_1 Olaylar  #########
         self.QtLibrary.pushButton_1_cikis.clicked.connect(self.lib_exit)
@@ -98,6 +100,10 @@ class Library(QMainWindow):
 
     def new_user(self):
         self.user.show()
+
+    def user_name(self,name):
+        self.QtLibrary.label_log_on.setText(name)
+
    
     ##################################
     #####   Tab_2 Fonksiyonlar   #####
