@@ -77,6 +77,28 @@ def odunc_gecmisi(user_id=None, book_id=None):
                                 ORDER BY f.outdate DESC, f.rowid DESC""", parametreler).fetchall()
 
 
+## Bir üyenin ödünçleri: (kitap, yazar, veriliş, durum, iade) — dışarıdakiler önce, en yeni en üstte
+def uye_odunc(kullanici):
+    return baglantı.execute("""SELECT COALESCE(k.Adi,'(silinmiş kitap)'), COALESCE(k.Yazari,''),
+                                      f.outdate, f.status, f.indate
+                               FROM follow f
+                               JOIN users u ON u.id=f.userId
+                               LEFT JOIN kayitlistesi k ON k.Id=f.bookId
+                               WHERE u.kullanici=?
+                               ORDER BY f.status='in', f.outdate DESC, f.rowid DESC""", (kullanici,)).fetchall()
+
+
+def kalan_gun_yazi(verilis, bugun=None):
+    """Dışarıdaki kitap için: '5 gün kaldı', 'Bugün teslim', '3 gün gecikti'"""
+    teslim = teslim_tarihi(verilis)
+    if teslim is None:
+        return ""
+    fark = (teslim - (bugun or datetime.date.today())).days
+    if fark > 0:
+        return f"{fark} gün kaldı"
+    return "Bugün teslim" if fark == 0 else f"{-fark} gün gecikti"
+
+
 ## Geçmiş filtreleri için ödünç almış üyeler ve ödünç verilmiş kitaplar
 def odunc_alan_uyeler():
     return baglantı.execute("""SELECT DISTINCT u.id, u.adi_soyadi, u.kullanici FROM follow f
