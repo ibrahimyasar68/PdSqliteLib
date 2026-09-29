@@ -5,6 +5,7 @@
 from PyQt5.QtWidgets import QLabel, QLineEdit, QMessageBox, QTableWidgetItem
 from bforms.onay import onay
 from database.dbframe import df_sort_list, df_srt_fltr, kitap_ara, rapor
+from acodes.grafikler import GrafikPaneli
 
 SECINIZ = ' Seçiniz...'
 
@@ -59,6 +60,10 @@ class OrtakSekmeler:
             getattr(ui,f"pushButton_4_{no}_temizle").clicked.connect(lambda _,no=no,baslik=baslik: self.filtre_temizle(no,baslik))
 
         ###  Tab_5  ###
+        # Grafikler: eski sabit resmin yerine her yenilemede çizilen grafikler
+        ui.widget.hide()
+        self.grafikler=GrafikPaneli(ui.tab_5_2)
+        ui.gridLayout_6.addWidget(self.grafikler,0,0)
         self.create_tab_5()
 
     ##################################
@@ -187,3 +192,5 @@ class OrtakSekmeler:
             if kolon=='Yili':
                 kayit=kayit.sort_index()
             tabloya_yaz(tablo, list(zip(kayit.index,kayit.values)))
+        if hasattr(self,"grafikler"):
+            self.grafikler.yenile()

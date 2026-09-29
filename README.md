@@ -14,7 +14,7 @@ Giriş ekranında kullanıcının yetkisine göre iki farklı panel açılır:
 | **Kitap Listesi**: tüm kitaplar, anlık arama | ✓ | ✓ |
 | **Kitap Kayıt**: ekleme, güncelleme, silme | ✓ | |
 | **Filtre**: tür, yazar, yayınevi ve yıla göre çoklu seçim | ✓ | ✓ |
-| **İstatistik**: en çok kitabı olan tür, yazar, yayınevi ve yıllar | ✓ | ✓ |
+| **İstatistik**: çizelgeler ve güncel grafikler (tür, yazar, yayınevi, basım yılı) | ✓ | ✓ |
 | **Kitap Verme**: ödünç verme, iade alma, dışarıdaki kitaplar, ödünç geçmişi | ✓ | |
 
 Yeni kullanıcı ve üye kayıtlarını (`admin` veya `guest`) sadece giriş yapmış bir admin,
@@ -128,6 +128,7 @@ acodes/              Pencerelerin iş mantığı (login, library, guest, user)
 acodes/ortak.py      Admin ve Guest panellerinde ortak sekmeler (liste, filtre, istatistik)
 acodes/kullanici_yonetimi.py  Kullanıcı yönetimi ve şifre değiştirme pencereleri
 acodes/odunc_gecmisi.py       Kitap Verme > Ödünç Geçmişi sekmesi
+acodes/grafikler.py           İstatistik > Grafikler (veritabanından her seferinde çizilir)
 bforms/              .ui dosyalarından üretilen formlar (elle düzenlenmez)
 cuis/                Qt Designer .ui kaynakları
 database/dbbase.py   Yazma işlemleri, şifre hash'leme, veritabanı yolu

@@ -53,6 +53,18 @@ def rapor(sor,cnt):
     snc=dfbook.groupby(sor)['Yili'].count().sort_values().tail(cnt)[::-1]
     return snc
 
+## Basım yıllarına göre on yıllık dağılım: [("1980'ler", 45), ("1990'lar", 120), ...]
+_ONLUK_EK = {0:"ler", 1:"lar", 2:"ler", 3:"lar", 4:"lar", 5:"ler", 6:"lar", 7:"ler", 8:"ler", 9:"lar"}
+
+def yil_dagilimi():
+    sayilar={}
+    for (yil,) in baglantı.execute("SELECT Yili FROM kayitlistesi"):
+        yil=str(yil or "").strip()
+        if len(yil)==4 and yil.isdigit():
+            onluk=int(yil)//10*10
+            sayilar[onluk]=sayilar.get(onluk,0)+1
+    return [(f"{o}'{_ONLUK_EK[o//10%10]}", sayilar[o]) for o in sorted(sayilar)]
+
 ######################
 ###  User Table   ####
 ######################
