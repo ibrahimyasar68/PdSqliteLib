@@ -39,17 +39,25 @@ islem=baglantı.cursor()
 sema_olustur(baglantı)  # Eksik tablo varsa oluşturulur
 
 
-#Kayıt ekleme (ActifLibrary)
+# Ek bilgiler verilmezse kullanılan değerler: ISBN, Kopya, Raf, Notlar
+EK_VARSAYILAN = ("", 1, "", "")
+
+#Kayıt ekleme (ActifLibrary): adi, yazari, ceviren, turu, yayinevi, yili, sayfa [, isbn, kopya, raf, notlar]
 def ekle_kayit(kayit):
-    ekle="Insert Into kayitlistesi (adi, yazari, ceviren, turu, yayinevi, yili, sayfa) values (?,?,?,?,?,?,?)"
-    islem.execute(ekle,kayit[:7])
+    degerler=list(kayit)+list(EK_VARSAYILAN[len(kayit)-7:])   # eksik ek bilgiler varsayılanla tamamlanır
+    ekle="Insert Into kayitlistesi (adi, yazari, ceviren, turu, yayinevi, yili, sayfa, isbn, kopya, raf, notlar) values (?,?,?,?,?,?,?,?,?,?,?)"
+    islem.execute(ekle,degerler)
     baglantı.commit()
 
 
 # Kayıt değiştirme  (ActifLibrary)
+# kayit: id, adi, yazari, ceviren, turu, yayinevi, yili, sayfa [, isbn, kopya, raf, notlar]
 def degistir_kayit(kayit):
     dgsm="Update kayitlistesi Set adi=?, yazari=?, ceviren=?, turu=?, yayinevi=?, yili=?, sayfa=? where id=?"
     islem.execute(dgsm,(kayit[1],kayit[2],kayit[3],kayit[4],kayit[5],kayit[6],kayit[7],kayit[0]))
+    if len(kayit)>=12:
+        islem.execute("Update kayitlistesi Set isbn=?, kopya=?, raf=?, notlar=? where id=?",
+                      (kayit[8],kayit[9],kayit[10],kayit[11],kayit[0]))
     baglantı.commit()
 
 

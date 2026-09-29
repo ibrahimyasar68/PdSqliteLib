@@ -36,7 +36,8 @@ KITAPLAR = [
 def ornek_veri_yukle():
     baglantı.executescript("DELETE FROM follow; DELETE FROM users; DELETE FROM kayitlistesi; DELETE FROM duzeltme_yoksay;"
                            "DELETE FROM sqlite_sequence;")
-    baglantı.executemany("INSERT INTO kayitlistesi VALUES (?,?,?,?,?,?,?,?)", KITAPLAR)
+    baglantı.executemany("INSERT INTO kayitlistesi (Id,Adi,Yazari,Ceviren,Turu,Yayinevi,Yili,Sayfa)"
+                         " VALUES (?,?,?,?,?,?,?,?)", KITAPLAR)
     baglantı.executemany(
         "INSERT INTO users (id,kullanici,sifre,adi_soyadi,telefon,mail,yetki) VALUES (?,?,?,?,?,?,?)", [
             (1, "admin", sifre_hashle(ADMIN_SIFRE), "Yönetici", "", "", "admin"),

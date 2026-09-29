@@ -2,7 +2,7 @@ import pandas as pd
 from database.dbbase import baglantı, sifre_dogrula, sifre_guncelle
 
 # Sorguya adı yazılabilecek kolonlar (değerler her zaman ? ile verilir)
-KITAP_KOLON = {'Id','Adi','Yazari','Ceviren','Turu','Yayinevi','Yili','Sayfa'}
+KITAP_KOLON = {'Id','Adi','Yazari','Ceviren','Turu','Yayinevi','Yili','Sayfa','ISBN','Kopya','Raf','Notlar'}
 USER_KOLON = {'id','kullanici','adi_soyadi','telefon','mail','yetki'}
 
 def kolon(ad, izinli):
@@ -14,8 +14,13 @@ def kolon(ad, izinli):
 ###  Book Table   ####
 ######################
 
+# Kitap Listesi tablosunun kolonları (Notlar listede gösterilmez ama aramada kullanılır)
+LISTE_SQL = "SELECT Id, Adi, Yazari, Ceviren, Turu, Yayinevi, Yili, Sayfa, ISBN, Kopya, Raf FROM kayitlistesi"
+TEMEL_KOLONLAR = "Id, Adi, Yazari, Ceviren, Turu, Yayinevi, Yili, Sayfa"
+TUM_KOLONLAR = TEMEL_KOLONLAR + ", ISBN, Kopya, Raf, Notlar"
+
 def df_all_list():
-    return baglantı.execute("SELECT * FROM kayitlistesi").fetchall()
+    return baglantı.execute(LISTE_SQL).fetchall()
 
 ## Arama: büyük/küçük harf ve Türkçe karakter farkı gözetilmez ("sahin" -> "Şahin")
 _KATLAMA = str.maketrans("ÇĞIİÖŞÜÂÎÛçğıöşüâîû", "cgiiosuaiucgiosuaiu")
@@ -31,14 +36,15 @@ def tr_sirala(metin):
     metin=str(metin or "").replace("I","ı").replace("İ","i").lower().translate(str.maketrans("âîû","aiu"))
     return [1000+_SIRA[h] if h in _SIRA else ord(h) for h in metin]
 
-## Ad, yazar, çevirmen, tür, yayınevi ve yılda geçen kelimelerin hepsini içeren kitaplar
+## Ad, yazar, çevirmen, tür, yayınevi, yıl, ISBN, raf ve notlarda geçen kelimelerin hepsini içeren kitaplar
 def kitap_ara(sorgu):
-    kelimeler=katla(sorgu).split()
+    kelimeler=katla(sorgu.replace("-","")).split()
     sonuc=[]
-    for satir in df_all_list():
-        metin=katla(" ".join(str(x or "") for x in satir[1:7]))
+    for satir in baglantı.execute(LISTE_SQL.replace(" FROM", ", Notlar FROM")):
+        # Tireler iki tarafta da yok sayılır: "978-0-306" ISBN'i, "b-2" raf yerini, "jean-paul" adı bulur
+        metin=katla(" ".join(str(x or "") for x in satir[1:7]+satir[8:9]+satir[10:12])).replace("-","")
         if all(k in metin for k in kelimeler):
-            sonuc.append(satir)
+            sonuc.append(satir[:11])
     return sonuc
 
 ## Filtre açılır listeleri için bir kolondaki farklı değerler (boşlar hariç)
@@ -53,7 +59,7 @@ def df_book_id_list():
 
 ## Filtre sonuçları: kolonu verilen değere eşit kitaplar
 def df_srt_fltr(sort,name):
-    return baglantı.execute(f"SELECT * FROM kayitlistesi WHERE {kolon(sort,KITAP_KOLON)}=?",(name,)).fetchall()
+    return baglantı.execute(f"SELECT {TEMEL_KOLONLAR} FROM kayitlistesi WHERE {kolon(sort,KITAP_KOLON)}=?",(name,)).fetchall()
 
 ## İstatistik: kolondaki her değer için kitap sayısı (en çok olan cnt tanesi)
 def rapor(sor,cnt):
@@ -128,8 +134,20 @@ def df_work_perbook(id):
                                JOIN kayitlistesi k ON k.Id=f.bookId
                                WHERE f.status='out' AND f.userId=? ORDER BY k.Adi""",(str(id),)).fetchall()
 
+## Kitabın tüm bilgileri: Id, Adi, Yazari, Ceviren, Turu, Yayinevi, Yili, Sayfa, ISBN, Kopya, Raf, Notlar
 def df_book_find_by_id(id):
-    return list(baglantı.execute("SELECT * FROM kayitlistesi WHERE Id=?",(id,)).fetchone())
+    return list(baglantı.execute(f"SELECT {TUM_KOLONLAR} FROM kayitlistesi WHERE Id=?",(id,)).fetchone())
+
+## Kitabın kaç kopyası var, kaçı dışarıda
+def kopya_durumu(book_id):
+    kopya=baglantı.execute("SELECT COALESCE(Kopya,1) FROM kayitlistesi WHERE Id=?",(book_id,)).fetchone()
+    disarida=baglantı.execute("SELECT COUNT(*) FROM follow WHERE bookId=? AND status='out'",(str(book_id),)).fetchone()[0]
+    return (kopya[0] if kopya else 0), disarida
+
+## Üyede bu kitabın iade edilmemiş bir kopyası var mı?
+def uyede_mi(user_id, book_id):
+    return baglantı.execute("SELECT COUNT(*) FROM follow WHERE userId=? AND bookId=? AND status='out'",
+                            (str(user_id),str(book_id))).fetchone()[0]>0
 
 ## Kitap vermede tablo döküm listesi
 def df_work_table_book():

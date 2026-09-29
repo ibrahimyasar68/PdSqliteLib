@@ -12,8 +12,8 @@ from acodes.kullanici_yonetimi import panel_butonu
 
 SECINIZ = ' Seçiniz...'
 
-LISTE_KOLONLARI = [(60,"Sıra No"),(200,"Adı"),(200,"Yazarı"),(150,"Çeviren"),
-                   (150,"Turu"),(200,"Yayınevi"),(60,"Yılı"),(60,"Sayfa")]
+LISTE_KOLONLARI = [(55,"Sıra No"),(190,"Adı"),(160,"Yazarı"),(120,"Çeviren"),(90,"Turu"),
+                   (160,"Yayınevi"),(45,"Yılı"),(45,"Sayfa"),(115,"ISBN"),(50,"Kopya"),(60,"Raf")]
 FILTRE_KOLONLARI = [(50,"Sıra No"),(190,"Adı"),(190,"Yazarı"),(130,"Çeviren"),
                     (130,"Turu"),(165,"Yayınevi"),(40,"Yılı"),(40,"Sayfa")]
 
@@ -108,6 +108,7 @@ class OrtakSekmeler:
     ##################################
 
     def create_form_tab2(self):
+        self.QtLibrary.tableWidget_2.setColumnCount(len(LISTE_KOLONLARI))
         self.QtLibrary.tableWidget_2.setRowCount(1)
         tablo_basliklari(self.QtLibrary.tableWidget_2, LISTE_KOLONLARI)
 
@@ -117,7 +118,7 @@ class OrtakSekmeler:
         ui.tableWidget_2.setGeometry(160,55,1160,545)
         self.arama=QLineEdit(ui.tab_2)
         self.arama.setGeometry(160,10,520,36)
-        self.arama.setPlaceholderText("Ara: kitap adı, yazar, çevirmen, tür, yayınevi, yıl...")
+        self.arama.setPlaceholderText("Ara: kitap adı, yazar, çevirmen, tür, yayınevi, yıl, ISBN, raf, not...")
         self.arama.setClearButtonEnabled(True)
         self.arama.setStyleSheet('font: 12pt "Verdana"; color: black; background-color: white;'
                                  ' border: 1px solid gray; border-radius: 6px; padding: 2px 6px;')

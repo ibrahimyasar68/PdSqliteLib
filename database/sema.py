@@ -10,7 +10,11 @@ CREATE TABLE IF NOT EXISTS kayitlistesi (
     Turu     TEXT,
     Yayinevi TEXT,
     Yili     TEXT,
-    Sayfa    TEXT
+    Sayfa    TEXT,
+    ISBN     TEXT,
+    Kopya    INTEGER DEFAULT 1,
+    Raf      TEXT,
+    Notlar   TEXT
 );
 CREATE TABLE IF NOT EXISTS users (
     id         INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -39,8 +43,17 @@ CREATE TABLE IF NOT EXISTS duzeltme_yoksay (
 GEREKLI_TABLOLAR = {"kayitlistesi", "users", "follow"}
 
 
+# Sonradan eklenen kolonlar: eski veritabanları ve yedekler açılışta bunlarla güncellenir
+EK_KOLONLAR = {"kayitlistesi": [("ISBN", "TEXT"), ("Kopya", "INTEGER DEFAULT 1"), ("Raf", "TEXT"), ("Notlar", "TEXT")]}
+
+
 def sema_olustur(baglanti):
     baglanti.executescript(SEMA)
+    for tablo, kolonlar in EK_KOLONLAR.items():
+        mevcut = {satir[1] for satir in baglanti.execute(f"PRAGMA table_info({tablo})")}
+        for ad, tip in kolonlar:
+            if ad not in mevcut:
+                baglanti.execute(f"ALTER TABLE {tablo} ADD COLUMN {ad} {tip}")
     baglanti.commit()
 
 

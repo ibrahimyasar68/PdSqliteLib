@@ -40,6 +40,16 @@ tür, yayınevi ve yılda arar; büyük/küçük harf ve Türkçe karakter fark�
 - **Dışardaki Kitaplar**'da bir satıra çift tıklamak **Alma Kaydı** ekranını üye ve kitap seçili
   olarak açar; sadece Kaydet'e basmak kalır.
 
+### Ek bilgiler: ISBN, kopya sayısı, raf yeri, notlar
+
+Kitap Kayıt formlarındaki **Ek Bilgiler** kutusunda girilir; Kitap Listesi'nde ISBN, Kopya ve Raf
+kolonları görünür, arama bu alanlarda ve notlarda da yapılır.
+
+- **ISBN** isteğe bağlıdır; yazılırsa ISBN-10 / ISBN-13 kontrol basamağı doğrulanır, tiresiz saklanır.
+- **Kopya sayısı** kadar üyeye aynı kitap aynı anda ödünç verilebilir (verirken müsait kopya gösterilir).
+  Bir üyeye aynı kitabın ikinci kopyası verilmez; kopya sayısı dışarıdaki kopya sayısının altına düşürülemez.
+- Eski veritabanları ve yedekler açılışta bu alanlarla otomatik güncellenir (mevcut kitaplar 1 kopya).
+
 ### Veri düzeltme
 
 **Kitap Kayıt → Veri Düzeltme** alt sekmesi:
@@ -169,6 +179,7 @@ acodes/grafikler.py           İstatistik > Grafikler (veritabanından her sefer
 acodes/tablo.py               Tablo doldurma, Türkçe sıralama, satır vurgulama
 acodes/disa_aktar.py          Tabloları Excel / CSV olarak kaydetme
 acodes/veri_duzeltme.py       Kitap Kayıt > Veri Düzeltme sekmesi
+acodes/ek_bilgi.py            Kitap formlarındaki Ek Bilgiler kutusu, ISBN doğrulama
 bforms/              .ui dosyalarından üretilen formlar (elle düzenlenmez)
 cuis/                Qt Designer .ui kaynakları
 database/dbbase.py   Yazma işlemleri, şifre hash'leme, veritabanı yolu
@@ -198,7 +209,8 @@ Betiği sanal ortam etkinken çalıştırın (`source .venv/bin/activate`); `pyu
 ## Veritabanı şeması
 
 ```sql
-kayitlistesi (Id INTEGER PRIMARY KEY, Adi, Yazari, Ceviren, Turu, Yayinevi, Yili, Sayfa)
+kayitlistesi (Id INTEGER PRIMARY KEY, Adi, Yazari, Ceviren, Turu, Yayinevi, Yili, Sayfa,
+              ISBN, Kopya INTEGER DEFAULT 1, Raf, Notlar)
 users        (id INTEGER PRIMARY KEY, kullanici UNIQUE, sifre, adi_soyadi, telefon, mail, yetki)
 follow       (userId, bookId, outdate, outtime, status, indate, intime)
 ```

@@ -5,10 +5,11 @@ from acodes.user import User
 from acodes.kullanici_yonetimi import KullaniciYonetimi, panel_butonu
 from acodes.odunc_gecmisi import OduncGecmisi
 from acodes.veri_duzeltme import VeriDuzeltme
+from acodes.ek_bilgi import EkBilgiler
 from acodes.ortak import OrtakSekmeler, FILTRELER, SECINIZ
 from acodes.tablo import satir_verisi, tablo_ayarla, tablo_basliklari, tabloya_yaz
 from database.dbframe import (df_book_id_list, df_book_find_by_id, df_user_id_list, df_user_find_by_id,
-                              kitap_oduncte, df_work_user_list, df_work_perbook, df_work_table_book)
+                              kitap_oduncte, kopya_durumu, uyede_mi, df_work_user_list, df_work_perbook, df_work_table_book)
 from database.dbbase import ekle_kayit, degistir_kayit, sil_kayit, save_work_to_db, update_work_to_db
 from database.yedek import geri_yukle, yedek_al, yedek_hatasi, yedek_klasoru
 from database.odunc import (ODUNC_SURESI_GUN, gecikme_gunu, geciken_sayisi, gun_sayisi, odunc_verilis,
@@ -67,6 +68,13 @@ class Library(OrtakSekmeler, QMainWindow):
         self.yonetim_butonlari()
 
         ###  Tab_3 Olaylar  #########
+        # Ek bilgiler (ISBN, kopya, raf, notlar) formların yanındaki boş alana
+        self.ek_3_1=EkBilgiler(self.QtLibrary.tab_3_1)
+        self.ek_3_1.setGeometry(830,20,440,330)
+        self.ek_3_2=EkBilgiler(self.QtLibrary.tab_3_2)
+        self.ek_3_2.setGeometry(30,260,460,330)
+        self.ek_3_3=EkBilgiler(self.QtLibrary.tab_3_3, salt_okunur=True)
+        self.ek_3_3.setGeometry(30,260,460,330)
         self.QtLibrary.pushButton_3_1_kaydet.clicked.connect(self.save_book)
         self.QtLibrary.pushButton_3_1_temizle.clicked.connect(self.clear_form_3_1)
         self.list_items_3_2()
@@ -268,8 +276,11 @@ class Library(OrtakSekmeler, QMainWindow):
         kayit.append(buyuk_harf(self.QtLibrary.lineEdit_3_1_yayinevi.text()))
         kayit.append(self.QtLibrary.lineEdit_3_1_yili.text())
         kayit.append(self.QtLibrary.lineEdit_3_1_sayfa.text())
+        kayit.extend(self.ek_3_1.degerler())
         if (self.QtLibrary.lineEdit_3_1_adi.text())=="":
             self.QtLibrary.statusbar.showMessage("Kayıt oluşturun",self.dur_msj)
+        elif self.ek_3_1.hata():
+            QMessageBox.warning(self,"Uyarı!",self.ek_3_1.hata())
         else:
             cvb=onay(f"{(self.QtLibrary.lineEdit_3_1_adi.text())} kaydedilsin mi?")
             if cvb==QMessageBox.Yes:
@@ -286,6 +297,7 @@ class Library(OrtakSekmeler, QMainWindow):
         self.QtLibrary.lineEdit_3_1_yayinevi.clear()
         self.QtLibrary.lineEdit_3_1_yili.clear()
         self.QtLibrary.lineEdit_3_1_sayfa.clear()
+        self.ek_3_1.temizle()
 
 ### Tablo 2 İşlemleri  ###
 
@@ -309,6 +321,7 @@ class Library(OrtakSekmeler, QMainWindow):
         self.QtLibrary.lineEdit_3_2_yayinevi.setText(degisecek[5])
         self.QtLibrary.lineEdit_3_2_yili.setText(degisecek[6])
         self.QtLibrary.lineEdit_3_2_sayfa.setText(degisecek[7])
+        self.ek_3_2.doldur(*degisecek[8:12])
         self.QtLibrary.statusbar.showMessage(f"{self.QtLibrary.comboBox_3_2_bul_adi.currentText()} bilgileri yazıldı.",self.dur_msj)
         self.QtLibrary.pushButton_3_2_deg_kaydet.setEnabled(True)
         self.QtLibrary.pushButton_3_2_iptal.setEnabled(True)
@@ -323,7 +336,14 @@ class Library(OrtakSekmeler, QMainWindow):
         kayit.append(buyuk_harf(self.QtLibrary.lineEdit_3_2_yayinevi.text()))
         kayit.append(self.QtLibrary.lineEdit_3_2_yili.text())
         kayit.append(self.QtLibrary.lineEdit_3_2_sayfa.text())
-        if len(self.QtLibrary.lineEdit_3_2_adi.text())!=0:
+        kayit.extend(self.ek_3_2.degerler())
+        disarida=kopya_durumu(kayit[0])[1] if kayit[0] else 0
+        if self.ek_3_2.hata():
+            QMessageBox.warning(self,"Uyarı!",self.ek_3_2.hata())
+        elif kayit[9]<disarida:
+            QMessageBox.warning(self,"Uyarı!",f"Bu kitabın {disarida} kopyası şu an üyelerde. "
+                                              f"Kopya sayısı {disarida}'den az olamaz.")
+        elif len(self.QtLibrary.lineEdit_3_2_adi.text())!=0:
             cvb=onay("Kayıt değiştirilsin mi?")
             if cvb==QMessageBox.Yes:
                 degistir_kayit(kayit)
@@ -342,6 +362,7 @@ class Library(OrtakSekmeler, QMainWindow):
         self.QtLibrary.lineEdit_3_2_yayinevi.clear()
         self.QtLibrary.lineEdit_3_2_yili.clear()
         self.QtLibrary.lineEdit_3_2_sayfa.clear()
+        self.ek_3_2.temizle()
         self.QtLibrary.pushButton_3_2_deg_kaydet.setEnabled(False)
         self.QtLibrary.pushButton_3_2_iptal.setEnabled(False)
         self.QtLibrary.comboBox_3_2_bul_adi.setCurrentIndex(0)
@@ -368,6 +389,7 @@ class Library(OrtakSekmeler, QMainWindow):
         self.QtLibrary.lineEdit_3_3_yayinevi.setText(silinecek[5])
         self.QtLibrary.lineEdit_3_3_yili.setText(silinecek[6])
         self.QtLibrary.lineEdit_3_3_sayfa.setText(silinecek[7])
+        self.ek_3_3.doldur(*silinecek[8:12])
         self.QtLibrary.statusbar.showMessage(f"{self.QtLibrary.comboBox_3_3_bul_adi.currentText()} bilgileri yazıldı.",self.dur_msj)
         self.QtLibrary.pushButton_3_3_Sil.setEnabled(True)
         self.QtLibrary.pushButton_3_3_iptal.setEnabled(True)
@@ -392,6 +414,7 @@ class Library(OrtakSekmeler, QMainWindow):
         self.QtLibrary.lineEdit_3_3_yayinevi.clear()
         self.QtLibrary.lineEdit_3_3_yili.clear()
         self.QtLibrary.lineEdit_3_3_sayfa.clear()
+        self.ek_3_3.temizle()
         self.QtLibrary.pushButton_3_3_Sil.setEnabled(False)
         self.QtLibrary.pushButton_3_3_iptal.setEnabled(False)
         self.QtLibrary.comboBox_3_3_bul_adi.setCurrentIndex(0)
@@ -409,10 +432,15 @@ class Library(OrtakSekmeler, QMainWindow):
         id=self.QtLibrary.comboBox_6_1_1_liste_kitap.currentData()
         if id is None:
             self.QtLibrary.statusbar.showMessage("Seçim yapınız",self.dur_msj)
-        elif kitap_oduncte(id):
-            QMessageBox.information(self,"Uyarı!","Bu kitap başka bir üyededir!")
+            return
+        kopya,disarida=kopya_durumu(id)
+        if disarida>=kopya:
+            QMessageBox.information(self,"Uyarı!","Bu kitap başka bir üyededir!" if kopya==1 else
+                                    f"Bu kitabın {kopya} kopyasının hepsi üyelerde!")
         else:
             self.show_items_6_1_1(df_book_find_by_id(id))
+            if kopya>1:
+                self.QtLibrary.statusbar.showMessage(f"Müsait kopya: {kopya-disarida} / {kopya}",8000)
 
     def show_items_6_1_1(self,kyt):
         kayit=kyt
@@ -486,7 +514,9 @@ class Library(OrtakSekmeler, QMainWindow):
         self.QtLibrary.pushButton_6_1_islemi_kaydet.setEnabled(self.flag_book and self.flag_user)
 
     def save_work(self):
-        if self.flag_book and self.flag_user:
+        if self.flag_book and self.flag_user and uyede_mi(self.kisi_6_1,self.QtLibrary.lineEdit_6_1_id.text()):
+            QMessageBox.information(self,"Uyarı!","Bu kitabın bir kopyası zaten bu üyede. Önce iade alın.")
+        elif self.flag_book and self.flag_user:
             cvb=onay("İşlemi kaydetmek istiyor musunuz?")
             if cvb==QMessageBox.Yes:
                 tdy=datetime.datetime.today()
