@@ -3,9 +3,6 @@
     <file>autumn.jpg</file>
     <file>colorful.jpg</file>
     <file>login.jpeg</file>
-    <file>patterned.jpg</file>
-    <file>rain-water.jpg</file>
-    <file>unsplash.jpg</file>
   </qresource>
   <qresource prefix="figure">
     <file>figure.png</file>

@@ -1,0 +1,7 @@
+# Satır sonları depoda LF olarak saklanır, Windows/Mac çalışma kopyasında yerel biçimde açılır
+* text=auto
+*.jpg binary
+*.jpeg binary
+*.png binary
+*.ico binary
+*.db binary
