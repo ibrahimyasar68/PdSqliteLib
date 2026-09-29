@@ -36,6 +36,16 @@ tür, yayınevi ve yılda arar; büyük/küçük harf ve Türkçe karakter fark�
 - **Dışardaki Kitaplar**'da bir satıra çift tıklamak **Alma Kaydı** ekranını üye ve kitap seçili
   olarak açar; sadece Kaydet'e basmak kalır.
 
+### Dışa aktarma (Excel / CSV)
+
+Kitap Listesi, Filtre sonuçları, Dışardaki Kitaplar ve Ödünç Geçmişi'nde **Dışa Aktar** butonu vardır;
+tüm tablolarda (İstatistik çizelgeleri dahil) sağ tıklayarak da aktarılabilir. Tablo ekranda nasıl
+görünüyorsa (arama, filtre, sıralama) öyle kaydedilir.
+
+- **Excel (.xlsx):** kalın başlık, sabit ilk satır ve otomatik filtre. Sayılar sayı, tarihler tarih
+  olarak yazılır; telefon gibi uzun rakam dizileri baştaki sıfır kaybolmasın diye metin kalır.
+- **CSV:** Türkçe Excel'in doğrudan açabileceği biçimde (UTF-8, `;` ayırıcı).
+
 ### Ödünç takibi
 
 - Ödünç süresi **15 gündür** (`database/odunc.py` içindeki `ODUNC_SURESI_GUN`). Teslim tarihi veriliş
@@ -140,6 +150,7 @@ acodes/kullanici_yonetimi.py  Kullanıcı yönetimi ve şifre değiştirme pence
 acodes/odunc_gecmisi.py       Kitap Verme > Ödünç Geçmişi sekmesi
 acodes/grafikler.py           İstatistik > Grafikler (veritabanından her seferinde çizilir)
 acodes/tablo.py               Tablo doldurma, Türkçe sıralama, satır vurgulama
+acodes/disa_aktar.py          Tabloları Excel / CSV olarak kaydetme
 bforms/              .ui dosyalarından üretilen formlar (elle düzenlenmez)
 cuis/                Qt Designer .ui kaynakları
 database/dbbase.py   Yazma işlemleri, şifre hash'leme, veritabanı yolu

@@ -105,6 +105,7 @@ class Library(OrtakSekmeler, QMainWindow):
             tablo.setToolTip("Kitabı düzenlemek için satıra çift tıklayın")
             tablo.cellDoubleClicked.connect(lambda satir,_,t=tablo: self.tablodan_kitap_duzenle(t,satir))
         tablo_ayarla(ui.tableWidget_6_2)
+        self.aktar_butonu(ui.tableWidget_6_2,"Dışardaki Kitaplar",ui.pushButton_6_3_temizle,(40,470,100,60))
         ui.tableWidget_6_2.setToolTip("İade almak için satıra çift tıklayın")
         ui.tableWidget_6_2.cellDoubleClicked.connect(lambda satir,_: self.tablodan_iade(satir))
 

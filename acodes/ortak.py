@@ -7,6 +7,8 @@ from bforms.onay import onay
 from database.dbframe import df_sort_list, df_srt_fltr, kitap_ara, rapor
 from acodes.grafikler import GrafikPaneli
 from acodes.tablo import tablo_ayarla, tablo_basliklari, tabloya_yaz  # noqa: F401  (library.py de buradan alır)
+from acodes.disa_aktar import disa_aktar, sag_tik_menusu
+from acodes.kullanici_yonetimi import panel_butonu
 
 SECINIZ = ' Seçiniz...'
 
@@ -18,6 +20,8 @@ FILTRE_KOLONLARI = [(50,"Sıra No"),(190,"Adı"),(190,"Yazarı"),(130,"Çeviren"
 # Tab 4 filtreleri: (sıra no, veritabanı kolonu, seçim tablosu başlığı)
 FILTRELER = [(1,'Turu','Seçilen Tür'), (2,'Yazari','Seçilen Yazar'),
              (3,'Yayinevi','Seçilen Yayınevi'), (4,'Yili','Seçilen Yıl')]
+
+FILTRE_ADLARI = {1:"Tür", 2:"Yazar", 3:"Yayınevi", 4:"Yıl"}
 
 # Tab 5 istatistikleri: (tablo no, veritabanı kolonu, başlık, gösterilecek en fazla satır)
 ISTATISTIKLER = [(1,'Turu','Yayın Türü',35), (2,'Yazari','Yazar',40),
@@ -60,6 +64,25 @@ class OrtakSekmeler:
             tablo_ayarla(tablo)
         for no,_,_ in FILTRELER:
             tablo_ayarla(getattr(ui,f"tableWidget_4_{no}_1"), siralama=False)
+
+        ###  Dışa aktarma: ana tablolarda buton, tüm tablolarda sağ tık menüsü  ###
+        self.aktar_butonu(ui.tableWidget_2,"Kitap Listesi",ui.pushButton_2_temizle,(40,480,100,60))
+        for no,_,_ in FILTRELER:
+            self.aktar_butonu(getattr(ui,f"tableWidget_4_{no}_2"),f"Filtre - {FILTRE_ADLARI[no]}",
+                              getattr(ui,f"pushButton_4_{no}_temizle"),(80,570,111,51))
+        for no,_,baslik,_ in ISTATISTIKLER:
+            sag_tik_menusu(self,getattr(ui,f"tableWidget_5_1_{no}"),f"İstatistik - {baslik}")
+
+    def aktar_butonu(self,tablo,ad,ornek,konum):
+        ###  Örnek butonla aynı stilde "Dışa Aktar" butonu ve tabloya sağ tık menüsü  ###
+        buton=panel_butonu(ornek,"Dışa\nAktar",f"{ornek.objectName()}_aktar")
+        buton.setParent(ornek.parentWidget())
+        buton.setGeometry(*konum)
+        buton.setToolTip(f"{ad} tablosunu Excel veya CSV olarak kaydet")
+        buton.clicked.connect(lambda: disa_aktar(self,tablo,ad))
+        buton.show()
+        sag_tik_menusu(self,tablo,ad)
+        return buton
 
     ##################################
     #####   Tab_1 Fonksiyonlar   #####

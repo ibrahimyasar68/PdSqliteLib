@@ -2,7 +2,9 @@
 # Üye ve kitap bazında tüm ödünç kayıtları; teslim tarihi, gün sayısı ve gecikme bilgisiyle.
 
 from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QComboBox, QHBoxLayout, QHeaderView, QLabel, QTableWidget, QVBoxLayout, QWidget
+from PyQt5.QtWidgets import (QComboBox, QHBoxLayout, QHeaderView, QLabel, QPushButton, QTableWidget,
+                             QVBoxLayout, QWidget)
+from acodes.disa_aktar import disa_aktar, sag_tik_menusu
 from acodes.tablo import VURGU_ARKA, tablo_ayarla, tabloya_yaz
 from database.odunc import (gecikme_gunu, gun_sayisi, odunc_alan_uyeler, odunc_gecmisi,
                             odunc_verilen_kitaplar, tarih_yazi, teslim_tarihi)
@@ -33,6 +35,8 @@ class OduncGecmisi(QWidget):
             #tab_6_4 { background-color: rgb(255, 240, 255); }
             QLabel, QComboBox, QTableWidget { font: 11pt "Verdana"; color: black; }
             QComboBox { background-color: white; border: 1px solid gray; border-radius: 4px; padding: 3px; }
+            QPushButton { font: 11pt "Verdana"; color: black; background-color: rgb(255, 255, 127);
+                          border: 1px solid gray; border-radius: 6px; padding: 4px 10px; }
             QTableWidget { background-color: white; }
         """)
         self.uye = QComboBox()
@@ -52,6 +56,11 @@ class OduncGecmisi(QWidget):
             filtreler.addWidget(QLabel(etiket))
             filtreler.addWidget(kutu, 1)
         filtreler.addWidget(self.ozet, 1)
+        self.aktar = QPushButton("Dışa Aktar")
+        self.aktar.setToolTip("Tabloyu Excel veya CSV olarak kaydet")
+        self.aktar.clicked.connect(lambda: disa_aktar(self, self.tablo, "Ödünç Geçmişi"))
+        filtreler.addWidget(self.aktar)
+        sag_tik_menusu(self, self.tablo, "Ödünç Geçmişi")
         duzen = QVBoxLayout(self)
         duzen.addLayout(filtreler)
         duzen.addWidget(self.tablo)
