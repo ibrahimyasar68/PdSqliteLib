@@ -5,3 +5,5 @@
 *.png binary
 *.ico binary
 *.db binary
+# Windows betikleri CRLF satır sonuyla saklanır (cmd bazı satırları LF ile yanlış okur)
+*.bat text eol=crlf

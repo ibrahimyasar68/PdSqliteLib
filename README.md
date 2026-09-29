@@ -170,6 +170,24 @@ ayrı veritabanları kullanır.
 Paket imzalanmamıştır. Başka bir Mac'te ilk açılışta sağ tık → **Aç** demek gerekir.
 Apple Silicon (arm64) için derlenir.
 
+## Windows
+
+**Kurulum ve çalıştırma:** [python.org](https://www.python.org/downloads/windows/) adresinden Python 3.9+
+kurun ("Add python.exe to PATH" işaretli), veritabanını `data\DBL_Kayit.db` olarak koyun ve
+`scripts\baslat_windows.bat` dosyasına çift tıklayın. İlk çalıştırmada sanal ortam kurulur, sonra program
+konsol penceresi açılmadan başlar. Masaüstü kısayolu için dosyaya sağ tık → **Kısayol oluştur**.
+
+**Program paketi (.exe):** Windows'ta proje klasöründe:
+
+```bat
+scripts\build_windows.bat
+```
+
+Çıktı `dist\PdSqliteLib\` klasörüdür; `PdSqliteLib.exe` bu klasördeki diğer dosyalarla birlikte çalışır,
+başka bir bilgisayara klasörün tamamı (örneğin zip olarak) taşınır. Paketlenmiş program veritabanını
+`%APPDATA%\PdSqliteLib\` altında tutar ve ilk açılışta pakete eklenen veritabanını oraya kopyalar.
+Paket imzasız olduğu için Windows SmartScreen ilk açılışta uyarabilir: **Ek bilgi → Yine de çalıştır**.
+
 ## Proje yapısı
 
 ```
