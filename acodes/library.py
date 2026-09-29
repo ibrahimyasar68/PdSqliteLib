@@ -4,6 +4,7 @@ from bforms.onay import onay
 from acodes.user import User
 from acodes.kullanici_yonetimi import KullaniciYonetimi, panel_butonu
 from acodes.odunc_gecmisi import OduncGecmisi
+from acodes.veri_duzeltme import VeriDuzeltme
 from acodes.ortak import OrtakSekmeler, FILTRELER, SECINIZ
 from acodes.tablo import satir_verisi, tablo_ayarla, tablo_basliklari, tabloya_yaz
 from database.dbframe import (df_book_id_list, df_book_find_by_id, df_user_id_list, df_user_find_by_id,
@@ -103,6 +104,11 @@ class Library(OrtakSekmeler, QMainWindow):
         self.QtLibrary.tabWidget_6.currentChanged.connect(self.odunc_sekmesi_degisti)
         self.gecikme_bildir()
 
+        ###  Kitap Kayıt > Veri Düzeltme (sadece bu alt sekme açıkken yenilenir)  ###
+        self.duzeltme=VeriDuzeltme(kitap_duzenle=self.kitap_duzenle, degisti=self.yenile)
+        self.QtLibrary.tabWidget_3.addTab(self.duzeltme,"Veri Düzeltme")
+        self.QtLibrary.tabWidget_3.currentChanged.connect(self.kayit_sekmesi_degisti)
+
         ###  Çift tıklama: kitap satırı düzenleme ekranını, ödünç satırı iade ekranını açar  ###
         ui=self.QtLibrary
         for tablo in [ui.tableWidget_2]+[getattr(ui,f"tableWidget_4_{no}_2") for no,_,_ in FILTRELER]:
@@ -140,6 +146,10 @@ class Library(OrtakSekmeler, QMainWindow):
             self.QtLibrary.statusbar.showMessage(
                 f"Teslim süresi ({ODUNC_SURESI_GUN} gün) geçmiş {sayi} kitap var. Kitap Verme > Dışardaki Kitaplar", 10000)
         return sayi
+
+    def kayit_sekmesi_degisti(self):
+        if self.QtLibrary.tabWidget_3.currentWidget() is self.duzeltme:
+            self.duzeltme.yenile()
 
     def odunc_sekmesi_degisti(self):
         ###  Dışardaki kitaplar ve geçmiş sekmesi açılınca güncel hali göster  ###

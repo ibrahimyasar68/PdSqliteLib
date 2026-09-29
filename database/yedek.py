@@ -11,7 +11,7 @@ import os
 import sqlite3
 
 from database.dbbase import DB_YOLU, baglantı
-from database.sema import GEREKLI_TABLOLAR, tablolar
+from database.sema import GEREKLI_TABLOLAR, sema_olustur, tablolar
 
 OTOMATIK_SAKLA = 10
 OTOMATIK_ONEK = "DBL_Kayit_"      # otomatik yedekler: DBL_Kayit_20260929_101500.db
@@ -88,4 +88,5 @@ def geri_yukle(yol):
         kaynak.backup(baglantı)
     finally:
         kaynak.close()
+    sema_olustur(baglantı)   # eski bir yedekte sonradan eklenen tablolar yoksa oluştur
     return onceki

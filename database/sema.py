@@ -30,6 +30,10 @@ CREATE TABLE IF NOT EXISTS follow (
     indate  TEXT,
     intime  TEXT
 );
+CREATE TABLE IF NOT EXISTS duzeltme_yoksay (
+    kolon TEXT,
+    imza  TEXT
+);
 """
 
 GEREKLI_TABLOLAR = {"kayitlistesi", "users", "follow"}

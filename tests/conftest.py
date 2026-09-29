@@ -34,7 +34,7 @@ KITAPLAR = [
 
 
 def ornek_veri_yukle():
-    baglantı.executescript("DELETE FROM follow; DELETE FROM users; DELETE FROM kayitlistesi;"
+    baglantı.executescript("DELETE FROM follow; DELETE FROM users; DELETE FROM kayitlistesi; DELETE FROM duzeltme_yoksay;"
                            "DELETE FROM sqlite_sequence;")
     baglantı.executemany("INSERT INTO kayitlistesi VALUES (?,?,?,?,?,?,?,?)", KITAPLAR)
     baglantı.executemany(
@@ -65,8 +65,9 @@ def uyarilar(monkeypatch):
     import acodes.library
     import acodes.ortak
     import acodes.user
+    import acodes.veri_duzeltme
     mesajlar = []
-    for modul in (acodes.library, acodes.ortak, acodes.user, acodes.kullanici_yonetimi):
+    for modul in (acodes.library, acodes.ortak, acodes.user, acodes.kullanici_yonetimi, acodes.veri_duzeltme):
         monkeypatch.setattr(modul, "onay", lambda *a: QMessageBox.Yes)
     monkeypatch.setattr(QMessageBox, "information", staticmethod(lambda *a: mesajlar.append(a[-1])))
     monkeypatch.setattr(QMessageBox, "warning", staticmethod(lambda *a: mesajlar.append(a[-1])))

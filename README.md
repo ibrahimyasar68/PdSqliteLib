@@ -12,7 +12,7 @@ Giriş ekranında kullanıcının yetkisine göre iki farklı panel açılır:
 |---|:---:|:---:|
 | **Giriş**: yeni kullanıcı, kullanıcı yönetimi, yedekleme | ✓ | sadece kendi şifresini değiştirme |
 | **Kitap Listesi**: tüm kitaplar, anlık arama | ✓ | ✓ |
-| **Kitap Kayıt**: ekleme, güncelleme, silme | ✓ | |
+| **Kitap Kayıt**: ekleme, güncelleme, silme, veri düzeltme | ✓ | |
 | **Filtre**: tür, yazar, yayınevi ve yıla göre çoklu seçim | ✓ | ✓ |
 | **İstatistik**: çizelgeler ve güncel grafikler (tür, yazar, yayınevi, basım yılı) | ✓ | ✓ |
 | **Kitap Verme**: ödünç verme, iade alma, dışarıdaki kitaplar, ödünç geçmişi | ✓ | |
@@ -39,6 +39,19 @@ tür, yayınevi ve yılda arar; büyük/küçük harf ve Türkçe karakter fark�
   **Kitap Kayıt → Kayıt Düzenleme** ekranında açar.
 - **Dışardaki Kitaplar**'da bir satıra çift tıklamak **Alma Kaydı** ekranını üye ve kitap seçili
   olarak açar; sadece Kaydet'e basmak kalır.
+
+### Veri düzeltme
+
+**Kitap Kayıt → Veri Düzeltme** alt sekmesi:
+
+- **Aynı değerin farklı yazımları:** Yazar, yayınevi, çevirmen veya türde birbirine çok benzeyen
+  yazımları bulur. Sadece büyük/küçük harf, aksan veya noktalama farkı olanlar **Kesin**
+  ("Adam Yayınları" / "Adam yayınları"), harf farkı olanlar **Olası** ("EYÜBOĞLU" / "EYYÜBOĞLU")
+  olarak gösterilir. Hiçbir şey kendiliğinden değişmez: birleştirilecek yazımları işaretleyip doğru
+  yazımı seçer (veya düzeltir) ve **İşaretlileri Birleştir**'e basarsınız. Değişiklikten önce yedek alınır.
+- Yanlış bir öneri (ör. "Antoloji" / "Astroloji") **Bu Öneriyi Yoksay** ile bir daha gösterilmez.
+- **Eksik bilgiler:** Basım yılı, yayınevi, yazar veya türü boş olan kitaplar; çift tıklayınca kitap
+  düzenleme ekranında açılır.
 
 ### Dışa aktarma (Excel / CSV)
 
@@ -155,6 +168,7 @@ acodes/odunc_gecmisi.py       Kitap Verme > Ödünç Geçmişi sekmesi
 acodes/grafikler.py           İstatistik > Grafikler (veritabanından her seferinde çizilir)
 acodes/tablo.py               Tablo doldurma, Türkçe sıralama, satır vurgulama
 acodes/disa_aktar.py          Tabloları Excel / CSV olarak kaydetme
+acodes/veri_duzeltme.py       Kitap Kayıt > Veri Düzeltme sekmesi
 bforms/              .ui dosyalarından üretilen formlar (elle düzenlenmez)
 cuis/                Qt Designer .ui kaynakları
 database/dbbase.py   Yazma işlemleri, şifre hash'leme, veritabanı yolu
@@ -162,6 +176,7 @@ database/dbframe.py  Okuma, filtreleme ve raporlar
 database/sema.py     Tablo şeması (eksik tablolar açılışta oluşturulur)
 database/yedek.py    Yedek alma ve geri yükleme
 database/odunc.py    Teslim tarihi, gecikme ve ödünç geçmişi
+database/duzeltme.py Benzer yazımları bulma ve birleştirme, eksik bilgiler
 tests/               Otomatik testler (pytest)
 media/               Resimler, ikon ve media.qrc
 scripts/             Dönüştürme, veri aktarma ve paketleme betikleri
