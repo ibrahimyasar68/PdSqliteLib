@@ -7,6 +7,28 @@ from database.dbbase import *
 import datetime 
 
 
+def buyuk_harf(metin):
+    """Her kelimenin ilk harfini büyütür, gerisine dokunmaz (Türkçe i/İ uyumlu).
+    str.title() "Anne'nin" -> "Anne'Nin", "TAHİR" -> "Tahi̇r" yaptığı için kullanılmıyor."""
+    kelimeler=[]
+    for k in metin.split(" "):
+        if k:
+            ilk=k[0]
+            k=("İ" if ilk=="i" else "I" if ilk=="ı" else ilk.upper())+k[1:]
+        kelimeler.append(k)
+    return " ".join(kelimeler)
+
+
+def kitap_listesi(cmb):
+    """Açılır listeyi kitap id'leriyle doldurur. Aynı adlı kitaplara yayınevi ve yıl eklenir."""
+    kitaplar=df_book_id_list()
+    adlar=[adi for _,adi,_,_ in kitaplar]
+    cmb.addItem(' Seçiniz...')
+    for id,adi,yayinevi,yili in kitaplar:
+        cmb.addItem(f"{adi} ({yayinevi}, {yili})" if adlar.count(adi)>1 else adi, id)
+
+
+
 class Library(QMainWindow):
     def __init__(self):
         super().__init__()
@@ -95,6 +117,29 @@ class Library(QMainWindow):
         self.QtLibrary.pushButton_6_3_listele.clicked.connect(self.listele_6)
         self.QtLibrary.pushButton_6_3_temizle.clicked.connect(self.temizle_6)
 
+        # Sekme değişince listeler güncellensin (ör. Tab 1'den eklenen yeni üye)
+        self.QtLibrary.tabWidget.currentChanged.connect(self.yenile)
+
+    def yenile(self):
+        ###  Kayıt/üye değişikliklerinden sonra açılır listeleri ve istatistikleri güncelleme  ###
+        for cmb in (self.QtLibrary.comboBox_3_2_bul_adi, self.QtLibrary.comboBox_3_3_bul_adi,
+                    self.QtLibrary.comboBox_4_1_turu, self.QtLibrary.comboBox_4_2_turu,
+                    self.QtLibrary.comboBox_4_3_turu, self.QtLibrary.comboBox_4_4_turu,
+                    self.QtLibrary.comboBox_6_1_1_liste_kitap, self.QtLibrary.comboBox_6_1_2_liste_kisi):
+            cmb.blockSignals(True)
+            cmb.clear()
+            cmb.blockSignals(False)
+        self.list_items_3_2()
+        self.list_items_3_3()
+        for cmb,kolon in ((self.QtLibrary.comboBox_4_1_turu,'Turu'), (self.QtLibrary.comboBox_4_2_turu,'Yazari'),
+                          (self.QtLibrary.comboBox_4_3_turu,'Yayinevi'), (self.QtLibrary.comboBox_4_4_turu,'Yili')):
+            cmb.blockSignals(True)  # Seçim listesine otomatik ekleme yapılmasın
+            cmb.addItems([' Seçiniz...']+df_sort_list(kolon))
+            cmb.blockSignals(False)
+        self.create_tab_5()
+        self.list_items_6_1_1()
+        self.list_user_6_1_2()
+
     ##################################
     #####   Tab_1 Fonksiyonlar   #####
     ##################################
@@ -144,11 +189,11 @@ class Library(QMainWindow):
 
     def save_book(self):     
         kayit=[]     
-        kayit.append((self.QtLibrary.lineEdit_3_1_adi.text()).title())
-        kayit.append((self.QtLibrary.lineEdit_3_1_yazari.text()).title()) 
-        kayit.append((self.QtLibrary.lineEdit_3_1_ceviren.text()).title())
-        kayit.append((self.QtLibrary.lineEdit_3_1_turu.text()).title())
-        kayit.append((self.QtLibrary.lineEdit_3_1_yayinevi.text()).title())
+        kayit.append(buyuk_harf(self.QtLibrary.lineEdit_3_1_adi.text()))
+        kayit.append(buyuk_harf(self.QtLibrary.lineEdit_3_1_yazari.text())) 
+        kayit.append(buyuk_harf(self.QtLibrary.lineEdit_3_1_ceviren.text()))
+        kayit.append(buyuk_harf(self.QtLibrary.lineEdit_3_1_turu.text()))
+        kayit.append(buyuk_harf(self.QtLibrary.lineEdit_3_1_yayinevi.text()))
         kayit.append(self.QtLibrary.lineEdit_3_1_yili.text())
         kayit.append(self.QtLibrary.lineEdit_3_1_sayfa.text())
         if (self.QtLibrary.lineEdit_3_1_adi.text())=="":
@@ -157,7 +202,9 @@ class Library(QMainWindow):
             cvb=onay(f"{(self.QtLibrary.lineEdit_3_1_adi.text())} kaydedilsin mi?")
             if cvb==QMessageBox.Yes:        
                 ekle_kayit(kayit)
-                self.QtLibrary.statusbar.showMessage(f"'{(self.QtLibrary.lineEdit_3_1_adi.text())}' kaydedildi",self.dur_msj)
+                self.QtLibrary.statusbar.showMessage(f"'{kayit[0]}' kaydedildi",self.dur_msj)
+                self.clear_form_3_1()
+                self.yenile()
             else:pass  
 
     def clear_form_3_1(self):
@@ -167,31 +214,19 @@ class Library(QMainWindow):
         self.QtLibrary.lineEdit_3_1_turu.clear()    
         self.QtLibrary.lineEdit_3_1_yayinevi.clear()
         self.QtLibrary.lineEdit_3_1_yili.clear()
+        self.QtLibrary.lineEdit_3_1_sayfa.clear()
 
 ### Tablo 2 İşlemleri  ###
 
     def list_items_3_2 (self):
-        cmb=list(df_sort_list('Adi'))
-        cmb.insert(0,' Seçiniz...')
-        self.QtLibrary.comboBox_3_2_bul_adi.addItems(cmb)
+        kitap_listesi(self.QtLibrary.comboBox_3_2_bul_adi)
 
     def find_item_3_2(self):
-        txt=self.QtLibrary.comboBox_3_2_bul_adi.currentText()
-        if txt==(' Seçiniz...'):
+        id=self.QtLibrary.comboBox_3_2_bul_adi.currentData()
+        if id is None:
             self.QtLibrary.statusbar.showMessage("Seçim yapınız",self.dur_msj)
         else:
-            sayi,kyt=df_find_by_sort('Adi',txt)
-            if sayi==0: 
-                self.QtLibrary.statusbar.showMessage(f"'{txt}' kaydı bulunamadı",self.dur_msj)
-            else:
-                if sayi>1:
-                    cvb=onay(f"'{txt}' adında {sayi} kayıt bulundu.\nİlk kayıt gösterilsin mi?")
-                    if cvb==QMessageBox.No:
-                        self.QtLibrary.statusbar.showMessage("Yeniden kayıt girin")
-                    else:
-                        self.show_items_3_2(kyt)    
-                else:
-                    self.show_items_3_2(kyt)  
+            self.show_items_3_2(df_book_find_by_id(id))
 
     def show_items_3_2(self,kyt):
         degisecek=kyt 
@@ -210,11 +245,11 @@ class Library(QMainWindow):
     def update_item_3_2(self):
         kayit=[]
         kayit.append(self.QtLibrary.lineEdit_3_2_id.text())       
-        kayit.append(self.QtLibrary.lineEdit_3_2_adi.text().title())
-        kayit.append(self.QtLibrary.lineEdit_3_2_yazari.text().title())      
-        kayit.append(self.QtLibrary.lineEdit_3_2_ceviren.text().title())
-        kayit.append(self.QtLibrary.lineEdit_3_2_turu.text().title())
-        kayit.append(self.QtLibrary.lineEdit_3_2_yayinevi.text().title())
+        kayit.append(buyuk_harf(self.QtLibrary.lineEdit_3_2_adi.text()))
+        kayit.append(buyuk_harf(self.QtLibrary.lineEdit_3_2_yazari.text()))      
+        kayit.append(buyuk_harf(self.QtLibrary.lineEdit_3_2_ceviren.text()))
+        kayit.append(buyuk_harf(self.QtLibrary.lineEdit_3_2_turu.text()))
+        kayit.append(buyuk_harf(self.QtLibrary.lineEdit_3_2_yayinevi.text()))
         kayit.append(self.QtLibrary.lineEdit_3_2_yili.text())
         kayit.append(self.QtLibrary.lineEdit_3_2_sayfa.text())
         if len(self.QtLibrary.lineEdit_3_2_adi.text())!=0:
@@ -223,6 +258,7 @@ class Library(QMainWindow):
                 degistir_kayit(kayit)
                 self.QtLibrary.statusbar.showMessage(f"'{kayit[1]}' güncellendi.",self.dur_msj)
                 self.clear_form_3_2()               
+                self.yenile()
             else:pass
         else:
             self.QtLibrary.statusbar.showMessage("Kayıtta değişiklik yapılmadı.Kontrol edin",self.dur_msj)
@@ -243,27 +279,14 @@ class Library(QMainWindow):
 ### Tablo 3 İşlemleri  ###
 
     def list_items_3_3 (self):
-        cmb=(df_sort_list('Adi'))
-        cmb.insert(0,' Seçiniz...')
-        self.QtLibrary.comboBox_3_3_bul_adi.addItems(cmb)
+        kitap_listesi(self.QtLibrary.comboBox_3_3_bul_adi)
 
     def find_item_3_3(self):
-        txt=self.QtLibrary.comboBox_3_3_bul_adi.currentText()
-        if txt==(' Seçiniz...'):
+        id=self.QtLibrary.comboBox_3_3_bul_adi.currentData()
+        if id is None:
             self.QtLibrary.statusbar.showMessage("Seçim yapınız",self.dur_msj)
         else:
-            sayi,kyt=df_find_by_sort('Adi',txt)
-            if sayi==0: 
-                self.QtLibrary.statusbar.showMessage(f"'{txt}' kaydı bulunamadı",self.dur_msj)
-            else:
-                if sayi>1:
-                    cvb=onay(f"'{txt}' adında {sayi} kayıt bulundu.\nİlk kayıt gösterilsin mi?")
-                    if cvb==QMessageBox.No:
-                        self.QtLibrary.statusbar.showMessage("Yeniden kayıt girin")
-                    else:
-                        self.show_items_3_3(kyt)    
-                else:
-                    self.show_items_3_3(kyt)  
+            self.show_items_3_3(df_book_find_by_id(id))
         
     def show_items_3_3(self,kyt):
         silinecek=kyt 
@@ -286,8 +309,9 @@ class Library(QMainWindow):
         cvb=onay("Kayıt silinsin mi?")
         if cvb==QMessageBox.Yes:
             sil_kayit(int(self.QtLibrary.lineEdit_3_3_id.text()))            
-            self.QtLibrary.statusbar.showMessage(f"{self.QtLibrary.comboBox_3_3_bul_adi.currentText()} silindi",self.dur_msj)
+            self.QtLibrary.statusbar.showMessage(f"{self.QtLibrary.lineEdit_3_3_adi.text()} silindi",self.dur_msj)
             self.clear_form_3_3()
+            self.yenile()
         else:pass
 
     def clear_form_3_3(self):
@@ -385,13 +409,12 @@ class Library(QMainWindow):
                 self.QtLibrary.tableWidget_4_1_2.clear()
                 self.QtLibrary.tableWidget_4_1_2.setRowCount(1)
                 self.QtLibrary.statusbar.showMessage("Veriler temizlendi",self.dur_msj)
-             #Kolon aralıklarını ayarlama
-            kolonbilgi=[(50,"Sıra No"),(190,"Adı"),(190,"Yazarı"),(130,"Çeviren"),
-                            (130,"Turu"),(165,"Yayınevi"),(40,"Yılı"),(40,"Sayfa")]
-            for ind,dgr in enumerate(kolonbilgi):
-                self.QtLibrary.tableWidget_4_1_2.setColumnWidth(ind,dgr[0])
-                self.QtLibrary.tableWidget_4_1_2.setHorizontalHeaderItem(ind,QTableWidgetItem(dgr[1]))
-            else:pass            
+                #Kolon aralıklarını ayarlama
+                kolonbilgi=[(50,"Sıra No"),(190,"Adı"),(190,"Yazarı"),(130,"Çeviren"),
+                                (130,"Turu"),(165,"Yayınevi"),(40,"Yılı"),(40,"Sayfa")]
+                for ind,dgr in enumerate(kolonbilgi):
+                    self.QtLibrary.tableWidget_4_1_2.setColumnWidth(ind,dgr[0])
+                    self.QtLibrary.tableWidget_4_1_2.setHorizontalHeaderItem(ind,QTableWidgetItem(dgr[1]))
         else:
             self.QtLibrary.statusbar.showMessage("Temizlenecek Veri Yok!",self.dur_msj)
 
@@ -406,7 +429,7 @@ class Library(QMainWindow):
 
         #####  Liste  genişliği ve adı ayarlama  #######
         self.QtLibrary.tableWidget_4_2_1.setColumnWidth(0,200)
-        self.QtLibrary.tableWidget_4_2_1.setHorizontalHeaderItem(0,QTableWidgetItem("Seçilen Tür"))
+        self.QtLibrary.tableWidget_4_2_1.setHorizontalHeaderItem(0,QTableWidgetItem("Seçilen Yazar"))
         self.QtLibrary.tableWidget_4_2_1.setRowCount(1)
 
         #Kolon aralıklarını ayarlama
@@ -461,19 +484,18 @@ class Library(QMainWindow):
 
                 self.QtLibrary.tableWidget_4_2_1.clear() 
                 self.QtLibrary.pushButton_4_2_temizle.setEnabled(False)               
-                self.QtLibrary.tableWidget_4_2_1.setHorizontalHeaderItem(0,QTableWidgetItem("Seçilen Tür"))
+                self.QtLibrary.tableWidget_4_2_1.setHorizontalHeaderItem(0,QTableWidgetItem("Seçilen Yazar"))
                 self.QtLibrary.tableWidget_4_2_1.setRowCount(1)
 
                 self.QtLibrary.tableWidget_4_2_2.clear()
                 self.QtLibrary.tableWidget_4_2_2.setRowCount(1)
                 self.QtLibrary.statusbar.showMessage("Veriler temizlendi",self.dur_msj)
-             #Kolon aralıklarını ayarlama
-            kolonbilgi=[(50,"Sıra No"),(190,"Adı"),(190,"Yazarı"),(130,"Çeviren"),
-                            (130,"Turu"),(165,"Yayınevi"),(40,"Yılı"),(40,"Sayfa")]
-            for ind,dgr in enumerate(kolonbilgi):
-                self.QtLibrary.tableWidget_4_2_2.setColumnWidth(ind,dgr[0])
-                self.QtLibrary.tableWidget_4_2_2.setHorizontalHeaderItem(ind,QTableWidgetItem(dgr[1]))
-            else:pass            
+                #Kolon aralıklarını ayarlama
+                kolonbilgi=[(50,"Sıra No"),(190,"Adı"),(190,"Yazarı"),(130,"Çeviren"),
+                                (130,"Turu"),(165,"Yayınevi"),(40,"Yılı"),(40,"Sayfa")]
+                for ind,dgr in enumerate(kolonbilgi):
+                    self.QtLibrary.tableWidget_4_2_2.setColumnWidth(ind,dgr[0])
+                    self.QtLibrary.tableWidget_4_2_2.setHorizontalHeaderItem(ind,QTableWidgetItem(dgr[1]))
         else:
             self.QtLibrary.statusbar.showMessage("Temizlenecek Veri Yok!",self.dur_msj)
 
@@ -488,7 +510,7 @@ class Library(QMainWindow):
 
         #####  Liste  genişliği ve adı ayarlama  #######
         self.QtLibrary.tableWidget_4_3_1.setColumnWidth(0,200)
-        self.QtLibrary.tableWidget_4_3_1.setHorizontalHeaderItem(0,QTableWidgetItem("Seçilen Tür"))
+        self.QtLibrary.tableWidget_4_3_1.setHorizontalHeaderItem(0,QTableWidgetItem("Seçilen Yayınevi"))
         self.QtLibrary.tableWidget_4_3_1.setRowCount(1)
 
         #Kolon aralıklarını ayarlam3
@@ -543,19 +565,18 @@ class Library(QMainWindow):
 
                 self.QtLibrary.tableWidget_4_3_1.clear() 
                 self.QtLibrary.pushButton_4_3_temizle.setEnabled(False)               
-                self.QtLibrary.tableWidget_4_3_1.setHorizontalHeaderItem(0,QTableWidgetItem("Seçilen Tür"))
+                self.QtLibrary.tableWidget_4_3_1.setHorizontalHeaderItem(0,QTableWidgetItem("Seçilen Yayınevi"))
                 self.QtLibrary.tableWidget_4_3_1.setRowCount(1)
 
                 self.QtLibrary.tableWidget_4_3_2.clear()
                 self.QtLibrary.tableWidget_4_3_2.setRowCount(1)
                 self.QtLibrary.statusbar.showMessage("Veriler temizlendi",self.dur_msj)
-             #Kolon aralıklarını ayarlama
-            kolonbilgi=[(50,"Sıra No"),(190,"Adı"),(190,"Yazarı"),(130,"Çeviren"),
-                            (130,"Turu"),(165,"Yayınevi"),(40,"Yılı"),(40,"Sayfa")]
-            for ind,dgr in enumerate(kolonbilgi):
-                self.QtLibrary.tableWidget_4_3_2.setColumnWidth(ind,dgr[0])
-                self.QtLibrary.tableWidget_4_3_2.setHorizontalHeaderItem(ind,QTableWidgetItem(dgr[1]))
-            else:pass            
+                #Kolon aralıklarını ayarlama
+                kolonbilgi=[(50,"Sıra No"),(190,"Adı"),(190,"Yazarı"),(130,"Çeviren"),
+                                (130,"Turu"),(165,"Yayınevi"),(40,"Yılı"),(40,"Sayfa")]
+                for ind,dgr in enumerate(kolonbilgi):
+                    self.QtLibrary.tableWidget_4_3_2.setColumnWidth(ind,dgr[0])
+                    self.QtLibrary.tableWidget_4_3_2.setHorizontalHeaderItem(ind,QTableWidgetItem(dgr[1]))
         else:
             self.QtLibrary.statusbar.showMessage("Temizlenecek Veri Yok!",self.dur_msj)
 
@@ -570,7 +591,7 @@ class Library(QMainWindow):
 
         #####  Liste  genişliği ve adı ayarlama  #######
         self.QtLibrary.tableWidget_4_4_1.setColumnWidth(0,200)
-        self.QtLibrary.tableWidget_4_4_1.setHorizontalHeaderItem(0,QTableWidgetItem("Seçilen Tür"))
+        self.QtLibrary.tableWidget_4_4_1.setHorizontalHeaderItem(0,QTableWidgetItem("Seçilen Yıl"))
         self.QtLibrary.tableWidget_4_4_1.setRowCount(1)
 
         #Kolon aralıklarını ayarlama
@@ -624,19 +645,18 @@ class Library(QMainWindow):
 
                 self.QtLibrary.tableWidget_4_4_1.clear() 
                 self.QtLibrary.pushButton_4_4_temizle.setEnabled(False)               
-                self.QtLibrary.tableWidget_4_4_1.setHorizontalHeaderItem(0,QTableWidgetItem("Seçilen Tür"))
+                self.QtLibrary.tableWidget_4_4_1.setHorizontalHeaderItem(0,QTableWidgetItem("Seçilen Yıl"))
                 self.QtLibrary.tableWidget_4_4_1.setRowCount(1)
 
                 self.QtLibrary.tableWidget_4_4_2.clear()
                 self.QtLibrary.tableWidget_4_4_2.setRowCount(1)
                 self.QtLibrary.statusbar.showMessage("Veriler temizlendi",self.dur_msj)
-             #Kolon aralıklarını ayarlama
-            kolonbilgi=[(50,"Sıra No"),(190,"Adı"),(190,"Yazarı"),(130,"Çeviren"),
-                            (130,"Turu"),(165,"Yayınevi"),(40,"Yılı"),(40,"Sayfa")]
-            for ind,dgr in enumerate(kolonbilgi):
-                self.QtLibrary.tableWidget_4_4_2.setColumnWidth(ind,dgr[0])
-                self.QtLibrary.tableWidget_4_4_2.setHorizontalHeaderItem(ind,QTableWidgetItem(dgr[1]))
-            else:pass            
+                #Kolon aralıklarını ayarlama
+                kolonbilgi=[(50,"Sıra No"),(190,"Adı"),(190,"Yazarı"),(130,"Çeviren"),
+                                (130,"Turu"),(165,"Yayınevi"),(40,"Yılı"),(40,"Sayfa")]
+                for ind,dgr in enumerate(kolonbilgi):
+                    self.QtLibrary.tableWidget_4_4_2.setColumnWidth(ind,dgr[0])
+                    self.QtLibrary.tableWidget_4_4_2.setHorizontalHeaderItem(ind,QTableWidgetItem(dgr[1]))
         else:
             self.QtLibrary.statusbar.showMessage("Temizlenecek Veri Yok!",self.dur_msj)
 
@@ -702,29 +722,16 @@ class Library(QMainWindow):
 ### Tablo 1 İşlemleri  ###
 
     def list_items_6_1_1 (self):
-        cmb=(df_sort_list('Adi'))
-        cmb.insert(0,' Seçiniz...')
-        self.QtLibrary.comboBox_6_1_1_liste_kitap.addItems(cmb)
+        kitap_listesi(self.QtLibrary.comboBox_6_1_1_liste_kitap)
 
     def find_item_6_1_1(self):
-        txt=self.QtLibrary.comboBox_6_1_1_liste_kitap.currentText()
-        if txt==(' Seçiniz...'):
+        id=self.QtLibrary.comboBox_6_1_1_liste_kitap.currentData()
+        if id is None:
             self.QtLibrary.statusbar.showMessage("Seçim yapınız",self.dur_msj)
+        elif kitap_oduncte(id):
+            QMessageBox.information(self,"Uyarı!","Bu kitap başka bir üyededir!")
         else:
-            sayi,kyt=df_find_by_sort('Adi',txt)
-            if sayi==0: 
-                self.QtLibrary.statusbar.showMessage(f"'{txt}' kaydı bulunamadı",self.dur_msj)
-            elif kitap_oduncte(kyt[0]):
-                QMessageBox.information(self,"Uyarı!","Bu kitap başka bir üyededir!")
-            else:
-                if sayi>1:
-                    cvb=onay(f"'{txt}' adında {sayi} kayıt bulundu.\nİlk kayıt gösterilsin mi?")
-                    if cvb==QMessageBox.No:
-                        self.QtLibrary.statusbar.showMessage("Yeniden kayıt girin")
-                    else:
-                        self.show_items_6_1_1(kyt)    
-                else:
-                    self.show_items_6_1_1(kyt)  
+            self.show_items_6_1_1(df_book_find_by_id(id))
 
     def show_items_6_1_1(self,kyt):
         kayit=kyt 
@@ -758,8 +765,8 @@ class Library(QMainWindow):
     def list_user_6_1_2 (self):
         # Aynı isimde iki üye olabileceği için her satırda kullanıcı id'si saklanır
         self.QtLibrary.comboBox_6_1_2_liste_kisi.addItem(' Seçiniz...')
-        for id,adi in df_user_id_list():
-            self.QtLibrary.comboBox_6_1_2_liste_kisi.addItem(adi,id)
+        for id,adi,kullanici in df_user_id_list():
+            self.QtLibrary.comboBox_6_1_2_liste_kisi.addItem(f"{adi} ({kullanici})",id)
 
     def find_user_6_1_2(self):
         id=self.QtLibrary.comboBox_6_1_2_liste_kisi.currentData()
@@ -822,8 +829,8 @@ class Library(QMainWindow):
     def list_user_6_2_1 (self):
         self.QtLibrary.comboBox_6_2_1_liste_kisi.clear()
         self.QtLibrary.comboBox_6_2_1_liste_kisi.addItem(' Seçiniz...')
-        for id,adi in df_work_user_list():
-            self.QtLibrary.comboBox_6_2_1_liste_kisi.addItem(adi,id)
+        for id,adi,kullanici in df_work_user_list():
+            self.QtLibrary.comboBox_6_2_1_liste_kisi.addItem(f"{adi} ({kullanici})",id)
 
     def find_user_6_2_1(self):
         id=self.QtLibrary.comboBox_6_2_1_liste_kisi.currentData()

@@ -36,21 +36,16 @@ def df_sort_list(sort):
     snc.sort()
     return snc
 
+## Açılır listeler için (id, adı, yayınevi, yılı) listesi
+def df_book_id_list():
+    return baglantı.execute("SELECT Id, Adi, Yayinevi, Yili FROM kayitlistesi ORDER BY Adi, Yili").fetchall()
+
 def df_srt_fltr(sort,name):
     snc=pd.read_sql_query(f"SELECT * FROM kayitlistesi WHERE {kolon(sort,KITAP_KOLON)}=?",baglantı,params=(name,))
     sn=[]
     for i in range(len(snc)):
         sn.append(([*(snc.iloc[i])]))
     return len(snc),sn
-
-def df_find_by_sort(sort,name):
-    snc=pd.read_sql_query(f"SELECT * FROM kayitlistesi WHERE {kolon(sort,KITAP_KOLON)}=?",baglantı,params=(name,))
-    if len(snc)<1:
-        kyt=[]
-        return 0,kyt
-    else:
-        kyt=([*snc.iloc[0]])
-        return len(snc),kyt
 
 def rapor(sor,cnt): ###İstatistik için####
     dfbook=pd.read_sql_query("SELECT * FROM kayitlistesi",baglantı)
@@ -79,9 +74,9 @@ def df_user_list(key):
     snc=list(dfuser[key])
     return snc
 
-## Kitap verme ekranı için (id, adı soyadı) listesi
+## Kitap verme ekranı için (id, adı soyadı, kullanıcı adı) listesi
 def df_user_id_list():
-    return baglantı.execute("SELECT id, adi_soyadi FROM users ORDER BY adi_soyadi").fetchall()
+    return baglantı.execute("SELECT id, adi_soyadi, kullanici FROM users ORDER BY adi_soyadi").fetchall()
 
 def df_user_find_by_id(id):
     return list(baglantı.execute("SELECT * FROM users WHERE id=?",(id,)).fetchone())
@@ -112,9 +107,9 @@ def giris_kontrol(name,paw):
 def kitap_oduncte(book_id):
     return baglantı.execute("SELECT COUNT(*) FROM follow WHERE bookId=? AND status='out'",(str(book_id),)).fetchone()[0]>0
 
-## İade ekranı için kitap alan kullanıcıların (id, adı soyadı) listesi
+## İade ekranı için kitap alan kullanıcıların (id, adı soyadı, kullanıcı adı) listesi
 def df_work_user_list():
-    return baglantı.execute("""SELECT DISTINCT u.id, u.adi_soyadi FROM follow f
+    return baglantı.execute("""SELECT DISTINCT u.id, u.adi_soyadi, u.kullanici FROM follow f
                                JOIN users u ON u.id=f.userId
                                WHERE f.status='out' ORDER BY u.adi_soyadi""").fetchall()
 

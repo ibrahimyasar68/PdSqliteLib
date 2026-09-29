@@ -58,7 +58,7 @@ class User(QMainWindow):
 
     def chk_telefon(self):
         tel=(self.QtUser.lineEdit_telefon.text())
-        pattern="\d{10}"
+        pattern=r"\d{10}"
         if not re.fullmatch(pattern,tel):
             QMessageBox.information(self,"Uyarı!","Uygun telefon numarası girilmedi.Kontrol edin!")
             self.QtUser.lineEdit_telefon.clear()
@@ -66,7 +66,7 @@ class User(QMainWindow):
 
     def chk_mail(self):
         mail=self.QtUser.lineEdit_mail.text()
-        pattern="\w+@[a-z]+(\.[a-z]{2,3})+"
+        pattern=r"[\w.+-]+@[\w-]+(\.[\w-]+)*\.[a-zA-Z]{2,}"
         if not re.fullmatch(pattern,mail):
             QMessageBox.information(self,"Uyarı!","Uygun mail adresi girilmedi.Kontrol edin!")
             self.QtUser.lineEdit_mail.clear()
@@ -77,7 +77,7 @@ class User(QMainWindow):
             QMessageBox.information(self,"Uyarı!","Kayıt oluşturmak için yetki seçimini belirtin!")
             self.QtUser.comboBox_yetki.setCurrentIndex(0)
         else:
-            if not self.QtUser.lineEdit_kullanici_adi.text() and not self.QtUser.lineEdit_sifre.text() and not self.QtUser.lineEdit_adi_soyadi.text():
+            if not self.QtUser.lineEdit_kullanici_adi.text() or not self.QtUser.lineEdit_sifre.text() or not self.QtUser.lineEdit_adi_soyadi.text():
                 QMessageBox.information(self,"Uyarı!","Kullanıcı Adı, Şifre ve Adı Soyadı boş olamaz!")
             else:        
                 kayit=[]      

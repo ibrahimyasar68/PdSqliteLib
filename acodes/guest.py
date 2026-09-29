@@ -175,13 +175,12 @@ class Guest(QMainWindow):
                 self.QtLibrary.tableWidget_4_1_2.clear()
                 self.QtLibrary.tableWidget_4_1_2.setRowCount(1)
                 self.QtLibrary.statusbar.showMessage("Veriler temizlendi",self.dur_msj)
-             #Kolon aralıklarını ayarlama
-            kolonbilgi=[(50,"Sıra No"),(190,"Adı"),(190,"Yazarı"),(130,"Çeviren"),
-                            (130,"Turu"),(165,"Yayınevi"),(40,"Yılı"),(40,"Sayfa")]
-            for ind,dgr in enumerate(kolonbilgi):
-                self.QtLibrary.tableWidget_4_1_2.setColumnWidth(ind,dgr[0])
-                self.QtLibrary.tableWidget_4_1_2.setHorizontalHeaderItem(ind,QTableWidgetItem(dgr[1]))
-            else:pass            
+                #Kolon aralıklarını ayarlama
+                kolonbilgi=[(50,"Sıra No"),(190,"Adı"),(190,"Yazarı"),(130,"Çeviren"),
+                                (130,"Turu"),(165,"Yayınevi"),(40,"Yılı"),(40,"Sayfa")]
+                for ind,dgr in enumerate(kolonbilgi):
+                    self.QtLibrary.tableWidget_4_1_2.setColumnWidth(ind,dgr[0])
+                    self.QtLibrary.tableWidget_4_1_2.setHorizontalHeaderItem(ind,QTableWidgetItem(dgr[1]))
         else:
             self.QtLibrary.statusbar.showMessage("Temizlenecek Veri Yok!",self.dur_msj)
 
@@ -196,7 +195,7 @@ class Guest(QMainWindow):
 
         #####  Liste  genişliği ve adı ayarlama  #######
         self.QtLibrary.tableWidget_4_2_1.setColumnWidth(0,200)
-        self.QtLibrary.tableWidget_4_2_1.setHorizontalHeaderItem(0,QTableWidgetItem("Seçilen Tür"))
+        self.QtLibrary.tableWidget_4_2_1.setHorizontalHeaderItem(0,QTableWidgetItem("Seçilen Yazar"))
         self.QtLibrary.tableWidget_4_2_1.setRowCount(1)
 
         #Kolon aralıklarını ayarlama
@@ -251,19 +250,18 @@ class Guest(QMainWindow):
 
                 self.QtLibrary.tableWidget_4_2_1.clear() 
                 self.QtLibrary.pushButton_4_2_temizle.setEnabled(False)               
-                self.QtLibrary.tableWidget_4_2_1.setHorizontalHeaderItem(0,QTableWidgetItem("Seçilen Tür"))
+                self.QtLibrary.tableWidget_4_2_1.setHorizontalHeaderItem(0,QTableWidgetItem("Seçilen Yazar"))
                 self.QtLibrary.tableWidget_4_2_1.setRowCount(1)
 
                 self.QtLibrary.tableWidget_4_2_2.clear()
                 self.QtLibrary.tableWidget_4_2_2.setRowCount(1)
                 self.QtLibrary.statusbar.showMessage("Veriler temizlendi",self.dur_msj)
-             #Kolon aralıklarını ayarlama
-            kolonbilgi=[(50,"Sıra No"),(190,"Adı"),(190,"Yazarı"),(130,"Çeviren"),
-                            (130,"Turu"),(165,"Yayınevi"),(40,"Yılı"),(40,"Sayfa")]
-            for ind,dgr in enumerate(kolonbilgi):
-                self.QtLibrary.tableWidget_4_2_2.setColumnWidth(ind,dgr[0])
-                self.QtLibrary.tableWidget_4_2_2.setHorizontalHeaderItem(ind,QTableWidgetItem(dgr[1]))
-            else:pass            
+                #Kolon aralıklarını ayarlama
+                kolonbilgi=[(50,"Sıra No"),(190,"Adı"),(190,"Yazarı"),(130,"Çeviren"),
+                                (130,"Turu"),(165,"Yayınevi"),(40,"Yılı"),(40,"Sayfa")]
+                for ind,dgr in enumerate(kolonbilgi):
+                    self.QtLibrary.tableWidget_4_2_2.setColumnWidth(ind,dgr[0])
+                    self.QtLibrary.tableWidget_4_2_2.setHorizontalHeaderItem(ind,QTableWidgetItem(dgr[1]))
         else:
             self.QtLibrary.statusbar.showMessage("Temizlenecek Veri Yok!",self.dur_msj)
 
@@ -278,7 +276,7 @@ class Guest(QMainWindow):
 
         #####  Liste  genişliği ve adı ayarlama  #######
         self.QtLibrary.tableWidget_4_3_1.setColumnWidth(0,200)
-        self.QtLibrary.tableWidget_4_3_1.setHorizontalHeaderItem(0,QTableWidgetItem("Seçilen Tür"))
+        self.QtLibrary.tableWidget_4_3_1.setHorizontalHeaderItem(0,QTableWidgetItem("Seçilen Yayınevi"))
         self.QtLibrary.tableWidget_4_3_1.setRowCount(1)
 
         #Kolon aralıklarını ayarlam3
@@ -333,19 +331,18 @@ class Guest(QMainWindow):
 
                 self.QtLibrary.tableWidget_4_3_1.clear() 
                 self.QtLibrary.pushButton_4_3_temizle.setEnabled(False)               
-                self.QtLibrary.tableWidget_4_3_1.setHorizontalHeaderItem(0,QTableWidgetItem("Seçilen Tür"))
+                self.QtLibrary.tableWidget_4_3_1.setHorizontalHeaderItem(0,QTableWidgetItem("Seçilen Yayınevi"))
                 self.QtLibrary.tableWidget_4_3_1.setRowCount(1)
 
                 self.QtLibrary.tableWidget_4_3_2.clear()
                 self.QtLibrary.tableWidget_4_3_2.setRowCount(1)
                 self.QtLibrary.statusbar.showMessage("Veriler temizlendi",self.dur_msj)
-             #Kolon aralıklarını ayarlama
-            kolonbilgi=[(50,"Sıra No"),(190,"Adı"),(190,"Yazarı"),(130,"Çeviren"),
-                            (130,"Turu"),(165,"Yayınevi"),(40,"Yılı"),(40,"Sayfa")]
-            for ind,dgr in enumerate(kolonbilgi):
-                self.QtLibrary.tableWidget_4_3_2.setColumnWidth(ind,dgr[0])
-                self.QtLibrary.tableWidget_4_3_2.setHorizontalHeaderItem(ind,QTableWidgetItem(dgr[1]))
-            else:pass            
+                #Kolon aralıklarını ayarlama
+                kolonbilgi=[(50,"Sıra No"),(190,"Adı"),(190,"Yazarı"),(130,"Çeviren"),
+                                (130,"Turu"),(165,"Yayınevi"),(40,"Yılı"),(40,"Sayfa")]
+                for ind,dgr in enumerate(kolonbilgi):
+                    self.QtLibrary.tableWidget_4_3_2.setColumnWidth(ind,dgr[0])
+                    self.QtLibrary.tableWidget_4_3_2.setHorizontalHeaderItem(ind,QTableWidgetItem(dgr[1]))
         else:
             self.QtLibrary.statusbar.showMessage("Temizlenecek Veri Yok!",self.dur_msj)
 
@@ -360,7 +357,7 @@ class Guest(QMainWindow):
 
         #####  Liste  genişliği ve adı ayarlama  #######
         self.QtLibrary.tableWidget_4_4_1.setColumnWidth(0,200)
-        self.QtLibrary.tableWidget_4_4_1.setHorizontalHeaderItem(0,QTableWidgetItem("Seçilen Tür"))
+        self.QtLibrary.tableWidget_4_4_1.setHorizontalHeaderItem(0,QTableWidgetItem("Seçilen Yıl"))
         self.QtLibrary.tableWidget_4_4_1.setRowCount(1)
 
         #Kolon aralıklarını ayarlama
@@ -414,19 +411,18 @@ class Guest(QMainWindow):
 
                 self.QtLibrary.tableWidget_4_4_1.clear() 
                 self.QtLibrary.pushButton_4_4_temizle.setEnabled(False)               
-                self.QtLibrary.tableWidget_4_4_1.setHorizontalHeaderItem(0,QTableWidgetItem("Seçilen Tür"))
+                self.QtLibrary.tableWidget_4_4_1.setHorizontalHeaderItem(0,QTableWidgetItem("Seçilen Yıl"))
                 self.QtLibrary.tableWidget_4_4_1.setRowCount(1)
 
                 self.QtLibrary.tableWidget_4_4_2.clear()
                 self.QtLibrary.tableWidget_4_4_2.setRowCount(1)
                 self.QtLibrary.statusbar.showMessage("Veriler temizlendi",self.dur_msj)
-             #Kolon aralıklarını ayarlama
-            kolonbilgi=[(50,"Sıra No"),(190,"Adı"),(190,"Yazarı"),(130,"Çeviren"),
-                            (130,"Turu"),(165,"Yayınevi"),(40,"Yılı"),(40,"Sayfa")]
-            for ind,dgr in enumerate(kolonbilgi):
-                self.QtLibrary.tableWidget_4_4_2.setColumnWidth(ind,dgr[0])
-                self.QtLibrary.tableWidget_4_4_2.setHorizontalHeaderItem(ind,QTableWidgetItem(dgr[1]))
-            else:pass            
+                #Kolon aralıklarını ayarlama
+                kolonbilgi=[(50,"Sıra No"),(190,"Adı"),(190,"Yazarı"),(130,"Çeviren"),
+                                (130,"Turu"),(165,"Yayınevi"),(40,"Yılı"),(40,"Sayfa")]
+                for ind,dgr in enumerate(kolonbilgi):
+                    self.QtLibrary.tableWidget_4_4_2.setColumnWidth(ind,dgr[0])
+                    self.QtLibrary.tableWidget_4_4_2.setHorizontalHeaderItem(ind,QTableWidgetItem(dgr[1]))
         else:
             self.QtLibrary.statusbar.showMessage("Temizlenecek Veri Yok!",self.dur_msj)
 
