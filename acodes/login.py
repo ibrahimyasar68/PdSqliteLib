@@ -31,6 +31,7 @@ class Login(QMainWindow):
         self.QtLogin.lineEdit_parola.returnPressed.connect(self.giris)
         # Üye kaydı sadece giriş yapıldıktan sonra admin panelinden yapılır
         self.QtLogin.pushButton_yeni_kayit.hide()
+        self.QtLogin.pushButton_cikis.setToolTip("Programdan çık")
         self.QtLogin.pushButton_cikis.clicked.connect(self.close)
 
     def giris(self):

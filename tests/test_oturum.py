@@ -86,3 +86,11 @@ def test_pencere_basliklari(w):
     w.library.oturumu_kapat()
     giris_yap(w, "ayse1", UYE_SIFRE)
     assert w.guest.windowTitle() == "Yaşar Kütüphanesi - Üye Paneli - ayse1"
+
+
+def test_cikis_butonu_ikonu(w):
+    from PyQt5.QtCore import QFile
+    buton = w.QtLogin.pushButton_cikis
+    assert QFile(":/pic/guc.png").exists()          # ikon programın içinde, dışarıdaki dosyaya bağlı değil
+    assert not buton.icon().isNull() and buton.icon().availableSizes()
+    assert buton.toolTip() == "Programdan çık"
