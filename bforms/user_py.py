@@ -15,7 +15,6 @@ class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(900, 680)
-        MainWindow.setGeometry(240,20,1020,680)
         MainWindow.setMinimumSize(QtCore.QSize(900, 680))
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
@@ -230,4 +229,4 @@ class Ui_MainWindow(object):
         self.lineEdit_adi_soyadi.setPlaceholderText(_translate("MainWindow", "Adı Soyadı"))
         self.lineEdit_telefon.setPlaceholderText(_translate("MainWindow", "Telefon"))
         self.lineEdit_mail.setPlaceholderText(_translate("MainWindow", "Mail Adresi"))
-import bforms.media_rc
+from bforms import media_rc

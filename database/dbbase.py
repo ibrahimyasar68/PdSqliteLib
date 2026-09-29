@@ -28,15 +28,15 @@ def db_yolu():
 DB_YOLU = db_yolu()
 
 
+# Uygulama tek bir bağlantı kullanır (dbframe.py de bunu kullanır)
 baglantı = sqlite3.connect(DB_YOLU)
 islem=baglantı.cursor()
-baglantı.commit()
 
 
 #Kayıt ekleme (ActifLibrary)
 def ekle_kayit(kayit):
     ekle="Insert Into kayitlistesi (adi, yazari, ceviren, turu, yayinevi, yili, sayfa) values (?,?,?,?,?,?,?)"
-    islem.execute(ekle,((kayit[0]),(kayit[1]),(kayit[2]),(kayit[3]),(kayit[4]),(kayit[5]),(kayit[6])))
+    islem.execute(ekle,kayit[:7])
     baglantı.commit()
 
 
@@ -47,11 +47,11 @@ def degistir_kayit(kayit):
     baglantı.commit()
 
 
-#isme göre kayıt silme (ActifLibrary)  
+# id ile kayıt silme (ActifLibrary)
 def sil_kayit(id):
     sorgu=("Delete From kayitlistesi where Id=?")
     islem.execute(sorgu,(id,))
-    baglantı.commit() 
+    baglantı.commit()
 
 
 # Şifre hash'leme: "pbkdf2$tekrar$tuz$hash" biçiminde saklanır
@@ -84,26 +84,15 @@ def user_ekle(user):
     baglantı.commit()
 
 
+# Ödünç verme (follow)
 def save_work_to_db(kayit):
-    baglantı = sqlite3.connect(DB_YOLU)
-    islem=baglantı.cursor()
-    baglantı.commit()
     ekle="Insert Into follow (userId,bookId,outdate,outtime,status,indate,intime) values (?,?,?,?,?,?,?)"
-    islem.execute(ekle,((kayit[0]),(kayit[1]),(kayit[2]),(kayit[3]),(kayit[4]),(kayit[5]),(kayit[6])))
+    islem.execute(ekle,(kayit[0],kayit[1],str(kayit[2]),kayit[3],kayit[4],kayit[5],kayit[6]))
     baglantı.commit()
-    baglantı.close()
 
-def uptate_work_to_db(kayit):
-    baglantı = sqlite3.connect(DB_YOLU)
-    islem=baglantı.cursor()
-    baglantı.commit()
+# İade alma (follow)
+def update_work_to_db(kayit):
     # Sadece dışarıdaki (status='out') kayıt güncellenir, geçmiş iadeler korunur
     dgsm="Update follow Set status=?, indate=?, intime=? where userId=? and bookId=? and status='out'"
     islem.execute(dgsm,(kayit[4],str(kayit[5]),kayit[6],str(kayit[0]),str(kayit[1])))
     baglantı.commit()
-    baglantı.close()
-    
-
-if __name__=="__main__": 
-    pass
- 

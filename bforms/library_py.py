@@ -2969,4 +2969,4 @@ class Ui_MainWindow(object):
         item.setText(_translate("MainWindow", "New Column"))
         self.tabWidget_6.setTabText(self.tabWidget_6.indexOf(self.tab_6_3), _translate("MainWindow", "Dışardaki  Kitaplar"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_6), _translate("MainWindow", "Kitap Verme"))
-import bforms.media_rc
+from bforms import media_rc

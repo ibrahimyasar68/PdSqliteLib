@@ -20,6 +20,9 @@ fi
     --clean \
     --icon "$PWD/media/family.ico" \
     --osx-bundle-identifier com.pdsqlitelib.app \
+    --exclude-module matplotlib \
+    --exclude-module PIL \
+    --exclude-module tkinter \
     --add-data "$PWD/data/DBL_Kayit.db:data" \
     --workpath build/pyinstaller \
     --specpath build/pyinstaller \

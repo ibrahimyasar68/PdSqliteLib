@@ -1,35 +1,20 @@
-## Ui dosyalarını py dosyalarına çevirme ##
-===========================================
-python -m PyQt5.uic.pyuic -x login_ui.ui -o login_py.py
+## Ui ve medya dosyalarını py dosyalarına çevirme ##
+=====================================================
+Sanal ortam etkinken proje klasöründen:
+
+    python scripts/convertFiles.py
+
+Bu betik cuis/*.ui dosyalarını bforms/*_py.py dosyalarına, media/media.qrc
+dosyasını bforms/media_rc.py dosyasına çevirir.
 
 
+## bforms/ altındaki dosyalar elle düzenlenmez ##
+=================================================
+Dönüştürmeden sonra elle bir şey eklemek gerekmez; her dönüştürmede bu dosyalar
+yeniden yazılır. Pencere ayarları acodes/ altındaki dosyalarda yapılır:
 
-## medya(.qrc) dosyalarını py dosyasına çevirme ##
-==================================================
-pyrcc5 media.qrc -o media_rc.py
-
-
-=====================
-## Çerçeveyi kaldırma 
-====================== 
-login_py.py dosyasına [MainWindow.resize(850, 680)] 
-satırından sonra 17 ve 18 satırlar olarak;
--------------------------------------------
-MainWindow.setGeometry(260,20,800,700)
-MainWindow.setWindowFlags(QtCore.Qt.FramelessWindowHint)
-MainWindow.setAttribute(QtCore.Qt.WA_TranslucentBackground)
-
-
-
-user_py.py dosyasına [MainWindow.resize(900, 680)] 
-satırından sonra 17 ve 18 satırlar olarak;
--------------------------------------------
-MainWindow.setGeometry(240,20,1020,680)
-MainWindow.setWindowFlags(QtCore.Qt.FramelessWindowHint)
-MainWindow.setAttribute(QtCore.Qt.WA_TranslucentBackground)
-
-veya
-
-login.py ie user.py dosyalarına;
----------------------------------
-self.setWindowFlags(Qt.FramelessWindowHint)
+- Çerçeveyi kaldırma ve pencere konumu: acodes/login.py, acodes/user.py
+  self.setWindowFlags(Qt.FramelessWindowHint)
+  self.setGeometry(...) / self.move(...)
+- Kaynak dosyası (media_rc) içe aktarma satırını betik otomatik üretir
+  (pyuic5 --import-from=bforms).

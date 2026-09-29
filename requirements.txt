@@ -1,7 +1,6 @@
 # Uygulama bağımlılıkları (Python 3.9 ile test edildi)
 PyQt5>=5.15,<5.16
 pandas>=2.0
-matplotlib>=3.7
 
 # Sadece .app/.exe paketi oluşturmak için gerekir (scripts/build_mac.sh):
 #   pip install pyinstaller pillow

@@ -1,9 +1,5 @@
 import pandas as pd
-import matplotlib.pyplot as plt
-import sqlite3
-from database.dbbase import DB_YOLU, sifre_dogrula, sifre_guncelle
-
-baglantı= sqlite3.connect(DB_YOLU)
+from database.dbbase import baglantı, sifre_dogrula, sifre_guncelle
 
 # Sorguya adı yazılabilecek kolonlar (değerler her zaman ? ile verilir)
 KITAP_KOLON = {'Id','Adi','Yazari','Ceviren','Turu','Yayinevi','Yili','Sayfa'}
@@ -18,61 +14,32 @@ def kolon(ad, izinli):
 ###  Book Table   ####
 ######################
 
-def df_count_items():
-    dfbook=pd.read_sql_query("SELECT * FROM kayitlistesi",baglantı)
-    sayi=len(dfbook['Id'])
-    return sayi
-
 def df_all_list():
-    dfbook=pd.read_sql_query("SELECT * FROM kayitlistesi",baglantı)
-    snc=[]
-    for i in range(df_count_items()):
-        snc.append((dfbook.iloc[i]).values)
-    return snc
+    return baglantı.execute("SELECT * FROM kayitlistesi").fetchall()
 
+## Filtre açılır listeleri için bir kolondaki farklı değerler (boşlar hariç)
 def df_sort_list(sort):
-    dfbook=pd.read_sql_query("SELECT * FROM kayitlistesi",baglantı)
-    snc=list(dfbook[sort].unique())
-    snc.sort()
-    return snc
+    k=kolon(sort,KITAP_KOLON)
+    satirlar=baglantı.execute(f"SELECT DISTINCT {k} FROM kayitlistesi WHERE {k} IS NOT NULL AND {k}<>''").fetchall()
+    return sorted(str(s[0]) for s in satirlar)
 
 ## Açılır listeler için (id, adı, yayınevi, yılı) listesi
 def df_book_id_list():
     return baglantı.execute("SELECT Id, Adi, Yayinevi, Yili FROM kayitlistesi ORDER BY Adi, Yili").fetchall()
 
+## Filtre sonuçları: kolonu verilen değere eşit kitaplar
 def df_srt_fltr(sort,name):
-    snc=pd.read_sql_query(f"SELECT * FROM kayitlistesi WHERE {kolon(sort,KITAP_KOLON)}=?",baglantı,params=(name,))
-    sn=[]
-    for i in range(len(snc)):
-        sn.append(([*(snc.iloc[i])]))
-    return len(snc),sn
+    return baglantı.execute(f"SELECT * FROM kayitlistesi WHERE {kolon(sort,KITAP_KOLON)}=?",(name,)).fetchall()
 
-def rapor(sor,cnt): ###İstatistik için####
+## İstatistik: kolondaki her değer için kitap sayısı (en çok olan cnt tanesi)
+def rapor(sor,cnt):
     dfbook=pd.read_sql_query("SELECT * FROM kayitlistesi",baglantı)
     snc=dfbook.groupby(sor)['Yili'].count().sort_values().tail(cnt)[::-1]
     return snc
 
-def piegraf():
-    liste=rapor('Turu',15)
-    names=liste.index[::]
-    val=liste.values[::]
-    valint=list(float(i) for i in val)
-    myexplode=[]
-    for i in range(len(valint)):
-        myexplode.append(0.05)
-    figure=plt.figure()
-    axes=figure.add_axes([0,0,1,1])
-    axes.pie(valint,labels=names, shadow=True, explode=myexplode, autopct="%1.1f%%")
-    plt.show()
-
 ######################
 ###  User Table   ####
 ######################
-
-def df_user_list(key):
-    dfuser=pd.read_sql_query("SELECT * FROM users",baglantı)
-    snc=list(dfuser[key])
-    return snc
 
 ## Kitap verme ekranı için (id, adı soyadı, kullanıcı adı) listesi
 def df_user_id_list():
@@ -81,14 +48,9 @@ def df_user_id_list():
 def df_user_find_by_id(id):
     return list(baglantı.execute("SELECT * FROM users WHERE id=?",(id,)).fetchone())
 
+## Bu kolonda bu değere sahip kullanıcı var mı?
 def df_user_query(a,b):
-    sayi=baglantı.execute(f"SELECT COUNT(*) FROM users WHERE {kolon(a,USER_KOLON)}=?",(b,)).fetchone()[0]
-    if sayi==0:
-        return False
-    elif sayi==1:
-        return True
-    else:
-        return None
+    return baglantı.execute(f"SELECT COUNT(*) FROM users WHERE {kolon(a,USER_KOLON)}=?",(b,)).fetchone()[0]>0
 
 ## Giriş kontrolü: doğruysa yetkiyi, yanlışsa None döndürür
 def giris_kontrol(name,paw):
@@ -132,11 +94,3 @@ def df_work_table_book():
                               WHERE f.status='out'""").fetchall()
     return [list(satir) for satir in kayit]
 
-
-if __name__ == "__main__":
-
-    # piegraf()
-
-    # x=piegraf()
-    # x.show()
-    pass

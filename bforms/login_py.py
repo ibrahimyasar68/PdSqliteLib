@@ -15,7 +15,6 @@ class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(850, 680)
-        MainWindow.setGeometry(260,20,800,700)
         MainWindow.setMinimumSize(QtCore.QSize(850, 680))
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
@@ -177,7 +176,7 @@ class Ui_MainWindow(object):
 "")
         self.pushButton_cikis.setText("")
         icon = QtGui.QIcon()
-        icon.addPixmap(QtGui.QPixmap("cuis\\../../Media/icon/sekiller/8666692_power_icon.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon.addPixmap(QtGui.QPixmap("cuis/../../Media/icon/sekiller/8666692_power_icon.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.pushButton_cikis.setIcon(icon)
         self.pushButton_cikis.setIconSize(QtCore.QSize(26, 22))
         self.pushButton_cikis.setObjectName("pushButton_cikis")
@@ -213,4 +212,4 @@ class Ui_MainWindow(object):
         self.lineEdit_parola.setToolTip(_translate("MainWindow", "Parolayı Girin"))
         self.pushButton_giris.setText(_translate("MainWindow", "G i r i ş"))
         self.pushButton_yeni_kayit.setText(_translate("MainWindow", "Yeni Kayıt"))
-import bforms.media_rc
+from bforms import media_rc

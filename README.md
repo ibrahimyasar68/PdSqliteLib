@@ -78,6 +78,7 @@ Apple Silicon (arm64) için derlenir.
 ```
 main.py              Giriş noktası
 acodes/              Pencerelerin iş mantığı (login, library, guest, user)
+acodes/ortak.py      Admin ve Guest panellerinde ortak sekmeler (liste, filtre, istatistik)
 bforms/              .ui dosyalarından üretilen formlar (elle düzenlenmez)
 cuis/                Qt Designer .ui kaynakları
 database/dbbase.py   Yazma işlemleri, şifre hash'leme, veritabanı yolu
