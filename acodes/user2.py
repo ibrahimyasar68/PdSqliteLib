@@ -14,6 +14,17 @@ class User2(QMainWindow):
         self.QtUser.setupUi(self)
         self.dur_msj=3000
         self.setWindowFlags(Qt.FramelessWindowHint)
+        # Mac: tam ekran panelin üstünde açılınca ekrana yayılmasın
+        self.setFixedSize(900,680)
+        # Mac'te yetki kutusu saydam kalıp koyu arka planda görünmüyordu
+        self.QtUser.comboBox_yetki.setFixedSize(300,30)
+        self.QtUser.comboBox_yetki.setView(QListView())  # Mac'in yerel listesi seçenekleri kesiyordu
+        self.QtUser.comboBox_yetki.setStyleSheet(
+            'QComboBox { font: 11pt "Verdana"; color: black; background-color: rgba(255,255,255,220);'
+            ' border-radius: 6px; padding-left: 4px; }'
+            'QComboBox QAbstractItemView { background-color: white; color: black;'
+            ' selection-background-color: rgb(80,140,240); selection-color: white; }'
+            'QComboBox QAbstractItemView::item { min-height: 26px; padding-left: 4px; }')
         
         self.cmb_yetki()
 

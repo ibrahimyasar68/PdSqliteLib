@@ -11,7 +11,7 @@ cd "$(dirname "$0")/.."
 if [ ! -x .venv/bin/python ]; then
     python3 -m venv .venv
 fi
-.venv/bin/pip install -q PyQt5 pandas matplotlib pyinstaller pillow
+.venv/bin/pip install -q -r requirements.txt pyinstaller pillow
 
 .venv/bin/pyinstaller main.py \
     --name PdSqliteLib \
