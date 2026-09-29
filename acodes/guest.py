@@ -445,10 +445,10 @@ class Guest(QMainWindow):
         for ind,dgr in enumerate(kolonbilgi):
                 self.QtLibrary.tableWidget_5_1_1.setColumnWidth(ind,dgr[0])
                 self.QtLibrary.tableWidget_5_1_1.setHorizontalHeaderItem(ind,QTableWidgetItem(dgr[1]))
-        self.QtLibrary.tableWidget_5_1_1.setRowCount(self.cnt2)
         kayit=rapor('Turu',self.cnt2) 
-        for i in range(self.cnt2):                 
-            self.QtLibrary.tableWidget_5_1_1.setItem(i,0,QTableWidgetItem(kayit.index[i]))          
+        self.QtLibrary.tableWidget_5_1_1.setRowCount(len(kayit))
+        for i in range(len(kayit)):                 
+            self.QtLibrary.tableWidget_5_1_1.setItem(i,0,QTableWidgetItem(str(kayit.index[i])))          
             self.QtLibrary.tableWidget_5_1_1.setItem(i,1,QTableWidgetItem(str(kayit.values[i])))
        
     def table_5_1_2(self): 
@@ -456,10 +456,10 @@ class Guest(QMainWindow):
         for ind,dgr in enumerate(kolonbilgi):
                 self.QtLibrary.tableWidget_5_1_2.setColumnWidth(ind,dgr[0])
                 self.QtLibrary.tableWidget_5_1_2.setHorizontalHeaderItem(ind,QTableWidgetItem(dgr[1]))
-        self.QtLibrary.tableWidget_5_1_2.setRowCount(self.cnt3)
         kayit=rapor('Yazari',self.cnt3) 
-        for i in range(self.cnt3):                 
-            self.QtLibrary.tableWidget_5_1_2.setItem(i,0,QTableWidgetItem(kayit.index[i]))          
+        self.QtLibrary.tableWidget_5_1_2.setRowCount(len(kayit))
+        for i in range(len(kayit)):                 
+            self.QtLibrary.tableWidget_5_1_2.setItem(i,0,QTableWidgetItem(str(kayit.index[i])))          
             self.QtLibrary.tableWidget_5_1_2.setItem(i,1,QTableWidgetItem(str(kayit.values[i])))
     
     def table_5_1_3(self):       
@@ -467,10 +467,10 @@ class Guest(QMainWindow):
         for ind,dgr in enumerate(kolonbilgi):
                 self.QtLibrary.tableWidget_5_1_3.setColumnWidth(ind,dgr[0])
                 self.QtLibrary.tableWidget_5_1_3.setHorizontalHeaderItem(ind,QTableWidgetItem(dgr[1]))
-        self.QtLibrary.tableWidget_5_1_3.setRowCount(self.cnt2)
         kayit=rapor('Yayinevi',self.cnt2) 
-        for i in range(self.cnt2):                 
-            self.QtLibrary.tableWidget_5_1_3.setItem(i,0,QTableWidgetItem(kayit.index[i]))          
+        self.QtLibrary.tableWidget_5_1_3.setRowCount(len(kayit))
+        for i in range(len(kayit)):                 
+            self.QtLibrary.tableWidget_5_1_3.setItem(i,0,QTableWidgetItem(str(kayit.index[i])))          
             self.QtLibrary.tableWidget_5_1_3.setItem(i,1,QTableWidgetItem(str(kayit.values[i])))
 
     def table_5_1_4(self):       
@@ -478,11 +478,11 @@ class Guest(QMainWindow):
         for ind,dgr in enumerate(kolonbilgi):
                 self.QtLibrary.tableWidget_5_1_4.setColumnWidth(ind,dgr[0])
                 self.QtLibrary.tableWidget_5_1_4.setHorizontalHeaderItem(ind,QTableWidgetItem(dgr[1]))
-        self.QtLibrary.tableWidget_5_1_4.setRowCount(self.cnt2)
         kayit1=rapor('Yili',self.cnt2)
         kayit=kayit1.sort_index()
-        for i in range(self.cnt2):                 
-            self.QtLibrary.tableWidget_5_1_4.setItem(i,0,QTableWidgetItem(kayit.index[i]))          
+        self.QtLibrary.tableWidget_5_1_4.setRowCount(len(kayit))
+        for i in range(len(kayit)):                 
+            self.QtLibrary.tableWidget_5_1_4.setItem(i,0,QTableWidgetItem(str(kayit.index[i])))          
             self.QtLibrary.tableWidget_5_1_4.setItem(i,1,QTableWidgetItem(str(kayit.values[i])))
 
     ##################################

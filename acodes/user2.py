@@ -42,12 +42,6 @@ class User2(QMainWindow):
         if  not (self.QtUser.lineEdit_kullanici_adi.text()):
             QMessageBox.information(self,"Uyarı!","Önce kullanıcı adı girilmelidir!")
             self.QtUser.lineEdit_sifre.clear()
-        else:
-            if df_user_query('sifre',self.QtUser.lineEdit_sifre.text()):
-                QMessageBox.information(self,"Uyarı!","Şifre kullanılmaktadır!")
-                self.QtUser.statusbar.showMessage("Şifre kullanılmaktadır. Lütfen yeni bir şifre deneyin",self.dur_msj)   
-                self.QtUser.lineEdit_sifre.clear()
-            else:pass   
 
     def chk_adi_soyadi(self):
         if not self.QtUser.lineEdit_sifre.text():
@@ -95,7 +89,6 @@ class User2(QMainWindow):
                 kayit.append(self.QtUser.comboBox_yetki.currentText())      
                 cvb=onay(f"{kayit[0]} kaydı yapılsın mı?")
                 if cvb==QMessageBox.Yes:   
-                    print(kayit)
                     user_ekle(kayit)
                     self.clear_form()
                 else:pass

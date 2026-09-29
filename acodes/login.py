@@ -4,7 +4,7 @@ from acodes.library import Library
 from acodes.guest import Guest
 from acodes.user2 import User2
 from bforms.login_py import Ui_MainWindow
-from database.dbframe import df_user_list,authority,df_pasw_query_by_name
+from database.dbframe import giris_kontrol
 
 
 class Login(QMainWindow):
@@ -30,33 +30,24 @@ class Login(QMainWindow):
         ad=str(f"{self.QtLogin.lineEdit_kullanci_adi.text()}")
         sifre=str(f"{self.QtLogin.lineEdit_parola.text()}")
                
-        kullanicilar=df_user_list('kullanici')  
-        sifreler=df_user_list('sifre')
-
         if ad=="" or sifre=="":
             self.QtLogin.statusbar.showMessage("Kullanıcı adı ve parola bilgilerini giriniz!",self.msj_tm)
-           
         else:
-            if (ad not in kullanicilar) and (sifre not in sifreler): 
-                self.QtLogin.statusbar.showMessage("Kullanıcı adı ve parola yanlış!", self.msj_tm)
-            else:           
-                if (ad not in kullanicilar):
-                    self.QtLogin.statusbar.showMessage("Kullanıcı adı yanlış!", self.msj_tm)
-                else:            
-                    if df_pasw_query_by_name(ad,sifre):
-                        self.QtLogin.statusbar.showMessage("Şifre yanlış!", self.msj_tm)
-                    else:
-                        if authority(ad)=='admin':                                            
-                            self.library.showFullScreen()
-                            self.library.user_name(self.QtLogin.lineEdit_kullanci_adi.text())
-                            self.close()
-                        elif authority(ad)=='guest': 
-                            self.guest.showFullScreen()
-                            self.guest.user_name(self.QtLogin.lineEdit_kullanci_adi.text())
-                            self.close()
-                        else:
-                            self.QtLogin.statusbar.showMessage("Yetkiniz yok!", self.msj_tm)
-     
+            yetki=giris_kontrol(ad,sifre)
+            if yetki is None:
+                # Hangisinin yanlış olduğu söylenmez (kullanıcı adı tahminini zorlaştırır)
+                self.QtLogin.statusbar.showMessage("Kullanıcı adı veya parola yanlış!", self.msj_tm)
+            elif yetki=='admin':
+                self.library.showFullScreen()
+                self.library.user_name(ad)
+                self.close()
+            elif yetki=='guest':
+                self.guest.showFullScreen()
+                self.guest.user_name(ad)
+                self.close()
+            else:
+                self.QtLogin.statusbar.showMessage("Yetkiniz yok!", self.msj_tm)
+
     def yeni_kayit(self):
         self.user2.show()
 

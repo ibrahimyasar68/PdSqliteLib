@@ -25,6 +25,10 @@ class Library(QMainWindow):
         self.list44=[]
         self.flag_book=False
         self.flag_user=False
+        self.flag_book2=False
+        self.flag_user2=False
+        self.kisi_6_1=None
+        self.kisi_6_2=None
         
 
         ###  Tab_1 Olaylar  #########
@@ -276,6 +280,9 @@ class Library(QMainWindow):
         self.QtLibrary.pushButton_3_3_iptal.setEnabled(True)
             
     def delete_item_3_3(self):
+        if kitap_oduncte(self.QtLibrary.lineEdit_3_3_id.text()):
+            QMessageBox.information(self,"Uyarı!","Bu kitap ödünçte. İade alınmadan silinemez!")
+            return
         cvb=onay("Kayıt silinsin mi?")
         if cvb==QMessageBox.Yes:
             sil_kayit(int(self.QtLibrary.lineEdit_3_3_id.text()))            
@@ -648,10 +655,10 @@ class Library(QMainWindow):
         for ind,dgr in enumerate(kolonbilgi):
                 self.QtLibrary.tableWidget_5_1_1.setColumnWidth(ind,dgr[0])
                 self.QtLibrary.tableWidget_5_1_1.setHorizontalHeaderItem(ind,QTableWidgetItem(dgr[1]))
-        self.QtLibrary.tableWidget_5_1_1.setRowCount(self.cnt2)
         kayit=rapor('Turu',self.cnt2) 
-        for i in range(self.cnt2):                 
-            self.QtLibrary.tableWidget_5_1_1.setItem(i,0,QTableWidgetItem(kayit.index[i]))          
+        self.QtLibrary.tableWidget_5_1_1.setRowCount(len(kayit))
+        for i in range(len(kayit)):                 
+            self.QtLibrary.tableWidget_5_1_1.setItem(i,0,QTableWidgetItem(str(kayit.index[i])))          
             self.QtLibrary.tableWidget_5_1_1.setItem(i,1,QTableWidgetItem(str(kayit.values[i])))
        
     def table_5_1_2(self): 
@@ -659,10 +666,10 @@ class Library(QMainWindow):
         for ind,dgr in enumerate(kolonbilgi):
                 self.QtLibrary.tableWidget_5_1_2.setColumnWidth(ind,dgr[0])
                 self.QtLibrary.tableWidget_5_1_2.setHorizontalHeaderItem(ind,QTableWidgetItem(dgr[1]))
-        self.QtLibrary.tableWidget_5_1_2.setRowCount(self.cnt3)
         kayit=rapor('Yazari',self.cnt3) 
-        for i in range(self.cnt3):                 
-            self.QtLibrary.tableWidget_5_1_2.setItem(i,0,QTableWidgetItem(kayit.index[i]))          
+        self.QtLibrary.tableWidget_5_1_2.setRowCount(len(kayit))
+        for i in range(len(kayit)):                 
+            self.QtLibrary.tableWidget_5_1_2.setItem(i,0,QTableWidgetItem(str(kayit.index[i])))          
             self.QtLibrary.tableWidget_5_1_2.setItem(i,1,QTableWidgetItem(str(kayit.values[i])))
     
     def table_5_1_3(self):       
@@ -670,10 +677,10 @@ class Library(QMainWindow):
         for ind,dgr in enumerate(kolonbilgi):
                 self.QtLibrary.tableWidget_5_1_3.setColumnWidth(ind,dgr[0])
                 self.QtLibrary.tableWidget_5_1_3.setHorizontalHeaderItem(ind,QTableWidgetItem(dgr[1]))
-        self.QtLibrary.tableWidget_5_1_3.setRowCount(self.cnt2)
         kayit=rapor('Yayinevi',self.cnt2) 
-        for i in range(self.cnt2):                 
-            self.QtLibrary.tableWidget_5_1_3.setItem(i,0,QTableWidgetItem(kayit.index[i]))          
+        self.QtLibrary.tableWidget_5_1_3.setRowCount(len(kayit))
+        for i in range(len(kayit)):                 
+            self.QtLibrary.tableWidget_5_1_3.setItem(i,0,QTableWidgetItem(str(kayit.index[i])))          
             self.QtLibrary.tableWidget_5_1_3.setItem(i,1,QTableWidgetItem(str(kayit.values[i])))
 
     def table_5_1_4(self):       
@@ -681,11 +688,11 @@ class Library(QMainWindow):
         for ind,dgr in enumerate(kolonbilgi):
                 self.QtLibrary.tableWidget_5_1_4.setColumnWidth(ind,dgr[0])
                 self.QtLibrary.tableWidget_5_1_4.setHorizontalHeaderItem(ind,QTableWidgetItem(dgr[1]))
-        self.QtLibrary.tableWidget_5_1_4.setRowCount(self.cnt2)
         kayit1=rapor('Yili',self.cnt2)
         kayit=kayit1.sort_index()
-        for i in range(self.cnt2):                 
-            self.QtLibrary.tableWidget_5_1_4.setItem(i,0,QTableWidgetItem(kayit.index[i]))          
+        self.QtLibrary.tableWidget_5_1_4.setRowCount(len(kayit))
+        for i in range(len(kayit)):                 
+            self.QtLibrary.tableWidget_5_1_4.setItem(i,0,QTableWidgetItem(str(kayit.index[i])))          
             self.QtLibrary.tableWidget_5_1_4.setItem(i,1,QTableWidgetItem(str(kayit.values[i])))
 
     ##################################
@@ -704,22 +711,20 @@ class Library(QMainWindow):
         if txt==(' Seçiniz...'):
             self.QtLibrary.statusbar.showMessage("Seçim yapınız",self.dur_msj)
         else:
-            verlis=df_work_book_list()
-            if txt not in verlis:
-                sayi,kyt=df_find_by_sort('Adi',txt)
-                if sayi==0: 
-                    self.QtLibrary.statusbar.showMessage(f"'{txt}' kaydı bulunamadı",self.dur_msj)
-                else:
-                    if sayi>1:
-                        cvb=onay(f"'{txt}' adında {sayi} kayıt bulundu.\nİlk kayıt gösterilsin mi?")
-                        if cvb==QMessageBox.No:
-                            self.QtLibrary.statusbar.showMessage("Yeniden kayıt girin")
-                        else:
-                            self.show_items_6_1_1(kyt)    
-                    else:
-                        self.show_items_6_1_1(kyt)  
-            else:
+            sayi,kyt=df_find_by_sort('Adi',txt)
+            if sayi==0: 
+                self.QtLibrary.statusbar.showMessage(f"'{txt}' kaydı bulunamadı",self.dur_msj)
+            elif kitap_oduncte(kyt[0]):
                 QMessageBox.information(self,"Uyarı!","Bu kitap başka bir üyededir!")
+            else:
+                if sayi>1:
+                    cvb=onay(f"'{txt}' adında {sayi} kayıt bulundu.\nİlk kayıt gösterilsin mi?")
+                    if cvb==QMessageBox.No:
+                        self.QtLibrary.statusbar.showMessage("Yeniden kayıt girin")
+                    else:
+                        self.show_items_6_1_1(kyt)    
+                else:
+                    self.show_items_6_1_1(kyt)  
 
     def show_items_6_1_1(self,kyt):
         kayit=kyt 
@@ -751,20 +756,22 @@ class Library(QMainWindow):
         self.QtLibrary.comboBox_6_1_1_liste_kitap.setCurrentIndex(0) 
 
     def list_user_6_1_2 (self):
-        cmb=(df_user_list('adi_soyadi'))
-        cmb.insert(0,' Seçiniz...')
-        self.QtLibrary.comboBox_6_1_2_liste_kisi.addItems(cmb)
+        # Aynı isimde iki üye olabileceği için her satırda kullanıcı id'si saklanır
+        self.QtLibrary.comboBox_6_1_2_liste_kisi.addItem(' Seçiniz...')
+        for id,adi in df_user_id_list():
+            self.QtLibrary.comboBox_6_1_2_liste_kisi.addItem(adi,id)
 
     def find_user_6_1_2(self):
-        txt=self.QtLibrary.comboBox_6_1_2_liste_kisi.currentText()
-        if txt==(' Seçiniz...'):
+        id=self.QtLibrary.comboBox_6_1_2_liste_kisi.currentData()
+        if id is None:
             self.QtLibrary.statusbar.showMessage("Seçim yapınız",self.dur_msj)
         else:
-            kyt=df_user_find(txt)
+            kyt=df_user_find_by_id(id)
             self.show_user_6_1_2(kyt)  
 
     def show_user_6_1_2(self,kyt):
         kayit=kyt    
+        self.kisi_6_1=kayit[0]
         self.QtLibrary.lineEdit_6_1_kullanici.setText(kayit[1])
         self.QtLibrary.lineEdit_6_1_adi_soyadi.setText(kayit[3])
         self.QtLibrary.lineEdit_6_1_telefon.setText(kayit[4])
@@ -781,6 +788,7 @@ class Library(QMainWindow):
         self.QtLibrary.lineEdit_6_1_telefon.clear()
         self.QtLibrary.lineEdit_6_1_mail.clear()
         self.QtLibrary.lineEdit_6_1_yetki.clear()
+        self.kisi_6_1=None
         self.flag_user=False 
         self.QtLibrary.pushButton_6_1_islemi_kaydet.setEnabled(False)
         self.QtLibrary.pushButton_6_1_2_bul_kisi_temizle.setEnabled(False)     
@@ -797,13 +805,14 @@ class Library(QMainWindow):
             cvb=onay("İşlemi kaydetmek istiyor musunuz?")
             if cvb==QMessageBox.Yes:
                 tdy=datetime.datetime.today()
-                kayit=[str((df_user_find(self.QtLibrary.comboBox_6_1_2_liste_kisi.currentText()))[0]),
+                kayit=[str(self.kisi_6_1),
                         self.QtLibrary.lineEdit_6_1_id.text(),
                         tdy.date(), datetime.datetime.strftime(tdy, '%X '),"out","",""]  
                 save_work_to_db(kayit)
                 self.QtLibrary.statusbar.showMessage("İşlem kaydedildi.",self.dur_msj)
                 self.clear_form_6_1_1()
                 self.clear_form_6_1_2() 
+                self.clear_form_6_2_1()  # İade listesi yeni kaydı göstersin
             else:pass
         else:
             self.QtLibrary.statusbar.showMessage("Kayıtta eksik var. Kontrol edin.",self.dur_msj)
@@ -811,33 +820,34 @@ class Library(QMainWindow):
 ### Tablo 2 İşlemleri  ###
 
     def list_user_6_2_1 (self):
-        cmb=df_work_user_list()
-        cmb.insert(0,' Seçiniz...')
-        self.QtLibrary.comboBox_6_2_1_liste_kisi.addItems(cmb)
+        self.QtLibrary.comboBox_6_2_1_liste_kisi.clear()
+        self.QtLibrary.comboBox_6_2_1_liste_kisi.addItem(' Seçiniz...')
+        for id,adi in df_work_user_list():
+            self.QtLibrary.comboBox_6_2_1_liste_kisi.addItem(adi,id)
 
     def find_user_6_2_1(self):
-        txt=self.QtLibrary.comboBox_6_2_1_liste_kisi.currentText()
-        if txt==(' Seçiniz...'):
+        id=self.QtLibrary.comboBox_6_2_1_liste_kisi.currentData()
+        if id is None:
             self.QtLibrary.statusbar.showMessage("Seçim yapınız",self.dur_msj)
         else:
-            kyt=df_user_find(txt)
+            kyt=df_user_find_by_id(id)
             self.show_user_6_2_1(kyt)
-            persid=df_user_find(kyt[3])[0]         
-            cmb2=df_work_perbook(persid)  
-            cmb2.insert(0,' Seçiniz...')
             self.QtLibrary.comboBox_6_2_2_liste_kitap.clear()
-            self.QtLibrary.comboBox_6_2_2_liste_kitap.addItems(cmb2)
+            self.QtLibrary.comboBox_6_2_2_liste_kitap.addItem(' Seçiniz...')
+            for kitap_id,adi in df_work_perbook(id):
+                self.QtLibrary.comboBox_6_2_2_liste_kitap.addItem(adi,kitap_id)
             self.QtLibrary.comboBox_6_2_2_liste_kitap.setEnabled(True)            
             self.QtLibrary.pushButton_6_2_2_bul_kitap.setEnabled(True)
 
     def show_user_6_2_1(self,kyt):
         kayit=kyt    
+        self.kisi_6_2=kayit[0]
         self.QtLibrary.lineEdit_6_2_kullanici.setText(kayit[1])
         self.QtLibrary.lineEdit_6_2_adi_soyadi.setText(kayit[3])
         self.QtLibrary.lineEdit_6_2_telefon.setText(kayit[4])
         self.QtLibrary.lineEdit_6_2_mail.setText(kayit[5])
         self.QtLibrary.lineEdit_6_2_yetki.setText(kayit[6])
-        self.flag_user=True
+        self.flag_user2=True
         self.check_bottom2()
         self.QtLibrary.pushButton_6_2_1_bul_kisi_temizle.setEnabled(True)
         self.QtLibrary.statusbar.showMessage(f"{self.QtLibrary.comboBox_6_2_1_liste_kisi.currentText()} bilgileri yazıldı.",self.dur_msj)
@@ -848,32 +858,22 @@ class Library(QMainWindow):
         self.QtLibrary.lineEdit_6_2_telefon.clear()
         self.QtLibrary.lineEdit_6_2_mail.clear()
         self.QtLibrary.lineEdit_6_2_yetki.clear()
-        self.flag_user=False 
+        self.kisi_6_2=None
+        self.flag_user2=False 
         self.QtLibrary.pushButton_6_2_islemi_kaydet.setEnabled(False)
         self.QtLibrary.pushButton_6_2_1_bul_kisi_temizle.setEnabled(False)     
-        self.QtLibrary.comboBox_6_2_1_liste_kisi.setCurrentIndex(0) 
+        self.list_user_6_2_1()
         self.QtLibrary.comboBox_6_2_2_liste_kitap.setEnabled(False)
         self.QtLibrary.comboBox_6_2_2_liste_kitap.clear()
         self.QtLibrary.pushButton_6_2_2_bul_kitap.setEnabled(False)
         self.clear_form_6_2_2()
 
     def find_item_6_2_2(self):
-        txt=self.QtLibrary.comboBox_6_2_2_liste_kitap.currentText()
-        if txt==(' Seçiniz...'):
+        kitap_id=self.QtLibrary.comboBox_6_2_2_liste_kitap.currentData()
+        if kitap_id is None:
             self.QtLibrary.statusbar.showMessage("Seçim yapınız",self.dur_msj)
         else:
-            sayi,kyt=df_find_by_sort('Adi',txt)
-            if sayi==0: 
-                self.QtLibrary.statusbar.showMessage(f"'{txt}' kaydı bulunamadı",self.dur_msj)
-            else:
-                if sayi>1:
-                    cvb=onay(f"'{txt}' adında {sayi} kayıt bulundu.\nİlk kayıt gösterilsin mi?")
-                    if cvb==QMessageBox.No:
-                        self.QtLibrary.statusbar.showMessage("Yeniden kayıt girin")
-                    else:
-                        self.show_items_6_2_2(kyt)    
-                else:
-                    self.show_items_6_2_2(kyt)  
+            self.show_items_6_2_2(df_book_find_by_id(kitap_id))
 
     def show_items_6_2_2(self,kyt):
         kayit=kyt 
@@ -885,7 +885,7 @@ class Library(QMainWindow):
         self.QtLibrary.lineEdit_6_2_yayinevi.setText(kayit[5])
         self.QtLibrary.lineEdit_6_2_yili.setText(kayit[6])
         self.QtLibrary.lineEdit_6_2_sayfa.setText(kayit[7])
-        self.flag_book=True
+        self.flag_book2=True
         self.check_bottom2()
         self.QtLibrary.pushButton_6_2_2_bul_kitap_temizle.setEnabled(True)
         self.QtLibrary.statusbar.showMessage(f"{self.QtLibrary.comboBox_6_2_2_liste_kitap.currentText()} bilgileri yazıldı.",self.dur_msj)
@@ -899,23 +899,23 @@ class Library(QMainWindow):
         self.QtLibrary.lineEdit_6_2_yayinevi.clear()
         self.QtLibrary.lineEdit_6_2_yili.clear()
         self.QtLibrary.lineEdit_6_2_sayfa.clear()
-        self.flag_book=False
+        self.flag_book2=False
         self.QtLibrary.pushButton_6_2_islemi_kaydet.setEnabled(False)
         self.QtLibrary.pushButton_6_2_2_bul_kitap_temizle.setEnabled(False)
         self.QtLibrary.comboBox_6_2_2_liste_kitap.setCurrentIndex(0) 
 
     def check_bottom2(self):
-        if self.flag_book and self.flag_user:
+        if self.flag_book2 and self.flag_user2:
             self.QtLibrary.pushButton_6_2_islemi_kaydet.setEnabled(True)
         else:
             self.QtLibrary.pushButton_6_2_islemi_kaydet.setEnabled(False)
 
     def save_work2(self):
-        if self.flag_book and self.flag_user:
+        if self.flag_book2 and self.flag_user2:
             cvb=onay("İşlemi kaydetmek istiyor musunuz?")
             if cvb==QMessageBox.Yes:
                 tdy=datetime.datetime.today()
-                kayit=[str((df_user_find(self.QtLibrary.comboBox_6_2_1_liste_kisi.currentText()))[0]),
+                kayit=[str(self.kisi_6_2),
                         self.QtLibrary.lineEdit_6_2_id.text(),"","","in",
                         tdy.date(), datetime.datetime.strftime(tdy, '%X ')]  
                 uptate_work_to_db(kayit)
