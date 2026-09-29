@@ -2,7 +2,6 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtCore import Qt
 from acodes.library import Library
 from acodes.guest import Guest
-from acodes.user2 import User2
 from bforms.login_py import Ui_MainWindow
 from database.dbframe import giris_kontrol
 
@@ -15,12 +14,12 @@ class Login(QMainWindow):
         self.setWindowFlags(Qt.FramelessWindowHint) 
         self.library=Library()
         self.guest=Guest()
-        self.user2=User2()
         self.msj_tm=2000 
 
         
         self.QtLogin.pushButton_giris.clicked.connect(self.giris)
-        self.QtLogin.pushButton_yeni_kayit.clicked.connect(self.yeni_kayit)
+        # Üye kaydı sadece giriş yapıldıktan sonra admin panelinden yapılır
+        self.QtLogin.pushButton_yeni_kayit.hide()
         self.QtLogin.pushButton_cikis.clicked.connect(self.cikis)
 
      
@@ -47,9 +46,6 @@ class Login(QMainWindow):
                 self.close()
             else:
                 self.QtLogin.statusbar.showMessage("Yetkiniz yok!", self.msj_tm)
-
-    def yeni_kayit(self):
-        self.user2.show()
 
     def cikis(self):
         self.close()

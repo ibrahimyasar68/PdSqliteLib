@@ -18,7 +18,6 @@ ui_files = [
     "cuis/library.ui",
     "cuis/login.ui",
     "cuis/user.ui",
-    "cuis/user2.ui",
     "cuis/guest.ui",  
 ]
 

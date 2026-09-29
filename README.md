@@ -10,15 +10,15 @@ Giriş ekranında kullanıcının yetkisine göre iki farklı panel açılır:
 
 | Sekme | Admin | Guest |
 |---|:---:|:---:|
-| **Giriş**: karşılama, yeni kullanıcı ekleme | ✓ | ✓ (kullanıcı ekleme yok) |
+| **Giriş**: karşılama, yeni kullanıcı / üye ekleme | ✓ | ✓ (kullanıcı ekleme yok) |
 | **Kitap Listesi**: tüm kitaplar | ✓ | ✓ |
 | **Kitap Kayıt**: ekleme, güncelleme, silme | ✓ | |
 | **Filtre**: tür, yazar, yayınevi ve yıla göre çoklu seçim | ✓ | ✓ |
 | **İstatistik**: en çok kitabı olan tür, yazar, yayınevi ve yıllar | ✓ | ✓ |
 | **Kitap Verme**: ödünç verme, iade alma, dışarıdaki kitaplar | ✓ | |
 
-Giriş ekranındaki **Yeni kayıt** butonuyla herkes kendine `guest` yetkili üyelik açabilir.
-`admin` yetkili kullanıcıyı sadece bir admin oluşturabilir.
+Yeni kullanıcı ve üye kayıtlarını (`admin` veya `guest`) sadece giriş yapmış bir admin,
+**Giriş** sekmesindeki **Yeni Kullanıcı Girişi** butonuyla oluşturabilir.
 
 ## Kurulum
 
@@ -77,7 +77,7 @@ Apple Silicon (arm64) için derlenir.
 
 ```
 main.py              Giriş noktası
-acodes/              Pencerelerin iş mantığı (login, library, guest, user, user2)
+acodes/              Pencerelerin iş mantığı (login, library, guest, user)
 bforms/              .ui dosyalarından üretilen formlar (elle düzenlenmez)
 cuis/                Qt Designer .ui kaynakları
 database/dbbase.py   Yazma işlemleri, şifre hash'leme, veritabanı yolu

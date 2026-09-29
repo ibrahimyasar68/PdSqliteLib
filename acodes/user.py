@@ -14,6 +14,8 @@ class User(QMainWindow):
         self.QtUser.setupUi(self)
         self.dur_msj=3000
         self.setWindowFlags(Qt.FramelessWindowHint)
+        # Admin panelindeki form ile giriş ekranındaki üye kaydı karışmasın
+        self.QtUser.label_2.setText("Y E N İ   K U L L A N I C I")
         # Mac: tam ekran panelin üstünde açılınca ekrana yayılmasın
         self.setFixedSize(900,680)
         # Mac'te yetki kutusu saydam kalıp koyu arka planda görünmüyordu
