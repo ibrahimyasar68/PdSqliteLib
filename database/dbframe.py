@@ -52,6 +52,17 @@ def df_user_find_by_id(id):
 def df_user_query(a,b):
     return baglantı.execute(f"SELECT COUNT(*) FROM users WHERE {kolon(a,USER_KOLON)}=?",(b,)).fetchone()[0]>0
 
+## Kullanıcı yönetimi ekranı için tüm kullanıcılar (şifre hariç)
+def df_user_all():
+    return baglantı.execute("SELECT id, kullanici, adi_soyadi, telefon, mail, yetki FROM users ORDER BY kullanici").fetchall()
+
+def admin_sayisi():
+    return baglantı.execute("SELECT COUNT(*) FROM users WHERE yetki='admin'").fetchone()[0]
+
+## Kullanıcının elinde iade edilmemiş kitap sayısı
+def kullanici_odunc_sayisi(id):
+    return baglantı.execute("SELECT COUNT(*) FROM follow WHERE userId=? AND status='out'",(str(id),)).fetchone()[0]
+
 ## Giriş kontrolü: doğruysa yetkiyi, yanlışsa None döndürür
 def giris_kontrol(name,paw):
     kayit=baglantı.execute("SELECT sifre, yetki FROM users WHERE kullanici=?",(name,)).fetchone()

@@ -1,0 +1,4 @@
+# Geliştirme ve test için (uygulama bağımlılıklarına ek olarak)
+-r requirements.txt
+pytest>=8
+pyflakes>=3

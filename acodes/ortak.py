@@ -65,6 +65,7 @@ class OrtakSekmeler:
     ##################################
 
     def user_name(self,name):
+        self.aktif_kullanici=name
         self.QtLibrary.label_log_on.setText(name)
 
     ##################################

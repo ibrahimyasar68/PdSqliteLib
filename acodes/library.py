@@ -1,11 +1,14 @@
-from PyQt5.QtWidgets import QApplication, QMainWindow, QMessageBox
+from PyQt5.QtWidgets import QApplication, QFileDialog, QMainWindow, QMessageBox, QVBoxLayout, QWidget
 from bforms.library_py import Ui_MainWindow
 from bforms.onay import onay
 from acodes.user import User
+from acodes.kullanici_yonetimi import KullaniciYonetimi, panel_butonu
 from acodes.ortak import OrtakSekmeler, FILTRELER, SECINIZ, tablo_basliklari, tabloya_yaz
 from database.dbframe import (df_book_id_list, df_book_find_by_id, df_user_id_list, df_user_find_by_id,
                               kitap_oduncte, df_work_user_list, df_work_perbook, df_work_table_book)
 from database.dbbase import ekle_kayit, degistir_kayit, sil_kayit, save_work_to_db, update_work_to_db
+from database.yedek import geri_yukle, yedek_al, yedek_hatasi, yedek_klasoru
+import os
 import datetime
 
 
@@ -47,10 +50,12 @@ class Library(OrtakSekmeler, QMainWindow):
         self.flag_user2=False
         self.kisi_6_1=None
         self.kisi_6_2=None
+        self.aktif_kullanici=None
 
         ###  Tab_1, 2, 4, 5 (Guest ile ortak)  #########
         self.ortak_sekmeleri_kur()
         self.QtLibrary.pushButton_1_yeni_kullanici.clicked.connect(self.user.show)
+        self.yonetim_butonlari()
 
         ###  Tab_3 Olaylar  #########
         self.QtLibrary.pushButton_3_1_kaydet.clicked.connect(self.save_book)
@@ -100,6 +105,59 @@ class Library(OrtakSekmeler, QMainWindow):
         self.create_tab_5()
         self.list_items_6_1_1()
         self.list_user_6_1_2()
+
+    ##################################
+    #####   Tab_1 Fonksiyonlar   #####
+    ##################################
+
+    def yonetim_butonlari(self):
+        ###  Giriş sekmesine ikinci buton sütunu (mevcut butonlarla aynı stilde)  ###
+        ornek=self.QtLibrary.pushButton_1_yeni_kullanici
+        sutun=QWidget(self.QtLibrary.tab_1)
+        sutun.setGeometry(810,440,221,170)
+        duzen=QVBoxLayout(sutun)
+        duzen.setContentsMargins(0,0,0,0)
+        self.btn_kullanicilar=panel_butonu(ornek,"Kullanıcı Yönetimi","pushButton_1_kullanicilar")
+        self.btn_yedek_al=panel_butonu(ornek,"Yedek Al","pushButton_1_yedek_al")
+        self.btn_geri_yukle=panel_butonu(ornek,"Yedekten Geri Yükle","pushButton_1_geri_yukle")
+        for b in (self.btn_kullanicilar,self.btn_yedek_al,self.btn_geri_yukle):
+            duzen.addWidget(b)
+        self.btn_kullanicilar.clicked.connect(self.kullanici_yonetimi)
+        self.btn_yedek_al.clicked.connect(self.yedek_al_ekrani)
+        self.btn_geri_yukle.clicked.connect(self.geri_yukle_ekrani)
+
+    def kullanici_yonetimi(self):
+        KullaniciYonetimi(self.aktif_kullanici, self).exec_()
+        self.yenile()
+
+    def yedek_al_ekrani(self):
+        varsayilan=os.path.join(yedek_klasoru(), f"DBL_Kayit_yedek_{datetime.date.today():%Y%m%d}.db")
+        yol,_=QFileDialog.getSaveFileName(self,"Yedek Al",varsayilan,"Veritabanı (*.db)")
+        if not yol:
+            return
+        try:
+            yedek_al(yol)
+        except Exception as hata:
+            QMessageBox.warning(self,"Uyarı!",f"Yedek alınamadı:\n{hata}")
+            return
+        QMessageBox.information(self,"Bilgi",f"Yedek alındı:\n{yol}")
+
+    def geri_yukle_ekrani(self):
+        yol,_=QFileDialog.getOpenFileName(self,"Yedekten Geri Yükle",yedek_klasoru(),"Veritabanı (*.db)")
+        if not yol:
+            return
+        hata=yedek_hatasi(yol)
+        if hata:
+            QMessageBox.warning(self,"Uyarı!",hata)
+            return
+        cvb=onay(f"Mevcut tüm kayıtlar bu yedektekilerle değiştirilecek:\n{os.path.basename(yol)}\n\n"
+                 "Mevcut halin yedeği önce otomatik olarak alınacak. Devam edilsin mi?")
+        if cvb!=QMessageBox.Yes:
+            return
+        onceki=geri_yukle(yol)
+        self.yenile()
+        self.clear_form_6_2_1()
+        QMessageBox.information(self,"Bilgi",f"Yedek geri yüklendi.\n\nÖnceki hal şuraya yedeklendi:\n{onceki}")
 
     ##################################
     #####   Tab_3 Fonksiyonlar   #####

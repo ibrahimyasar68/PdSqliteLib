@@ -6,11 +6,15 @@ import hmac
 import secrets
 import shutil
 import sys
+from database.sema import sema_olustur
 
 def db_yolu():
     """Geliştirmede proje içindeki data/ klasörü kullanılır.
     Paketlenmiş uygulamada (.app / .exe) veritabanı kullanıcı klasöründe tutulur;
-    ilk açılışta paketle gelen veritabanı oraya kopyalanır."""
+    ilk açılışta paketle gelen veritabanı oraya kopyalanır.
+    PDSQLITE_DB ortam değişkeni verilirse o dosya kullanılır (testler için)."""
+    if os.environ.get("PDSQLITE_DB"):
+        return os.environ["PDSQLITE_DB"]
     if not getattr(sys, "frozen", False):
         return os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "data", "DBL_Kayit.db")
     if sys.platform == "darwin":
@@ -29,8 +33,10 @@ DB_YOLU = db_yolu()
 
 
 # Uygulama tek bir bağlantı kullanır (dbframe.py de bunu kullanır)
+os.makedirs(os.path.dirname(os.path.abspath(DB_YOLU)), exist_ok=True)
 baglantı = sqlite3.connect(DB_YOLU)
 islem=baglantı.cursor()
+sema_olustur(baglantı)  # Eksik tablo varsa oluşturulur
 
 
 #Kayıt ekleme (ActifLibrary)
@@ -81,6 +87,19 @@ def sifre_guncelle(kullanici, sifre):
 def user_ekle(user):
     ekle="Insert Into users ( kullanici, sifre, adi_soyadi, telefon, mail, yetki) values (?,?,?,?,?,?)"
     islem.execute(ekle,(user[0],sifre_hashle(user[1]),user[2],user[3],user[4],user[5]))
+    baglantı.commit()
+
+
+# kullanıcı bilgilerini güncelleme (kullanıcı adı ve şifre hariç)
+def kullanici_guncelle(id, adi_soyadi, telefon, mail, yetki):
+    islem.execute("Update users Set adi_soyadi=?, telefon=?, mail=?, yetki=? where id=?",
+                  (adi_soyadi, telefon, mail, yetki, id))
+    baglantı.commit()
+
+
+# kullanıcı silme (ödünç geçmişi korunur)
+def kullanici_sil(id):
+    islem.execute("Delete From users where id=?", (id,))
     baglantı.commit()
 
 

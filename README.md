@@ -10,7 +10,7 @@ Giriş ekranında kullanıcının yetkisine göre iki farklı panel açılır:
 
 | Sekme | Admin | Guest |
 |---|:---:|:---:|
-| **Giriş**: karşılama, yeni kullanıcı / üye ekleme | ✓ | ✓ (kullanıcı ekleme yok) |
+| **Giriş**: yeni kullanıcı, kullanıcı yönetimi, yedekleme | ✓ | sadece kendi şifresini değiştirme |
 | **Kitap Listesi**: tüm kitaplar | ✓ | ✓ |
 | **Kitap Kayıt**: ekleme, güncelleme, silme | ✓ | |
 | **Filtre**: tür, yazar, yayınevi ve yıla göre çoklu seçim | ✓ | ✓ |
@@ -19,6 +19,29 @@ Giriş ekranında kullanıcının yetkisine göre iki farklı panel açılır:
 
 Yeni kullanıcı ve üye kayıtlarını (`admin` veya `guest`) sadece giriş yapmış bir admin,
 **Giriş** sekmesindeki **Yeni Kullanıcı Girişi** butonuyla oluşturabilir.
+
+### Kullanıcı yönetimi
+
+Admin panelinde **Giriş → Kullanıcı Yönetimi**: kullanıcıları listeleme, bilgilerini ve yetkisini
+düzenleme, şifresini sıfırlama ve silme. Kilitlenmeyi önleyen kurallar:
+
+- Kimse kendi hesabını silemez veya kendi yetkisini değiştiremez.
+- Son `admin` kullanıcı silinemez, yetkisi düşürülemez.
+- Elinde iade edilmemiş kitap olan kullanıcı silinemez. Silinen kullanıcının ödünç geçmişi korunur.
+- Şifreler en az 6 karakter olmalıdır.
+
+Guest kullanıcılar **Giriş → Şifremi Değiştir** ile kendi şifrelerini değiştirebilir (mevcut şifre sorulur).
+
+### Yedekleme
+
+- **Otomatik:** Program her gün ilk açılışta veritabanının yedeğini alır; son 10 otomatik yedek saklanır.
+- **Elle:** Admin panelinde **Giriş → Yedek Al** ile istenen yere (ör. USB bellek) yedek alınır.
+- **Geri yükleme:** **Giriş → Yedekten Geri Yükle**. Dosya önce doğrulanır (PdSqliteLib veritabanı mı,
+  içinde admin kullanıcı var mı); geri yüklemeden önce mevcut halin yedeği otomatik alınır.
+
+Yedekler veritabanının yanındaki `yedekler/` klasöründedir
+(`data/yedekler/` veya `~/Library/Application Support/PdSqliteLib/yedekler/`).
+Bu klasör aynı diskte durduğu için ara sıra harici bir diske de yedek almanız önerilir.
 
 ## Kurulum
 
@@ -52,6 +75,15 @@ git'e eklenmez. Yeni bir makinede bu dosyayı elde etmenin iki yolu var:
 .venv/bin/python main.py
 ```
 
+## Testler
+
+Testler geçici bir veritabanı kullanır; gerçek verilere dokunmaz ve pencere açmaz.
+
+```bash
+.venv/bin/pip install -r requirements-dev.txt
+.venv/bin/python -m pytest
+```
+
 ## macOS uygulaması (.app)
 
 ```bash
@@ -79,13 +111,17 @@ Apple Silicon (arm64) için derlenir.
 main.py              Giriş noktası
 acodes/              Pencerelerin iş mantığı (login, library, guest, user)
 acodes/ortak.py      Admin ve Guest panellerinde ortak sekmeler (liste, filtre, istatistik)
+acodes/kullanici_yonetimi.py  Kullanıcı yönetimi ve şifre değiştirme pencereleri
 bforms/              .ui dosyalarından üretilen formlar (elle düzenlenmez)
 cuis/                Qt Designer .ui kaynakları
 database/dbbase.py   Yazma işlemleri, şifre hash'leme, veritabanı yolu
 database/dbframe.py  Okuma, filtreleme ve raporlar
+database/sema.py     Tablo şeması (eksik tablolar açılışta oluşturulur)
+database/yedek.py    Yedek alma ve geri yükleme
+tests/               Otomatik testler (pytest)
 media/               Resimler, ikon ve media.qrc
 scripts/             Dönüştürme, veri aktarma ve paketleme betikleri
-data/                Veritabanı (git dışında)
+data/                Veritabanı ve yedekler (git dışında)
 ```
 
 ### Arayüzü düzenlemek

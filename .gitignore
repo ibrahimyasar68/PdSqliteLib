@@ -3,3 +3,4 @@ __pycache__/
 data/ilk_giris.txt
 dist/
 build/pyinstaller/
+.pytest_cache/

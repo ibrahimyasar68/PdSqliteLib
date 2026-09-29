@@ -6,6 +6,26 @@ from database.dbbase import user_ekle
 from bforms.onay import onay
 import re
 
+SIFRE_EN_AZ = 6
+
+
+def telefon_gecerli(tel):
+    return re.fullmatch(r"\d{10}", tel) is not None
+
+
+def mail_gecerli(mail):
+    return re.fullmatch(r"[\w.+-]+@[\w-]+(\.[\w-]+)*\.[a-zA-Z]{2,}", mail) is not None
+
+
+def sifre_hatasi(sifre, tekrar=None):
+    """Şifre kurallara uymuyorsa hata mesajını, uyuyorsa None döndürür."""
+    if len(sifre) < SIFRE_EN_AZ:
+        return f"Şifre en az {SIFRE_EN_AZ} karakter olmalıdır!"
+    if tekrar is not None and sifre != tekrar:
+        return "Şifreler birbiriyle aynı değil!"
+    return None
+
+
 class User(QMainWindow):
     def __init__(self):
         super().__init__()
@@ -66,16 +86,12 @@ class User(QMainWindow):
                     self.QtUser.lineEdit_adi_soyadi.clear()
 
     def chk_telefon(self):
-        tel=(self.QtUser.lineEdit_telefon.text())
-        pattern=r"\d{10}"
-        if not re.fullmatch(pattern,tel):
+        if not telefon_gecerli(self.QtUser.lineEdit_telefon.text()):
             QMessageBox.information(self,"Uyarı!","Uygun telefon numarası girilmedi.Kontrol edin!")
             self.QtUser.lineEdit_telefon.clear()
 
     def chk_mail(self):
-        mail=self.QtUser.lineEdit_mail.text()
-        pattern=r"[\w.+-]+@[\w-]+(\.[\w-]+)*\.[a-zA-Z]{2,}"
-        if not re.fullmatch(pattern,mail):
+        if not mail_gecerli(self.QtUser.lineEdit_mail.text()):
             QMessageBox.information(self,"Uyarı!","Uygun mail adresi girilmedi.Kontrol edin!")
             self.QtUser.lineEdit_mail.clear()
 
@@ -86,6 +102,8 @@ class User(QMainWindow):
         else:
             if not self.QtUser.lineEdit_kullanici_adi.text() or not self.QtUser.lineEdit_sifre.text() or not self.QtUser.lineEdit_adi_soyadi.text():
                 QMessageBox.information(self,"Uyarı!","Kullanıcı Adı, Şifre ve Adı Soyadı boş olamaz!")
+            elif sifre_hatasi(self.QtUser.lineEdit_sifre.text()):
+                QMessageBox.information(self,"Uyarı!",sifre_hatasi(self.QtUser.lineEdit_sifre.text()))
             else:
                 kayit=[]
                 kayit.append(self.QtUser.lineEdit_kullanici_adi.text())

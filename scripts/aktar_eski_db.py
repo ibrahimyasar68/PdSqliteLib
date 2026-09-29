@@ -5,41 +5,13 @@
 import argparse
 import os
 import sqlite3
+import sys
+
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."))
+from database.sema import SEMA  # noqa: E402  (uygulamanın beklediği şema)
 
 VARSAYILAN_KAYNAK = os.path.expanduser("~/Desktop/librarySqlite")
 VARSAYILAN_HEDEF = os.path.join(os.path.dirname(__file__), "..", "data", "DBL_Kayit.db")
-
-# Uygulamanın (acodes/, database/) beklediği şema
-SEMA = """
-CREATE TABLE kayitlistesi (
-    Id       INTEGER PRIMARY KEY AUTOINCREMENT,
-    Adi      TEXT,
-    Yazari   TEXT,
-    Ceviren  TEXT,
-    Turu     TEXT,
-    Yayinevi TEXT,
-    Yili     TEXT,
-    Sayfa    TEXT
-);
-CREATE TABLE users (
-    id         INTEGER PRIMARY KEY AUTOINCREMENT,
-    kullanici  TEXT UNIQUE,
-    sifre      TEXT,
-    adi_soyadi TEXT,
-    telefon    TEXT,
-    mail       TEXT,
-    yetki      TEXT
-);
-CREATE TABLE follow (
-    userId  TEXT,
-    bookId  TEXT,
-    outdate TEXT,
-    outtime TEXT,
-    status  TEXT,
-    indate  TEXT,
-    intime  TEXT
-);
-"""
 
 # Bilinen veri giriş hataları: (adi, yazari, hatalı sayfa) -> doğru sayfa
 SAYFA_DUZELTME = {("Acımak", "Stefan ZWEIG", "4045"): "404"}
