@@ -2,9 +2,9 @@
 # Giriş (çıkış ve kullanıcı adı), Kitap Listesi, Filtre ve İstatistik sekmeleri.
 # İki panelin .ui dosyasında bu sekmelerdeki nesne adları aynı olduğu için kod tek yerde tutulur.
 
-from PyQt5.QtWidgets import QMessageBox, QTableWidgetItem
+from PyQt5.QtWidgets import QLabel, QLineEdit, QMessageBox, QTableWidgetItem
 from bforms.onay import onay
-from database.dbframe import df_all_list, df_sort_list, df_srt_fltr, rapor
+from database.dbframe import df_sort_list, df_srt_fltr, kitap_ara, rapor
 
 SECINIZ = ' Seçiniz...'
 
@@ -46,6 +46,7 @@ class OrtakSekmeler:
 
         ###  Tab_2  ###
         self.create_form_tab2()
+        self.arama_kutusu_kur()
         ui.pushButton_2_listele.clicked.connect(self.listele)
         ui.pushButton_2_temizle.clicked.connect(self.temizle)
 
@@ -76,11 +77,32 @@ class OrtakSekmeler:
         self.QtLibrary.tableWidget_2.setRowCount(1)
         tablo_basliklari(self.QtLibrary.tableWidget_2, LISTE_KOLONLARI)
 
+    def arama_kutusu_kur(self):
+        ###  Tablonun üstüne arama kutusu (tablo biraz aşağı kaydırılır)  ###
+        ui=self.QtLibrary
+        ui.tableWidget_2.setGeometry(160,55,1160,545)
+        self.arama=QLineEdit(ui.tab_2)
+        self.arama.setGeometry(160,10,520,36)
+        self.arama.setPlaceholderText("Ara: kitap adı, yazar, çevirmen, tür, yayınevi, yıl...")
+        self.arama.setClearButtonEnabled(True)
+        self.arama.setStyleSheet('font: 12pt "Verdana"; color: black; background-color: white;'
+                                 ' border: 1px solid gray; border-radius: 6px; padding: 2px 6px;')
+        self.arama_sonuc=QLabel(ui.tab_2)
+        self.arama_sonuc.setGeometry(700,10,400,36)
+        self.arama_sonuc.setStyleSheet('font: bold 12pt "Verdana"; color: rgb(0, 60, 0);')
+        self.arama.textChanged.connect(self.listele)
+
     def listele(self):
-        tabloya_yaz(self.QtLibrary.tableWidget_2, df_all_list())
-        self.QtLibrary.statusbar.showMessage("Liste görüntülendi.",self.dur_msj)
+        sorgu=self.arama.text().strip()
+        kitaplar=kitap_ara(sorgu)
+        tabloya_yaz(self.QtLibrary.tableWidget_2, kitaplar)
+        self.arama_sonuc.setText(f"{len(kitaplar)} kitap bulundu" if sorgu else f"Toplam {len(kitaplar)} kitap")
 
     def temizle(self):
+        self.arama.blockSignals(True)  # Temizlerken liste yeniden doldurulmasın
+        self.arama.clear()
+        self.arama.blockSignals(False)
+        self.arama_sonuc.clear()
         self.QtLibrary.tableWidget_2.clear()
         self.create_form_tab2()
         self.QtLibrary.statusbar.showMessage("Liste temizlendi.",self.dur_msj)

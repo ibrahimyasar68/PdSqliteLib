@@ -17,6 +17,22 @@ def kolon(ad, izinli):
 def df_all_list():
     return baglantı.execute("SELECT * FROM kayitlistesi").fetchall()
 
+## Arama: büyük/küçük harf ve Türkçe karakter farkı gözetilmez ("sahin" -> "Şahin")
+_KATLAMA = str.maketrans("ÇĞIİÖŞÜÂÎÛçğıöşüâîû", "cgiiosuaiucgiosuaiu")
+
+def katla(metin):
+    return str(metin or "").translate(_KATLAMA).lower()
+
+## Ad, yazar, çevirmen, tür, yayınevi ve yılda geçen kelimelerin hepsini içeren kitaplar
+def kitap_ara(sorgu):
+    kelimeler=katla(sorgu).split()
+    sonuc=[]
+    for satir in df_all_list():
+        metin=katla(" ".join(str(x or "") for x in satir[1:7]))
+        if all(k in metin for k in kelimeler):
+            sonuc.append(satir)
+    return sonuc
+
 ## Filtre açılır listeleri için bir kolondaki farklı değerler (boşlar hariç)
 def df_sort_list(sort):
     k=kolon(sort,KITAP_KOLON)
@@ -102,6 +118,6 @@ def df_work_table_book():
                               FROM follow f
                               LEFT JOIN kayitlistesi k ON k.Id=f.bookId
                               LEFT JOIN users u ON u.id=f.userId
-                              WHERE f.status='out'""").fetchall()
+                              WHERE f.status='out' ORDER BY f.outdate, f.rowid""").fetchall()
     return [list(satir) for satir in kayit]
 

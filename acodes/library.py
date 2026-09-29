@@ -3,11 +3,14 @@ from bforms.library_py import Ui_MainWindow
 from bforms.onay import onay
 from acodes.user import User
 from acodes.kullanici_yonetimi import KullaniciYonetimi, panel_butonu
+from acodes.odunc_gecmisi import OduncGecmisi, satir_renklendir
 from acodes.ortak import OrtakSekmeler, FILTRELER, SECINIZ, tablo_basliklari, tabloya_yaz
 from database.dbframe import (df_book_id_list, df_book_find_by_id, df_user_id_list, df_user_find_by_id,
                               kitap_oduncte, df_work_user_list, df_work_perbook, df_work_table_book)
 from database.dbbase import ekle_kayit, degistir_kayit, sil_kayit, save_work_to_db, update_work_to_db
 from database.yedek import geri_yukle, yedek_al, yedek_hatasi, yedek_klasoru
+from database.odunc import (ODUNC_SURESI_GUN, gecikme_gunu, geciken_sayisi, gun_sayisi, odunc_verilis,
+                            tarih_yazi, teslim_tarihi)
 import os
 import datetime
 
@@ -90,6 +93,11 @@ class Library(OrtakSekmeler, QMainWindow):
         self.QtLibrary.pushButton_6_3_listele.clicked.connect(self.listele_6)
         self.QtLibrary.pushButton_6_3_temizle.clicked.connect(self.temizle_6)
 
+        self.gecmis=OduncGecmisi()
+        self.QtLibrary.tabWidget_6.addTab(self.gecmis,"Ödünç Geçmişi")
+        self.QtLibrary.tabWidget_6.currentChanged.connect(self.odunc_sekmesi_degisti)
+        self.gecikme_bildir()
+
         # Sekme değişince listeler güncellensin (ör. Tab 1'den eklenen yeni üye)
         self.QtLibrary.tabWidget.currentChanged.connect(self.yenile)
 
@@ -105,6 +113,26 @@ class Library(OrtakSekmeler, QMainWindow):
         self.create_tab_5()
         self.list_items_6_1_1()
         self.list_user_6_1_2()
+        self.gecmis.yenile()
+        self.gecikme_bildir()
+
+    def gecikme_bildir(self):
+        ###  Teslim süresi geçen kitap varsa Kitap Verme sekmesinin adında göster  ###
+        sayi=geciken_sayisi()
+        sekme=self.QtLibrary.tabWidget.indexOf(self.QtLibrary.tab_6)
+        self.QtLibrary.tabWidget.setTabText(sekme, f"Kitap Verme ({sayi} gecikmiş)" if sayi else "Kitap Verme")
+        if sayi:
+            self.QtLibrary.statusbar.showMessage(
+                f"Teslim süresi ({ODUNC_SURESI_GUN} gün) geçmiş {sayi} kitap var. Kitap Verme > Dışardaki Kitaplar", 10000)
+        return sayi
+
+    def odunc_sekmesi_degisti(self):
+        ###  Dışardaki kitaplar ve geçmiş sekmesi açılınca güncel hali göster  ###
+        sayfa=self.QtLibrary.tabWidget_6.currentWidget()
+        if sayfa is self.QtLibrary.tab_6_3:
+            self.listele_6()
+        elif sayfa is self.gecmis:
+            self.gecmis.yenile()
 
     ##################################
     #####   Tab_1 Fonksiyonlar   #####
@@ -400,10 +428,12 @@ class Library(OrtakSekmeler, QMainWindow):
                         self.QtLibrary.lineEdit_6_1_id.text(),
                         tdy.date(), datetime.datetime.strftime(tdy, '%X '),"out","",""]
                 save_work_to_db(kayit)
-                self.QtLibrary.statusbar.showMessage("İşlem kaydedildi.",self.dur_msj)
+                self.QtLibrary.statusbar.showMessage(
+                    f"İşlem kaydedildi. Teslim tarihi: {tarih_yazi(teslim_tarihi(tdy.date()))}",8000)
                 self.clear_form_6_1_1()
                 self.clear_form_6_1_2()
                 self.clear_form_6_2_1()  # İade listesi yeni kaydı göstersin
+                self.gecikme_bildir()
         else:
             self.QtLibrary.statusbar.showMessage("Kayıtta eksik var. Kontrol edin.",self.dur_msj)
 
@@ -478,7 +508,10 @@ class Library(OrtakSekmeler, QMainWindow):
         self.flag_book2=True
         self.check_bottom2()
         self.QtLibrary.pushButton_6_2_2_bul_kitap_temizle.setEnabled(True)
-        self.QtLibrary.statusbar.showMessage(f"{self.QtLibrary.comboBox_6_2_2_liste_kitap.currentText()} bilgileri yazıldı.",self.dur_msj)
+        verilis=odunc_verilis(self.kisi_6_2,kayit[0])
+        bilgi=f"Veriliş: {tarih_yazi(verilis)}, teslim: {tarih_yazi(teslim_tarihi(verilis))}"
+        gecikme=gecikme_gunu(verilis)
+        self.QtLibrary.statusbar.showMessage(f"{bilgi} ({gecikme} gün gecikti)" if gecikme else bilgi, 10000)
 
     def clear_form_6_2_2(self):
         self.QtLibrary.lineEdit_6_2_id.clear()
@@ -508,20 +541,36 @@ class Library(OrtakSekmeler, QMainWindow):
                 update_work_to_db(kayit)
                 self.QtLibrary.statusbar.showMessage("İşlem kaydedildi.",self.dur_msj)
                 self.clear_form_6_2_1()
+                self.gecikme_bildir()
         else:
             self.QtLibrary.statusbar.showMessage("Kayıtta eksik var. Kontrol edin.",self.dur_msj)
 
 ### Tablo 3 İşlemleri  ###
 
     def create_form_tab_6(self):
+        self.QtLibrary.tableWidget_6_2.setColumnCount(9)
         self.QtLibrary.tableWidget_6_2.setRowCount(1)
         tablo_basliklari(self.QtLibrary.tableWidget_6_2,
-                         [(220,"Kitap Adı"),(220,"Yazarı"),(100,"Turu"),(170,"Alan Kişi"),
-                          (120,"Telefon"),(180,"Mail"),(100,"Aldığı Tarih")])
+                         [(190,"Kitap Adı"),(160,"Yazarı"),(90,"Turu"),(160,"Alan Kişi"),(110,"Telefon"),
+                          (160,"Mail"),(95,"Aldığı Tarih"),(95,"Teslim Tarihi"),(45,"Gün")])
 
     def listele_6(self):
-        tabloya_yaz(self.QtLibrary.tableWidget_6_2, df_work_table_book())
-        self.QtLibrary.statusbar.showMessage("Liste görüntülendi.",self.dur_msj)
+        ###  En eski ödünç en üstte; teslim süresi geçenler kırmızı  ###
+        kayitlar=df_work_table_book()
+        satirlar=[]
+        for kitap,yazar,tur,kisi,telefon,mail,verilis in kayitlar:
+            gun=gun_sayisi(verilis)
+            satirlar.append([kitap,yazar,tur,kisi,telefon,mail,tarih_yazi(verilis),
+                             tarih_yazi(teslim_tarihi(verilis)),"" if gun is None else gun])
+        tablo=self.QtLibrary.tableWidget_6_2
+        tabloya_yaz(tablo, satirlar)
+        gecikmis=0
+        for r,(*_,verilis) in enumerate(kayitlar):
+            if gecikme_gunu(verilis):
+                satir_renklendir(tablo,r)
+                gecikmis+=1
+        mesaj=f"Dışarıda {len(satirlar)} kitap var"
+        self.QtLibrary.statusbar.showMessage(f"{mesaj}, {gecikmis} tanesinin teslim süresi geçmiş." if gecikmis else mesaj+".",self.dur_msj)
 
     def temizle_6(self):
         self.QtLibrary.tableWidget_6_2.clear()

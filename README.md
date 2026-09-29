@@ -11,14 +11,29 @@ Giriş ekranında kullanıcının yetkisine göre iki farklı panel açılır:
 | Sekme | Admin | Guest |
 |---|:---:|:---:|
 | **Giriş**: yeni kullanıcı, kullanıcı yönetimi, yedekleme | ✓ | sadece kendi şifresini değiştirme |
-| **Kitap Listesi**: tüm kitaplar | ✓ | ✓ |
+| **Kitap Listesi**: tüm kitaplar, anlık arama | ✓ | ✓ |
 | **Kitap Kayıt**: ekleme, güncelleme, silme | ✓ | |
 | **Filtre**: tür, yazar, yayınevi ve yıla göre çoklu seçim | ✓ | ✓ |
 | **İstatistik**: en çok kitabı olan tür, yazar, yayınevi ve yıllar | ✓ | ✓ |
-| **Kitap Verme**: ödünç verme, iade alma, dışarıdaki kitaplar | ✓ | |
+| **Kitap Verme**: ödünç verme, iade alma, dışarıdaki kitaplar, ödünç geçmişi | ✓ | |
 
 Yeni kullanıcı ve üye kayıtlarını (`admin` veya `guest`) sadece giriş yapmış bir admin,
 **Giriş** sekmesindeki **Yeni Kullanıcı Girişi** butonuyla oluşturabilir.
+
+### Arama
+
+**Kitap Listesi** sekmesindeki arama kutusu yazdıkça sonuçları günceller. Kitap adı, yazar, çevirmen,
+tür, yayınevi ve yılda arar; büyük/küçük harf ve Türkçe karakter farkı gözetmez ("sahin" → "Şahin",
+"kuyucakli" → "Kuyucaklı"). Birden fazla kelime yazılırsa hepsini içeren kitaplar listelenir.
+
+### Ödünç takibi
+
+- Ödünç süresi **15 gündür** (`database/odunc.py` içindeki `ODUNC_SURESI_GUN`). Teslim tarihi veriliş
+  tarihinden hesaplanır; eski kayıtlar için de geçerlidir.
+- Kitap verilirken teslim tarihi, iade alınırken gecikme varsa kaç gün geciktiği gösterilir.
+- **Dışardaki Kitaplar**: teslim tarihi ve kaç gündür dışarıda olduğu; süresi geçenler kırmızı.
+- Süresi geçmiş kitap varsa sekme adı **Kitap Verme (N gecikmiş)** olur ve panel açılırken uyarı verilir.
+- **Ödünç Geçmişi**: tüm ödünç kayıtları; üye, kitap ve duruma (dışarıda / gecikmiş / iade edildi) göre süzülür.
 
 ### Kullanıcı yönetimi
 
@@ -112,12 +127,14 @@ main.py              Giriş noktası
 acodes/              Pencerelerin iş mantığı (login, library, guest, user)
 acodes/ortak.py      Admin ve Guest panellerinde ortak sekmeler (liste, filtre, istatistik)
 acodes/kullanici_yonetimi.py  Kullanıcı yönetimi ve şifre değiştirme pencereleri
+acodes/odunc_gecmisi.py       Kitap Verme > Ödünç Geçmişi sekmesi
 bforms/              .ui dosyalarından üretilen formlar (elle düzenlenmez)
 cuis/                Qt Designer .ui kaynakları
 database/dbbase.py   Yazma işlemleri, şifre hash'leme, veritabanı yolu
 database/dbframe.py  Okuma, filtreleme ve raporlar
 database/sema.py     Tablo şeması (eksik tablolar açılışta oluşturulur)
 database/yedek.py    Yedek alma ve geri yükleme
+database/odunc.py    Teslim tarihi, gecikme ve ödünç geçmişi
 tests/               Otomatik testler (pytest)
 media/               Resimler, ikon ve media.qrc
 scripts/             Dönüştürme, veri aktarma ve paketleme betikleri
