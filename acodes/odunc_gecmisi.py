@@ -2,24 +2,14 @@
 # Üye ve kitap bazında tüm ödünç kayıtları; teslim tarihi, gün sayısı ve gecikme bilgisiyle.
 
 from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QColor
-from PyQt5.QtWidgets import (QAbstractItemView, QComboBox, QHBoxLayout, QHeaderView, QLabel,
-                             QTableWidget, QTableWidgetItem, QVBoxLayout, QWidget)
+from PyQt5.QtWidgets import QComboBox, QHBoxLayout, QHeaderView, QLabel, QTableWidget, QVBoxLayout, QWidget
+from acodes.tablo import VURGU_ARKA, tablo_ayarla, tabloya_yaz
 from database.odunc import (gecikme_gunu, gun_sayisi, odunc_alan_uyeler, odunc_gecmisi,
                             odunc_verilen_kitaplar, tarih_yazi, teslim_tarihi)
 
 TUMU = "Tümü"
 DURUMLAR = [TUMU, "Dışarıda", "Gecikmiş", "İade edildi"]
-GECIKME_ARKA = QColor(255, 205, 205)
-GECIKME_YAZI = QColor(150, 0, 0)
-
-
-def satir_renklendir(tablo, satir, arka=GECIKME_ARKA, yazi=GECIKME_YAZI):
-    for c in range(tablo.columnCount()):
-        hucre = tablo.item(satir, c)
-        if hucre:
-            hucre.setBackground(arka)
-            hucre.setForeground(yazi)
+GECIKME_ARKA = VURGU_ARKA
 
 
 def durum_bilgisi(verilis, durum, iade):
@@ -52,8 +42,7 @@ class OduncGecmisi(QWidget):
         self.ozet = QLabel()
         self.tablo = QTableWidget(0, len(self.KOLONLAR))
         self.tablo.setHorizontalHeaderLabels(self.KOLONLAR)
-        self.tablo.setEditTriggers(QAbstractItemView.NoEditTriggers)
-        self.tablo.setSelectionBehavior(QAbstractItemView.SelectRows)
+        tablo_ayarla(self.tablo)
         baslik = self.tablo.horizontalHeader()
         baslik.setSectionResizeMode(QHeaderView.ResizeToContents)
         baslik.setSectionResizeMode(0, QHeaderView.Stretch)
@@ -98,11 +87,6 @@ class OduncGecmisi(QWidget):
             satirlar.append(([kitap, uye, tarih_yazi(verilis), tarih_yazi(teslim_tarihi(verilis)),
                               tarih_yazi(iade) if durum == "in" else "", "" if gun is None else gun, yazi],
                              durum == "out" and gecikme > 0))
-        self.tablo.setRowCount(len(satirlar))
-        for r, (degerler, gecikmis) in enumerate(satirlar):
-            for c, deger in enumerate(degerler):
-                self.tablo.setItem(r, c, QTableWidgetItem(str(deger)))
-            if gecikmis:
-                satir_renklendir(self.tablo, r)
+        tabloya_yaz(self.tablo, [d for d, _ in satirlar], vurgulu={r for r, (_, g) in enumerate(satirlar) if g})
         disarida = sum(1 for d, _ in satirlar if d[4] == "")
         self.ozet.setText(f"{len(satirlar)} kayıt, {disarida} dışarıda")

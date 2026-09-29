@@ -6,6 +6,7 @@ from PyQt5.QtWidgets import QLabel, QLineEdit, QMessageBox, QTableWidgetItem
 from bforms.onay import onay
 from database.dbframe import df_sort_list, df_srt_fltr, kitap_ara, rapor
 from acodes.grafikler import GrafikPaneli
+from acodes.tablo import tablo_ayarla, tablo_basliklari, tabloya_yaz  # noqa: F401  (library.py de buradan alır)
 
 SECINIZ = ' Seçiniz...'
 
@@ -21,19 +22,6 @@ FILTRELER = [(1,'Turu','Seçilen Tür'), (2,'Yazari','Seçilen Yazar'),
 # Tab 5 istatistikleri: (tablo no, veritabanı kolonu, başlık, gösterilecek en fazla satır)
 ISTATISTIKLER = [(1,'Turu','Yayın Türü',35), (2,'Yazari','Yazar',40),
                  (3,'Yayinevi','Yayınevi',35), (4,'Yili','Basım Yılı',35)]
-
-
-def tablo_basliklari(tablo, kolonlar):
-    for i,(genislik,baslik) in enumerate(kolonlar):
-        tablo.setColumnWidth(i,genislik)
-        tablo.setHorizontalHeaderItem(i,QTableWidgetItem(baslik))
-
-
-def tabloya_yaz(tablo, satirlar):
-    tablo.setRowCount(len(satirlar))
-    for r,satir in enumerate(satirlar):
-        for c,deger in enumerate(satir):
-            tablo.setItem(r,c,QTableWidgetItem(str(deger)))
 
 
 class OrtakSekmeler:
@@ -65,6 +53,13 @@ class OrtakSekmeler:
         self.grafikler=GrafikPaneli(ui.tab_5_2)
         ui.gridLayout_6.addWidget(self.grafikler,0,0)
         self.create_tab_5()
+
+        ###  Tablolar: başlığa tıklayınca sıralama, hücreler salt okunur  ###
+        for tablo in [ui.tableWidget_2]+[getattr(ui,f"tableWidget_4_{no}_2") for no,_,_ in FILTRELER] \
+                     +[getattr(ui,f"tableWidget_5_1_{no}") for no,*_ in ISTATISTIKLER]:
+            tablo_ayarla(tablo)
+        for no,_,_ in FILTRELER:
+            tablo_ayarla(getattr(ui,f"tableWidget_4_{no}_1"), siralama=False)
 
     ##################################
     #####   Tab_1 Fonksiyonlar   #####

@@ -26,6 +26,16 @@ Yeni kullanıcı ve üye kayıtlarını (`admin` veya `guest`) sadece giriş yap
 tür, yayınevi ve yılda arar; büyük/küçük harf ve Türkçe karakter farkı gözetmez ("sahin" → "Şahin",
 "kuyucakli" → "Kuyucaklı"). Birden fazla kelime yazılırsa hepsini içeren kitaplar listelenir.
 
+### Tablolar
+
+- Kolon başlığına tıklayınca tablo o kolona göre sıralanır (tekrar tıklayınca ters sırada).
+  Sayılar sayı olarak, tarihler tarih olarak, metinler Türk alfabesine göre sıralanır; boşlar en sona gider.
+- Hücreler salt okunurdur; değişiklikler ilgili düzenleme ekranlarından yapılır.
+- Admin panelinde **Kitap Listesi** veya **Filtre** sonuçlarında bir satıra çift tıklamak kitabı
+  **Kitap Kayıt → Kayıt Düzenleme** ekranında açar.
+- **Dışardaki Kitaplar**'da bir satıra çift tıklamak **Alma Kaydı** ekranını üye ve kitap seçili
+  olarak açar; sadece Kaydet'e basmak kalır.
+
 ### Ödünç takibi
 
 - Ödünç süresi **15 gündür** (`database/odunc.py` içindeki `ODUNC_SURESI_GUN`). Teslim tarihi veriliş
@@ -129,6 +139,7 @@ acodes/ortak.py      Admin ve Guest panellerinde ortak sekmeler (liste, filtre, 
 acodes/kullanici_yonetimi.py  Kullanıcı yönetimi ve şifre değiştirme pencereleri
 acodes/odunc_gecmisi.py       Kitap Verme > Ödünç Geçmişi sekmesi
 acodes/grafikler.py           İstatistik > Grafikler (veritabanından her seferinde çizilir)
+acodes/tablo.py               Tablo doldurma, Türkçe sıralama, satır vurgulama
 bforms/              .ui dosyalarından üretilen formlar (elle düzenlenmez)
 cuis/                Qt Designer .ui kaynakları
 database/dbbase.py   Yazma işlemleri, şifre hash'leme, veritabanı yolu

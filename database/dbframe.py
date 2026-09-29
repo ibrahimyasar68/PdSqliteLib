@@ -23,6 +23,14 @@ _KATLAMA = str.maketrans("ÇĞIİÖŞÜÂÎÛçğıöşüâîû", "cgiiosuaiucgi
 def katla(metin):
     return str(metin or "").translate(_KATLAMA).lower()
 
+## Türk alfabesine göre sıralama anahtarı (Ç, Ğ, İ, Ö, Ş, Ü kendi yerlerinde; büyük/küçük harf farksız)
+_ALFABE = "abcçdefgğhıijklmnoöpqrsştuüvwxyz"
+_SIRA = {h: i for i, h in enumerate(_ALFABE)}
+
+def tr_sirala(metin):
+    metin=str(metin or "").replace("I","ı").replace("İ","i").lower().translate(str.maketrans("âîû","aiu"))
+    return [1000+_SIRA[h] if h in _SIRA else ord(h) for h in metin]
+
 ## Ad, yazar, çevirmen, tür, yayınevi ve yılda geçen kelimelerin hepsini içeren kitaplar
 def kitap_ara(sorgu):
     kelimeler=katla(sorgu).split()
@@ -37,7 +45,7 @@ def kitap_ara(sorgu):
 def df_sort_list(sort):
     k=kolon(sort,KITAP_KOLON)
     satirlar=baglantı.execute(f"SELECT DISTINCT {k} FROM kayitlistesi WHERE {k} IS NOT NULL AND {k}<>''").fetchall()
-    return sorted(str(s[0]) for s in satirlar)
+    return sorted((str(s[0]) for s in satirlar), key=tr_sirala)
 
 ## Açılır listeler için (id, adı, yayınevi, yılı) listesi
 def df_book_id_list():
@@ -126,7 +134,8 @@ def df_book_find_by_id(id):
 ## Kitap vermede tablo döküm listesi
 def df_work_table_book():
     kayit=baglantı.execute("""SELECT COALESCE(k.Adi,'(silinmiş kitap)'), COALESCE(k.Yazari,''), COALESCE(k.Turu,''),
-                                     COALESCE(u.adi_soyadi,'(silinmiş üye)'), COALESCE(u.telefon,''), COALESCE(u.mail,''), f.outdate
+                                     COALESCE(u.adi_soyadi,'(silinmiş üye)'), COALESCE(u.telefon,''), COALESCE(u.mail,''), f.outdate,
+                                     f.userId, f.bookId
                               FROM follow f
                               LEFT JOIN kayitlistesi k ON k.Id=f.bookId
                               LEFT JOIN users u ON u.id=f.userId

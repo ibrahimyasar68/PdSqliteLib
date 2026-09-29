@@ -5,7 +5,8 @@
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import (QAbstractItemView, QComboBox, QDialog, QDialogButtonBox, QFormLayout,
                              QHBoxLayout, QHeaderView, QLineEdit, QMessageBox, QPushButton,
-                             QTableWidget, QTableWidgetItem, QVBoxLayout)
+                             QTableWidget, QVBoxLayout)
+from acodes.tablo import satir_verisi, tablo_ayarla, tabloya_yaz
 from bforms.onay import onay
 from acodes.user import mail_gecerli, sifre_hatasi, telefon_gecerli
 from database.dbbase import kullanici_guncelle, kullanici_sil, sifre_guncelle
@@ -128,9 +129,8 @@ class KullaniciYonetimi(QDialog):
 
         self.tablo = QTableWidget(0, len(self.KOLONLAR))
         self.tablo.setHorizontalHeaderLabels(self.KOLONLAR)
-        self.tablo.setSelectionBehavior(QAbstractItemView.SelectRows)
+        tablo_ayarla(self.tablo)
         self.tablo.setSelectionMode(QAbstractItemView.SingleSelection)
-        self.tablo.setEditTriggers(QAbstractItemView.NoEditTriggers)
         self.tablo.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
         self.tablo.itemSelectionChanged.connect(self.butonlari_ayarla)
         self.tablo.doubleClicked.connect(self.duzenle)
@@ -156,20 +156,21 @@ class KullaniciYonetimi(QDialog):
 
     def yukle(self):
         self.kayitlar = df_user_all()
-        self.tablo.setRowCount(len(self.kayitlar))
-        for r, kayit in enumerate(self.kayitlar):
-            for c, deger in enumerate(kayit[1:]):
-                self.tablo.setItem(r, c, QTableWidgetItem(deger or ""))
+        # Kayıt satırın içinde saklanır; başlığa tıklanıp sıralansa da doğru kullanıcı seçilir
+        tabloya_yaz(self.tablo, [[d or "" for d in k[1:]] for k in self.kayitlar], veri=list(range(len(self.kayitlar))))
         self.tablo.clearSelection()
         self.butonlari_ayarla()
 
     def secili(self):
         satirlar = self.tablo.selectionModel().selectedRows()
-        return self.kayitlar[satirlar[0].row()] if satirlar else None
+        if not satirlar:
+            return None
+        sira = satir_verisi(self.tablo, satirlar[0].row())
+        return self.kayitlar[sira] if sira is not None else None
 
     def sec(self, kullanici):
-        for r, kayit in enumerate(self.kayitlar):
-            if kayit[1] == kullanici:
+        for r in range(self.tablo.rowCount()):
+            if self.tablo.item(r, 0).text() == kullanici:
                 self.tablo.selectRow(r)
 
     def butonlari_ayarla(self):

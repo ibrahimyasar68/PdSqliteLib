@@ -3,8 +3,9 @@ from bforms.library_py import Ui_MainWindow
 from bforms.onay import onay
 from acodes.user import User
 from acodes.kullanici_yonetimi import KullaniciYonetimi, panel_butonu
-from acodes.odunc_gecmisi import OduncGecmisi, satir_renklendir
-from acodes.ortak import OrtakSekmeler, FILTRELER, SECINIZ, tablo_basliklari, tabloya_yaz
+from acodes.odunc_gecmisi import OduncGecmisi
+from acodes.ortak import OrtakSekmeler, FILTRELER, SECINIZ
+from acodes.tablo import satir_verisi, tablo_ayarla, tablo_basliklari, tabloya_yaz
 from database.dbframe import (df_book_id_list, df_book_find_by_id, df_user_id_list, df_user_find_by_id,
                               kitap_oduncte, df_work_user_list, df_work_perbook, df_work_table_book)
 from database.dbbase import ekle_kayit, degistir_kayit, sil_kayit, save_work_to_db, update_work_to_db
@@ -98,6 +99,15 @@ class Library(OrtakSekmeler, QMainWindow):
         self.QtLibrary.tabWidget_6.currentChanged.connect(self.odunc_sekmesi_degisti)
         self.gecikme_bildir()
 
+        ###  Çift tıklama: kitap satırı düzenleme ekranını, ödünç satırı iade ekranını açar  ###
+        ui=self.QtLibrary
+        for tablo in [ui.tableWidget_2]+[getattr(ui,f"tableWidget_4_{no}_2") for no,_,_ in FILTRELER]:
+            tablo.setToolTip("Kitabı düzenlemek için satıra çift tıklayın")
+            tablo.cellDoubleClicked.connect(lambda satir,_,t=tablo: self.tablodan_kitap_duzenle(t,satir))
+        tablo_ayarla(ui.tableWidget_6_2)
+        ui.tableWidget_6_2.setToolTip("İade almak için satıra çift tıklayın")
+        ui.tableWidget_6_2.cellDoubleClicked.connect(lambda satir,_: self.tablodan_iade(satir))
+
         # Sekme değişince listeler güncellensin (ör. Tab 1'den eklenen yeni üye)
         self.QtLibrary.tabWidget.currentChanged.connect(self.yenile)
 
@@ -133,6 +143,47 @@ class Library(OrtakSekmeler, QMainWindow):
             self.listele_6()
         elif sayfa is self.gecmis:
             self.gecmis.yenile()
+
+    def tablodan_kitap_duzenle(self,tablo,satir):
+        hucre=tablo.item(satir,0)   # ilk kolon: kitap numarası (Id)
+        if hucre and hucre.text().isdigit():
+            self.kitap_duzenle(int(hucre.text()))
+
+    def kitap_duzenle(self,kitap_id):
+        ###  Kitap Kayıt > Kayıt Düzenleme ekranını bu kitapla aç  ###
+        q=self.QtLibrary
+        q.tabWidget.setCurrentWidget(q.tab_3)
+        q.tabWidget_3.setCurrentWidget(q.tab_3_2)
+        i=q.comboBox_3_2_bul_adi.findData(kitap_id)
+        if i<0:
+            q.statusbar.showMessage("Kitap bulunamadı (silinmiş olabilir).",self.dur_msj)
+            return
+        q.comboBox_3_2_bul_adi.setCurrentIndex(i)
+        self.find_item_3_2()
+
+    def tablodan_iade(self,satir):
+        idler=satir_verisi(self.QtLibrary.tableWidget_6_2,satir)
+        if idler:
+            self.iade_ekrani(*idler)
+
+    def iade_ekrani(self,user_id,book_id):
+        ###  Kitap Verme > Alma Kaydı ekranını bu üye ve kitap seçili olarak aç  ###
+        q=self.QtLibrary
+        q.tabWidget_6.setCurrentWidget(q.tab_6_2)
+        self.clear_form_6_2_1()
+        sayi=lambda x: int(x) if str(x).isdigit() else -1
+        i=q.comboBox_6_2_1_liste_kisi.findData(sayi(user_id))
+        if i<0:
+            q.statusbar.showMessage("Bu ödüncü alan üye silinmiş; iade ekranından seçilemez.",self.dur_msj)
+            return
+        q.comboBox_6_2_1_liste_kisi.setCurrentIndex(i)
+        self.find_user_6_2_1()
+        j=q.comboBox_6_2_2_liste_kitap.findData(sayi(book_id))
+        if j<0:
+            q.statusbar.showMessage("Bu kitap silinmiş; iade ekranından seçilemez.",self.dur_msj)
+            return
+        q.comboBox_6_2_2_liste_kitap.setCurrentIndex(j)
+        self.find_item_6_2_2()
 
     ##################################
     #####   Tab_1 Fonksiyonlar   #####
@@ -556,19 +607,16 @@ class Library(OrtakSekmeler, QMainWindow):
 
     def listele_6(self):
         ###  En eski ödünç en üstte; teslim süresi geçenler kırmızı  ###
-        kayitlar=df_work_table_book()
-        satirlar=[]
-        for kitap,yazar,tur,kisi,telefon,mail,verilis in kayitlar:
+        satirlar,idler,gecikenler=[],[],set()
+        for r,(kitap,yazar,tur,kisi,telefon,mail,verilis,user_id,book_id) in enumerate(df_work_table_book()):
             gun=gun_sayisi(verilis)
             satirlar.append([kitap,yazar,tur,kisi,telefon,mail,tarih_yazi(verilis),
                              tarih_yazi(teslim_tarihi(verilis)),"" if gun is None else gun])
-        tablo=self.QtLibrary.tableWidget_6_2
-        tabloya_yaz(tablo, satirlar)
-        gecikmis=0
-        for r,(*_,verilis) in enumerate(kayitlar):
+            idler.append((user_id,book_id))
             if gecikme_gunu(verilis):
-                satir_renklendir(tablo,r)
-                gecikmis+=1
+                gecikenler.add(r)
+        tabloya_yaz(self.QtLibrary.tableWidget_6_2, satirlar, vurgulu=gecikenler, veri=idler)
+        gecikmis=len(gecikenler)
         mesaj=f"Dışarıda {len(satirlar)} kitap var"
         self.QtLibrary.statusbar.showMessage(f"{mesaj}, {gecikmis} tanesinin teslim süresi geçmiş." if gecikmis else mesaj+".",self.dur_msj)
 
