@@ -37,6 +37,7 @@ class User(QMainWindow):
         # Mac: tam ekran panelin üstünde açılınca ekrana yayılmasın
         self.setFixedSize(900,680)
         self.move(240,20)
+        self.setWindowTitle("Yaşar Kütüphanesi - Yeni Kullanıcı")
         # Mac'te yetki kutusu saydam kalıp koyu arka planda görünmüyordu
         self.QtUser.comboBox_yetki.setFixedSize(300,30)
         self.QtUser.comboBox_yetki.setView(QListView())  # Mac'in yerel listesi seçenekleri kesiyordu

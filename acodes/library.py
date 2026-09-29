@@ -12,6 +12,7 @@ from database.dbbase import ekle_kayit, degistir_kayit, sil_kayit, save_work_to_
 from database.yedek import geri_yukle, yedek_al, yedek_hatasi, yedek_klasoru
 from database.odunc import (ODUNC_SURESI_GUN, gecikme_gunu, geciken_sayisi, gun_sayisi, odunc_verilis,
                             tarih_yazi, teslim_tarihi)
+from PyQt5.QtCore import pyqtSignal
 import os
 import datetime
 
@@ -39,6 +40,9 @@ def kitap_listesi(cmb):
 
 ## Admin paneli: ortak sekmelere ek olarak Kitap Kayıt ve Kitap Verme sekmeleri
 class Library(OrtakSekmeler, QMainWindow):
+    oturum_kapandi = pyqtSignal()
+    PENCERE_BASLIGI = "Yaşar Kütüphanesi - Yönetici Paneli"
+
     def __init__(self):
         super().__init__()
         self.QtLibrary = Ui_MainWindow()

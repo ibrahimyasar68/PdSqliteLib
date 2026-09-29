@@ -17,6 +17,10 @@ Giriş ekranında kullanıcının yetkisine göre iki farklı panel açılır:
 | **İstatistik**: çizelgeler ve güncel grafikler (tür, yazar, yayınevi, basım yılı) | ✓ | ✓ |
 | **Kitap Verme**: ödünç verme, iade alma, dışarıdaki kitaplar, ödünç geçmişi | ✓ | |
 
+Panellerdeki **Oturumu Kapat** butonu giriş ekranına döner; başka bir kullanıcıyla giriş yapılabilir.
+Programdan çıkmak için giriş ekranındaki kırmızı çıkış butonu kullanılır. Paneller macOS'ta büyütülmüş
+pencerede (küçültülebilir, diğer programlara geçilebilir), Windows'ta tam ekran açılır.
+
 Yeni kullanıcı ve üye kayıtlarını (`admin` veya `guest`) sadece giriş yapmış bir admin,
 **Giriş** sekmesindeki **Yeni Kullanıcı Girişi** butonuyla oluşturabilir.
 

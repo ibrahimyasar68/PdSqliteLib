@@ -1,3 +1,4 @@
+from PyQt5.QtCore import pyqtSignal
 from PyQt5.QtWidgets import QApplication, QMainWindow
 from bforms.guest_py import Ui_MainWindow
 from acodes.ortak import OrtakSekmeler
@@ -6,6 +7,9 @@ from acodes.kullanici_yonetimi import SifreDegistir, panel_butonu
 
 ## Guest paneli: Giriş, Kitap Listesi, Filtre ve İstatistik sekmeleri (salt okunur)
 class Guest(OrtakSekmeler, QMainWindow):
+    oturum_kapandi = pyqtSignal()
+    PENCERE_BASLIGI = "Yaşar Kütüphanesi - Üye Paneli"
+
     def __init__(self):
         super().__init__()
         self.QtLibrary = Ui_MainWindow()

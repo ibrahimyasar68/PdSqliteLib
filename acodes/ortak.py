@@ -35,7 +35,10 @@ class OrtakSekmeler:
         ui=self.QtLibrary
 
         ###  Tab_1  ###
-        ui.pushButton_1_cikis.clicked.connect(self.close)
+        # Çıkış butonu oturumu kapatıp giriş ekranına döner (programdan çıkış giriş ekranındadır)
+        ui.pushButton_1_cikis.setText("Oturumu Kapat")
+        ui.pushButton_1_cikis.setToolTip("Oturumu kapatıp giriş ekranına dön")
+        ui.pushButton_1_cikis.clicked.connect(self.oturumu_kapat)
 
         ###  Tab_2  ###
         self.create_form_tab2()
@@ -88,8 +91,16 @@ class OrtakSekmeler:
     #####   Tab_1 Fonksiyonlar   #####
     ##################################
 
+    def oturumu_kapat(self):
+        ###  Açık alt pencereleri kapat, giriş ekranına haber ver, paneli kapat  ###
+        if hasattr(self,"user"):
+            self.user.close()
+        self.oturum_kapandi.emit()   # giriş ekranı önce görünür olur, böylece program kapanmaz
+        self.close()
+
     def user_name(self,name):
         self.aktif_kullanici=name
+        self.setWindowTitle(f"{self.PENCERE_BASLIGI} - {name}")
         self.QtLibrary.label_log_on.setText(name)
 
     ##################################
