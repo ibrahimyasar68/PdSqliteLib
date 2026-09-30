@@ -11,7 +11,7 @@ from acodes.kitap_ekrani import KitapEkrani
 from acodes.odunc_ekrani import OduncEkrani
 from acodes.disa_aktar import disa_aktar, sag_tik_menusu
 from acodes.ana_sayfa import AnaSayfa, ana_sayfayi_yerlestir
-from acodes import bildirim, ikonlar
+from acodes import arka_plan, bildirim, ikonlar
 from acodes.ortak import OrtakSekmeler
 from acodes.tablo import satir_verisi
 from database.dbframe import df_book_find_by_id
@@ -47,6 +47,7 @@ class Library(OrtakSekmeler, QMainWindow):
         self.QtLibrary = Ui_MainWindow()
         self.QtLibrary.setupUi(self)
         tema.uygula(self)   # .ui renkleri yerine tek tema
+        self.arka_plan=arka_plan.uygula(self)   # giriş ekranındaki fotoğraf tüm panelin zemininde
         self.bildirim=bildirim.baglan(self,self.QtLibrary.statusbar)   # mesajlar kısa süreli bildirim olarak
         self.user=User()
         self.QtLibrary.tabWidget.setCurrentIndex(0)

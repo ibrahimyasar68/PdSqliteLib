@@ -10,7 +10,7 @@ from acodes import tema
 from acodes.tablo import tablo_ayarla, tabloya_yaz
 
 STIL = f"""
-#ana_sayfa {{ background-color: {tema.SAYFA}; }}
+#ana_sayfa {{ background: transparent; }}
 #ana_baslik {{ border-image: url(:/pic/autumn.jpg) 0 0 0 0 stretch stretch; border-radius: 10px; }}
 #baslik_yazi {{ color: #FFE14D; font: italic 46px "Monotype Corsiva"; }}
 #karsilama {{ color: white; font-size: 17px; font-weight: bold; }}

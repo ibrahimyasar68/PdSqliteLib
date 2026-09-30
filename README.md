@@ -22,6 +22,9 @@ Giriş ekranında kullanıcının yetkisine göre iki farklı panel açılır:
 Panellerdeki **Oturumu Kapat** butonu giriş ekranına döner; başka bir kullanıcıyla giriş yapılabilir.
 Programdan çıkmak için giriş ekranındaki kırmızı çıkış butonu kullanılır. Paneller macOS'ta büyütülmüş
 pencerede (küçültülebilir, diğer programlara geçilebilir), Windows'ta tam ekran açılır.
+Giriş ekranındaki şelale fotoğrafı panellerin de arka planıdır; sayfalar yarı saydam olduğu için içeriğin
+arkasından görünür, tablolar ve formlar okunaklı kalsın diye beyazdır (saydamlık `acodes/arka_plan.py`
+içindeki `SAYFA_SAYDAMLIK` ile ayarlanır).
 
 Yeni kullanıcı ve üye kayıtlarını (`admin` veya `guest`) sadece giriş yapmış bir admin,
 **Ayarlar → Yeni Kullanıcı Ekle** ile oluşturabilir.
@@ -240,6 +243,7 @@ acodes/filtre_paneli.py       Filtre sekmesi (dört ölçüt tek panelde)
 acodes/ek_bilgi.py            Kitap formundaki Ek Bilgiler kutusu, ISBN doğrulama
 acodes/kitaplarim.py          Guest paneli > Kitaplarım sekmesi
 acodes/ana_sayfa.py           Ana sayfa özet panosu (kartlar ve listeler)
+acodes/arka_plan.py           Panellerin arka plan fotoğrafı
 acodes/ayarlar.py             Ayarlar sekmesi (kullanıcılar, yedekleme, bilgiler / hesabım)
 bforms/              .ui dosyalarından üretilen formlar (elle düzenlenmez)
 cuis/                Qt Designer .ui kaynakları

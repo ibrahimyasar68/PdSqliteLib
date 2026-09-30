@@ -41,9 +41,7 @@ class KitapEkrani(QWidget):
         self.degisti = degisti
         self.kitap_id = None
         self.setObjectName("kitap_ekrani")
-        self.setAttribute(Qt.WA_StyledBackground, True)
         self.setStyleSheet(f"""
-            #kitap_ekrani {{ background-color: {tema.SAYFA}; }}
             #kitap_arama {{ font-size: 15px; padding: 4px 8px; }}
             #form_baslik {{ font-size: 18px; font-weight: bold; }}
             #kopya_bilgi {{ color: {tema.IKINCIL_METIN}; }}

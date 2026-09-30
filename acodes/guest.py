@@ -5,7 +5,7 @@ from acodes.ortak import OrtakSekmeler
 from acodes.kitaplarim import Kitaplarim
 from acodes.ayarlar import Ayarlar
 from acodes.ana_sayfa import AnaSayfa, ana_sayfayi_yerlestir
-from acodes import bildirim, ikonlar
+from acodes import arka_plan, bildirim, ikonlar
 from database.dbframe import genel_ozet, son_eklenenler
 from database.odunc import gecikme_gunu, kalan_gun_yazi, tarih_yazi, teslim_tarihi, uye_odunc
 from acodes import tema
@@ -23,6 +23,7 @@ class Guest(OrtakSekmeler, QMainWindow):
         self.QtLibrary = Ui_MainWindow()
         self.QtLibrary.setupUi(self)
         tema.uygula(self)   # .ui renkleri yerine tek tema
+        self.arka_plan=arka_plan.uygula(self)   # giriş ekranındaki fotoğraf tüm panelin zemininde
         self.bildirim=bildirim.baglan(self,self.QtLibrary.statusbar)   # mesajlar kısa süreli bildirim olarak
         self.QtLibrary.tabWidget.setCurrentIndex(0)
         self.dur_msj=2000

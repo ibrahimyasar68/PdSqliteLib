@@ -11,7 +11,7 @@ from PyQt5.QtWidgets import (QFormLayout, QGroupBox, QHBoxLayout, QLabel, QPushB
                              QVBoxLayout, QWidget)
 
 STIL = f"""
-#ayarlar_ic {{ background-color: {tema.SAYFA}; }}
+#ayarlar_ic {{ background: transparent; }}
 QGroupBox {{ font-size: 16px; font-weight: bold; border-radius: 10px; padding: 16px 12px 12px 12px; }}
 QLabel {{ color: {tema.IKINCIL_METIN}; }}
 QLabel[rol="deger"] {{ color: {tema.METIN}; }}
@@ -63,6 +63,7 @@ class Ayarlar(QScrollArea):
         super().__init__(parent)
         self.setWidgetResizable(True)
         self.setFrameShape(QScrollArea.NoFrame)
+        self.setStyleSheet("QScrollArea { background: transparent; }")   # panelin fotoğrafı görünür
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         ic = QWidget()
         ic.setObjectName("ayarlar_ic")
