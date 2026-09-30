@@ -2,7 +2,7 @@
 
 import pytest
 from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QAbstractItemView, QTableWidget
+from PyQt5.QtWidgets import QAbstractItemView, QHeaderView, QTableWidget
 
 from conftest import sec
 from acodes.guest import Guest
@@ -150,3 +150,22 @@ def test_panellerde_bos_tablo_mesajlari(lib, app):
     assert q.tableWidget_2.bos_durum.etiket.text() == "Aramanıza uyan kitap yok."
     assert not q.tableWidget_2.bos_durum.etiket.isHidden()
     assert lib.odunc.tablo.bos_durum.etiket.text() == "Şu an dışarıda kitap yok."
+
+
+def test_icerige_gore_kolonlu_buyuk_tablo_hizli_dolar(app):
+    # Eskiden her hücrede kolon genişliği baştan ölçülüyordu: 737 kitaplık liste ~18 sn sürüyordu
+    import time
+    t = QTableWidget(0, 6)
+    tablo_ayarla(t)
+    t.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeToContents)
+    t.horizontalHeader().setSectionResizeMode(1, QHeaderView.Stretch)
+    t.resize(900, 500)
+    t.show()
+    satirlar = [[i, f"Kitap {i}", "Yazar", "Yayınevi", 1990 + i % 30, 1] for i in range(1500)]
+    bas = time.time()
+    tabloya_yaz(t, satirlar)
+    assert time.time() - bas < 3
+    modlar = [t.horizontalHeader().sectionResizeMode(c) for c in range(6)]
+    assert modlar[1] == QHeaderView.Stretch and modlar[0] == modlar[5] == QHeaderView.ResizeToContents
+    assert t.columnWidth(0) >= t.fontMetrics().horizontalAdvance("1499")    # sonunda içeriğe göre ölçüldü
+    t.close()

@@ -4,7 +4,7 @@ import re
 
 from PyQt5.QtCore import QEvent, QObject, Qt, QTimer
 from PyQt5.QtGui import QColor
-from PyQt5.QtWidgets import QAbstractItemView, QLabel, QTableWidgetItem
+from PyQt5.QtWidgets import QAbstractItemView, QHeaderView, QLabel, QTableWidgetItem
 
 from database.dbframe import tr_sirala
 
@@ -115,6 +115,13 @@ def tabloya_yaz(tablo, satirlar, vurgulu=(), veri=None):
     veri: her satır için ilk hücrede saklanacak ek bilgi (ör. id'ler), sıralamada satırla birlikte taşınır."""
     siralama=tablo.isSortingEnabled()
     tablo.setSortingEnabled(False)   # doldururken satırlar yer değiştirmesin
+    # "İçeriğe göre genişlik" kolonları her hücrede baştan ölçülür (737 kitapta ~18 sn);
+    # doldururken sabitlenir, bitince bir kez ölçülür
+    baslik=tablo.horizontalHeader()
+    kipler=[baslik.sectionResizeMode(c) for c in range(tablo.columnCount())]
+    for c,kip in enumerate(kipler):
+        if kip==QHeaderView.ResizeToContents:
+            baslik.setSectionResizeMode(c,QHeaderView.Interactive)
     tablo.setRowCount(len(satirlar))
     for r,satir in enumerate(satirlar):
         for c,deger in enumerate(satir):
@@ -125,6 +132,9 @@ def tabloya_yaz(tablo, satirlar, vurgulu=(), veri=None):
             if c==0 and veri is not None:
                 hucre.setData(Qt.UserRole, veri[r])
             tablo.setItem(r,c,hucre)
+    for c,kip in enumerate(kipler):
+        if kip==QHeaderView.ResizeToContents:
+            baslik.setSectionResizeMode(c,kip)
     tablo.setSortingEnabled(siralama)
 
 
