@@ -65,4 +65,4 @@ def test_listele_butonu_aramayi_dikkate_alir(app, uyarilar):
     p.arama.setText("zweig")
     p.arama.blockSignals(False)
     p.listele()
-    assert p.QtLibrary.tableWidget_2.rowCount() == 1
+    assert p.QtLibrary.tableWidget_2.rowCount() == 1 and p.QtLibrary.tableWidget_2.item(0, 1).text() == "Satranç"

@@ -20,7 +20,7 @@ TEHLIKE_KOYU = "#B91C1C"
 
 # Yazı: sistemin kendi yazı tipi (Mac: San Francisco, Windows: Segoe UI). Boyutlar piksel cinsinden
 # verilir; Mac ve Windows nokta (pt) boyutlarını farklı ölçeklediği için iki sistemde de aynı görünür.
-YAZI_PX = 13
+YAZI_PX = 15
 
 # Geri alınamayan işlem butonları kırmızı gösterilir
 TEHLIKELI_BUTONLAR = ["kitap_sil"]
@@ -51,7 +51,7 @@ QPushButton#filtre_etiketi {{ background-color: {VURGU_ACIK}; color: {VURGU_KOYU
                padding: 4px 10px; }}
 QPushButton#filtre_etiketi:hover {{ background-color: #FEE2E2; color: {TEHLIKE_KOYU}; }}
 #filtre_aciklama {{ color: {IKINCIL_METIN}; }}
-#filtre_sonuc {{ font-size: 14px; font-weight: bold; color: {VURGU_KOYU}; }}
+#filtre_sonuc {{ font-size: 16px; font-weight: bold; color: {VURGU_KOYU}; }}
 
 QLineEdit, QComboBox, QSpinBox, QPlainTextEdit {{ background-color: {KART}; color: {METIN};
                border: 1px solid #C7CDD8; border-radius: 5px; padding: 3px 6px; }}
@@ -66,6 +66,7 @@ QTableWidget, QTreeWidget {{ background-color: {KART}; alternate-background-colo
                selection-background-color: {VURGU_ACIK}; selection-color: {METIN}; }}
 QTableWidget::item {{ padding: 0 6px; }}
 QTableWidget::item:hover {{ background-color: #EEF4FF; }}
+QHeaderView::section:vertical {{ color: {IKINCIL_METIN}; font-weight: normal; padding: 0 8px 0 10px; }}
 QHeaderView::section {{ background-color: {ZEMIN}; color: #334155; padding: 4px 6px; border: none; font-weight: bold;
                border-right: 1px solid {KENAR}; border-bottom: 1px solid {KENAR}; }}
 

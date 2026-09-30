@@ -42,7 +42,7 @@ class KitapEkrani(QWidget):
         self.kitap_id = None
         self.setObjectName("kitap_ekrani")
         self.setStyleSheet(f"""
-            #kitap_arama {{ font-size: 15px; padding: 4px 8px; }}
+            #kitap_arama {{ font-size: 17px; padding: 4px 8px; }}
             #form_baslik {{ font-size: 18px; font-weight: bold; }}
             #kopya_bilgi {{ color: {tema.IKINCIL_METIN}; }}
             QGroupBox {{ font-weight: bold; }}

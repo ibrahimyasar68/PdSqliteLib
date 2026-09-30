@@ -54,7 +54,7 @@ class Bildirim(QObject):
             return
         self.tur = tur_bul(metin)
         self.kutu.setText(metin)
-        self.kutu.setStyleSheet(f"background-color: {RENKLER[self.tur]}; color: white; font-size: 14px;"
+        self.kutu.setStyleSheet(f"background-color: {RENKLER[self.tur]}; color: white; font-size: 16px;"
                                 " font-weight: bold; padding: 10px 18px; border-radius: 10px;")
         self._yerlestir()
         self.kutu.raise_()

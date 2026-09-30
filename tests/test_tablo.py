@@ -119,7 +119,10 @@ def test_kullanici_tablosu_siralaninca_dogru_kullanici_secilir(app, uyarilar):
 def test_tablo_gorunumu(app):
     t = QTableWidget(0, 2)
     tablo_ayarla(t)
-    assert t.alternatingRowColors() and t.verticalHeader().isHidden()
+    assert t.alternatingRowColors() and not t.verticalHeader().isHidden()    # sıra numarası görünür
+    t2 = QTableWidget(0, 2)
+    tablo_ayarla(t2, sira_no=False)
+    assert t2.verticalHeader().isHidden()
     assert t.horizontalHeader().stretchLastSection()
     tabloya_yaz(t, [["Kitap", "42"]])
     assert t.item(0, 1).textAlignment() & Qt.AlignRight          # sayılar sağa yaslı
@@ -169,3 +172,26 @@ def test_icerige_gore_kolonlu_buyuk_tablo_hizli_dolar(app):
     assert modlar[1] == QHeaderView.Stretch and modlar[0] == modlar[5] == QHeaderView.ResizeToContents
     assert t.columnWidth(0) >= t.fontMetrics().horizontalAdvance("1499")    # sonunda içeriğe göre ölçüldü
     t.close()
+
+
+def sira_numaralari(t):
+    return [t.model().headerData(r, Qt.Vertical) for r in range(t.rowCount())]
+
+
+def test_listelerde_sira_numarasi(app, uyarilar):
+    lib = Library()
+    q = lib.QtLibrary
+    q.tabWidget.setCurrentWidget(q.tab_2)
+    t = q.tableWidget_2
+    assert not t.verticalHeader().isHidden() and sira_numaralari(t) == list(range(1, 9))   # son numara = kayıt sayısı
+    t.sortItems(0, Qt.DescendingOrder)                  # kayıt numarası tersine: sıra numarası yine 1'den
+    assert kolon(t, 0)[0] == "8" and sira_numaralari(t) == list(range(1, 9))
+    lib.arama.setText("tahir")
+    assert sira_numaralari(t) == [1, 2]
+    for tablo in (lib.kitaplar.tablo, lib.filtre.tablo, lib.odunc.tablo, lib.gecmis.tablo, q.tableWidget_5_1_1):
+        assert not tablo.verticalHeader().isHidden()
+
+
+def test_bos_listede_sira_numarasi_yok(app, uyarilar):
+    lib = Library()
+    assert lib.QtLibrary.tableWidget_2.rowCount() == 0      # sekme açılmadan boş satır ("1") görünmez

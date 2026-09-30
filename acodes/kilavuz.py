@@ -127,13 +127,13 @@ UYE = [
 ]
 
 STIL = f"""
-#kilavuz_hakkinda {{ color: {tema.METIN}; font-size: 14px; font-weight: normal; }}
+#kilavuz_hakkinda {{ color: {tema.METIN}; font-size: 16px; font-weight: normal; }}
 QPushButton#kilavuz_konu {{ background: transparent; color: {tema.METIN}; border: none; border-radius: 0;
                border-top: 1px solid {tema.KENAR}; padding: 10px 4px; min-width: 0; text-align: left;
-               font-size: 15px; font-weight: bold; }}
+               font-size: 17px; font-weight: bold; }}
 QPushButton#kilavuz_konu:hover {{ color: {tema.VURGU_KOYU}; }}
 QPushButton#kilavuz_konu:checked {{ color: {tema.VURGU_KOYU}; }}
-#kilavuz_metin {{ color: {tema.METIN}; font-size: 14px; font-weight: normal; padding: 0 8px 10px 22px; }}
+#kilavuz_metin {{ color: {tema.METIN}; font-size: 16px; font-weight: normal; padding: 0 8px 10px 22px; }}
 """
 
 

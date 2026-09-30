@@ -20,7 +20,7 @@ def pencere_stili():
     """Pencereler panelden bağımsız açılsa da (ör. testlerde) aynı temayla, biraz daha büyük yazıyla görünür."""
     return tema.qss() + f"""
 QDialog {{ background-color: {tema.SAYFA}; }}
-QWidget {{ font-size: 14px; }}
+QWidget {{ font-size: 16px; }}
 QPushButton {{ padding: 6px 14px; }}
 """
 

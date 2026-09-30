@@ -113,7 +113,7 @@ class OrtakSekmeler:
 
     def create_form_tab2(self):
         self.QtLibrary.tableWidget_2.setColumnCount(len(LISTE_KOLONLARI))
-        self.QtLibrary.tableWidget_2.setRowCount(1)
+        self.QtLibrary.tableWidget_2.setRowCount(0)
         tablo_basliklari(self.QtLibrary.tableWidget_2, LISTE_KOLONLARI)
 
     def arama_kutusu_kur(self):
@@ -124,10 +124,10 @@ class OrtakSekmeler:
         self.arama.setGeometry(160,10,520,36)
         self.arama.setPlaceholderText("Ara: kitap adı, yazar, çevirmen, tür, yayınevi, yıl, ISBN, raf, not...")
         self.arama.setClearButtonEnabled(True)
-        self.arama.setStyleSheet('font-size: 15px; border-radius: 6px; padding: 2px 8px;')
+        self.arama.setStyleSheet('font-size: 17px; border-radius: 6px; padding: 2px 8px;')
         self.arama_sonuc=QLabel(ui.tab_2)
         self.arama_sonuc.setGeometry(700,10,400,36)
-        self.arama_sonuc.setStyleSheet(f'font-size: 14px; font-weight: bold; color: {tema.VURGU_KOYU};')
+        self.arama_sonuc.setStyleSheet(f'font-size: 16px; font-weight: bold; color: {tema.VURGU_KOYU};')
         self.arama.textChanged.connect(self.listele)
 
     def listele(self):

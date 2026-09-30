@@ -36,10 +36,10 @@ class Grafik(QWidget):
         p.setBrush(Qt.white)
         p.drawRoundedRect(kutu, 8, 8)
         p.setPen(Qt.black)
-        p.setFont(tema.yazi_tipi(15, kalin=True))
+        p.setFont(tema.yazi_tipi(17, kalin=True))
         p.drawText(kutu.adjusted(12, 8, -12, 0), Qt.AlignLeft | Qt.AlignTop, self.baslik)
         alan = kutu.adjusted(14, 38, -14, -12)
-        p.setFont(tema.yazi_tipi(12))
+        p.setFont(tema.yazi_tipi(14))
         if not self.veri:
             p.setPen(QColor(120, 120, 120))
             p.drawText(alan, Qt.AlignCenter, "Gösterilecek veri yok")

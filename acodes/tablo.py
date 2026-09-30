@@ -51,7 +51,7 @@ class BosDurum(QObject):
         self.etiket.setObjectName("bos_durum")
         self.etiket.setAlignment(Qt.AlignCenter)
         self.etiket.setWordWrap(True)
-        self.etiket.setStyleSheet("color: #8A94A6; font-size: 15px; background: transparent;")
+        self.etiket.setStyleSheet("color: #8A94A6; font-size: 17px; background: transparent;")
         self.etiket.setAttribute(Qt.WA_TransparentForMouseEvents)
         self.bekliyor = False
         model = tablo.model()
@@ -85,16 +85,21 @@ class BosDurum(QObject):
         return False
 
 
-def tablo_ayarla(tablo, siralama=True, bos_metin=None):
+def tablo_ayarla(tablo, siralama=True, bos_metin=None, sira_no=True):
     """Hücreler düzenlenemez, tıklanınca satır seçilir, başlığa tıklanınca sıralanır.
     İlk açılışta veri geldiği sırada gösterilir (sıralama göstergesi yok).
-    Satırlar sırayla renklenir, satır numarası kolonu gizlenir; bos_metin verilirse boş tabloda gösterilir."""
+    Satırlar sırayla renklenir; bos_metin verilirse boş tabloda gösterilir.
+    sira_no: solda 1'den başlayan sıra numarası (kayıt numarasından bağımsız; sıralama değişince de
+    ekrandaki sıraya göre numaralanır, son numara listedeki kayıt sayısını gösterir)."""
     tablo.setEditTriggers(QAbstractItemView.NoEditTriggers)
     tablo.setSelectionBehavior(QAbstractItemView.SelectRows)
     tablo.setAlternatingRowColors(True)
     tablo.setMouseTracking(True)
-    tablo.verticalHeader().setVisible(False)
-    tablo.verticalHeader().setDefaultSectionSize(26)
+    tablo.verticalHeader().setVisible(sira_no)
+    tablo.verticalHeader().setDefaultAlignment(Qt.AlignRight | Qt.AlignVCenter)
+    tablo.verticalHeader().setSectionResizeMode(QHeaderView.Fixed)
+    tablo.verticalHeader().setHighlightSections(False)
+    tablo.verticalHeader().setDefaultSectionSize(30)
     tablo.horizontalHeader().setStretchLastSection(True)
     tablo.horizontalHeader().setHighlightSections(False)
     if bos_metin:
