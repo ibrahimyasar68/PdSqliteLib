@@ -46,11 +46,16 @@ tür ve yayınevi alanlarında yazdıkça mevcut değerler önerilir (yazım far
 
 ### Filtre
 
-**Filtre** sekmesinde tür, yazar, yayınevi ve yıl ölçütleri tek panelde yan yana durur. Her ölçütte
-birden fazla değer seçilebilir; seçilenler ölçütün altında etiket olarak görünür, etikete tıklamak
-seçimi kaldırır. Aynı ölçütteki seçimlerden **biri**, farklı ölçütlerin **hepsi** tutmalıdır
-("Roman veya Hikaye" **ve** "Kemal TAHİR"). Sonuçlar her seçimde kendiliğinden güncellenir;
-**Temizle** tüm seçimleri kaldırır.
+**Filtre** sekmesinde tür, yazar, yayınevi ve yıl ölçütleri tek panelde yan yana durur.
+
+- Ölçüt kutusuna yazmak Kitap Listesi'ndeki arama gibi süzer; büyük/küçük harf ve Türkçe karakter
+  farkı gözetilmez ("şiir" yazınca türü "Şiir" veya "şiir" olan kitaplar gelir).
+- Diğer ölçütlerin listelerinde yalnızca süzülen kitaplarda geçen değerler kalır: türe "şiir" yazınca
+  yazar listesinde sadece şiir kitabı olan yazarlar, yıl listesinde o kitapların yılları görünür.
+- Listeden seçilen değer ölçütün altında etikete dönüşür (etikete tıklamak kaldırır); böylece bir ölçütte
+  birden fazla değer seçilebilir. Aynı ölçütteki seçimlerden **biri**, farklı ölçütlerin **hepsi**
+  tutmalıdır ("Roman veya Hikaye" **ve** "Kemal TAHİR").
+- Sonuçlar her değişiklikte kendiliğinden güncellenir; **Temizle** tüm seçimleri ve aramaları kaldırır.
 
 ### Aranabilir listeler
 

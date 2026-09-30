@@ -11,7 +11,6 @@ from PyQt5.QtWidgets import (QComboBox, QFormLayout, QFrame, QGroupBox, QHBoxLay
 from bforms.onay import onay
 from acodes import tema
 from acodes.aranabilir import aranabilir_yap, secili_veri
-from acodes.filtre_paneli import SECINIZ
 from acodes.tablo import satir_verisi, tablo_ayarla, tabloya_yaz
 from database.dbbase import save_work_to_db, update_work_to_db
 from database.dbframe import (df_book_find_by_id, df_book_id_list, df_user_find_by_id, df_user_id_list,
@@ -19,6 +18,7 @@ from database.dbframe import (df_book_find_by_id, df_book_id_list, df_user_find_
 from database.odunc import (ODUNC_SURESI_GUN, gecikme_gunu, kalan_gun_yazi, tarih_yazi, teslim_tarihi,
                             uye_durumu)
 
+SECINIZ = ' Seçiniz...'
 LISTE_KOLONLARI = ["Kitap", "Yazarı", "Üye", "Telefon", "Veriliş", "Teslim", "Durum"]
 IYI, KOTU = "#15803D", tema.TEHLIKE
 

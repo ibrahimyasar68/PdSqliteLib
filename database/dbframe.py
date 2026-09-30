@@ -57,18 +57,53 @@ def df_sort_list(sort):
 def df_book_id_list():
     return baglantı.execute("SELECT Id, Adi, Yayinevi, Yili FROM kayitlistesi ORDER BY Adi, Yili").fetchall()
 
-## Filtre sonuçları: secimler = {kolon: [değerler]}. Aynı kolondaki değerlerden biri ("veya"),
-## farklı kolonların hepsi ("ve") tutmalı. Seçim yoksa boş liste. Sonuç kitap adına göre sıralı.
-def kitap_filtrele(secimler):
-    kosullar,degerler=[],[]
-    for ad,secilen in secimler.items():
-        if secilen:
-            kosullar.append(f"{kolon(ad,KITAP_KOLON)} IN ({','.join('?'*len(secilen))})")
-            degerler+=list(secilen)
-    if not kosullar:
+## Filtre: kosullar = {kolon: [seçilen değerler] veya "aranan metin"}.
+## Liste verilirse değerlerden biri ("veya"), metin verilirse kitap listesindeki arama gibi yazılan kelimelerin
+## hepsi (büyük/küçük harf ve Türkçe karakter farksız) aranır. Farklı kolonların hepsi ("ve") tutmalı.
+_TEMEL_SIRA = {ad: i for i, ad in enumerate(TEMEL_KOLONLAR.split(", "))}
+
+def _kosullari_hazirla(kosullar):
+    hazir=[]
+    for ad,kosul in kosullar.items():
+        i=_TEMEL_SIRA[kolon(ad,set(_TEMEL_SIRA))]
+        if isinstance(kosul,str):
+            if katla(kosul).split():
+                hazir.append((ad,i,False,katla(kosul).split()))
+        elif kosul:
+            hazir.append((ad,i,True,{str(d) for d in kosul}))
+    return hazir
+
+def _uyar(satir,hazir,haric=None):
+    for ad,i,secim,deger in hazir:
+        if ad==haric:
+            continue
+        metin="" if satir[i] is None else str(satir[i])
+        if secim:
+            if metin not in deger:
+                return False
+        elif not all(k in katla(metin) for k in deger):
+            return False
+    return True
+
+## Koşullara uyan kitaplar (koşul yoksa boş liste), kitap adına göre sıralı
+def kitap_filtrele(kosullar):
+    hazir=_kosullari_hazirla(kosullar)
+    if not hazir:
         return []
-    satirlar=baglantı.execute(f"SELECT {TEMEL_KOLONLAR} FROM kayitlistesi WHERE {' AND '.join(kosullar)}",degerler).fetchall()
+    satirlar=[s for s in baglantı.execute(f"SELECT {TEMEL_KOLONLAR} FROM kayitlistesi") if _uyar(s,hazir)]
     return sorted(satirlar, key=lambda s: (tr_sirala(s[1] or ""), s[0]))
+
+## Her kolon için seçilebilecek değerler: o kolon hariç diğer koşullara uyan kitaplarda geçenler.
+## Ör. türe "şiir" yazılınca yazar listesinde sadece şiir kitabı olan yazarlar kalır.
+def filtre_secenekleri(kosullar, kolonlar):
+    hazir=_kosullari_hazirla(kosullar)
+    satirlar=baglantı.execute(f"SELECT {TEMEL_KOLONLAR} FROM kayitlistesi").fetchall()
+    secenekler={}
+    for ad in kolonlar:
+        i=_TEMEL_SIRA[kolon(ad,set(_TEMEL_SIRA))]
+        degerler={str(s[i]) for s in satirlar if s[i] not in (None,"") and _uyar(s,hazir,haric=ad)}
+        secenekler[ad]=sorted(degerler,key=tr_sirala)
+    return secenekler
 
 ## İstatistik: kolondaki her değer için kitap sayısı (en çok olan cnt tanesi)
 def rapor(sor,cnt):

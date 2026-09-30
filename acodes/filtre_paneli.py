@@ -1,6 +1,9 @@
 ## Filtre sekmesi: tür, yazar, yayınevi ve yıl ölçütleri tek panelde ##
-# Her ölçütte birden fazla değer seçilebilir. Aynı ölçütteki seçimlerden biri ("Roman veya Deneme"),
-# farklı ölçütlerin hepsi ("Roman ve Kemal TAHİR") tutmalıdır. Sonuçlar her seçimde kendiliğinden güncellenir.
+# Ölçüt kutusuna yazılan metin Kitap Listesi'ndeki arama gibi süzer ("şiir" → "Şiir" ve "şiir" türleri).
+# Diğer ölçütlerin listelerinde yalnızca süzülen kitaplarda geçen değerler kalır (türe "şiir" yazılınca yazar
+# listesinde sadece şiir kitabı olan yazarlar). Listeden seçilen değerler etikete dönüşür: aynı ölçütteki
+# seçimlerden biri ("Roman veya Deneme"), farklı ölçütlerin hepsi ("Roman ve Kemal TAHİR") tutmalıdır.
+# Sonuçlar her değişiklikte kendiliğinden güncellenir.
 
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import (QComboBox, QFrame, QGroupBox, QHBoxLayout, QHeaderView, QLabel, QPushButton,
@@ -9,14 +12,13 @@ from PyQt5.QtWidgets import (QComboBox, QFrame, QGroupBox, QHBoxLayout, QHeaderV
 from acodes.aranabilir import aranabilir_yap
 from acodes.tablo import tablo_ayarla, tabloya_yaz
 from acodes.yerlesim import AkisDuzeni
-from database.dbframe import df_sort_list, kitap_filtrele, tr_sirala
+from database.dbframe import filtre_secenekleri, kitap_filtrele, tr_sirala
 
-SECINIZ = ' Seçiniz...'
 # (veritabanı kolonu, ölçüt adı)
 OLCUTLER = [("Turu", "Tür"), ("Yazari", "Yazar"), ("Yayinevi", "Yayınevi"), ("Yili", "Yıl")]
 SONUC_KOLONLARI = ["Kayıt No", "Adı", "Yazarı", "Çeviren", "Türü", "Yayınevi", "Yılı", "Sayfa"]
-SECIM_YOK = "Soldaki ölçütlerden bir veya birkaç seçim yapın;\nuyan kitaplar burada listelenir."
-SONUC_YOK = "Seçimlerin hepsine uyan kitap yok.\nBir seçimi kaldırmayı deneyin."
+SECIM_YOK = "Soldaki ölçütlere yazın veya listeden seçin;\nuyan kitaplar burada listelenir."
+SONUC_YOK = "Ölçütlerin hepsine uyan kitap yok.\nBir seçimi kaldırmayı veya aramayı değiştirmeyi deneyin."
 
 
 class FiltrePaneli(QWidget):
@@ -25,12 +27,14 @@ class FiltrePaneli(QWidget):
         self.mesaj = mesaj or (lambda metin: None)
         self.secimler = {kolon: [] for kolon, _ in OLCUTLER}
         self.combo, self.kutu, self.etiketler = {}, {}, {}
+        self.secenekler = {}
 
         # --- Sol: ölçütler (pencere küçükse kaydırılır), altında butonlar
         olcutler = QVBoxLayout()
         olcutler.setContentsMargins(0, 0, 6, 0)
         olcutler.setSpacing(10)
-        aciklama = QLabel("Aynı ölçütteki seçimlerden <b>biri</b>, farklı ölçütlerin <b>hepsi</b> tutmalı.")
+        aciklama = QLabel("Yazdıkça süzülür; diğer ölçütlerde yalnızca uyan seçenekler kalır. Listeden seçilenler "
+                          "etikete dönüşür: aynı ölçütte <b>biri</b>, farklı ölçütlerde <b>hepsi</b> tutmalı.")
         aciklama.setWordWrap(True)
         aciklama.setObjectName("filtre_aciklama")
         olcutler.addWidget(aciklama)
@@ -42,8 +46,9 @@ class FiltrePaneli(QWidget):
             cmb.setMinimumHeight(32)
             cmb.setSizeAdjustPolicy(QComboBox.AdjustToMinimumContentsLengthWithIcon)   # uzun adlar genişletmesin
             cmb.setMinimumContentsLength(12)
-            aranabilir_yap(cmb, f"{ad} yazarak arayın...")
-            # Seçime ekleme listeden bir seçenek seçilince yapılır (yazarken değil)
+            aranabilir_yap(cmb, f"{ad} yazın veya seçin...")
+            # Yazılan metin hemen süzer; listeden bir seçenek seçilince etikete dönüşür
+            cmb.editTextChanged.connect(self.listele)
             cmb.currentIndexChanged.connect(lambda i, kolon=kolon: self._combo_secildi(kolon, i))
             dikey.addWidget(cmb)
             etiketler = QWidget()
@@ -100,25 +105,43 @@ class FiltrePaneli(QWidget):
         self.yenile()
 
     def yenile(self):
-        ###  Açılır listeleri veritabanından doldur (seçimler korunur), sonuçları güncelle  ###
-        for kolon, _ in OLCUTLER:
-            cmb = self.combo[kolon]
-            cmb.blockSignals(True)
-            cmb.clear()
-            cmb.addItems([SECINIZ] + df_sort_list(kolon))
-            cmb.setCurrentIndex(0)
-            cmb.blockSignals(False)
+        ###  Veritabanı değişince seçenekleri ve sonuçları yeniden oku (seçimler ve aramalar korunur)  ###
+        self.secenekler = {}
         self.listele()
 
+    def kosullar(self):
+        """Her ölçüt için etiketler (seçilen değerler) veya etiket yoksa kutuya yazılan metin."""
+        return {kolon: list(self.secimler[kolon]) or self.combo[kolon].currentText().strip() for kolon, _ in OLCUTLER}
+
+    def _secenekleri_yaz(self, secenekler):
+        # Sadece değişen listeler yeniden doldurulur; kutuya yazılmış metin korunur
+        for kolon, degerler in secenekler.items():
+            if self.secenekler.get(kolon) == degerler:
+                continue
+            cmb = self.combo[kolon]
+            metin = cmb.currentText()
+            cmb.blockSignals(True)
+            cmb.clear()
+            cmb.addItems(degerler)
+            cmb.setCurrentIndex(-1)
+            cmb.setEditText(metin)
+            cmb.blockSignals(False)
+        self.secenekler = secenekler
+
     def _combo_secildi(self, kolon, i):
-        if i <= 0:
+        if i < 0:
             return
-        self.ekle(kolon, self.combo[kolon].itemText(i))
         cmb = self.combo[kolon]
+        deger = cmb.itemText(i)
         cmb.blockSignals(True)
-        cmb.setCurrentIndex(0)          # bir sonraki seçim için liste başa döner
+        cmb.setCurrentIndex(-1)         # bir sonraki seçim için kutu boşalır
+        cmb.setEditText("")
         cmb.blockSignals(False)
         cmb.suzgec.ayarla("")
+        if deger in self.secimler[kolon]:
+            self.listele()
+        else:
+            self.ekle(kolon, deger)
 
     def ekle(self, kolon, deger):
         if not deger or deger in self.secimler[kolon]:
@@ -132,11 +155,16 @@ class FiltrePaneli(QWidget):
             self.listele()
 
     def temizle(self):
-        if not any(self.secimler.values()):
+        if not any(self.kosullar().values()):
             self.mesaj("Temizlenecek seçim yok!")
             return
-        for secilen in self.secimler.values():
+        for kolon, secilen in self.secimler.items():
             secilen.clear()
+            cmb = self.combo[kolon]
+            cmb.blockSignals(True)
+            cmb.setEditText("")
+            cmb.blockSignals(False)
+            cmb.suzgec.ayarla("")
         self.listele()
         self.mesaj("Filtre temizlendi.")
 
@@ -145,8 +173,10 @@ class FiltrePaneli(QWidget):
             self._etiketleri_yaz(kolon)
             adet = len(self.secimler[kolon])
             self.kutu[kolon].setTitle(f"{ad} ({adet})" if adet else ad)
-        secim_var = any(self.secimler.values())
-        satirlar = kitap_filtrele(self.secimler)
+        kosullar = self.kosullar()
+        secim_var = any(kosullar.values())
+        self._secenekleri_yaz(filtre_secenekleri(kosullar, [kolon for kolon, _ in OLCUTLER]))
+        satirlar = kitap_filtrele(kosullar)
         tabloya_yaz(self.tablo, satirlar)
         self.tablo.bos_durum.etiket.setText(SONUC_YOK if secim_var else SECIM_YOK)
         self.sonuc.setText(f"{len(satirlar)} kitap bulundu" if secim_var else "")
