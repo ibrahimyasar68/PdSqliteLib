@@ -63,7 +63,6 @@ class Ayarlar(QScrollArea):
         super().__init__(parent)
         self.setWidgetResizable(True)
         self.setFrameShape(QScrollArea.NoFrame)
-        self.setStyleSheet("QScrollArea { background: transparent; }")   # panelin fotoğrafı görünür
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         ic = QWidget()
         ic.setObjectName("ayarlar_ic")

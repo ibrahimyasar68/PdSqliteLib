@@ -22,9 +22,9 @@ Giriş ekranında kullanıcının yetkisine göre iki farklı panel açılır:
 Panellerdeki **Oturumu Kapat** butonu giriş ekranına döner; başka bir kullanıcıyla giriş yapılabilir.
 Programdan çıkmak için giriş ekranındaki kırmızı çıkış butonu kullanılır. Paneller macOS'ta büyütülmüş
 pencerede (küçültülebilir, diğer programlara geçilebilir), Windows'ta tam ekran açılır.
-Giriş ekranındaki şelale fotoğrafı panellerin de arka planıdır; sayfalar yarı saydam olduğu için içeriğin
-arkasından görünür, tablolar ve formlar okunaklı kalsın diye beyazdır (saydamlık `acodes/arka_plan.py`
-içindeki `SAYFA_SAYDAMLIK` ile ayarlanır).
+Panellerin arka planı yaprak fotoğrafıdır (`media/autumn.jpg`). Giriş sekmesinde fotoğraf olduğu gibi
+görünür; diğer sayfalar yarı saydam olduğu için içeriğin arkasından hafifçe görünür, tablolar ve formlar
+okunaklı kalsın diye beyazdır (saydamlık `acodes/arka_plan.py` içindeki `SAYFA_SAYDAMLIK` ile ayarlanır).
 
 Yeni kullanıcı ve üye kayıtlarını (`admin` veya `guest`) sadece giriş yapmış bir admin,
 **Ayarlar → Yeni Kullanıcı Ekle** ile oluşturabilir.

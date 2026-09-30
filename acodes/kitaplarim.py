@@ -1,6 +1,7 @@
 ## Guest paneli > Kitaplarım sekmesi ##
 # Üyenin elindeki kitaplar (teslim tarihi, kalan gün) ve daha önce aldığı kitaplar.
 
+from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QGroupBox, QHeaderView, QLabel, QTableWidget, QVBoxLayout, QWidget
 
 from acodes import tema
@@ -23,7 +24,8 @@ class Kitaplarim(QWidget):
         super().__init__(parent)
         self.kullanici = None
         self.setObjectName("tab_kitaplarim")
-        self.setStyleSheet("QGroupBox { font-weight: bold; }")   # zemin saydam: panelin fotoğrafı görünür
+        self.setAttribute(Qt.WA_StyledBackground, True)   # panelin yarı saydam sayfa zemini çizilsin
+        self.setStyleSheet("QGroupBox { font-weight: bold; }")
         self.ozet = QLabel()
         self.ozet.setStyleSheet('font-size: 16px; font-weight: bold;')
         self.elimdeki = tablo_olustur(["Kitap", "Yazar", "Aldığım Tarih", "Teslim Tarihi", "Durum"],

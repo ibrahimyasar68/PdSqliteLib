@@ -23,7 +23,7 @@ class Guest(OrtakSekmeler, QMainWindow):
         self.QtLibrary = Ui_MainWindow()
         self.QtLibrary.setupUi(self)
         tema.uygula(self)   # .ui renkleri yerine tek tema
-        self.arka_plan=arka_plan.uygula(self)   # giriş ekranındaki fotoğraf tüm panelin zemininde
+        self.arka_plan=arka_plan.uygula(self)   # yaprak fotoğrafı tüm panelin zemininde
         self.bildirim=bildirim.baglan(self,self.QtLibrary.statusbar)   # mesajlar kısa süreli bildirim olarak
         self.QtLibrary.tabWidget.setCurrentIndex(0)
         self.dur_msj=2000

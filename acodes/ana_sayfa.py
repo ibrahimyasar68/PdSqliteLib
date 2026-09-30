@@ -1,5 +1,5 @@
 ## Ana sayfa özet panosu ##
-# Üstte kütüphanenin resmiyle başlık şeridi, altında tıklanabilir özet kartları ve iki kısa liste.
+# Üstte başlık şeridi (panelin arka plan fotoğrafı üzerinde), altında tıklanabilir özet kartları ve iki kısa liste.
 # Yönetici ve üye panelleri aynı bileşeni farklı kartlar/listelerle kurar.
 
 from PyQt5.QtCore import Qt, pyqtSignal
@@ -11,7 +11,7 @@ from acodes.tablo import tablo_ayarla, tabloya_yaz
 
 STIL = f"""
 #ana_sayfa {{ background: transparent; }}
-#ana_baslik {{ border-image: url(:/pic/autumn.jpg) 0 0 0 0 stretch stretch; border-radius: 10px; }}
+#ana_baslik {{ background: transparent; }}
 #baslik_yazi {{ color: #FFE14D; font: italic 46px "Monotype Corsiva"; }}
 #karsilama {{ color: white; font-size: 17px; font-weight: bold; }}
 #kart {{ background-color: {tema.KART}; border: 1px solid {tema.KENAR}; border-radius: 10px; }}
@@ -19,7 +19,8 @@ STIL = f"""
 #kart_sayi {{ font-size: 30px; font-weight: bold; color: {tema.METIN}; }}
 #kart_baslik {{ font-size: 14px; font-weight: bold; color: #334155; }}
 #kart_alt {{ font-size: 12px; color: {tema.IKINCIL_METIN}; }}
-QGroupBox {{ font-weight: bold; }}
+QGroupBox {{ font-weight: bold; color: white; }}
+#ana_sayfa QTableWidget, #ana_sayfa QHeaderView {{ color: {tema.METIN}; }}
 """
 
 

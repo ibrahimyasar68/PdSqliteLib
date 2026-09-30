@@ -1,25 +1,40 @@
-## Panellerin arka planı: giriş ekranındaki fotoğraf ##
+## Panellerin arka planı: yaprak fotoğrafı ##
 import pytest
 from PyQt5.QtWidgets import QApplication
 
+from acodes import arka_plan
 from acodes.guest import Guest
 from acodes.library import Library
 
 
-@pytest.mark.parametrize("panel", [Library, Guest])
-def test_fotograf_panelin_zemininde(app, uyarilar, panel):
-    p = panel()
-    assert not p.arka_plan.resim.isNull()
-    p.resize(1200, 700)
-    p.show()
+def goster(panel, sayfa=None):
+    if sayfa is not None:
+        panel.QtLibrary.tabWidget.setCurrentWidget(sayfa)
+    panel.resize(1200, 700)
+    panel.show()
     QApplication.processEvents()
-    goruntu = p.centralWidget().grab().toImage()
-    # sayfanın dışında kalan kenarda (sekme çubuğunun solu) fotoğraf görünür: düz tema zemini değil
-    renkler = {goruntu.pixel(x, 5) for x in range(0, 200, 10)}
-    assert len(renkler) > 3
+    return panel.centralWidget().grab().toImage()
+
+
+def renk(goruntu, x, y):
+    return goruntu.pixelColor(x, y).name()
+
+
+@pytest.mark.parametrize("panel", [Library, Guest])
+def test_giris_sayfasinda_fotograf_perdesiz(app, uyarilar, panel):
+    p = panel()
+    assert arka_plan.RESIM == ":/pic/autumn.jpg" and not p.arka_plan.resim.isNull()
+    goruntu = goster(p)                            # ilk açılış (sekme değiştirilmeden)
+    # başlık şeridinde tema zemini değil, fotoğrafın kendisi görünür (koyu yaprak renkleri)
+    renkler = {renk(goruntu, x, 100) for x in range(100, 1100, 50)}
+    assert "#f7f8fb" not in renkler and len(renkler) > 5
+    assert all(goruntu.pixelColor(x, 100).lightness() < 200 for x in range(100, 1100, 100))
     p.close()
 
 
-def test_sayfalar_yari_saydam(app, uyarilar):
-    lib = Library()
-    assert "rgba(247, 248, 251" in lib.styleSheet() and "#centralwidget { background: transparent; }" in lib.styleSheet()
+def test_diger_sayfalarda_yari_saydam_perde(app, uyarilar):
+    p = Library()
+    goruntu = goster(p, p.QtLibrary.tab_4)
+    kenar = goruntu.pixelColor(1180, 690)          # tablonun dışında kalan sayfa zemini
+    assert kenar.name() not in ("#f7f8fb", "#ffffff") and kenar.lightness() > 120   # perdeli fotoğraf
+    p.close()
