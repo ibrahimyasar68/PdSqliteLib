@@ -31,7 +31,8 @@ Yeni kullanıcı ve üye kayıtlarını (`admin` veya `guest`) sadece giriş yap
 
 ### Arama
 
-**Kitap Listesi** sekmesindeki arama kutusu yazdıkça sonuçları günceller. Kitap adı, yazar, çevirmen,
+**Kitap Listesi** sekmesine gelince tüm kitaplar kendiliğinden listelenir (her gelişte güncel hali);
+arama kutusu yazdıkça sonuçları günceller, **Temizle** aramayı silip tüm listeye döner. Kitap adı, yazar, çevirmen,
 tür, yayınevi ve yılda arar; büyük/küçük harf ve Türkçe karakter farkı gözetmez ("sahin" → "Şahin",
 "kuyucakli" → "Kuyucaklı"). Birden fazla kelime yazılırsa hepsini içeren kitaplar listelenir.
 

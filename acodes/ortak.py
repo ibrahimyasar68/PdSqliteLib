@@ -35,7 +35,9 @@ class OrtakSekmeler:
         ###  Tab_2  ###
         self.create_form_tab2()
         self.arama_kutusu_kur()
-        ui.pushButton_2_listele.clicked.connect(self.listele)
+        # Liste sekmeye gelince kendiliğinden dolar ve yazdıkça süzülür; Listele butonuna gerek kalmadı
+        ui.pushButton_2_listele.hide()
+        ui.tabWidget.currentChanged.connect(self.liste_sekmesi_acildi)
         ui.pushButton_2_temizle.clicked.connect(self.temizle)
 
         ###  Tab_4: dört ayrı filtre sekmesi yerine tek panel  ###
@@ -53,8 +55,7 @@ class OrtakSekmeler:
         self.create_tab_5()
 
         ###  Tablolar: başlığa tıklayınca sıralama, hücreler salt okunur, boşken yönlendirici mesaj  ###
-        tablo_ayarla(ui.tableWidget_2, bos_metin="Kitapları görmek için Listele'ye basın\n"
-                                                  "veya yukarıya aramak istediğinizi yazın.")
+        tablo_ayarla(ui.tableWidget_2, bos_metin="Aramanıza uyan kitap yok.")
         for no,*_ in ISTATISTIKLER:
             tablo_ayarla(getattr(ui,f"tableWidget_5_1_{no}"))
 
@@ -72,7 +73,7 @@ class OrtakSekmeler:
         ust.addWidget(self.arama,1)
         ust.addWidget(self.arama_sonuc)
         ust.addStretch()
-        liste_sayfasi(ui.tab_2,[ui.pushButton_2_listele,ui.pushButton_2_temizle,self.aktar_liste],ui.tableWidget_2,ust)
+        liste_sayfasi(ui.tab_2,[ui.pushButton_2_temizle,self.aktar_liste],ui.tableWidget_2,ust)
 
     def aktar_butonu(self,tablo,ad,ornek,konum):
         ###  Örnek butonla aynı stilde "Dışa Aktar" butonu ve tabloya sağ tık menüsü  ###
@@ -135,14 +136,13 @@ class OrtakSekmeler:
         tabloya_yaz(self.QtLibrary.tableWidget_2, kitaplar)
         self.arama_sonuc.setText(f"{len(kitaplar)} kitap bulundu" if sorgu else f"Toplam {len(kitaplar)} kitap")
 
+    def liste_sekmesi_acildi(self):
+        if self.QtLibrary.tabWidget.currentWidget() is self.QtLibrary.tab_2:
+            self.listele()   # her gelişte güncel liste (başka sekmede eklenen/silinen kitaplar dahil)
+
     def temizle(self):
-        self.arama.blockSignals(True)  # Temizlerken liste yeniden doldurulmasın
+        ###  Aramayı temizle: tüm kitaplar listelenir  ###
         self.arama.clear()
-        self.arama.blockSignals(False)
-        self.arama_sonuc.clear()
-        self.QtLibrary.tableWidget_2.clear()
-        self.create_form_tab2()
-        self.QtLibrary.statusbar.showMessage("Liste temizlendi.",self.dur_msj)
 
     ##################################
     #####   Tab_5 Fonksiyonlar   #####

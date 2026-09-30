@@ -142,9 +142,11 @@ def test_bos_tablo_mesaji(app):
 
 def test_panellerde_bos_tablo_mesajlari(lib, app):
     q = lib.QtLibrary
-    assert "Listele" in q.tableWidget_2.bos_durum.etiket.text()
-    assert not q.tableWidget_2.bos_durum.etiket.isHidden()
     lib.arama.setText("tahir")
     app.processEvents()
     assert q.tableWidget_2.bos_durum.etiket.isHidden()
+    lib.arama.setText("olmayan kitap")
+    app.processEvents()
+    assert q.tableWidget_2.bos_durum.etiket.text() == "Aramanıza uyan kitap yok."
+    assert not q.tableWidget_2.bos_durum.etiket.isHidden()
     assert lib.odunc.tablo.bos_durum.etiket.text() == "Şu an dışarıda kitap yok."
