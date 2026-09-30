@@ -97,10 +97,10 @@ def test_panelden_geri_yukleme_listeleri_yeniler(app, uyarilar, monkeypatch, db,
     db.execute("DELETE FROM kayitlistesi WHERE Id>2")
     db.commit()
     lib.yenile()
-    assert lib.QtLibrary.comboBox_3_2_bul_adi.count() == 3
+    assert lib.kitaplar.tablo.rowCount() == 2
     monkeypatch.setattr(yedek_modulu_dialog(), "getOpenFileName", staticmethod(lambda *a: (yol, "")))
     lib.geri_yukle_ekrani()
-    assert lib.QtLibrary.comboBox_3_2_bul_adi.count() == 9
+    assert lib.kitaplar.tablo.rowCount() == 8
     assert uyarilar[-1].startswith("Yedek geri yüklendi")
 
 

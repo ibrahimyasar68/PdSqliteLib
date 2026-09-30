@@ -170,4 +170,4 @@ def test_eksik_kitaba_cift_tiklama_duzenlemede_acar(lib):
     e = lib.duzeltme
     e.eksik_ac(0)
     q = lib.QtLibrary
-    assert q.tabWidget_3.currentWidget() is q.tab_3_2 and q.lineEdit_3_2_adi.text() == "Kuyucaklı Yusuf"
+    assert q.tabWidget_3.currentWidget() is lib.kitaplar and lib.kitaplar.alan["Adi"].text() == "Kuyucaklı Yusuf"

@@ -7,7 +7,7 @@ from acodes.ayarlar import Ayarlar, klasoru_ac
 from acodes import tema
 from acodes.odunc_gecmisi import OduncGecmisi
 from acodes.veri_duzeltme import VeriDuzeltme
-from acodes.ek_bilgi import EkBilgiler
+from acodes.kitap_ekrani import KitapEkrani
 from acodes.aranabilir import aranabilir_yap, secili_veri
 from acodes.ana_sayfa import AnaSayfa, ana_sayfayi_yerlestir
 from acodes import bildirim, ikonlar
@@ -15,8 +15,8 @@ from acodes.yerlesim import form_kutusu, islem_sayfasi, liste_sayfasi
 from acodes.ortak import OrtakSekmeler, FILTRELER, SECINIZ
 from acodes.tablo import satir_verisi, tablo_ayarla, tablo_basliklari, tabloya_yaz
 from database.dbframe import (df_book_id_list, df_book_find_by_id, df_user_id_list, df_user_find_by_id,
-                              kitap_oduncte, kopya_durumu, uyede_mi, df_work_user_list, df_work_perbook, df_work_table_book)
-from database.dbbase import ekle_kayit, degistir_kayit, sil_kayit, save_work_to_db, update_work_to_db
+                              kopya_durumu, uyede_mi, df_work_user_list, df_work_perbook, df_work_table_book)
+from database.dbbase import save_work_to_db, update_work_to_db
 from database.yedek import geri_yukle, otomatik_yedekler, son_otomatik_yedek, yedek_al, yedek_hatasi, yedek_klasoru
 from database.dbbase import DB_YOLU
 from database.dbframe import genel_ozet
@@ -26,18 +26,6 @@ from database.dbframe import son_eklenenler
 from PyQt5.QtCore import pyqtSignal
 import os
 import datetime
-
-
-def buyuk_harf(metin):
-    """Her kelimenin ilk harfini büyütür, gerisine dokunmaz (Türkçe i/İ uyumlu).
-    str.title() "Anne'nin" -> "Anne'Nin", "TAHİR" -> "Tahi̇r" yaptığı için kullanılmıyor."""
-    kelimeler=[]
-    for k in metin.split(" "):
-        if k:
-            ilk=k[0]
-            k=("İ" if ilk=="i" else "I" if ilk=="ı" else ilk.upper())+k[1:]
-        kelimeler.append(k)
-    return " ".join(kelimeler)
 
 
 def kitap_listesi(cmb):
@@ -81,32 +69,12 @@ class Library(OrtakSekmeler, QMainWindow):
 
         ###  Uzun açılır listeler yazdıkça süzülür  ###
         ui=self.QtLibrary
-        for cmb,ipucu in ((ui.comboBox_3_2_bul_adi,"Kitap adı yazarak arayın..."),
-                          (ui.comboBox_3_3_bul_adi,"Kitap adı yazarak arayın..."),
-                          (ui.comboBox_6_1_1_liste_kitap,"Kitap adı yazarak arayın..."),
+        for cmb,ipucu in ((ui.comboBox_6_1_1_liste_kitap,"Kitap adı yazarak arayın..."),
                           (ui.comboBox_6_1_2_liste_kisi,"Üye adı yazarak arayın..."),
                           (ui.comboBox_6_2_1_liste_kisi,"Üye adı yazarak arayın..."),
                           (ui.comboBox_6_2_2_liste_kitap,"Kitap adı yazarak arayın...")):
             aranabilir_yap(cmb,ipucu)
 
-        ###  Tab_3 Olaylar  #########
-        # Ek bilgiler (ISBN, kopya, raf, notlar) formların yanındaki boş alana
-        self.ek_3_1=EkBilgiler(self.QtLibrary.tab_3_1)
-        self.ek_3_1.setGeometry(830,20,440,330)
-        self.ek_3_2=EkBilgiler(self.QtLibrary.tab_3_2)
-        self.ek_3_2.setGeometry(30,260,460,330)
-        self.ek_3_3=EkBilgiler(self.QtLibrary.tab_3_3, salt_okunur=True)
-        self.ek_3_3.setGeometry(30,260,460,330)
-        self.QtLibrary.pushButton_3_1_kaydet.clicked.connect(self.save_book)
-        self.QtLibrary.pushButton_3_1_temizle.clicked.connect(self.clear_form_3_1)
-        self.list_items_3_2()
-        self.QtLibrary.pushButton_3_2_bul.clicked.connect(self.find_item_3_2)
-        self.QtLibrary.pushButton_3_2_deg_kaydet.clicked.connect(self.update_item_3_2)
-        self.QtLibrary.pushButton_3_2_iptal.clicked.connect(self.clear_form_3_2)
-        self.list_items_3_3()
-        self.QtLibrary.pushButton_3_3_bul.clicked.connect(self.find_item_3_3)
-        self.QtLibrary.pushButton_3_3_Sil.clicked.connect(self.delete_item_3_3)
-        self.QtLibrary.pushButton_3_3_iptal.clicked.connect(self.clear_form_3_3)
 
         ###  Tab_6 Olaylar  #########
         self.list_items_6_1_1()
@@ -173,6 +141,14 @@ class Library(OrtakSekmeler, QMainWindow):
         self.ana_sayfa_yenile()
 
         ###  Kitap Kayıt > Veri Düzeltme (sadece bu alt sekme açıkken yenilenir)  ###
+        ###  Kitap Kayıt: ekleme / düzenleme / silme tek ekranda (eski üç ekranın yerine)  ###
+        ui=self.QtLibrary
+        for eski in (ui.tab_3_1,ui.tab_3_2,ui.tab_3_3):
+            ui.tabWidget_3.removeTab(ui.tabWidget_3.indexOf(eski))
+        self.kitaplar=KitapEkrani(mesaj=lambda metin: self.QtLibrary.statusbar.showMessage(metin,self.dur_msj),
+                                  degisti=self.yenile)
+        ui.tabWidget_3.insertTab(0,self.kitaplar,"Kitaplar")
+        ui.tabWidget_3.setCurrentIndex(0)
         self.duzeltme=VeriDuzeltme(kitap_duzenle=self.kitap_duzenle, degisti=self.yenile)
         self.QtLibrary.tabWidget_3.addTab(self.duzeltme,"Veri Düzeltme")
         self.QtLibrary.tabWidget_3.currentChanged.connect(self.kayit_sekmesi_degisti)
@@ -213,11 +189,9 @@ class Library(OrtakSekmeler, QMainWindow):
 
     def yenile(self):
         ###  Kayıt/üye değişikliklerinden sonra açılır listeleri ve istatistikleri güncelleme  ###
-        for cmb in (self.QtLibrary.comboBox_3_2_bul_adi, self.QtLibrary.comboBox_3_3_bul_adi,
-                    self.QtLibrary.comboBox_6_1_1_liste_kitap, self.QtLibrary.comboBox_6_1_2_liste_kisi):
+        self.kitaplar.yenile()
+        for cmb in (self.QtLibrary.comboBox_6_1_1_liste_kitap, self.QtLibrary.comboBox_6_1_2_liste_kisi):
             cmb.clear()
-        self.list_items_3_2()
-        self.list_items_3_3()
         for no,kolon,_ in FILTRELER:
             self.filtre_combo_doldur(no,kolon)
         self.create_tab_5()
@@ -280,16 +254,14 @@ class Library(OrtakSekmeler, QMainWindow):
             self.kitap_duzenle(int(hucre.text()))
 
     def kitap_duzenle(self,kitap_id):
-        ###  Kitap Kayıt > Kayıt Düzenleme ekranını bu kitapla aç  ###
+        ###  Kitap Kayıt > Kitaplar ekranını bu kitapla aç  ###
         q=self.QtLibrary
         q.tabWidget.setCurrentWidget(q.tab_3)
-        q.tabWidget_3.setCurrentWidget(q.tab_3_2)
-        i=q.comboBox_3_2_bul_adi.findData(kitap_id)
-        if i<0:
+        q.tabWidget_3.setCurrentWidget(self.kitaplar)
+        if df_book_find_by_id(kitap_id) is None:
             q.statusbar.showMessage("Kitap bulunamadı (silinmiş olabilir).",self.dur_msj)
             return
-        q.comboBox_3_2_bul_adi.setCurrentIndex(i)
-        self.find_item_3_2()
+        self.kitaplar.sec(kitap_id)
 
     def tablodan_iade(self,satir):
         idler=satir_verisi(self.QtLibrary.tableWidget_6_2,satir)
@@ -364,164 +336,6 @@ class Library(OrtakSekmeler, QMainWindow):
         self.yenile()
         self.clear_form_6_2_1()
         QMessageBox.information(self,"Bilgi",f"Yedek geri yüklendi.\n\nÖnceki hal şuraya yedeklendi:\n{onceki}")
-
-    ##################################
-    #####   Tab_3 Fonksiyonlar   #####
-    ##################################
-
-### Tablo 1 İşlemleri  ###
-
-    def save_book(self):
-        kayit=[]
-        kayit.append(buyuk_harf(self.QtLibrary.lineEdit_3_1_adi.text()))
-        kayit.append(buyuk_harf(self.QtLibrary.lineEdit_3_1_yazari.text()))
-        kayit.append(buyuk_harf(self.QtLibrary.lineEdit_3_1_ceviren.text()))
-        kayit.append(buyuk_harf(self.QtLibrary.lineEdit_3_1_turu.text()))
-        kayit.append(buyuk_harf(self.QtLibrary.lineEdit_3_1_yayinevi.text()))
-        kayit.append(self.QtLibrary.lineEdit_3_1_yili.text())
-        kayit.append(self.QtLibrary.lineEdit_3_1_sayfa.text())
-        kayit.extend(self.ek_3_1.degerler())
-        if (self.QtLibrary.lineEdit_3_1_adi.text())=="":
-            self.QtLibrary.statusbar.showMessage("Kayıt oluşturun",self.dur_msj)
-        elif self.ek_3_1.hata():
-            QMessageBox.warning(self,"Uyarı!",self.ek_3_1.hata())
-        else:
-            cvb=onay(f"{(self.QtLibrary.lineEdit_3_1_adi.text())} kaydedilsin mi?")
-            if cvb==QMessageBox.Yes:
-                ekle_kayit(kayit)
-                self.QtLibrary.statusbar.showMessage(f"'{kayit[0]}' kaydedildi",self.dur_msj)
-                self.clear_form_3_1()
-                self.yenile()
-
-    def clear_form_3_1(self):
-        self.QtLibrary.lineEdit_3_1_adi.clear()
-        self.QtLibrary.lineEdit_3_1_yazari.clear()
-        self.QtLibrary.lineEdit_3_1_ceviren.clear()
-        self.QtLibrary.lineEdit_3_1_turu.clear()
-        self.QtLibrary.lineEdit_3_1_yayinevi.clear()
-        self.QtLibrary.lineEdit_3_1_yili.clear()
-        self.QtLibrary.lineEdit_3_1_sayfa.clear()
-        self.ek_3_1.temizle()
-
-### Tablo 2 İşlemleri  ###
-
-    def list_items_3_2 (self):
-        kitap_listesi(self.QtLibrary.comboBox_3_2_bul_adi)
-
-    def find_item_3_2(self):
-        id=secili_veri(self.QtLibrary.comboBox_3_2_bul_adi)
-        if id is None:
-            self.QtLibrary.statusbar.showMessage("Seçim yapınız",self.dur_msj)
-        else:
-            self.show_items_3_2(df_book_find_by_id(id))
-
-    def show_items_3_2(self,kyt):
-        degisecek=kyt
-        self.QtLibrary.lineEdit_3_2_id.setText(str(degisecek[0]))
-        self.QtLibrary.lineEdit_3_2_adi.setText(degisecek[1])
-        self.QtLibrary.lineEdit_3_2_yazari.setText(degisecek[2])
-        self.QtLibrary.lineEdit_3_2_ceviren.setText(degisecek[3])
-        self.QtLibrary.lineEdit_3_2_turu.setText(degisecek[4])
-        self.QtLibrary.lineEdit_3_2_yayinevi.setText(degisecek[5])
-        self.QtLibrary.lineEdit_3_2_yili.setText(degisecek[6])
-        self.QtLibrary.lineEdit_3_2_sayfa.setText(degisecek[7])
-        self.ek_3_2.doldur(*degisecek[8:12])
-        self.QtLibrary.statusbar.showMessage(f"{self.QtLibrary.comboBox_3_2_bul_adi.currentText()} bilgileri yazıldı.",self.dur_msj)
-        self.QtLibrary.pushButton_3_2_deg_kaydet.setEnabled(True)
-        self.QtLibrary.pushButton_3_2_iptal.setEnabled(True)
-
-    def update_item_3_2(self):
-        kayit=[]
-        kayit.append(self.QtLibrary.lineEdit_3_2_id.text())
-        kayit.append(buyuk_harf(self.QtLibrary.lineEdit_3_2_adi.text()))
-        kayit.append(buyuk_harf(self.QtLibrary.lineEdit_3_2_yazari.text()))
-        kayit.append(buyuk_harf(self.QtLibrary.lineEdit_3_2_ceviren.text()))
-        kayit.append(buyuk_harf(self.QtLibrary.lineEdit_3_2_turu.text()))
-        kayit.append(buyuk_harf(self.QtLibrary.lineEdit_3_2_yayinevi.text()))
-        kayit.append(self.QtLibrary.lineEdit_3_2_yili.text())
-        kayit.append(self.QtLibrary.lineEdit_3_2_sayfa.text())
-        kayit.extend(self.ek_3_2.degerler())
-        disarida=kopya_durumu(kayit[0])[1] if kayit[0] else 0
-        if self.ek_3_2.hata():
-            QMessageBox.warning(self,"Uyarı!",self.ek_3_2.hata())
-        elif kayit[9]<disarida:
-            QMessageBox.warning(self,"Uyarı!",f"Bu kitabın {disarida} kopyası şu an üyelerde. "
-                                              f"Kopya sayısı {disarida}'den az olamaz.")
-        elif len(self.QtLibrary.lineEdit_3_2_adi.text())!=0:
-            cvb=onay("Kayıt değiştirilsin mi?")
-            if cvb==QMessageBox.Yes:
-                degistir_kayit(kayit)
-                self.QtLibrary.statusbar.showMessage(f"'{kayit[1]}' güncellendi.",self.dur_msj)
-                self.clear_form_3_2()
-                self.yenile()
-        else:
-            self.QtLibrary.statusbar.showMessage("Kitap adı boş olamaz. Kontrol edin.",self.dur_msj)
-
-    def clear_form_3_2(self):
-        self.QtLibrary.lineEdit_3_2_id.clear()
-        self.QtLibrary.lineEdit_3_2_ceviren.clear()
-        self.QtLibrary.lineEdit_3_2_yazari.clear()
-        self.QtLibrary.lineEdit_3_2_adi.clear()
-        self.QtLibrary.lineEdit_3_2_turu.clear()
-        self.QtLibrary.lineEdit_3_2_yayinevi.clear()
-        self.QtLibrary.lineEdit_3_2_yili.clear()
-        self.QtLibrary.lineEdit_3_2_sayfa.clear()
-        self.ek_3_2.temizle()
-        self.QtLibrary.pushButton_3_2_deg_kaydet.setEnabled(False)
-        self.QtLibrary.pushButton_3_2_iptal.setEnabled(False)
-        self.QtLibrary.comboBox_3_2_bul_adi.setCurrentIndex(0)
-
-### Tablo 3 İşlemleri  ###
-
-    def list_items_3_3 (self):
-        kitap_listesi(self.QtLibrary.comboBox_3_3_bul_adi)
-
-    def find_item_3_3(self):
-        id=secili_veri(self.QtLibrary.comboBox_3_3_bul_adi)
-        if id is None:
-            self.QtLibrary.statusbar.showMessage("Seçim yapınız",self.dur_msj)
-        else:
-            self.show_items_3_3(df_book_find_by_id(id))
-
-    def show_items_3_3(self,kyt):
-        silinecek=kyt
-        self.QtLibrary.lineEdit_3_3_id.setText(str(silinecek[0]))
-        self.QtLibrary.lineEdit_3_3_adi.setText(silinecek[1])
-        self.QtLibrary.lineEdit_3_3_yazari.setText(silinecek[2])
-        self.QtLibrary.lineEdit_3_3_ceviren.setText(silinecek[3])
-        self.QtLibrary.lineEdit_3_3_turu.setText(silinecek[4])
-        self.QtLibrary.lineEdit_3_3_yayinevi.setText(silinecek[5])
-        self.QtLibrary.lineEdit_3_3_yili.setText(silinecek[6])
-        self.QtLibrary.lineEdit_3_3_sayfa.setText(silinecek[7])
-        self.ek_3_3.doldur(*silinecek[8:12])
-        self.QtLibrary.statusbar.showMessage(f"{self.QtLibrary.comboBox_3_3_bul_adi.currentText()} bilgileri yazıldı.",self.dur_msj)
-        self.QtLibrary.pushButton_3_3_Sil.setEnabled(True)
-        self.QtLibrary.pushButton_3_3_iptal.setEnabled(True)
-
-    def delete_item_3_3(self):
-        if kitap_oduncte(self.QtLibrary.lineEdit_3_3_id.text()):
-            QMessageBox.information(self,"Uyarı!","Bu kitap ödünçte. İade alınmadan silinemez!")
-            return
-        cvb=onay("Kayıt silinsin mi?")
-        if cvb==QMessageBox.Yes:
-            sil_kayit(int(self.QtLibrary.lineEdit_3_3_id.text()))
-            self.QtLibrary.statusbar.showMessage(f"{self.QtLibrary.lineEdit_3_3_adi.text()} silindi",self.dur_msj)
-            self.clear_form_3_3()
-            self.yenile()
-
-    def clear_form_3_3(self):
-        self.QtLibrary.lineEdit_3_3_id.clear()
-        self.QtLibrary.lineEdit_3_3_adi.clear()
-        self.QtLibrary.lineEdit_3_3_yazari.clear()
-        self.QtLibrary.lineEdit_3_3_ceviren.clear()
-        self.QtLibrary.lineEdit_3_3_turu.clear()
-        self.QtLibrary.lineEdit_3_3_yayinevi.clear()
-        self.QtLibrary.lineEdit_3_3_yili.clear()
-        self.QtLibrary.lineEdit_3_3_sayfa.clear()
-        self.ek_3_3.temizle()
-        self.QtLibrary.pushButton_3_3_Sil.setEnabled(False)
-        self.QtLibrary.pushButton_3_3_iptal.setEnabled(False)
-        self.QtLibrary.comboBox_3_3_bul_adi.setCurrentIndex(0)
 
     ##################################
     #####   Tab_6 Fonksiyonlar   #####

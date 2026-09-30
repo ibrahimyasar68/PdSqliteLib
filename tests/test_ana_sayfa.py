@@ -83,7 +83,7 @@ def test_kart_tiklamalari(lib):
 def test_liste_cift_tiklama(lib):
     q = lib.QtLibrary
     lib.ana_sayfa.listeler["son"].tablo.cellDoubleClicked.emit(0, 0)
-    assert q.tabWidget_3.currentWidget() is q.tab_3_2 and q.lineEdit_3_2_adi.text() == "Denemeler"
+    assert q.tabWidget_3.currentWidget() is lib.kitaplar and lib.kitaplar.alan["Adi"].text() == "Denemeler"
     lib.ana_sayfa.listeler["yaklasan"].tablo.cellDoubleClicked.emit(1, 0)
     assert q.tabWidget_6.currentWidget() is q.tab_6_2 and q.lineEdit_6_2_adi.text() == "Satranç"
 

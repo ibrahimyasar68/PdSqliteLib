@@ -77,46 +77,6 @@ def lib(app, uyarilar):
     return Library()
 
 
-def test_kayit_eklerken_ek_bilgiler(lib, db, uyarilar):
-    q = lib.QtLibrary
-    q.lineEdit_3_1_adi.setText("yeni kitap")
-    lib.ek_3_1.isbn.setText("978-0-306-40615-8")      # hatalı kontrol basamağı
-    lib.save_book()
-    assert "ISBN geçerli değil" in uyarilar[-1]
-    assert db.execute("SELECT COUNT(*) FROM kayitlistesi WHERE Adi='Yeni Kitap'").fetchone()[0] == 0
-    lib.ek_3_1.isbn.setText("978-0-306-40615-7")
-    lib.ek_3_1.kopya.setValue(3)
-    lib.ek_3_1.raf.setText("  A-3 ")
-    lib.ek_3_1.notlar.setPlainText("Bağış")
-    lib.save_book()
-    assert db.execute("SELECT ISBN, Kopya, Raf, Notlar FROM kayitlistesi WHERE Adi='Yeni Kitap'").fetchone() == \
-        ("9780306406157", 3, "A-3", "Bağış")
-    assert lib.ek_3_1.degerler() == ("", 1, "", "")    # form temizlendi
-
-
-def test_duzenlemede_ek_bilgiler(lib, db, uyarilar):
-    db.execute("UPDATE kayitlistesi SET Kopya=3, Raf='A-1' WHERE Id=1")
-    db.executemany("INSERT INTO follow VALUES (?,'1','2026-01-01','10:00','out','','')", [("3",), ("4",)])
-    db.commit()
-    lib.kitap_duzenle(1)
-    assert lib.ek_3_2.kopya.value() == 3 and lib.ek_3_2.raf.text() == "A-1"
-    lib.ek_3_2.kopya.setValue(1)                        # 2 kopya dışarıdayken 1'e düşürülemez
-    lib.update_item_3_2()
-    assert "2 kopyası şu an üyelerde" in uyarilar[-1]
-    lib.ek_3_2.kopya.setValue(2)
-    lib.ek_3_2.raf.setText("C-9")
-    lib.update_item_3_2()
-    assert db.execute("SELECT Kopya, Raf FROM kayitlistesi WHERE Id=1").fetchone() == (2, "C-9")
-
-
-def test_silme_ekraninda_ek_bilgiler_salt_okunur(lib, db):
-    db.execute("UPDATE kayitlistesi SET Raf='D-4' WHERE Id=6")
-    db.commit()
-    lib.QtLibrary.comboBox_3_3_bul_adi.setCurrentText("Satranç")
-    lib.find_item_3_3()
-    assert lib.ek_3_3.raf.text() == "D-4" and lib.ek_3_3.raf.isReadOnly()
-
-
 def odunc_ver(lib, kitap, user_id):
     q = lib.QtLibrary
     q.comboBox_6_1_1_liste_kitap.setCurrentText(kitap)

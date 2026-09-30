@@ -4,7 +4,8 @@ import pytest
 
 from conftest import ADMIN_SIFRE, UYE_SIFRE, sec
 from acodes.guest import Guest
-from acodes.library import Library, buyuk_harf
+from acodes.kitap_ekrani import buyuk_harf
+from acodes.library import Library
 from acodes.login import Login
 
 
@@ -52,50 +53,6 @@ def test_giris_ekraninda_yeni_kayit_butonu_yok(app):
 ])
 def test_buyuk_harf(girdi, beklenen):
     assert buyuk_harf(girdi) == beklenen
-
-
-# --- Kitap kayıt (Tab 3) ---
-
-def test_kitap_ekleme_listeleri_yeniler_ve_formu_temizler(lib, db):
-    q = lib.QtLibrary
-    for alan, deger in [("adi", "yeni kitap"), ("yazari", "yeni yazar"), ("turu", "YeniTür"),
-                        ("yili", "2025"), ("sayfa", "50")]:
-        getattr(q, f"lineEdit_3_1_{alan}").setText(deger)
-    lib.save_book()
-    assert q.lineEdit_3_1_adi.text() == "" and q.lineEdit_3_1_sayfa.text() == ""
-    for cmb in (q.comboBox_3_2_bul_adi, q.comboBox_3_3_bul_adi, q.comboBox_6_1_1_liste_kitap):
-        assert "Yeni Kitap" in etiketler(cmb)
-    assert "Yeni Yazar" in etiketler(q.comboBox_4_2_turu)
-    turler = [q.tableWidget_5_1_1.item(i, 0).text() for i in range(q.tableWidget_5_1_1.rowCount())]
-    assert "YeniTür" in turler
-
-
-def test_guncelleme_mevcut_yazimi_bozmaz(lib, db):
-    q = lib.QtLibrary
-    q.comboBox_3_2_bul_adi.setCurrentText("Yol Ayrımı")
-    lib.find_item_3_2()
-    lib.update_item_3_2()
-    assert db.execute("SELECT Yazari FROM kayitlistesi WHERE Id=1").fetchone()[0] == "Kemal TAHİR"
-
-
-def test_ayni_adli_baskilar_ayri_secilir(lib):
-    q = lib.QtLibrary
-    iklimler = [e for e in etiketler(q.comboBox_3_2_bul_adi) if e.startswith("İklimler")]
-    assert len(iklimler) == 2
-    q.comboBox_3_2_bul_adi.setCurrentText(iklimler[1])
-    lib.find_item_3_2()
-    assert q.lineEdit_3_2_yayinevi.text() in iklimler[1]
-
-
-def test_oduncteki_kitap_silinemez(lib, db, uyarilar):
-    q = lib.QtLibrary
-    db.execute("INSERT INTO follow VALUES ('3','1','2026-01-01','10:00','out','','')")
-    db.commit()
-    q.comboBox_3_3_bul_adi.setCurrentText("Yol Ayrımı")
-    lib.find_item_3_3()
-    lib.delete_item_3_3()
-    assert db.execute("SELECT COUNT(*) FROM kayitlistesi WHERE Id=1").fetchone()[0] == 1
-    assert uyarilar[-1] == "Bu kitap ödünçte. İade alınmadan silinemez!"
 
 
 # --- Filtre ve istatistik (Tab 4, 5) ---

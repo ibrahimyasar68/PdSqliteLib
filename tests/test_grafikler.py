@@ -49,9 +49,9 @@ def test_panellerde_sabit_resim_yerine_grafik(app, uyarilar):
 
 def test_kitap_eklenince_grafik_guncellenir(app, uyarilar):
     lib = Library()
-    for alan, deger in [("adi", "yeni kitap"), ("yazari", "yeni yazar"), ("turu", "Şiir"), ("yili", "1975")]:
-        getattr(lib.QtLibrary, f"lineEdit_3_1_{alan}").setText(deger)
-    lib.save_book()
+    for alan, deger in [("Adi", "yeni kitap"), ("Yazari", "yeni yazar"), ("Turu", "Şiir"), ("Yili", "1975")]:
+        lib.kitaplar.alan[alan].setText(deger)
+    lib.kitaplar.kaydet()
     assert ("Şiir", 1) in lib.grafikler.turler.veri
     assert ("1970'ler", 1) in lib.grafikler.yillar.veri
 

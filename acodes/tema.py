@@ -23,7 +23,7 @@ TEHLIKE_KOYU = "#B91C1C"
 YAZI_PX = 13
 
 # Geri alınamayan işlem butonları kırmızı gösterilir
-TEHLIKELI_BUTONLAR = ["pushButton_3_3_Sil"]
+TEHLIKELI_BUTONLAR = ["kitap_sil"]
 
 TEMA = f"""
 QMainWindow, #centralwidget {{ background-color: {ZEMIN}; }}
@@ -46,6 +46,7 @@ QPushButton:pressed {{ background-color: #1E40AF; }}
 QPushButton:disabled {{ background-color: #E2E8F0; color: #64748B; }}
 {", ".join("#" + ad for ad in TEHLIKELI_BUTONLAR)} {{ background-color: {TEHLIKE}; }}
 {", ".join("#" + ad + ":hover" for ad in TEHLIKELI_BUTONLAR)} {{ background-color: {TEHLIKE_KOYU}; }}
+{", ".join("#" + ad + ":disabled" for ad in TEHLIKELI_BUTONLAR)} {{ background-color: #E2E8F0; color: #64748B; }}
 
 QLineEdit, QComboBox, QSpinBox, QPlainTextEdit {{ background-color: {KART}; color: {METIN};
                border: 1px solid #C7CDD8; border-radius: 5px; padding: 3px 6px; }}

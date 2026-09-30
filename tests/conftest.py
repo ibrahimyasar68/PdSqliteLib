@@ -69,13 +69,15 @@ def db():
 @pytest.fixture
 def uyarilar(monkeypatch):
     """Onay kutularına otomatik "Evet" der, bilgi mesajlarını listede toplar (pencere açılmaz)."""
+    import acodes.kitap_ekrani
     import acodes.kullanici_yonetimi
     import acodes.library
     import acodes.ortak
     import acodes.user
     import acodes.veri_duzeltme
     mesajlar = []
-    for modul in (acodes.library, acodes.ortak, acodes.user, acodes.kullanici_yonetimi, acodes.veri_duzeltme):
+    for modul in (acodes.library, acodes.ortak, acodes.user, acodes.kullanici_yonetimi, acodes.veri_duzeltme,
+                  acodes.kitap_ekrani):
         monkeypatch.setattr(modul, "onay", lambda *a: QMessageBox.Yes)
     monkeypatch.setattr(QMessageBox, "information", staticmethod(lambda *a: mesajlar.append(a[-1])))
     monkeypatch.setattr(QMessageBox, "warning", staticmethod(lambda *a: mesajlar.append(a[-1])))

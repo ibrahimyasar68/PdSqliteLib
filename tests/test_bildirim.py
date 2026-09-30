@@ -55,11 +55,10 @@ def test_bos_mesaj_gostermez(lib):
 
 
 def test_gercek_islemde_bildirim(lib):
-    q = lib.QtLibrary
-    q.lineEdit_3_1_adi.setText("bildirim kitabı")
-    lib.save_book()
+    lib.kitaplar.alan["Adi"].setText("bildirim kitabı")
+    lib.kitaplar.kaydet()
     assert lib.bildirim.kutu.text() == "'Bildirim Kitabı' kaydedildi" and lib.bildirim.tur == "basari"
-    lib.find_item_3_2()                                                  # seçim yapılmadan Bul
+    lib.find_item_6_1_1()                                                # seçim yapılmadan Bul
     assert lib.bildirim.kutu.text() == "Seçim yapınız" and lib.bildirim.tur == "uyari"
 
 

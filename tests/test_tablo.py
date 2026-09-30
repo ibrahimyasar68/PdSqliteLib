@@ -89,9 +89,10 @@ def test_listeden_cift_tiklama_kitabi_duzenlemede_acar(lib):
     q = lib.QtLibrary
     lib.arama.setText("şaheser")                   # İklimler'in ikinci baskısı (Id 4)
     lib.tablodan_kitap_duzenle(q.tableWidget_2, 0)
-    assert q.tabWidget.currentWidget() is q.tab_3 and q.tabWidget_3.currentWidget() is q.tab_3_2
-    assert q.lineEdit_3_2_id.text() == "4" and q.lineEdit_3_2_yayinevi.text() == "Şaheser Romanlar"
-    assert q.pushButton_3_2_deg_kaydet.isEnabled()
+    k = lib.kitaplar
+    assert q.tabWidget.currentWidget() is q.tab_3 and q.tabWidget_3.currentWidget() is k
+    assert k.kitap_id == 4 and k.alan["Yayinevi"].text() == "Şaheser Romanlar"
+    assert k.btn_sil.isEnabled() and k.form_baslik.text() == "Kitap #4"
 
 
 def test_filtreden_cift_tiklama(lib):
@@ -99,7 +100,7 @@ def test_filtreden_cift_tiklama(lib):
     sec(q.comboBox_4_2_turu, "Stefan ZWEIG")
     lib.filtre_listele(2, "Yazari")
     lib.tablodan_kitap_duzenle(q.tableWidget_4_2_2, 0)
-    assert q.lineEdit_3_2_adi.text() == "Satranç"
+    assert lib.kitaplar.alan["Adi"].text() == "Satranç"
 
 
 def test_bos_satira_cift_tiklama_bir_sey_yapmaz(lib):

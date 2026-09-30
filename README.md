@@ -12,7 +12,7 @@ Giriş ekranında kullanıcının yetkisine göre iki farklı panel açılır:
 |---|:---:|:---:|
 | **Giriş**: özet panosu (kitap, dışarıdaki, geciken sayıları; yaklaşan teslimler; son eklenenler) | ✓ | ✓ (kendi kitapları) |
 | **Kitap Listesi**: tüm kitaplar, anlık arama | ✓ | ✓ |
-| **Kitap Kayıt**: ekleme, güncelleme, silme, veri düzeltme | ✓ | |
+| **Kitap Kayıt**: tek ekranda ekleme, güncelleme, silme; veri düzeltme | ✓ | |
 | **Filtre**: tür, yazar, yayınevi ve yıla göre çoklu seçim | ✓ | ✓ |
 | **İstatistik**: çizelgeler ve güncel grafikler (tür, yazar, yayınevi, basım yılı) | ✓ | ✓ |
 | **Kitap Verme**: ödünç verme, iade alma, dışarıdaki kitaplar, ödünç geçmişi | ✓ | |
@@ -32,9 +32,17 @@ Yeni kullanıcı ve üye kayıtlarını (`admin` veya `guest`) sadece giriş yap
 tür, yayınevi ve yılda arar; büyük/küçük harf ve Türkçe karakter farkı gözetmez ("sahin" → "Şahin",
 "kuyucakli" → "Kuyucaklı"). Birden fazla kelime yazılırsa hepsini içeren kitaplar listelenir.
 
+### Kitap kayıt ekranı
+
+**Kitap Kayıt → Kitaplar** ekranında solda aranabilir kitap listesi, sağda seçili kitabın formu vardır.
+Listeden bir kitap seçince bilgileri forma gelir; değiştirip **Kaydet**'e basmak günceller, **Sil**
+siler (ödünçteki kitap iade alınmadan silinemez), **Vazgeç** kaydedilmemiş değişiklikleri geri alır.
+**Yeni Kitap** formu boşaltır; Kaydet yeni kitabı ekler ve listede seçili bırakır. Yazar, çevirmen,
+tür ve yayınevi alanlarında yazdıkça mevcut değerler önerilir (yazım farklılıklarını önler).
+
 ### Aranabilir listeler
 
-Kitap Kayıt ve Kitap Verme'deki kitap/üye seçimleri ile Filtre'deki tür, yazar, yayınevi ve yıl
+Kitap Verme'deki kitap/üye seçimleri ile Filtre'deki tür, yazar, yayınevi ve yıl
 listelerine yazdıkça liste süzülür ("iklim" → iki "İklimler" baskısı); büyük/küçük harf ve Türkçe
 karakter farkı gözetilmez. Tam adı yazıp **Bul**'a basmak da yeterlidir.
 
@@ -44,13 +52,13 @@ karakter farkı gözetilmez. Tam adı yazıp **Bul**'a basmak da yeterlidir.
   Sayılar sayı olarak, tarihler tarih olarak, metinler Türk alfabesine göre sıralanır; boşlar en sona gider.
 - Hücreler salt okunurdur; değişiklikler ilgili düzenleme ekranlarından yapılır.
 - Admin panelinde **Kitap Listesi** veya **Filtre** sonuçlarında bir satıra çift tıklamak kitabı
-  **Kitap Kayıt → Kayıt Düzenleme** ekranında açar.
+  **Kitap Kayıt → Kitaplar** ekranında açar.
 - **Dışarıdaki Kitaplar**'da bir satıra çift tıklamak **Alma Kaydı** ekranını üye ve kitap seçili
   olarak açar; sadece Kaydet'e basmak kalır.
 
 ### Ek bilgiler: ISBN, kopya sayısı, raf yeri, notlar
 
-Kitap Kayıt formlarındaki **Ek Bilgiler** kutusunda girilir; Kitap Listesi'nde ISBN, Kopya ve Raf
+Kitap Kayıt formundaki **Ek Bilgiler** kutusunda girilir; Kitap Listesi'nde ISBN, Kopya ve Raf
 kolonları görünür, arama bu alanlarda ve notlarda da yapılır.
 
 - **ISBN** isteğe bağlıdır; yazılırsa ISBN-10 / ISBN-13 kontrol basamağı doğrulanır, tiresiz saklanır.
@@ -211,8 +219,9 @@ acodes/ikonlar.py             Buton ve sekme ikonları (Qt ile çizilir, dosya g
 acodes/bildirim.py            Kısa süre görünen bildirimler (başarı yeşil, uyarı kırmızı)
 acodes/yerlesim.py            Esnek yerleşim kalıpları (.ui sayfalarını pencereyle büyüyen düzene alır)
 acodes/disa_aktar.py          Tabloları Excel / CSV olarak kaydetme
+acodes/kitap_ekrani.py        Kitap Kayıt > Kitaplar (liste ve form tek ekranda)
 acodes/veri_duzeltme.py       Kitap Kayıt > Veri Düzeltme sekmesi
-acodes/ek_bilgi.py            Kitap formlarındaki Ek Bilgiler kutusu, ISBN doğrulama
+acodes/ek_bilgi.py            Kitap formundaki Ek Bilgiler kutusu, ISBN doğrulama
 acodes/kitaplarim.py          Guest paneli > Kitaplarım sekmesi
 acodes/ana_sayfa.py           Ana sayfa özet panosu (kartlar ve listeler)
 acodes/ayarlar.py             Ayarlar sekmesi (kullanıcılar, yedekleme, bilgiler / hesabım)
