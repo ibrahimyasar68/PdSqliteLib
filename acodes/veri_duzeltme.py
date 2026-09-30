@@ -73,7 +73,7 @@ class VeriDuzeltme(QWidget):
             self.eksik_alan.addItem(ad, kol)
         self.eksik_ozet = QLabel()
         self.eksik_tablo = QTableWidget(0, 5)
-        self.eksik_tablo.setHorizontalHeaderLabels(["Sıra No", "Adı", "Yazarı", "Yayınevi", "Yılı"])
+        self.eksik_tablo.setHorizontalHeaderLabels(["Kayıt No", "Adı", "Yazarı", "Yayınevi", "Yılı"])
         baslik = self.eksik_tablo.horizontalHeader()
         for kol, mod in enumerate([QHeaderView.ResizeToContents, QHeaderView.Stretch, QHeaderView.Interactive,
                                    QHeaderView.Interactive, QHeaderView.ResizeToContents]):

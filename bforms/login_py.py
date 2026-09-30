@@ -210,6 +210,6 @@ class Ui_MainWindow(object):
         self.lineEdit_kullanci_adi.setToolTip(_translate("MainWindow", "Kullanıcı Adını Girin"))
         self.label_4.setText(_translate("MainWindow", "Parola"))
         self.lineEdit_parola.setToolTip(_translate("MainWindow", "Parolayı Girin"))
-        self.pushButton_giris.setText(_translate("MainWindow", "G i r i ş"))
+        self.pushButton_giris.setText(_translate("MainWindow", "Giriş"))
         self.pushButton_yeni_kayit.setText(_translate("MainWindow", "Yeni Kayıt"))
 from bforms import media_rc

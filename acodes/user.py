@@ -88,12 +88,12 @@ class User(QMainWindow):
 
     def chk_telefon(self):
         if not telefon_gecerli(self.QtUser.lineEdit_telefon.text()):
-            QMessageBox.information(self,"Uyarı!","Uygun telefon numarası girilmedi.Kontrol edin!")
+            QMessageBox.information(self,"Uyarı!","Uygun telefon numarası girilmedi. Kontrol edin!")
             self.QtUser.lineEdit_telefon.clear()
 
     def chk_mail(self):
         if not mail_gecerli(self.QtUser.lineEdit_mail.text()):
-            QMessageBox.information(self,"Uyarı!","Uygun mail adresi girilmedi.Kontrol edin!")
+            QMessageBox.information(self,"Uyarı!","Uygun mail adresi girilmedi. Kontrol edin!")
             self.QtUser.lineEdit_mail.clear()
 
     def save_user(self):

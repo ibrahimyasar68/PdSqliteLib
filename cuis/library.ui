@@ -233,7 +233,7 @@ padding-top:6px;}
 </string>
            </property>
            <property name="text">
-            <string>Ç ı k ı ş</string>
+            <string>Çıkış</string>
            </property>
           </widget>
          </item>
@@ -414,7 +414,7 @@ border-radius:10px;}
 </string>
         </property>
         <property name="text">
-         <string>T e m i z l e</string>
+         <string>Temizle</string>
         </property>
        </widget>
        <widget class="QPushButton" name="pushButton_2_listele">
@@ -466,7 +466,7 @@ border-radius:10px;}
 </string>
         </property>
         <property name="text">
-         <string>L i s t e l e</string>
+         <string>Listele</string>
         </property>
        </widget>
       </widget>
@@ -754,7 +754,7 @@ border-radius:10px;}
 </string>
             </property>
             <property name="text">
-             <string>K a y d e t</string>
+             <string>Kaydet</string>
             </property>
            </widget>
            <widget class="QPushButton" name="pushButton_3_1_temizle">
@@ -806,7 +806,7 @@ border-radius:10px;}
 </string>
             </property>
             <property name="text">
-             <string>T e m i z l e</string>
+             <string>Temizle</string>
             </property>
            </widget>
           </widget>
@@ -863,8 +863,7 @@ border-radius:10px;}
 </string>
             </property>
             <property name="text">
-             <string>Aranan Kaydı
-B u l</string>
+             <string>Bul</string>
             </property>
            </widget>
            <widget class="QWidget" name="formLayoutWidget_2">
@@ -1239,7 +1238,7 @@ border-radius:10px;}
 </string>
             </property>
             <property name="text">
-             <string>İ p t a l</string>
+             <string>İptal</string>
             </property>
            </widget>
           </widget>
@@ -1296,8 +1295,7 @@ border-radius:10px;}
 </string>
             </property>
             <property name="text">
-             <string>Aranan Kaydı
-B u l</string>
+             <string>Bul</string>
             </property>
            </widget>
            <widget class="QWidget" name="formLayoutWidget_4">
@@ -1632,8 +1630,7 @@ border-radius:10px;}
 </string>
             </property>
             <property name="text">
-             <string>Kaydı
-S i l</string>
+             <string>Sil</string>
             </property>
            </widget>
            <widget class="QPushButton" name="pushButton_3_3_iptal">
@@ -1688,7 +1685,7 @@ border-radius:10px;}
 </string>
             </property>
             <property name="text">
-             <string>İ p t a l</string>
+             <string>İptal</string>
             </property>
            </widget>
           </widget>
@@ -1718,7 +1715,7 @@ border-radius:10px;}
           </property>
           <widget class="QWidget" name="tab_4_1">
            <attribute name="title">
-            <string>Türe Göre Listele</string>
+            <string>Türe Göre</string>
            </attribute>
            <widget class="QLabel" name="label_26">
             <property name="geometry">
@@ -1737,7 +1734,7 @@ border-radius:10px;}
              </font>
             </property>
             <property name="text">
-             <string>Listelenecek Kayıt </string>
+             <string>Seçilenler</string>
             </property>
             <property name="alignment">
              <set>Qt::AlignCenter</set>
@@ -1900,8 +1897,7 @@ border-radius:10px;}
 </string>
             </property>
             <property name="text">
-             <string>Kayıtları
-Listele</string>
+             <string>Listele</string>
             </property>
            </widget>
            <widget class="QWidget" name="formLayoutWidget_6">
@@ -1979,14 +1975,13 @@ border-radius:10px;}
 </string>
             </property>
             <property name="text">
-             <string>Kayıtları
-Temizle</string>
+             <string>Temizle</string>
             </property>
            </widget>
           </widget>
           <widget class="QWidget" name="tab_4_2">
            <attribute name="title">
-            <string>Yazara Göre Listeleme</string>
+            <string>Yazara Göre</string>
            </attribute>
            <widget class="QLabel" name="label_27">
             <property name="geometry">
@@ -2005,7 +2000,7 @@ Temizle</string>
              </font>
             </property>
             <property name="text">
-             <string>Listelenecek Kayıt </string>
+             <string>Seçilenler</string>
             </property>
             <property name="alignment">
              <set>Qt::AlignCenter</set>
@@ -2168,8 +2163,7 @@ border-radius:10px;}
 </string>
             </property>
             <property name="text">
-             <string>Kayıtları
-Listele</string>
+             <string>Listele</string>
             </property>
            </widget>
            <widget class="QWidget" name="formLayoutWidget_7">
@@ -2247,14 +2241,13 @@ border-radius:10px;}
 </string>
             </property>
             <property name="text">
-             <string>Kayıtları
-Temizle</string>
+             <string>Temizle</string>
             </property>
            </widget>
           </widget>
           <widget class="QWidget" name="tab_4_3">
            <attribute name="title">
-            <string>Yayınevine Göre Listeleme</string>
+            <string>Yayınevine Göre</string>
            </attribute>
            <widget class="QLabel" name="label_28">
             <property name="geometry">
@@ -2273,7 +2266,7 @@ Temizle</string>
              </font>
             </property>
             <property name="text">
-             <string>Listelenecek Kayıt </string>
+             <string>Seçilenler</string>
             </property>
             <property name="alignment">
              <set>Qt::AlignCenter</set>
@@ -2436,8 +2429,7 @@ border-radius:10px;}
 </string>
             </property>
             <property name="text">
-             <string>Kayıtları
-Listele</string>
+             <string>Listele</string>
             </property>
            </widget>
            <widget class="QWidget" name="formLayoutWidget_8">
@@ -2515,14 +2507,13 @@ border-radius:10px;}
 </string>
             </property>
             <property name="text">
-             <string>Kayıtları
-Temizle</string>
+             <string>Temizle</string>
             </property>
            </widget>
           </widget>
           <widget class="QWidget" name="tab_4_4">
            <attribute name="title">
-            <string>Yıllara Göre Listeleme</string>
+            <string>Yıla Göre</string>
            </attribute>
            <widget class="QLabel" name="label_29">
             <property name="geometry">
@@ -2541,7 +2532,7 @@ Temizle</string>
              </font>
             </property>
             <property name="text">
-             <string>Listelenecek Kayıt </string>
+             <string>Seçilenler</string>
             </property>
             <property name="alignment">
              <set>Qt::AlignCenter</set>
@@ -2704,8 +2695,7 @@ border-radius:10px;}
 </string>
             </property>
             <property name="text">
-             <string>Kayıtları
-Listele</string>
+             <string>Listele</string>
             </property>
            </widget>
            <widget class="QWidget" name="formLayoutWidget_9">
@@ -2783,8 +2773,7 @@ border-radius:10px;}
 </string>
             </property>
             <property name="text">
-             <string>Kayıtları
-Temizle</string>
+             <string>Temizle</string>
             </property>
            </widget>
           </widget>
@@ -2830,7 +2819,7 @@ Temizle</string>
                </font>
               </property>
               <property name="text">
-               <string>Türe Göre Liste</string>
+               <string>Türlere Göre</string>
               </property>
              </widget>
             </item>
@@ -2844,7 +2833,7 @@ Temizle</string>
                </font>
               </property>
               <property name="text">
-               <string>Yazarlara Göre Liste</string>
+               <string>Yazarlara Göre</string>
               </property>
              </widget>
             </item>
@@ -2858,7 +2847,7 @@ Temizle</string>
                </font>
               </property>
               <property name="text">
-               <string>Yayınevine Göre Liste</string>
+               <string>Yayınevlerine Göre</string>
               </property>
              </widget>
             </item>
@@ -2872,7 +2861,7 @@ Temizle</string>
                </font>
               </property>
               <property name="text">
-               <string>Yıllara Göre Liste</string>
+               <string>Basım Yıllarına Göre</string>
               </property>
              </widget>
             </item>
@@ -3061,8 +3050,7 @@ border-radius:10px;}
 </string>
             </property>
             <property name="text">
-             <string>Aranan Kaydı
-B u l</string>
+             <string>Bul</string>
             </property>
            </widget>
            <widget class="QWidget" name="formLayoutWidget_11">
@@ -3344,8 +3332,7 @@ border-radius:10px;}
 </string>
             </property>
             <property name="text">
-             <string>İşlemi
-Kaydet</string>
+             <string>Ödünç Ver</string>
             </property>
            </widget>
            <widget class="QComboBox" name="comboBox_6_1_1_liste_kitap">
@@ -3382,7 +3369,7 @@ Kaydet</string>
              </font>
             </property>
             <property name="text">
-             <string>Ödünç Verilecek  Kitap</string>
+             <string>Ödünç Verilecek Kitap</string>
             </property>
            </widget>
            <widget class="QPushButton" name="pushButton_6_1_2_bul_kisi">
@@ -3434,8 +3421,7 @@ border-radius:10px;}
 </string>
             </property>
             <property name="text">
-             <string>Aranan Kaydı
-B u l</string>
+             <string>Bul</string>
             </property>
            </widget>
            <widget class="QComboBox" name="comboBox_6_1_2_liste_kisi">
@@ -3682,8 +3668,7 @@ border-radius:10px;}
 </string>
             </property>
             <property name="text">
-             <string>Kaydı
-Temizle</string>
+             <string>Temizle</string>
             </property>
            </widget>
            <widget class="QPushButton" name="pushButton_6_1_2_bul_kisi_temizle">
@@ -3738,8 +3723,7 @@ border-radius:10px;}
 </string>
             </property>
             <property name="text">
-             <string>Kaydı
-Temizle</string>
+             <string>Temizle</string>
             </property>
            </widget>
           </widget>
@@ -3816,8 +3800,7 @@ border-radius:10px;}
 </string>
             </property>
             <property name="text">
-             <string>Aranan Kaydı
-B u l</string>
+             <string>Bul</string>
             </property>
            </widget>
            <widget class="QComboBox" name="comboBox_6_2_1_liste_kisi">
@@ -4044,8 +4027,7 @@ border-radius:10px;}
 </string>
             </property>
             <property name="text">
-             <string>Kaydı
-Temizle</string>
+             <string>Temizle</string>
             </property>
            </widget>
            <widget class="QComboBox" name="comboBox_6_2_2_liste_kitap">
@@ -4367,8 +4349,7 @@ border-radius:10px;}
 </string>
             </property>
             <property name="text">
-             <string>Kaydı
-Temizle</string>
+             <string>Temizle</string>
             </property>
            </widget>
            <widget class="QPushButton" name="pushButton_6_2_2_bul_kitap">
@@ -4423,8 +4404,7 @@ border-radius:10px;}
 </string>
             </property>
             <property name="text">
-             <string>Aranan Kaydı
-B u l</string>
+             <string>Bul</string>
             </property>
            </widget>
            <widget class="QPushButton" name="pushButton_6_2_islemi_kaydet">
@@ -4479,14 +4459,13 @@ border-radius:10px;}
 </string>
             </property>
             <property name="text">
-             <string>İşlemi
-Kaydet</string>
+             <string>İade Al</string>
             </property>
            </widget>
           </widget>
           <widget class="QWidget" name="tab_6_3">
            <attribute name="title">
-            <string>Dışardaki  Kitaplar</string>
+            <string>Dışarıdaki Kitaplar</string>
            </attribute>
            <widget class="QPushButton" name="pushButton_3_3_Sil_2">
             <property name="enabled">
@@ -4540,8 +4519,7 @@ border-radius:10px;}
 </string>
             </property>
             <property name="text">
-             <string>Kaydı
-S i l</string>
+             <string>Sil</string>
             </property>
            </widget>
            <widget class="QPushButton" name="pushButton_6_3_temizle">
@@ -4592,7 +4570,7 @@ border-radius:10px;}
 </string>
             </property>
             <property name="text">
-             <string>T e m i z l e</string>
+             <string>Temizle</string>
             </property>
            </widget>
            <widget class="QPushButton" name="pushButton_6_3_listele">
@@ -4644,7 +4622,7 @@ border-radius:10px;}
 </string>
             </property>
             <property name="text">
-             <string>L i s t e l e</string>
+             <string>Listele</string>
             </property>
            </widget>
            <widget class="QTableWidget" name="tableWidget_6_2">

@@ -98,7 +98,7 @@ def test_panellerde_aktar_butonlari(app, uyarilar):
     for tablo, ornek in [(q.tableWidget_2, q.pushButton_2_temizle), (q.tableWidget_4_3_2, q.pushButton_4_3_temizle),
                          (q.tableWidget_6_2, q.pushButton_6_3_temizle)]:
         buton = ornek.parentWidget().findChild(type(ornek), f"{ornek.objectName()}_aktar")
-        assert buton is not None and buton.text() == "Dışa\nAktar"
+        assert buton is not None and buton.text() == "Dışa Aktar"
         assert tablo.contextMenuPolicy() == Qt.CustomContextMenu
     assert q.tableWidget_5_1_2.contextMenuPolicy() == Qt.CustomContextMenu
     assert lib.gecmis.aktar.text() == "Dışa Aktar"

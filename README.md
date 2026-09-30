@@ -39,7 +39,7 @@ tür, yayınevi ve yılda arar; büyük/küçük harf ve Türkçe karakter fark�
 - Hücreler salt okunurdur; değişiklikler ilgili düzenleme ekranlarından yapılır.
 - Admin panelinde **Kitap Listesi** veya **Filtre** sonuçlarında bir satıra çift tıklamak kitabı
   **Kitap Kayıt → Kayıt Düzenleme** ekranında açar.
-- **Dışardaki Kitaplar**'da bir satıra çift tıklamak **Alma Kaydı** ekranını üye ve kitap seçili
+- **Dışarıdaki Kitaplar**'da bir satıra çift tıklamak **Alma Kaydı** ekranını üye ve kitap seçili
   olarak açar; sadece Kaydet'e basmak kalır.
 
 ### Ek bilgiler: ISBN, kopya sayısı, raf yeri, notlar
@@ -67,7 +67,7 @@ kolonları görünür, arama bu alanlarda ve notlarda da yapılır.
 
 ### Dışa aktarma (Excel / CSV)
 
-Kitap Listesi, Filtre sonuçları, Dışardaki Kitaplar ve Ödünç Geçmişi'nde **Dışa Aktar** butonu vardır;
+Kitap Listesi, Filtre sonuçları, Dışarıdaki Kitaplar ve Ödünç Geçmişi'nde **Dışa Aktar** butonu vardır;
 tüm tablolarda (İstatistik çizelgeleri dahil) sağ tıklayarak da aktarılabilir. Tablo ekranda nasıl
 görünüyorsa (arama, filtre, sıralama) öyle kaydedilir.
 
@@ -80,7 +80,7 @@ görünüyorsa (arama, filtre, sıralama) öyle kaydedilir.
 - Ödünç süresi **15 gündür** (`database/odunc.py` içindeki `ODUNC_SURESI_GUN`). Teslim tarihi veriliş
   tarihinden hesaplanır; eski kayıtlar için de geçerlidir.
 - Kitap verilirken teslim tarihi, iade alınırken gecikme varsa kaç gün geciktiği gösterilir.
-- **Dışardaki Kitaplar**: teslim tarihi ve kaç gündür dışarıda olduğu; süresi geçenler kırmızı.
+- **Dışarıdaki Kitaplar**: teslim tarihi ve kaç gündür dışarıda olduğu; süresi geçenler kırmızı.
 - Süresi geçmiş kitap varsa sekme adı **Kitap Verme (N gecikmiş)** olur ve panel açılırken uyarı verilir.
 - **Ödünç Geçmişi**: tüm ödünç kayıtları; üye, kitap ve duruma (dışarıda / gecikmiş / iade edildi) göre süzülür.
 - Üyeler kendi panellerindeki **Kitaplarım** sekmesinde elindeki kitapları, teslim tarihini ve kalan

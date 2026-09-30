@@ -143,7 +143,7 @@ class Library(OrtakSekmeler, QMainWindow):
             tablo.setToolTip("Kitabı düzenlemek için satıra çift tıklayın")
             tablo.cellDoubleClicked.connect(lambda satir,_,t=tablo: self.tablodan_kitap_duzenle(t,satir))
         tablo_ayarla(ui.tableWidget_6_2, bos_metin="Şu an dışarıda kitap yok.")
-        self.aktar_butonu(ui.tableWidget_6_2,"Dışardaki Kitaplar",ui.pushButton_6_3_temizle,(40,470,100,60))
+        self.aktar_butonu(ui.tableWidget_6_2,"Dışarıdaki Kitaplar",ui.pushButton_6_3_temizle,(40,470,100,60))
         ui.tableWidget_6_2.setToolTip("İade almak için satıra çift tıklayın")
         ui.tableWidget_6_2.cellDoubleClicked.connect(lambda satir,_: self.tablodan_iade(satir))
 
@@ -173,7 +173,7 @@ class Library(OrtakSekmeler, QMainWindow):
         self.QtLibrary.tabWidget.setTabText(sekme, f"Kitap Verme ({sayi} gecikmiş)" if sayi else "Kitap Verme")
         if sayi:
             self.QtLibrary.statusbar.showMessage(
-                f"Teslim süresi ({ODUNC_SURESI_GUN} gün) geçmiş {sayi} kitap var. Kitap Verme > Dışardaki Kitaplar", 10000)
+                f"Teslim süresi ({ODUNC_SURESI_GUN} gün) geçmiş {sayi} kitap var. Kitap Verme > Dışarıdaki Kitaplar", 10000)
         return sayi
 
     def kayit_sekmesi_degisti(self):
@@ -181,7 +181,7 @@ class Library(OrtakSekmeler, QMainWindow):
             self.duzeltme.yenile()
 
     def odunc_sekmesi_degisti(self):
-        ###  Dışardaki kitaplar ve geçmiş sekmesi açılınca güncel hali göster  ###
+        ###  Dışarıdaki kitaplar ve geçmiş sekmesi açılınca güncel hali göster  ###
         sayfa=self.QtLibrary.tabWidget_6.currentWidget()
         if sayfa is self.QtLibrary.tab_6_3:
             self.listele_6()
@@ -369,7 +369,7 @@ class Library(OrtakSekmeler, QMainWindow):
                 self.clear_form_3_2()
                 self.yenile()
         else:
-            self.QtLibrary.statusbar.showMessage("Kayıtta değişiklik yapılmadı.Kontrol edin",self.dur_msj)
+            self.QtLibrary.statusbar.showMessage("Kitap adı boş olamaz. Kontrol edin.",self.dur_msj)
 
     def clear_form_3_2(self):
         self.QtLibrary.lineEdit_3_2_id.clear()
@@ -665,7 +665,7 @@ class Library(OrtakSekmeler, QMainWindow):
         self.QtLibrary.tableWidget_6_2.setColumnCount(9)
         self.QtLibrary.tableWidget_6_2.setRowCount(1)
         tablo_basliklari(self.QtLibrary.tableWidget_6_2,
-                         [(190,"Kitap Adı"),(160,"Yazarı"),(90,"Turu"),(160,"Alan Kişi"),(110,"Telefon"),
+                         [(190,"Kitap Adı"),(160,"Yazarı"),(90,"Türü"),(160,"Alan Kişi"),(110,"Telefon"),
                           (160,"Mail"),(95,"Aldığı Tarih"),(95,"Teslim Tarihi"),(45,"Gün")])
 
     def listele_6(self):

@@ -13,10 +13,10 @@ from acodes.kullanici_yonetimi import SifreDegistir, panel_butonu
 
 SECINIZ = ' Seçiniz...'
 
-LISTE_KOLONLARI = [(70,"Sıra No"),(200,"Adı"),(160,"Yazarı"),(120,"Çeviren"),(90,"Turu"),
+LISTE_KOLONLARI = [(70,"Kayıt No"),(200,"Adı"),(160,"Yazarı"),(120,"Çeviren"),(90,"Türü"),
                    (160,"Yayınevi"),(50,"Yılı"),(55,"Sayfa"),(120,"ISBN"),(55,"Kopya"),(60,"Raf")]
-FILTRE_KOLONLARI = [(65,"Sıra No"),(190,"Adı"),(170,"Yazarı"),(120,"Çeviren"),
-                    (100,"Turu"),(165,"Yayınevi"),(55,"Yılı"),(55,"Sayfa")]
+FILTRE_KOLONLARI = [(70,"Kayıt No"),(190,"Adı"),(170,"Yazarı"),(120,"Çeviren"),
+                    (100,"Türü"),(165,"Yayınevi"),(55,"Yılı"),(55,"Sayfa")]
 
 # Tab 4 filtreleri: (sıra no, veritabanı kolonu, seçim tablosu başlığı)
 FILTRELER = [(1,'Turu','Seçilen Tür'), (2,'Yazari','Seçilen Yazar'),
@@ -67,7 +67,7 @@ class OrtakSekmeler:
                                                   "veya yukarıya aramak istediğinizi yazın.")
         for no,_,_ in FILTRELER:
             tablo_ayarla(getattr(ui,f"tableWidget_4_{no}_2"),
-                         bos_metin="Soldaki listeden bir veya birkaç seçim yapıp\nKayıtları Listele'ye basın.")
+                         bos_metin="Soldaki listeden bir veya birkaç seçim yapıp\nListele'ye basın.")
             tablo_ayarla(getattr(ui,f"tableWidget_4_{no}_1"), siralama=False, bos_metin="Henüz seçim yok")
         for no,*_ in ISTATISTIKLER:
             tablo_ayarla(getattr(ui,f"tableWidget_5_1_{no}"))
@@ -82,7 +82,7 @@ class OrtakSekmeler:
 
     def aktar_butonu(self,tablo,ad,ornek,konum):
         ###  Örnek butonla aynı stilde "Dışa Aktar" butonu ve tabloya sağ tık menüsü  ###
-        buton=panel_butonu(ornek,"Dışa\nAktar",f"{ornek.objectName()}_aktar")
+        buton=panel_butonu(ornek,"Dışa Aktar",f"{ornek.objectName()}_aktar")
         buton.setParent(ornek.parentWidget())
         buton.setGeometry(*konum)
         buton.setToolTip(f"{ad} tablosunu Excel veya CSV olarak kaydet")

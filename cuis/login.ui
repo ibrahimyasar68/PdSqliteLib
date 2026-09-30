@@ -217,7 +217,7 @@ border-radius:10px;}
 </string>
      </property>
      <property name="text">
-      <string>G i r i ş</string>
+      <string>Giriş</string>
      </property>
     </widget>
     <widget class="QLabel" name="label">
