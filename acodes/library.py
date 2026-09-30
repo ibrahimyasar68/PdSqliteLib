@@ -4,6 +4,7 @@ from bforms.onay import onay
 from acodes.user import User
 from acodes.kullanici_yonetimi import KullaniciYonetimi
 from acodes.ayarlar import Ayarlar, klasoru_ac
+from acodes import tema
 from acodes.odunc_gecmisi import OduncGecmisi
 from acodes.veri_duzeltme import VeriDuzeltme
 from acodes.ek_bilgi import EkBilgiler
@@ -52,6 +53,7 @@ class Library(OrtakSekmeler, QMainWindow):
         super().__init__()
         self.QtLibrary = Ui_MainWindow()
         self.QtLibrary.setupUi(self)
+        tema.uygula(self)   # .ui renkleri yerine tek tema
         self.user=User()
         self.QtLibrary.tabWidget.setCurrentIndex(0)
 

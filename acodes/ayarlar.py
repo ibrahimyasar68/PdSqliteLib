@@ -6,20 +6,16 @@ import os
 
 from PyQt5.QtCore import Qt, QUrl
 from PyQt5.QtGui import QDesktopServices
+from acodes import tema
 from PyQt5.QtWidgets import (QFormLayout, QGroupBox, QHBoxLayout, QLabel, QPushButton, QScrollArea,
                              QVBoxLayout, QWidget)
 
-STIL = """
-#ayarlar_ic { background-color: rgb(244, 246, 250); }
-QGroupBox { font: bold 13pt "Verdana"; color: rgb(40, 50, 70); background-color: white;
-            border: 1px solid rgb(210, 214, 222); border-radius: 10px; margin-top: 14px; padding: 16px 12px 12px 12px; }
-QGroupBox::title { subcontrol-origin: margin; left: 14px; padding: 0 6px; }
-QLabel { font: 11pt "Verdana"; color: rgb(40, 50, 70); background: transparent; }
-QLabel[rol="deger"] { color: rgb(20, 20, 20); }
-QPushButton { font: 11pt "Verdana"; color: rgb(30, 30, 30); background-color: rgb(255, 236, 140);
-              border: 1px solid rgb(200, 170, 60); border-radius: 8px; padding: 9px 16px; min-width: 150px; }
-QPushButton:hover { background-color: rgb(255, 224, 90); }
-QPushButton:pressed { background-color: rgb(240, 200, 60); }
+STIL = f"""
+#ayarlar_ic {{ background-color: {tema.SAYFA}; }}
+QGroupBox {{ font: bold 13pt "Verdana"; border-radius: 10px; padding: 16px 12px 12px 12px; }}
+QLabel {{ font: 11pt "Verdana"; color: {tema.IKINCIL_METIN}; }}
+QLabel[rol="deger"] {{ color: {tema.METIN}; }}
+QPushButton {{ font: 11pt "Verdana"; padding: 9px 16px; min-width: 150px; }}
 """
 
 

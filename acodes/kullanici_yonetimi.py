@@ -8,6 +8,7 @@ from PyQt5.QtWidgets import (QAbstractItemView, QComboBox, QDialog, QDialogButto
                              QTableWidget, QVBoxLayout)
 from acodes.tablo import satir_verisi, tablo_ayarla, tabloya_yaz
 from bforms.onay import onay
+from acodes import tema
 from acodes.user import mail_gecerli, sifre_hatasi, telefon_gecerli
 from database.dbbase import kullanici_guncelle, kullanici_sil, sifre_guncelle
 from database.dbframe import admin_sayisi, df_user_all, giris_kontrol, kullanici_odunc_sayisi
@@ -15,14 +16,10 @@ from database.dbframe import admin_sayisi, df_user_all, giris_kontrol, kullanici
 YETKILER = ["admin", "guest"]
 
 # Formlar koyu arka planlı panellerin üstünde açıldığı için açık ve okunur bir görünüm
-PENCERE_STILI = """
-QDialog { background-color: rgb(255, 255, 220); }
-QLabel, QLineEdit, QComboBox, QTableWidget, QPushButton { font: 12pt "Verdana"; color: black; }
-QLineEdit, QComboBox { background-color: white; border: 1px solid gray; border-radius: 4px; padding: 3px; }
-QTableWidget { background-color: white; }
-QPushButton { background-color: rgb(255, 255, 127); border: 1px solid gray; border-radius: 6px; padding: 6px 12px; }
-QPushButton:hover { background-color: rgb(255, 240, 90); }
-QPushButton:disabled { color: gray; background-color: rgb(235, 235, 235); }
+# Pencereler panelden bağımsız açılsa da (ör. testlerde) aynı temayla görünür
+PENCERE_STILI = tema.TEMA + f"""
+QDialog {{ background-color: {tema.SAYFA}; }}
+QLabel, QLineEdit, QComboBox, QTableWidget, QPushButton {{ font: 12pt "Verdana"; }}
 """
 
 

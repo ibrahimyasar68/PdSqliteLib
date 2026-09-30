@@ -4,6 +4,7 @@
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QGroupBox, QHeaderView, QLabel, QTableWidget, QVBoxLayout, QWidget
 
+from acodes import tema
 from acodes.tablo import tablo_ayarla, tabloya_yaz
 from database.odunc import gecikme_gunu, gun_sayisi, kalan_gun_yazi, tarih_yazi, teslim_tarihi, uye_odunc
 
@@ -24,11 +25,10 @@ class Kitaplarim(QWidget):
         self.kullanici = None
         self.setObjectName("tab_kitaplarim")
         self.setAttribute(Qt.WA_StyledBackground, True)
-        self.setStyleSheet("""
-            #tab_kitaplarim { background-color: rgb(255, 245, 215); }
-            QLabel, QTableWidget, QGroupBox { font: 11pt "Verdana"; color: black; }
-            QTableWidget { background-color: white; }
-            QGroupBox { font-weight: bold; }
+        self.setStyleSheet(f"""
+            #tab_kitaplarim {{ background-color: {tema.SAYFA}; }}
+            QLabel, QTableWidget, QGroupBox {{ font: 11pt "Verdana"; }}
+            QGroupBox {{ font-weight: bold; }}
         """)
         self.ozet = QLabel()
         self.ozet.setStyleSheet('font: bold 13pt "Verdana";')
@@ -67,5 +67,5 @@ class Kitaplarim(QWidget):
             if gecikenler:
                 metin += f" {len(gecikenler)} tanesinin teslim süresi geçti, lütfen iade edin."
         self.ozet.setText(metin)
-        self.ozet.setStyleSheet('font: bold 13pt "Verdana"; color: %s;' % ("rgb(170, 0, 0)" if gecikenler else "black"))
+        self.ozet.setStyleSheet('font: bold 13pt "Verdana"; color: %s;' % (tema.TEHLIKE if gecikenler else tema.METIN))
         return len(gecikenler)

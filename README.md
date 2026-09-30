@@ -195,6 +195,7 @@ Paket imzasız olduğu için Windows SmartScreen ilk açılışta uyarabilir: **
 main.py              Giriş noktası
 acodes/              Pencerelerin iş mantığı (login, library, guest, user)
 acodes/ortak.py      Admin ve Guest panellerinde ortak sekmeler (liste, filtre, istatistik)
+acodes/tema.py       Tek renk teması (renkler burada; .ui dosyalarındaki renkler açılışta silinir)
 acodes/kullanici_yonetimi.py  Kullanıcı yönetimi ve şifre değiştirme pencereleri
 acodes/odunc_gecmisi.py       Kitap Verme > Ödünç Geçmişi sekmesi
 acodes/grafikler.py           İstatistik > Grafikler (veritabanından her seferinde çizilir)

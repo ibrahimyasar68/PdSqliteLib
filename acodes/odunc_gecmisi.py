@@ -5,6 +5,7 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import (QComboBox, QHBoxLayout, QHeaderView, QLabel, QPushButton, QTableWidget,
                              QVBoxLayout, QWidget)
 from acodes.disa_aktar import disa_aktar, sag_tik_menusu
+from acodes import tema
 from acodes.tablo import VURGU_ARKA, tablo_ayarla, tabloya_yaz
 from database.odunc import (gecikme_gunu, gun_sayisi, odunc_alan_uyeler, odunc_gecmisi,
                             odunc_verilen_kitaplar, tarih_yazi, teslim_tarihi)
@@ -31,13 +32,9 @@ class OduncGecmisi(QWidget):
         super().__init__(parent)
         self.setObjectName("tab_6_4")
         self.setAttribute(Qt.WA_StyledBackground, True)
-        self.setStyleSheet("""
-            #tab_6_4 { background-color: rgb(255, 240, 255); }
-            QLabel, QComboBox, QTableWidget { font: 11pt "Verdana"; color: black; }
-            QComboBox { background-color: white; border: 1px solid gray; border-radius: 4px; padding: 3px; }
-            QPushButton { font: 11pt "Verdana"; color: black; background-color: rgb(255, 255, 127);
-                          border: 1px solid gray; border-radius: 6px; padding: 4px 10px; }
-            QTableWidget { background-color: white; }
+        self.setStyleSheet(f"""
+            #tab_6_4 {{ background-color: {tema.SAYFA}; }}
+            QLabel, QComboBox, QTableWidget, QPushButton {{ font: 11pt "Verdana"; }}
         """)
         self.uye = QComboBox()
         self.kitap = QComboBox()

@@ -4,6 +4,7 @@ from bforms.guest_py import Ui_MainWindow
 from acodes.ortak import OrtakSekmeler
 from acodes.kitaplarim import Kitaplarim
 from acodes.ayarlar import Ayarlar
+from acodes import tema
 from database.dbframe import kullanici_bilgisi
 
 
@@ -16,6 +17,7 @@ class Guest(OrtakSekmeler, QMainWindow):
         super().__init__()
         self.QtLibrary = Ui_MainWindow()
         self.QtLibrary.setupUi(self)
+        tema.uygula(self)   # .ui renkleri yerine tek tema
         self.QtLibrary.tabWidget.setCurrentIndex(0)
         self.dur_msj=2000
         self.aktif_kullanici=None

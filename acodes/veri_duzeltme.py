@@ -10,6 +10,7 @@ from PyQt5.QtGui import QFont
 from PyQt5.QtWidgets import (QComboBox, QGroupBox, QHBoxLayout, QHeaderView, QLabel, QLineEdit, QMessageBox,
                              QPushButton, QTableWidget, QTreeWidget, QTreeWidgetItem, QVBoxLayout, QWidget)
 from bforms.onay import onay
+from acodes import tema
 from acodes.tablo import tablo_ayarla, tabloya_yaz
 from database.duzeltme import benzer_gruplar, birlestir, eksik_kitaplar, yoksay
 from database.yedek import yedek_al, yedek_klasoru
@@ -27,14 +28,9 @@ class VeriDuzeltme(QWidget):
         self.yedek_alindi = None
         self.setObjectName("tab_3_4")
         self.setAttribute(Qt.WA_StyledBackground, True)
-        self.setStyleSheet("""
-            #tab_3_4 { background-color: rgb(230, 245, 255); }
-            QLabel, QComboBox, QLineEdit, QTableWidget, QGroupBox { font: 11pt "Verdana"; color: black; }
-            QComboBox, QLineEdit { background-color: white; border: 1px solid gray; border-radius: 4px; padding: 3px; }
-            QTableWidget { background-color: white; }
-            QPushButton { font: 11pt "Verdana"; color: black; background-color: rgb(255, 255, 127);
-                          border: 1px solid gray; border-radius: 6px; padding: 5px 10px; }
-            QPushButton:disabled { color: gray; background-color: rgb(235, 235, 235); }
+        self.setStyleSheet(f"""
+            #tab_3_4 {{ background-color: {tema.SAYFA}; }}
+            QLabel, QComboBox, QLineEdit, QTableWidget, QGroupBox, QPushButton {{ font: 11pt "Verdana"; }}
         """)
 
         # --- Benzer yazımlar
@@ -45,11 +41,10 @@ class VeriDuzeltme(QWidget):
         self.agac = QTreeWidget()
         self.agac.setFont(QFont("Verdana", 11))
         # Pencerenin stil sayfası altında macOS onay kutularını boş çiziyor; görünümleri açıkça verilir
-        self.agac.setStyleSheet("""
-            QTreeWidget { background-color: white; color: black; }
-            QTreeWidget::indicator { width: 14px; height: 14px; border: 1px solid rgb(90, 90, 90);
-                                     border-radius: 3px; background-color: white; }
-            QTreeWidget::indicator:checked { background-color: rgb(40, 120, 230); border-color: rgb(20, 80, 180); }
+        self.agac.setStyleSheet(f"""
+            QTreeWidget::indicator {{ width: 14px; height: 14px; border: 1px solid #5A5A5A;
+                                     border-radius: 3px; background-color: white; }}
+            QTreeWidget::indicator:checked {{ background-color: {tema.VURGU}; border-color: {tema.VURGU_KOYU}; }}
         """)
         self.agac.setHeaderLabels(["Yazım (birleştirilecekleri işaretleyin)", "Kitap"])
         self.agac.header().setSectionResizeMode(0, QHeaderView.Stretch)

@@ -26,12 +26,8 @@ class EkBilgiler(QGroupBox):
     def __init__(self, parent=None, salt_okunur=False):
         super().__init__("Ek Bilgiler", parent)
         self.setStyleSheet("""
-            QGroupBox { font: bold 12pt "Verdana"; color: black; background-color: rgba(255, 255, 255, 140);
-                        border: 1px solid rgb(90, 90, 90); border-radius: 8px; margin-top: 12px; padding: 8px; }
-            QGroupBox::title { subcontrol-origin: margin; left: 10px; padding: 0 4px; }
-            QLabel { font: 11pt "Verdana"; color: black; background: transparent; }
-            QLineEdit, QSpinBox, QPlainTextEdit { font: 11pt "Verdana"; color: black; background-color: white;
-                        border: 1px solid gray; border-radius: 4px; padding: 3px; }
+            QGroupBox { font: bold 12pt "Verdana"; }
+            QLabel, QLineEdit, QSpinBox, QPlainTextEdit { font: 11pt "Verdana"; }
         """)
         self.isbn = QLineEdit()
         self.isbn.setPlaceholderText("ör. 978-975-07-0321-5 (isteğe bağlı)")
