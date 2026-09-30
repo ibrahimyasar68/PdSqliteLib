@@ -61,10 +61,9 @@ def test_basliga_tiklayinca_siralanir_ve_veri_satirla_tasinir(app):
 def test_tablolar_salt_okunur_ve_siralanabilir(app, uyarilar):
     lib = Library()
     q = lib.QtLibrary
-    for t in (q.tableWidget_2, q.tableWidget_4_1_2, q.tableWidget_5_1_1, q.tableWidget_6_2, lib.gecmis.tablo):
+    for t in (q.tableWidget_2, lib.filtre.tablo, q.tableWidget_5_1_1, q.tableWidget_6_2, lib.gecmis.tablo):
         assert t.isSortingEnabled()
         assert t.editTriggers() == QAbstractItemView.NoEditTriggers
-    assert q.tableWidget_4_1_1.editTriggers() == QAbstractItemView.NoEditTriggers
     g = Guest()
     assert g.QtLibrary.tableWidget_2.isSortingEnabled()
 
@@ -96,10 +95,8 @@ def test_listeden_cift_tiklama_kitabi_duzenlemede_acar(lib):
 
 
 def test_filtreden_cift_tiklama(lib):
-    q = lib.QtLibrary
-    sec(q.comboBox_4_2_turu, "Stefan ZWEIG")
-    lib.filtre_listele(2, "Yazari")
-    lib.tablodan_kitap_duzenle(q.tableWidget_4_2_2, 0)
+    sec(lib.filtre.combo["Yazari"], "Stefan ZWEIG")
+    lib.tablodan_kitap_duzenle(lib.filtre.tablo, 0)
     assert lib.kitaplar.alan["Adi"].text() == "Satranç"
 
 

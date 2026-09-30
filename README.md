@@ -13,7 +13,7 @@ Giriş ekranında kullanıcının yetkisine göre iki farklı panel açılır:
 | **Giriş**: özet panosu (kitap, dışarıdaki, geciken sayıları; yaklaşan teslimler; son eklenenler) | ✓ | ✓ (kendi kitapları) |
 | **Kitap Listesi**: tüm kitaplar, anlık arama | ✓ | ✓ |
 | **Kitap Kayıt**: tek ekranda ekleme, güncelleme, silme; veri düzeltme | ✓ | |
-| **Filtre**: tür, yazar, yayınevi ve yıla göre çoklu seçim | ✓ | ✓ |
+| **Filtre**: tür, yazar, yayınevi ve yıl tek panelde, çoklu seçim | ✓ | ✓ |
 | **İstatistik**: çizelgeler ve güncel grafikler (tür, yazar, yayınevi, basım yılı) | ✓ | ✓ |
 | **Kitap Verme**: ödünç verme, iade alma, dışarıdaki kitaplar, ödünç geçmişi | ✓ | |
 | **Kitaplarım**: üyenin elindeki kitaplar (teslim tarihi, kalan gün) ve geçmişi | | ✓ |
@@ -39,6 +39,14 @@ Listeden bir kitap seçince bilgileri forma gelir; değiştirip **Kaydet**'e bas
 siler (ödünçteki kitap iade alınmadan silinemez), **Vazgeç** kaydedilmemiş değişiklikleri geri alır.
 **Yeni Kitap** formu boşaltır; Kaydet yeni kitabı ekler ve listede seçili bırakır. Yazar, çevirmen,
 tür ve yayınevi alanlarında yazdıkça mevcut değerler önerilir (yazım farklılıklarını önler).
+
+### Filtre
+
+**Filtre** sekmesinde tür, yazar, yayınevi ve yıl ölçütleri tek panelde yan yana durur. Her ölçütte
+birden fazla değer seçilebilir; seçilenler ölçütün altında etiket olarak görünür, etikete tıklamak
+seçimi kaldırır. Aynı ölçütteki seçimlerden **biri**, farklı ölçütlerin **hepsi** tutmalıdır
+("Roman veya Hikaye" **ve** "Kemal TAHİR"). Sonuçlar her seçimde kendiliğinden güncellenir;
+**Temizle** tüm seçimleri kaldırır.
 
 ### Aranabilir listeler
 
@@ -221,6 +229,7 @@ acodes/yerlesim.py            Esnek yerleşim kalıpları (.ui sayfalarını pen
 acodes/disa_aktar.py          Tabloları Excel / CSV olarak kaydetme
 acodes/kitap_ekrani.py        Kitap Kayıt > Kitaplar (liste ve form tek ekranda)
 acodes/veri_duzeltme.py       Kitap Kayıt > Veri Düzeltme sekmesi
+acodes/filtre_paneli.py       Filtre sekmesi (dört ölçüt tek panelde)
 acodes/ek_bilgi.py            Kitap formundaki Ek Bilgiler kutusu, ISBN doğrulama
 acodes/kitaplarim.py          Guest paneli > Kitaplarım sekmesi
 acodes/ana_sayfa.py           Ana sayfa özet panosu (kartlar ve listeler)

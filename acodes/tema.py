@@ -47,6 +47,11 @@ QPushButton:disabled {{ background-color: #E2E8F0; color: #64748B; }}
 {", ".join("#" + ad for ad in TEHLIKELI_BUTONLAR)} {{ background-color: {TEHLIKE}; }}
 {", ".join("#" + ad + ":hover" for ad in TEHLIKELI_BUTONLAR)} {{ background-color: {TEHLIKE_KOYU}; }}
 {", ".join("#" + ad + ":disabled" for ad in TEHLIKELI_BUTONLAR)} {{ background-color: #E2E8F0; color: #64748B; }}
+QPushButton#filtre_etiketi {{ background-color: {VURGU_ACIK}; color: {VURGU_KOYU}; border-radius: 12px;
+               padding: 4px 10px; }}
+QPushButton#filtre_etiketi:hover {{ background-color: #FEE2E2; color: {TEHLIKE_KOYU}; }}
+#filtre_aciklama {{ color: {IKINCIL_METIN}; }}
+#filtre_sonuc {{ font-size: 14px; font-weight: bold; color: {VURGU_KOYU}; }}
 
 QLineEdit, QComboBox, QSpinBox, QPlainTextEdit {{ background-color: {KART}; color: {METIN};
                border: 1px solid #C7CDD8; border-radius: 5px; padding: 3px 6px; }}

@@ -57,9 +57,18 @@ def df_sort_list(sort):
 def df_book_id_list():
     return baglantı.execute("SELECT Id, Adi, Yayinevi, Yili FROM kayitlistesi ORDER BY Adi, Yili").fetchall()
 
-## Filtre sonuçları: kolonu verilen değere eşit kitaplar
-def df_srt_fltr(sort,name):
-    return baglantı.execute(f"SELECT {TEMEL_KOLONLAR} FROM kayitlistesi WHERE {kolon(sort,KITAP_KOLON)}=?",(name,)).fetchall()
+## Filtre sonuçları: secimler = {kolon: [değerler]}. Aynı kolondaki değerlerden biri ("veya"),
+## farklı kolonların hepsi ("ve") tutmalı. Seçim yoksa boş liste. Sonuç kitap adına göre sıralı.
+def kitap_filtrele(secimler):
+    kosullar,degerler=[],[]
+    for ad,secilen in secimler.items():
+        if secilen:
+            kosullar.append(f"{kolon(ad,KITAP_KOLON)} IN ({','.join('?'*len(secilen))})")
+            degerler+=list(secilen)
+    if not kosullar:
+        return []
+    satirlar=baglantı.execute(f"SELECT {TEMEL_KOLONLAR} FROM kayitlistesi WHERE {' AND '.join(kosullar)}",degerler).fetchall()
+    return sorted(satirlar, key=lambda s: (tr_sirala(s[1] or ""), s[0]))
 
 ## İstatistik: kolondaki her değer için kitap sayısı (en çok olan cnt tanesi)
 def rapor(sor,cnt):

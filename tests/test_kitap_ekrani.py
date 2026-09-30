@@ -70,7 +70,8 @@ def test_yeni_kitap_ekleme(lib, k, db):
     # diğer ekranların listeleri de yenilendi
     q = lib.QtLibrary
     assert "Anne'nin Kitabı" in [q.comboBox_6_1_1_liste_kitap.itemText(i) for i in range(q.comboBox_6_1_1_liste_kitap.count())]
-    assert "Yeni Yazar" in [q.comboBox_4_2_turu.itemText(i) for i in range(q.comboBox_4_2_turu.count())]
+    yazarlar = lib.filtre.combo["Yazari"]
+    assert "Yeni Yazar" in [yazarlar.itemText(i) for i in range(yazarlar.count())]
 
 
 @pytest.mark.parametrize("adi,isbn,mesaj", [

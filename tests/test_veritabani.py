@@ -2,9 +2,9 @@
 from conftest import ADMIN_SIFRE, ESKI_SIFRE
 from database.dbbase import (degistir_kayit, ekle_kayit, save_work_to_db, sifre_dogrula,
                              sifre_hashle, update_work_to_db, user_ekle)
-from database.dbframe import (df_all_list, df_book_id_list, df_sort_list, df_srt_fltr,
+from database.dbframe import (df_all_list, df_book_id_list, df_sort_list,
                               df_user_query, df_work_perbook, df_work_table_book,
-                              df_work_user_list, giris_kontrol, kitap_oduncte, rapor)
+                              df_work_user_list, giris_kontrol, kitap_filtrele, kitap_oduncte, rapor)
 
 
 def odunc_ver(user_id, book_id, tarih="2026-01-01"):
@@ -54,7 +54,7 @@ def test_ayni_isimde_birden_fazla_kullanici_bulunur():
 
 def test_tirnakli_degerler_eklenir_bulunur_guncellenir(db):
     ekle_kayit(["Çocuk'un Kitabı", "D'Artagnan", "", "Roman", "L'Harmattan", "2021", "99"])
-    satir = df_srt_fltr("Yazari", "D'Artagnan")
+    satir = kitap_filtrele({"Yazari": ["D'Artagnan"]})
     assert len(satir) == 1 and satir[0][1] == "Çocuk'un Kitabı"
     degistir_kayit([satir[0][0], "Çocuk'un Kitabı", "D'Artagnan", "", "Roman", "O'Reilly", "2021", "100"])
     assert db.execute("SELECT Yayinevi FROM kayitlistesi WHERE Id=?", (satir[0][0],)).fetchone()[0] == "O'Reilly"
@@ -63,7 +63,7 @@ def test_tirnakli_degerler_eklenir_bulunur_guncellenir(db):
 def test_sql_injection_etkisiz(db):
     degistir_kayit([1, "x'; DROP TABLE users; --", "", "", "", "", "", ""])
     assert db.execute("SELECT COUNT(*) FROM users").fetchone()[0] == 4
-    assert df_srt_fltr("Adi", "' OR '1'='1") == []
+    assert kitap_filtrele({"Adi": ["' OR '1'='1"]}) == []
 
 
 def test_filtre_listesi_bos_degerleri_icermez():

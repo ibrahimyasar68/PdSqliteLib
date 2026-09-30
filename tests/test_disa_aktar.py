@@ -95,12 +95,12 @@ def test_kitap_listesi_arama_sonucunu_aktarir(app, uyarilar, monkeypatch, tmp_pa
 def test_panellerde_aktar_butonlari(app, uyarilar):
     lib = Library()
     q = lib.QtLibrary
-    for tablo, ornek in [(q.tableWidget_2, q.pushButton_2_temizle), (q.tableWidget_4_3_2, q.pushButton_4_3_temizle),
-                         (q.tableWidget_6_2, q.pushButton_6_3_temizle)]:
+    for tablo, ornek in [(q.tableWidget_2, q.pushButton_2_temizle), (q.tableWidget_6_2, q.pushButton_6_3_temizle)]:
         buton = ornek.parentWidget().findChild(type(ornek), f"{ornek.objectName()}_aktar")
         assert buton is not None and buton.text() == "Dışa Aktar"
         assert tablo.contextMenuPolicy() == Qt.CustomContextMenu
     assert q.tableWidget_5_1_2.contextMenuPolicy() == Qt.CustomContextMenu
     assert lib.gecmis.aktar.text() == "Dışa Aktar"
+    assert lib.filtre.btn_aktar.text() == "Dışa Aktar" and lib.filtre.tablo.contextMenuPolicy() == Qt.CustomContextMenu
     g = Guest()
     assert g.QtLibrary.tab_2.findChild(type(q.pushButton_2_temizle), "pushButton_2_temizle_aktar") is not None

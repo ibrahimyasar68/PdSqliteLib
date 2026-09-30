@@ -2,7 +2,8 @@
 # .ui dosyalarındaki sayfalar sabit piksel konumlarıyla çizilmiş; pencere büyüyünce sol üstte küçük kalıyorlardı.
 # Buradaki kalıplar mevcut bileşenleri yerleşim düzenlerine (layout) alır: tablolar ve alanlar pencereyle büyür.
 
-from PyQt5.QtWidgets import QFormLayout, QGroupBox, QHBoxLayout, QLineEdit, QVBoxLayout
+from PyQt5.QtCore import QPoint, QRect, QSize, Qt
+from PyQt5.QtWidgets import QFormLayout, QGroupBox, QHBoxLayout, QLayout, QLineEdit, QVBoxLayout
 
 SINIRSIZ = 16777215
 
@@ -79,3 +80,60 @@ def islem_sayfasi(sayfa, kutular, ana_buton):
     alt.addWidget(ana_buton)
     duzen.addLayout(alt)
     return duzen
+
+
+class AkisDuzeni(QLayout):
+    """Bileşenleri yan yana dizer, satır dolunca alt satıra geçer (ör. seçim etiketleri)."""
+
+    def __init__(self, parent=None, bosluk=6):
+        super().__init__(parent)
+        self.ogeler = []
+        self.bosluk = bosluk
+        self.setContentsMargins(0, 0, 0, 0)
+
+    def addItem(self, oge):
+        self.ogeler.append(oge)
+
+    def count(self):
+        return len(self.ogeler)
+
+    def itemAt(self, i):
+        return self.ogeler[i] if 0 <= i < len(self.ogeler) else None
+
+    def takeAt(self, i):
+        return self.ogeler.pop(i) if 0 <= i < len(self.ogeler) else None
+
+    def expandingDirections(self):
+        return Qt.Orientations(0)
+
+    def hasHeightForWidth(self):
+        return True
+
+    def heightForWidth(self, en):
+        return self._diz(QRect(0, 0, en, 0), sadece_olc=True)
+
+    def setGeometry(self, alan):
+        super().setGeometry(alan)
+        self._diz(alan)
+
+    def sizeHint(self):
+        return self.minimumSize()
+
+    def minimumSize(self):
+        boyut = QSize()
+        for oge in self.ogeler:
+            boyut = boyut.expandedTo(oge.minimumSize())
+        return boyut
+
+    def _diz(self, alan, sadece_olc=False):
+        x, y, satir_boyu = alan.x(), alan.y(), 0
+        for oge in self.ogeler:
+            boyut = oge.sizeHint()
+            if x + boyut.width() > alan.right() + 1 and satir_boyu > 0:
+                x, y = alan.x(), y + satir_boyu + self.bosluk
+                satir_boyu = 0
+            if not sadece_olc:
+                oge.setGeometry(QRect(QPoint(x, y), boyut))
+            x += boyut.width() + self.bosluk
+            satir_boyu = max(satir_boyu, boyut.height())
+        return y + satir_boyu - alan.y()

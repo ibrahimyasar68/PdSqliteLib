@@ -2,30 +2,18 @@
 # Giriş (çıkış ve kullanıcı adı), Kitap Listesi, Filtre ve İstatistik sekmeleri.
 # İki panelin .ui dosyasında bu sekmelerdeki nesne adları aynı olduğu için kod tek yerde tutulur.
 
-from PyQt5.QtWidgets import QLabel, QLineEdit, QMessageBox, QTableWidgetItem
-from bforms.onay import onay
-from database.dbframe import df_sort_list, df_srt_fltr, kitap_ara, rapor
+from PyQt5.QtWidgets import QHBoxLayout, QLabel, QLineEdit
+from database.dbframe import kitap_ara, rapor
 from acodes.grafikler import GrafikPaneli
+from acodes.filtre_paneli import FiltrePaneli
 from acodes import tema
-from acodes.aranabilir import aranabilir_yap
 from acodes.yerlesim import liste_sayfasi
-from PyQt5.QtWidgets import QHBoxLayout
 from acodes.tablo import tablo_ayarla, tablo_basliklari, tabloya_yaz  # noqa: F401  (library.py de buradan alır)
 from acodes.disa_aktar import disa_aktar, sag_tik_menusu
 from acodes.kullanici_yonetimi import SifreDegistir, panel_butonu
 
-SECINIZ = ' Seçiniz...'
-
 LISTE_KOLONLARI = [(70,"Kayıt No"),(200,"Adı"),(160,"Yazarı"),(120,"Çeviren"),(90,"Türü"),
                    (160,"Yayınevi"),(50,"Yılı"),(55,"Sayfa"),(120,"ISBN"),(55,"Kopya"),(60,"Raf")]
-FILTRE_KOLONLARI = [(70,"Kayıt No"),(190,"Adı"),(170,"Yazarı"),(120,"Çeviren"),
-                    (100,"Türü"),(165,"Yayınevi"),(55,"Yılı"),(55,"Sayfa")]
-
-# Tab 4 filtreleri: (sıra no, veritabanı kolonu, seçim tablosu başlığı)
-FILTRELER = [(1,'Turu','Seçilen Tür'), (2,'Yazari','Seçilen Yazar'),
-             (3,'Yayinevi','Seçilen Yayınevi'), (4,'Yili','Seçilen Yıl')]
-
-FILTRE_ADLARI = {1:"Tür", 2:"Yazar", 3:"Yayınevi", 4:"Yıl"}
 
 # Tab 5 istatistikleri: (tablo no, veritabanı kolonu, başlık, gösterilecek en fazla satır)
 ISTATISTIKLER = [(1,'Turu','Yayın Türü',35), (2,'Yazari','Yazar',40),
@@ -50,15 +38,12 @@ class OrtakSekmeler:
         ui.pushButton_2_listele.clicked.connect(self.listele)
         ui.pushButton_2_temizle.clicked.connect(self.temizle)
 
-        ###  Tab_4  ###
-        self.filtre_secimleri={no:[] for no,_,_ in FILTRELER}
-        for no,kolon,baslik in FILTRELER:
-            self.filtre_kur(no,kolon,baslik)
-            # Yazdıkça süzülen liste; seçime ekleme bir seçenek seçilince yapılır (yazarken değil)
-            aranabilir_yap(self.filtre_combo(no), f"{FILTRE_ADLARI[no]} yazarak arayın...")
-            self.filtre_combo(no).currentIndexChanged.connect(lambda _,no=no: self.filtre_ekle(no))
-            getattr(ui,f"pushButton_4_{no}_listele").clicked.connect(lambda _,no=no,kolon=kolon: self.filtre_listele(no,kolon))
-            getattr(ui,f"pushButton_4_{no}_temizle").clicked.connect(lambda _,no=no,baslik=baslik: self.filtre_temizle(no,baslik))
+        ###  Tab_4: dört ayrı filtre sekmesi yerine tek panel  ###
+        ui.gridLayout_3.removeWidget(ui.tabWidget_4)
+        ui.tabWidget_4.setParent(None)   # hemen ağaçtan çıksın (ikon, arama vb. eski bileşenleri görmesin)
+        ui.tabWidget_4.deleteLater()
+        self.filtre=FiltrePaneli(mesaj=lambda metin: self.QtLibrary.statusbar.showMessage(metin,self.dur_msj))
+        ui.gridLayout_3.addWidget(self.filtre,0,0)
 
         ###  Tab_5  ###
         # Grafikler: eski sabit resmin yerine her yenilemede çizilen grafikler
@@ -70,18 +55,13 @@ class OrtakSekmeler:
         ###  Tablolar: başlığa tıklayınca sıralama, hücreler salt okunur, boşken yönlendirici mesaj  ###
         tablo_ayarla(ui.tableWidget_2, bos_metin="Kitapları görmek için Listele'ye basın\n"
                                                   "veya yukarıya aramak istediğinizi yazın.")
-        for no,_,_ in FILTRELER:
-            tablo_ayarla(getattr(ui,f"tableWidget_4_{no}_2"),
-                         bos_metin="Soldaki listeden bir veya birkaç seçim yapıp\nListele'ye basın.")
-            tablo_ayarla(getattr(ui,f"tableWidget_4_{no}_1"), siralama=False, bos_metin="Henüz seçim yok")
         for no,*_ in ISTATISTIKLER:
             tablo_ayarla(getattr(ui,f"tableWidget_5_1_{no}"))
 
         ###  Dışa aktarma: ana tablolarda buton, tüm tablolarda sağ tık menüsü  ###
         self.aktar_liste=self.aktar_butonu(ui.tableWidget_2,"Kitap Listesi",ui.pushButton_2_temizle,(40,480,100,60))
-        for no,_,_ in FILTRELER:
-            self.aktar_butonu(getattr(ui,f"tableWidget_4_{no}_2"),f"Filtre - {FILTRE_ADLARI[no]}",
-                              getattr(ui,f"pushButton_4_{no}_temizle"),(80,570,111,51))
+        self.filtre.btn_aktar.clicked.connect(lambda: disa_aktar(self,self.filtre.tablo,"Filtre"))
+        sag_tik_menusu(self,self.filtre.tablo,"Filtre")
         for no,_,baslik,_ in ISTATISTIKLER:
             sag_tik_menusu(self,getattr(ui,f"tableWidget_5_1_{no}"),f"İstatistik - {baslik}")
 
@@ -163,74 +143,6 @@ class OrtakSekmeler:
         self.QtLibrary.tableWidget_2.clear()
         self.create_form_tab2()
         self.QtLibrary.statusbar.showMessage("Liste temizlendi.",self.dur_msj)
-
-    ##################################
-    #####   Tab_4 Fonksiyonlar   #####
-    ##################################
-
-    def filtre_combo(self,no):
-        return getattr(self.QtLibrary,f"comboBox_4_{no}_turu")
-
-    def filtre_combo_doldur(self,no,kolon):
-        cmb=self.filtre_combo(no)
-        cmb.blockSignals(True)  # Doldururken seçim listesine otomatik ekleme yapılmasın
-        cmb.clear()
-        cmb.addItems([SECINIZ]+df_sort_list(kolon))
-        cmb.blockSignals(False)
-
-    def filtre_kur(self,no,kolon,baslik):
-        ui=self.QtLibrary
-        self.filtre_combo_doldur(no,kolon)
-        secim=getattr(ui,f"tableWidget_4_{no}_1")
-        secim.setColumnWidth(0,200)
-        secim.setHorizontalHeaderItem(0,QTableWidgetItem(baslik))
-        secim.setRowCount(1)
-        sonuc=getattr(ui,f"tableWidget_4_{no}_2")
-        tablo_basliklari(sonuc,FILTRE_KOLONLARI)
-        sonuc.setRowCount(1)
-
-    def filtre_ekle(self,no):
-        secimler=self.filtre_secimleri[no]
-        deger=self.filtre_combo(no).currentText()
-        if deger not in (SECINIZ,'') and deger not in secimler:
-            secimler.append(deger)
-            secimler.sort()
-            self.QtLibrary.statusbar.showMessage(f"Listeye ' {deger} ' eklendi",self.dur_msj)
-        tabloya_yaz(getattr(self.QtLibrary,f"tableWidget_4_{no}_1"), [[s] for s in secimler])
-
-    def filtre_listele(self,no,kolon):
-        ui=self.QtLibrary
-        secimler=self.filtre_secimleri[no]
-        if secimler:
-            satirlar=[]
-            for deger in secimler:
-                satirlar+=df_srt_fltr(kolon,deger)
-            tabloya_yaz(getattr(ui,f"tableWidget_4_{no}_2"), satirlar)
-            ui.statusbar.showMessage("Sonuçlar listelendi",self.dur_msj)
-        else:
-            ui.statusbar.showMessage("Listelenecek seçim yapınız!",self.dur_msj)
-        getattr(ui,f"pushButton_4_{no}_temizle").setEnabled(True)
-
-    def filtre_temizle(self,no,baslik):
-        ui=self.QtLibrary
-        secimler=self.filtre_secimleri[no]
-        if not secimler:
-            ui.statusbar.showMessage("Temizlenecek Veri Yok!",self.dur_msj)
-            return
-        if onay('Kayıtları silmek istiyor musunuz?')!=QMessageBox.Yes:
-            return
-        secimler.clear()
-        self.filtre_combo(no).setCurrentIndex(0)
-        secim=getattr(ui,f"tableWidget_4_{no}_1")
-        secim.clear()
-        secim.setHorizontalHeaderItem(0,QTableWidgetItem(baslik))
-        secim.setRowCount(1)
-        getattr(ui,f"pushButton_4_{no}_temizle").setEnabled(False)
-        sonuc=getattr(ui,f"tableWidget_4_{no}_2")
-        sonuc.clear()
-        sonuc.setRowCount(1)
-        tablo_basliklari(sonuc,FILTRE_KOLONLARI)
-        ui.statusbar.showMessage("Veriler temizlendi",self.dur_msj)
 
     ##################################
     #####   Tab_5 Fonksiyonlar   #####

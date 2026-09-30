@@ -131,7 +131,8 @@ def test_birlestirme_ekrandan(lib, db, uyarilar):
     assert e.agac.topLevelItemCount() == 0 and e.ozet.text() == "Benzer yazım bulunamadı"
     assert uyarilar[-1].startswith("1 kitap güncellendi")
     assert os.path.exists(e.yedek_alindi) and "duzeltme_oncesi_" in e.yedek_alindi
-    yayinevleri = [lib.QtLibrary.comboBox_4_3_turu.itemText(i) for i in range(lib.QtLibrary.comboBox_4_3_turu.count())]
+    cmb = lib.filtre.combo["Yayinevi"]
+    yayinevleri = [cmb.itemText(i) for i in range(cmb.count())]
     assert "Adam yayınları" not in yayinevleri       # diğer listeler de yenilendi
 
 

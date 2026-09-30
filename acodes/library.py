@@ -12,7 +12,8 @@ from acodes.aranabilir import aranabilir_yap, secili_veri
 from acodes.ana_sayfa import AnaSayfa, ana_sayfayi_yerlestir
 from acodes import bildirim, ikonlar
 from acodes.yerlesim import form_kutusu, islem_sayfasi, liste_sayfasi
-from acodes.ortak import OrtakSekmeler, FILTRELER, SECINIZ
+from acodes.ortak import OrtakSekmeler
+from acodes.filtre_paneli import SECINIZ
 from acodes.tablo import satir_verisi, tablo_ayarla, tablo_basliklari, tabloya_yaz
 from database.dbframe import (df_book_id_list, df_book_find_by_id, df_user_id_list, df_user_find_by_id,
                               kopya_durumu, uyede_mi, df_work_user_list, df_work_perbook, df_work_table_book)
@@ -155,7 +156,7 @@ class Library(OrtakSekmeler, QMainWindow):
 
         ###  Çift tıklama: kitap satırı düzenleme ekranını, ödünç satırı iade ekranını açar  ###
         ui=self.QtLibrary
-        for tablo in [ui.tableWidget_2]+[getattr(ui,f"tableWidget_4_{no}_2") for no,_,_ in FILTRELER]:
+        for tablo in (ui.tableWidget_2,self.filtre.tablo):
             tablo.setToolTip("Kitabı düzenlemek için satıra çift tıklayın")
             tablo.cellDoubleClicked.connect(lambda satir,_,t=tablo: self.tablodan_kitap_duzenle(t,satir))
         tablo_ayarla(ui.tableWidget_6_2, bos_metin="Şu an dışarıda kitap yok.")
@@ -192,8 +193,7 @@ class Library(OrtakSekmeler, QMainWindow):
         self.kitaplar.yenile()
         for cmb in (self.QtLibrary.comboBox_6_1_1_liste_kitap, self.QtLibrary.comboBox_6_1_2_liste_kisi):
             cmb.clear()
-        for no,kolon,_ in FILTRELER:
-            self.filtre_combo_doldur(no,kolon)
+        self.filtre.yenile()
         self.create_tab_5()
         self.list_items_6_1_1()
         self.list_user_6_1_2()

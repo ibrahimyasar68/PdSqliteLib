@@ -2,7 +2,7 @@
 # Pencereler ekranda açılmaz; butonlara basmak yerine aynı fonksiyonlar çağrılır.
 import pytest
 
-from conftest import ADMIN_SIFRE, UYE_SIFRE, sec
+from conftest import ADMIN_SIFRE, UYE_SIFRE
 from acodes.guest import Guest
 from acodes.kitap_ekrani import buyuk_harf
 from acodes.library import Library
@@ -55,25 +55,7 @@ def test_buyuk_harf(girdi, beklenen):
     assert buyuk_harf(girdi) == beklenen
 
 
-# --- Filtre ve istatistik (Tab 4, 5) ---
-
-def test_filtre_coklu_secim_ve_temizleme(lib):
-    q = lib.QtLibrary
-    sec(q.comboBox_4_1_turu, "Roman")
-    sec(q.comboBox_4_1_turu, "Deneme")
-    lib.filtre_listele(1, "Turu")
-    assert lib.filtre_secimleri[1] == ["Deneme", "Roman"]
-    assert q.tableWidget_4_1_2.rowCount() == 7
-    lib.filtre_temizle(1, "Seçilen Tür")
-    assert lib.filtre_secimleri[1] == [] and q.tableWidget_4_1_2.rowCount() == 1
-
-
-def test_tirnakli_yazara_gore_filtre(lib):
-    sec(lib.QtLibrary.comboBox_4_2_turu, "O'brien")
-    lib.filtre_listele(2, "Yazari")
-    t = lib.QtLibrary.tableWidget_4_2_2
-    assert t.rowCount() == 1 and t.item(0, 1).text() == "Anne'nin Günlüğü"
-
+# --- İstatistik (Tab 5) ---
 
 def test_az_turle_istatistik_ekrani_acilir(app, uyarilar):
     # 35'ten az tür varken eskiden çöküyordu

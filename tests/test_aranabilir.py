@@ -71,14 +71,14 @@ def test_panelde_aranabilir_listeler(app, uyarilar):
     lib = Library()
     q = lib.QtLibrary
     for c in (q.comboBox_6_1_1_liste_kitap,
-              q.comboBox_6_1_2_liste_kisi, q.comboBox_6_2_1_liste_kisi, q.comboBox_4_2_turu):
+              q.comboBox_6_1_2_liste_kisi, q.comboBox_6_2_1_liste_kisi, lib.filtre.combo["Yazari"]):
         assert c.isEditable() and c.completer() is not None
 
 
 def test_yazarken_filtreye_eklenmez(app, uyarilar):
     lib = Library()
-    q = lib.QtLibrary
-    q.comboBox_4_2_turu.setEditText("Kem")       # yarım yazılmış metin seçim sayılmaz
-    assert lib.filtre_secimleri[2] == []
-    q.comboBox_4_2_turu.setCurrentIndex(q.comboBox_4_2_turu.findText("Kemal TAHİR"))
-    assert lib.filtre_secimleri[2] == ["Kemal TAHİR"]
+    cmb = lib.filtre.combo["Yazari"]
+    cmb.setEditText("Kem")                        # yarım yazılmış metin seçim sayılmaz
+    assert lib.filtre.secimler["Yazari"] == []
+    cmb.setCurrentIndex(cmb.findText("Kemal TAHİR"))
+    assert lib.filtre.secimler["Yazari"] == ["Kemal TAHİR"]
