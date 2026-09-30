@@ -13,10 +13,10 @@ from acodes.kullanici_yonetimi import SifreDegistir, panel_butonu
 
 SECINIZ = ' Seçiniz...'
 
-LISTE_KOLONLARI = [(55,"Sıra No"),(190,"Adı"),(160,"Yazarı"),(120,"Çeviren"),(90,"Turu"),
-                   (160,"Yayınevi"),(45,"Yılı"),(45,"Sayfa"),(115,"ISBN"),(50,"Kopya"),(60,"Raf")]
-FILTRE_KOLONLARI = [(50,"Sıra No"),(190,"Adı"),(190,"Yazarı"),(130,"Çeviren"),
-                    (130,"Turu"),(165,"Yayınevi"),(40,"Yılı"),(40,"Sayfa")]
+LISTE_KOLONLARI = [(70,"Sıra No"),(200,"Adı"),(160,"Yazarı"),(120,"Çeviren"),(90,"Turu"),
+                   (160,"Yayınevi"),(50,"Yılı"),(55,"Sayfa"),(120,"ISBN"),(55,"Kopya"),(60,"Raf")]
+FILTRE_KOLONLARI = [(65,"Sıra No"),(190,"Adı"),(170,"Yazarı"),(120,"Çeviren"),
+                    (100,"Turu"),(165,"Yayınevi"),(55,"Yılı"),(55,"Sayfa")]
 
 # Tab 4 filtreleri: (sıra no, veritabanı kolonu, seçim tablosu başlığı)
 FILTRELER = [(1,'Turu','Seçilen Tür'), (2,'Yazari','Seçilen Yazar'),
@@ -62,12 +62,15 @@ class OrtakSekmeler:
         ui.gridLayout_6.addWidget(self.grafikler,0,0)
         self.create_tab_5()
 
-        ###  Tablolar: başlığa tıklayınca sıralama, hücreler salt okunur  ###
-        for tablo in [ui.tableWidget_2]+[getattr(ui,f"tableWidget_4_{no}_2") for no,_,_ in FILTRELER] \
-                     +[getattr(ui,f"tableWidget_5_1_{no}") for no,*_ in ISTATISTIKLER]:
-            tablo_ayarla(tablo)
+        ###  Tablolar: başlığa tıklayınca sıralama, hücreler salt okunur, boşken yönlendirici mesaj  ###
+        tablo_ayarla(ui.tableWidget_2, bos_metin="Kitapları görmek için Listele'ye basın\n"
+                                                  "veya yukarıya aramak istediğinizi yazın.")
         for no,_,_ in FILTRELER:
-            tablo_ayarla(getattr(ui,f"tableWidget_4_{no}_1"), siralama=False)
+            tablo_ayarla(getattr(ui,f"tableWidget_4_{no}_2"),
+                         bos_metin="Soldaki listeden bir veya birkaç seçim yapıp\nKayıtları Listele'ye basın.")
+            tablo_ayarla(getattr(ui,f"tableWidget_4_{no}_1"), siralama=False, bos_metin="Henüz seçim yok")
+        for no,*_ in ISTATISTIKLER:
+            tablo_ayarla(getattr(ui,f"tableWidget_5_1_{no}"))
 
         ###  Dışa aktarma: ana tablolarda buton, tüm tablolarda sağ tık menüsü  ###
         self.aktar_butonu(ui.tableWidget_2,"Kitap Listesi",ui.pushButton_2_temizle,(40,480,100,60))

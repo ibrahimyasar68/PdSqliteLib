@@ -2,9 +2,9 @@
 
 import re
 
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import QEvent, QObject, Qt, QTimer
 from PyQt5.QtGui import QColor
-from PyQt5.QtWidgets import QAbstractItemView, QTableWidgetItem
+from PyQt5.QtWidgets import QAbstractItemView, QLabel, QTableWidgetItem
 
 from database.dbframe import tr_sirala
 
@@ -32,6 +32,8 @@ class SiraliHucre(QTableWidgetItem):
     def __init__(self, deger):
         super().__init__("" if deger is None else str(deger))
         self.anahtar = siralama_anahtari(self.text())
+        if self.anahtar[0] == 0:          # sayılar sağa yaslı
+            self.setTextAlignment(Qt.AlignRight | Qt.AlignVCenter)
 
     def __lt__(self, diger):
         if isinstance(diger, SiraliHucre):
@@ -39,11 +41,64 @@ class SiraliHucre(QTableWidgetItem):
         return super().__lt__(diger)
 
 
-def tablo_ayarla(tablo, siralama=True):
+class BosDurum(QObject):
+    """Tabloda gösterilecek bir şey yokken ortasında yönlendirici bir mesaj gösterir."""
+
+    def __init__(self, tablo, metin):
+        super().__init__(tablo)
+        self.tablo = tablo
+        self.etiket = QLabel(metin, tablo.viewport())
+        self.etiket.setObjectName("bos_durum")
+        self.etiket.setAlignment(Qt.AlignCenter)
+        self.etiket.setWordWrap(True)
+        self.etiket.setStyleSheet("color: #8A94A6; font-size: 15px; background: transparent;")
+        self.etiket.setAttribute(Qt.WA_TransparentForMouseEvents)
+        self.bekliyor = False
+        model = tablo.model()
+        for sinyal in (model.rowsInserted, model.rowsRemoved, model.modelReset, model.layoutChanged, model.dataChanged):
+            sinyal.connect(self.guncelle_sonra)
+        tablo.viewport().installEventFilter(self)
+        self.guncelle()
+
+    def guncelle_sonra(self, *_):
+        # Tablo doldurulurken her hücre için değil, doldurma bitince bir kez kontrol edilir
+        if not self.bekliyor:
+            self.bekliyor = True
+            QTimer.singleShot(0, self.guncelle)
+
+    def bos_mu(self):
+        for r in range(self.tablo.rowCount()):
+            for c in range(self.tablo.columnCount()):
+                hucre = self.tablo.item(r, c)
+                if hucre is not None and hucre.text():
+                    return False
+        return True
+
+    def guncelle(self):
+        self.bekliyor = False
+        self.etiket.setVisible(self.bos_mu())
+        self.etiket.setGeometry(self.tablo.viewport().rect().adjusted(20, 20, -20, -20))
+
+    def eventFilter(self, nesne, olay):
+        if olay.type() == QEvent.Resize:
+            self.etiket.setGeometry(self.tablo.viewport().rect().adjusted(20, 20, -20, -20))
+        return False
+
+
+def tablo_ayarla(tablo, siralama=True, bos_metin=None):
     """Hücreler düzenlenemez, tıklanınca satır seçilir, başlığa tıklanınca sıralanır.
-    İlk açılışta veri geldiği sırada gösterilir (sıralama göstergesi yok)."""
+    İlk açılışta veri geldiği sırada gösterilir (sıralama göstergesi yok).
+    Satırlar sırayla renklenir, satır numarası kolonu gizlenir; bos_metin verilirse boş tabloda gösterilir."""
     tablo.setEditTriggers(QAbstractItemView.NoEditTriggers)
     tablo.setSelectionBehavior(QAbstractItemView.SelectRows)
+    tablo.setAlternatingRowColors(True)
+    tablo.setMouseTracking(True)
+    tablo.verticalHeader().setVisible(False)
+    tablo.verticalHeader().setDefaultSectionSize(26)
+    tablo.horizontalHeader().setStretchLastSection(True)
+    tablo.horizontalHeader().setHighlightSections(False)
+    if bos_metin:
+        tablo.bos_durum = BosDurum(tablo, bos_metin)
     if siralama:
         tablo.horizontalHeader().setSortIndicator(-1, Qt.AscendingOrder)
         tablo.setSortingEnabled(True)

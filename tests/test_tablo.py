@@ -140,3 +140,39 @@ def test_kullanici_tablosu_siralaninca_dogru_kullanici_secilir(app, uyarilar):
     assert y.secili()[1] == "ayse1"
     y.tablo.selectRow(0)
     assert y.secili()[1] == y.tablo.item(0, 0).text()
+
+
+# --- Görünüm: satır renkleri, satır numarası, boş tablo mesajı ---
+
+def test_tablo_gorunumu(app):
+    t = QTableWidget(0, 2)
+    tablo_ayarla(t)
+    assert t.alternatingRowColors() and t.verticalHeader().isHidden()
+    assert t.horizontalHeader().stretchLastSection()
+    tabloya_yaz(t, [["Kitap", "42"]])
+    assert t.item(0, 1).textAlignment() & Qt.AlignRight          # sayılar sağa yaslı
+    assert not t.item(0, 0).textAlignment() & Qt.AlignRight
+
+
+def test_bos_tablo_mesaji(app):
+    t = QTableWidget(1, 2)
+    tablo_ayarla(t, bos_metin="Henüz kayıt yok")
+    etiket = t.bos_durum.etiket
+    assert etiket.text() == "Henüz kayıt yok" and not etiket.isHidden()
+    tabloya_yaz(t, [["a", "1"], ["b", "2"]])
+    app.processEvents()                                              # doldurma bitince bir kez kontrol edilir
+    assert etiket.isHidden()
+    t.clear()
+    t.setRowCount(1)
+    app.processEvents()
+    assert not etiket.isHidden()
+
+
+def test_panellerde_bos_tablo_mesajlari(lib, app):
+    q = lib.QtLibrary
+    assert "Listele" in q.tableWidget_2.bos_durum.etiket.text()
+    assert not q.tableWidget_2.bos_durum.etiket.isHidden()
+    lib.arama.setText("tahir")
+    app.processEvents()
+    assert q.tableWidget_2.bos_durum.etiket.isHidden()
+    assert q.tableWidget_6_2.bos_durum.etiket.text() == "Şu an dışarıda kitap yok."

@@ -142,7 +142,7 @@ class Library(OrtakSekmeler, QMainWindow):
         for tablo in [ui.tableWidget_2]+[getattr(ui,f"tableWidget_4_{no}_2") for no,_,_ in FILTRELER]:
             tablo.setToolTip("Kitabı düzenlemek için satıra çift tıklayın")
             tablo.cellDoubleClicked.connect(lambda satir,_,t=tablo: self.tablodan_kitap_duzenle(t,satir))
-        tablo_ayarla(ui.tableWidget_6_2)
+        tablo_ayarla(ui.tableWidget_6_2, bos_metin="Şu an dışarıda kitap yok.")
         self.aktar_butonu(ui.tableWidget_6_2,"Dışardaki Kitaplar",ui.pushButton_6_3_temizle,(40,470,100,60))
         ui.tableWidget_6_2.setToolTip("İade almak için satıra çift tıklayın")
         ui.tableWidget_6_2.cellDoubleClicked.connect(lambda satir,_: self.tablodan_iade(satir))

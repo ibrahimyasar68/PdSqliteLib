@@ -82,7 +82,7 @@ class VeriDuzeltme(QWidget):
         self.eksik_tablo.setColumnWidth(3, 140)
         self.eksik_tablo.setWordWrap(False)
         self.eksik_tablo.setToolTip("Kitabı düzenlemek için satıra çift tıklayın")
-        tablo_ayarla(self.eksik_tablo)
+        tablo_ayarla(self.eksik_tablo, bos_metin="Bu alanı boş olan kitap yok.")
         eksik = QGroupBox("Eksik bilgiler")
         kutu2 = QVBoxLayout(eksik)
         satir = QHBoxLayout()

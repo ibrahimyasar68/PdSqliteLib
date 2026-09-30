@@ -42,7 +42,7 @@ class OduncGecmisi(QWidget):
         self.ozet = QLabel()
         self.tablo = QTableWidget(0, len(self.KOLONLAR))
         self.tablo.setHorizontalHeaderLabels(self.KOLONLAR)
-        tablo_ayarla(self.tablo)
+        tablo_ayarla(self.tablo, bos_metin="Seçilen ölçütlere uyan ödünç kaydı yok.")
         baslik = self.tablo.horizontalHeader()
         baslik.setSectionResizeMode(QHeaderView.ResizeToContents)
         baslik.setSectionResizeMode(0, QHeaderView.Stretch)

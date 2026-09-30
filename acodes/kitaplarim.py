@@ -9,13 +9,13 @@ from acodes.tablo import tablo_ayarla, tabloya_yaz
 from database.odunc import gecikme_gunu, gun_sayisi, kalan_gun_yazi, tarih_yazi, teslim_tarihi, uye_odunc
 
 
-def tablo_olustur(basliklar):
+def tablo_olustur(basliklar, bos_metin):
     tablo = QTableWidget(0, len(basliklar))
     tablo.setHorizontalHeaderLabels(basliklar)
     baslik = tablo.horizontalHeader()
     baslik.setSectionResizeMode(QHeaderView.ResizeToContents)
     baslik.setSectionResizeMode(0, QHeaderView.Stretch)
-    tablo_ayarla(tablo)
+    tablo_ayarla(tablo, bos_metin=bos_metin)
     return tablo
 
 
@@ -31,8 +31,10 @@ class Kitaplarim(QWidget):
         """)
         self.ozet = QLabel()
         self.ozet.setStyleSheet('font-size: 16px; font-weight: bold;')
-        self.elimdeki = tablo_olustur(["Kitap", "Yazar", "Aldığım Tarih", "Teslim Tarihi", "Durum"])
-        self.gecmis = tablo_olustur(["Kitap", "Yazar", "Aldığım Tarih", "İade Tarihi", "Gün"])
+        self.elimdeki = tablo_olustur(["Kitap", "Yazar", "Aldığım Tarih", "Teslim Tarihi", "Durum"],
+                                      "Şu an elinizde ödünç kitap yok.")
+        self.gecmis = tablo_olustur(["Kitap", "Yazar", "Aldığım Tarih", "İade Tarihi", "Gün"],
+                                    "Daha önce aldığınız kitap yok.")
 
         kutu1 = QGroupBox("Elimdeki kitaplar")
         QVBoxLayout(kutu1).addWidget(self.elimdeki)

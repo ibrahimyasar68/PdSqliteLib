@@ -55,8 +55,11 @@ QLineEdit:read-only {{ background-color: #F1F4F8; }}
 QComboBox QAbstractItemView {{ background-color: {KART}; color: {METIN};
                selection-background-color: {VURGU_ACIK}; selection-color: {METIN}; }}
 
-QTableWidget, QTreeWidget {{ background-color: {KART}; color: {METIN}; gridline-color: #E5E7EB;
-               border: 1px solid {KENAR}; selection-background-color: {VURGU_ACIK}; selection-color: {METIN}; }}
+QTableWidget, QTreeWidget {{ background-color: {KART}; alternate-background-color: #F6F8FB; color: {METIN};
+               gridline-color: #EDF0F4; border: 1px solid {KENAR}; border-radius: 4px;
+               selection-background-color: {VURGU_ACIK}; selection-color: {METIN}; }}
+QTableWidget::item {{ padding: 0 6px; }}
+QTableWidget::item:hover {{ background-color: #EEF4FF; }}
 QHeaderView::section {{ background-color: {ZEMIN}; color: #334155; padding: 4px 6px; border: none; font-weight: bold;
                border-right: 1px solid {KENAR}; border-bottom: 1px solid {KENAR}; }}
 
