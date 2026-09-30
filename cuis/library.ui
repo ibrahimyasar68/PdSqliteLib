@@ -1182,8 +1182,7 @@ border-radius:10px;}
 </string>
             </property>
             <property name="text">
-             <string>Değişikliği
-Kaydet</string>
+             <string>Kaydet</string>
             </property>
            </widget>
            <widget class="QPushButton" name="pushButton_3_2_iptal">

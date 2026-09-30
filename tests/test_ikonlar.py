@@ -1,0 +1,49 @@
+## Buton ve sekme ikonları testleri ##
+import pytest
+from PyQt5.QtGui import QIcon
+
+from acodes import ikonlar
+from acodes.guest import Guest
+from acodes.kullanici_yonetimi import KullaniciYonetimi, SifreDegistir
+from acodes.library import Library
+
+
+@pytest.mark.parametrize("ad", sorted(ikonlar.CIZIMLER))
+def test_her_ikon_cizilir(app, ad):
+    simge = ikonlar.ikon(ad)
+    normal = simge.pixmap(32, 32, QIcon.Normal).toImage()
+    pasif = simge.pixmap(32, 32, QIcon.Disabled).toImage()
+    assert not normal.isNull()
+    dolu = [(x, y) for x in range(32) for y in range(32) if normal.pixelColor(x, y).alpha() > 0]
+    assert len(dolu) > 20                                              # boş resim değil
+    x, y = max(dolu, key=lambda n: normal.pixelColor(*n).alpha())
+    assert normal.pixelColor(x, y) != pasif.pixelColor(x, y)          # pasif hali farklı renkte
+
+
+def test_eslemelerdeki_ikonlar_tanimli():
+    assert set(ikonlar.BUTON_IKONLARI.values()) <= set(ikonlar.CIZIMLER)
+    assert set(ikonlar.SEKME_IKONLARI.values()) <= set(ikonlar.CIZIMLER)
+
+
+def test_panel_butonlarinda_ikon(app, uyarilar):
+    lib = Library()
+    q = lib.QtLibrary
+    for buton in (q.pushButton_2_listele, q.pushButton_2_temizle, q.pushButton_3_2_bul, q.pushButton_3_2_deg_kaydet,
+                  q.pushButton_3_3_Sil, q.pushButton_6_1_islemi_kaydet, q.pushButton_6_2_islemi_kaydet,
+                  q.pushButton_1_cikis, lib.ayarlar.buton("Yedek Al")):
+        assert not buton.icon().isNull(), buton.text()
+    assert q.pushButton_3_2_deg_kaydet.text() == "Kaydet"
+
+
+def test_sekmelerde_ikon(app, uyarilar):
+    for panel in (Library(), Guest()):
+        t = panel.QtLibrary.tabWidget
+        assert all(not t.tabIcon(i).isNull() for i in range(t.count()))
+
+
+def test_pencerelerde_ikon(app):
+    y = KullaniciYonetimi("admin")
+    assert all(not b.icon().isNull() for b in (y.btn_duzenle, y.btn_sifre, y.btn_sil))
+    s = SifreDegistir("admin")
+    from PyQt5.QtWidgets import QPushButton
+    assert all(not b.icon().isNull() for b in s.findChildren(QPushButton))

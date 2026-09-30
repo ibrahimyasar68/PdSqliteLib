@@ -5,6 +5,7 @@ from acodes.ortak import OrtakSekmeler
 from acodes.kitaplarim import Kitaplarim
 from acodes.ayarlar import Ayarlar
 from acodes.ana_sayfa import AnaSayfa, ana_sayfayi_yerlestir
+from acodes import ikonlar
 from database.dbframe import genel_ozet, son_eklenenler
 from database.odunc import gecikme_gunu, kalan_gun_yazi, tarih_yazi, teslim_tarihi, uye_odunc
 from acodes import tema
@@ -50,6 +51,12 @@ class Guest(OrtakSekmeler, QMainWindow):
             k[anahtar].tiklanabilir(lambda: self.QtLibrary.tabWidget.setCurrentWidget(self.kitaplarim),"Kitaplarım sekmesini aç")
         self.ana_sayfa_yenile()
         self.QtLibrary.tabWidget.currentChanged.connect(self.sekme_degisti)
+
+        ###  İkonlar  ###
+        ui=self.QtLibrary
+        ikonlar.butonlara_uygula(self)
+        ikonlar.sekmelere_uygula(ui.tabWidget,{ui.tab_1:"tab_1",ui.tab_2:"tab_2",ui.tab_4:"tab_4",ui.tab_5:"tab_5",
+                                               self.kitaplarim:"kitaplarim",self.ayarlar:"ayarlar"})
 
     def user_name(self,name):
         super().user_name(name)

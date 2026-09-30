@@ -2756,8 +2756,7 @@ class Ui_MainWindow(object):
         self.label_15.setText(_translate("MainWindow", "Sayfa"))
         self.label_30.setText(_translate("MainWindow", "Kayıt No"))
         self.label_16.setText(_translate("MainWindow", "Bulunacak Kitap Adı"))
-        self.pushButton_3_2_deg_kaydet.setText(_translate("MainWindow", "Değişikliği\n"
-"Kaydet"))
+        self.pushButton_3_2_deg_kaydet.setText(_translate("MainWindow", "Kaydet"))
         self.pushButton_3_2_iptal.setText(_translate("MainWindow", "İptal"))
         self.tabWidget_3.setTabText(self.tabWidget_3.indexOf(self.tab_3_2), _translate("MainWindow", "Kayıt Düzenleme"))
         self.pushButton_3_3_bul.setText(_translate("MainWindow", "Bul"))

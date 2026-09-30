@@ -10,6 +10,7 @@ from acodes.veri_duzeltme import VeriDuzeltme
 from acodes.ek_bilgi import EkBilgiler
 from acodes.aranabilir import aranabilir_yap, secili_veri
 from acodes.ana_sayfa import AnaSayfa, ana_sayfayi_yerlestir
+from acodes import ikonlar
 from acodes.ortak import OrtakSekmeler, FILTRELER, SECINIZ
 from acodes.tablo import satir_verisi, tablo_ayarla, tablo_basliklari, tabloya_yaz
 from database.dbframe import (df_book_id_list, df_book_find_by_id, df_user_id_list, df_user_find_by_id,
@@ -186,6 +187,11 @@ class Library(OrtakSekmeler, QMainWindow):
 
         # Sekme değişince listeler güncellensin (ör. Tab 1'den eklenen yeni üye)
         self.QtLibrary.tabWidget.currentChanged.connect(self.yenile)
+
+        ###  İkonlar  ###
+        ikonlar.butonlara_uygula(self)
+        ikonlar.sekmelere_uygula(ui.tabWidget,{ui.tab_1:"tab_1",ui.tab_2:"tab_2",ui.tab_3:"tab_3",ui.tab_4:"tab_4",
+                                               ui.tab_5:"tab_5",ui.tab_6:"tab_6",self.ayarlar:"ayarlar"})
 
     def yenile(self):
         ###  Kayıt/üye değişikliklerinden sonra açılır listeleri ve istatistikleri güncelleme  ###

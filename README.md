@@ -207,6 +207,7 @@ acodes/odunc_gecmisi.py       Kitap Verme > Ödünç Geçmişi sekmesi
 acodes/grafikler.py           İstatistik > Grafikler (veritabanından her seferinde çizilir)
 acodes/tablo.py               Tablo doldurma, Türkçe sıralama, satır vurgulama, boş tablo mesajı
 acodes/aranabilir.py          Yazdıkça süzülen açılır listeler
+acodes/ikonlar.py             Buton ve sekme ikonları (Qt ile çizilir, dosya gerektirmez)
 acodes/disa_aktar.py          Tabloları Excel / CSV olarak kaydetme
 acodes/veri_duzeltme.py       Kitap Kayıt > Veri Düzeltme sekmesi
 acodes/ek_bilgi.py            Kitap formlarındaki Ek Bilgiler kutusu, ISBN doğrulama

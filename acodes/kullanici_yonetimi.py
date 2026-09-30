@@ -8,7 +8,7 @@ from PyQt5.QtWidgets import (QAbstractItemView, QComboBox, QDialog, QDialogButto
                              QTableWidget, QVBoxLayout)
 from acodes.tablo import satir_verisi, tablo_ayarla, tabloya_yaz
 from bforms.onay import onay
-from acodes import tema
+from acodes import ikonlar, tema
 from acodes.user import mail_gecerli, sifre_hatasi, telefon_gecerli
 from database.dbbase import kullanici_guncelle, kullanici_sil, sifre_guncelle
 from database.dbframe import admin_sayisi, df_user_all, giris_kontrol, kullanici_odunc_sayisi
@@ -48,6 +48,7 @@ class SifreDegistir(QDialog):
         butonlar.accepted.connect(self.kaydet)
         butonlar.rejected.connect(self.reject)
         form.addRow(butonlar)
+        ikonlar.butonlara_uygula(self)
 
     def kaydet(self):
         if self.eski is not None and giris_kontrol(self.kullanici, self.eski.text()) is None:
@@ -93,6 +94,7 @@ class KullaniciDuzenle(QDialog):
         butonlar.accepted.connect(self.kaydet)
         butonlar.rejected.connect(self.reject)
         form.addRow(butonlar)
+        ikonlar.butonlara_uygula(self)
 
     def kaydet(self):
         adi_soyadi = self.adi_soyadi.text().strip()
@@ -151,6 +153,7 @@ class KullaniciYonetimi(QDialog):
         duzen = QVBoxLayout(self)
         duzen.addWidget(self.tablo)
         duzen.addLayout(butonlar)
+        ikonlar.butonlara_uygula(self)
         self.yukle()
 
     def yukle(self):
