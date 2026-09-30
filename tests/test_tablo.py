@@ -1,5 +1,4 @@
 ## Tablolarda sıralama, salt okunur hücreler ve çift tıklama testleri ##
-import datetime
 
 import pytest
 from PyQt5.QtCore import Qt
@@ -61,7 +60,7 @@ def test_basliga_tiklayinca_siralanir_ve_veri_satirla_tasinir(app):
 def test_tablolar_salt_okunur_ve_siralanabilir(app, uyarilar):
     lib = Library()
     q = lib.QtLibrary
-    for t in (q.tableWidget_2, lib.filtre.tablo, q.tableWidget_5_1_1, q.tableWidget_6_2, lib.gecmis.tablo):
+    for t in (q.tableWidget_2, lib.filtre.tablo, q.tableWidget_5_1_1, lib.odunc.tablo, lib.gecmis.tablo):
         assert t.isSortingEnabled()
         assert t.editTriggers() == QAbstractItemView.NoEditTriggers
     g = Guest()
@@ -106,32 +105,6 @@ def test_bos_satira_cift_tiklama_bir_sey_yapmaz(lib):
     assert q.tabWidget.currentWidget() is q.tab_1
 
 
-def test_disaridaki_kitaba_cift_tiklama_iade_ekranini_hazirlar(lib, db):
-    q = lib.QtLibrary
-    bugun = str(datetime.date.today())
-    db.execute("INSERT INTO follow VALUES ('4','6',?,'10:00','out','','')", (bugun,))
-    db.execute("INSERT INTO follow VALUES ('3','1',?,'10:00','out','','')", (bugun,))
-    db.commit()
-    lib.listele_6()
-    t = q.tableWidget_6_2
-    t.sortItems(0, Qt.AscendingOrder)               # sıralama sonrası da doğru kayıt açılmalı
-    satir = kolon(t, 0).index("Satranç")
-    lib.tablodan_iade(satir)
-    assert q.tabWidget_6.currentWidget() is q.tab_6_2
-    assert q.comboBox_6_2_1_liste_kisi.currentData() == 4 and q.lineEdit_6_2_adi.text() == "Satranç"
-    assert q.pushButton_6_2_islemi_kaydet.isEnabled()
-    lib.save_work2()
-    assert db.execute("SELECT status FROM follow WHERE bookId='6'").fetchone()[0] == "in"
-
-
-def test_silinmis_uyenin_oduncu_iade_ekranina_gitmez(lib, db):
-    db.execute("INSERT INTO follow VALUES ('999','1','2026-01-01','10:00','out','','')")
-    db.commit()
-    lib.listele_6()
-    lib.tablodan_iade(0)
-    assert "üye silinmiş" in lib.QtLibrary.statusbar.currentMessage()
-
-
 def test_kullanici_tablosu_siralaninca_dogru_kullanici_secilir(app, uyarilar):
     y = KullaniciYonetimi("admin")
     y.tablo.sortItems(0, Qt.DescendingOrder)
@@ -174,4 +147,4 @@ def test_panellerde_bos_tablo_mesajlari(lib, app):
     lib.arama.setText("tahir")
     app.processEvents()
     assert q.tableWidget_2.bos_durum.etiket.isHidden()
-    assert q.tableWidget_6_2.bos_durum.etiket.text() == "Şu an dışarıda kitap yok."
+    assert lib.odunc.tablo.bos_durum.etiket.text() == "Şu an dışarıda kitap yok."

@@ -8,34 +8,32 @@ from acodes import tema
 from acodes.odunc_gecmisi import OduncGecmisi
 from acodes.veri_duzeltme import VeriDuzeltme
 from acodes.kitap_ekrani import KitapEkrani
-from acodes.aranabilir import aranabilir_yap, secili_veri
+from acodes.odunc_ekrani import OduncEkrani
+from acodes.disa_aktar import disa_aktar, sag_tik_menusu
 from acodes.ana_sayfa import AnaSayfa, ana_sayfayi_yerlestir
 from acodes import bildirim, ikonlar
-from acodes.yerlesim import form_kutusu, islem_sayfasi, liste_sayfasi
 from acodes.ortak import OrtakSekmeler
-from acodes.filtre_paneli import SECINIZ
-from acodes.tablo import satir_verisi, tablo_ayarla, tablo_basliklari, tabloya_yaz
-from database.dbframe import (df_book_id_list, df_book_find_by_id, df_user_id_list, df_user_find_by_id,
-                              kopya_durumu, uyede_mi, df_work_user_list, df_work_perbook, df_work_table_book)
-from database.dbbase import save_work_to_db, update_work_to_db
+from acodes.tablo import satir_verisi
+from database.dbframe import df_book_find_by_id
 from database.yedek import geri_yukle, otomatik_yedekler, son_otomatik_yedek, yedek_al, yedek_hatasi, yedek_klasoru
 from database.dbbase import DB_YOLU
 from database.dbframe import genel_ozet
-from database.odunc import (ODUNC_SURESI_GUN, gecikme_gunu, geciken_sayisi, gun_sayisi, kalan_gun_yazi,
-                            odunc_verilis, tarih_yazi, teslim_tarihi, yaklasan_teslimler)
+from database.odunc import (ODUNC_SURESI_GUN, gecikme_gunu, geciken_sayisi, kalan_gun_yazi, tarih_yazi,
+                            teslim_tarihi, yaklasan_teslimler)
 from database.dbframe import son_eklenenler
 from PyQt5.QtCore import pyqtSignal
 import os
 import datetime
 
 
-def kitap_listesi(cmb):
-    """Açılır listeyi kitap id'leriyle doldurur. Aynı adlı kitaplara yayınevi ve yıl eklenir."""
-    kitaplar=df_book_id_list()
-    adlar=[adi for _,adi,_,_ in kitaplar]
-    cmb.addItem(SECINIZ)
-    for id,adi,yayinevi,yili in kitaplar:
-        cmb.addItem(f"{adi} ({yayinevi}, {yili})" if adlar.count(adi)>1 else adi, id)
+def eski_sekmeleri_degistir(sekmeler,eskiler,yeni,ad):
+    """.ui'daki eski alt sekmeleri siler, yerine kodla kurulan ekranı ilk sekme olarak koyar."""
+    for eski in eskiler:
+        sekmeler.removeTab(sekmeler.indexOf(eski))
+        eski.setParent(None)
+        eski.deleteLater()
+    sekmeler.insertTab(0,yeni,ad)
+    sekmeler.setCurrentIndex(0)
 
 
 ## Admin paneli: ortak sekmelere ek olarak Kitap Kayıt ve Kitap Verme sekmeleri
@@ -55,12 +53,6 @@ class Library(OrtakSekmeler, QMainWindow):
 
         ###  Property  #########
         self.dur_msj=2000
-        self.flag_book=False
-        self.flag_user=False
-        self.flag_book2=False
-        self.flag_user2=False
-        self.kisi_6_1=None
-        self.kisi_6_2=None
         self.aktif_kullanici=None
 
         ###  Tab_1, 2, 4, 5 (Guest ile ortak)  #########
@@ -68,36 +60,13 @@ class Library(OrtakSekmeler, QMainWindow):
         # Ana sayfa sade: işlem butonları Ayarlar sekmesinde, burada sadece Oturumu Kapat kalır
         self.QtLibrary.pushButton_1_yeni_kullanici.hide()
 
-        ###  Uzun açılır listeler yazdıkça süzülür  ###
+        ###  Kitap Verme: ödünç verme, iade alma ve dışarıdaki kitaplar tek ekranda (eski üç ekranın yerine)  ###
         ui=self.QtLibrary
-        for cmb,ipucu in ((ui.comboBox_6_1_1_liste_kitap,"Kitap adı yazarak arayın..."),
-                          (ui.comboBox_6_1_2_liste_kisi,"Üye adı yazarak arayın..."),
-                          (ui.comboBox_6_2_1_liste_kisi,"Üye adı yazarak arayın..."),
-                          (ui.comboBox_6_2_2_liste_kitap,"Kitap adı yazarak arayın...")):
-            aranabilir_yap(cmb,ipucu)
-
-
-        ###  Tab_6 Olaylar  #########
-        self.list_items_6_1_1()
-        self.QtLibrary.pushButton_6_1_1_bul_kitap.clicked.connect(self.find_item_6_1_1)
-        self.QtLibrary.pushButton_6_1_1_bul_kitap_temizle.clicked.connect(self.clear_form_6_1_1)
-        self.list_user_6_1_2 ()
-        self.QtLibrary.pushButton_6_1_2_bul_kisi.clicked.connect(self.find_user_6_1_2)
-        self.QtLibrary.pushButton_6_1_2_bul_kisi_temizle.clicked.connect(self.clear_form_6_1_2)
-        self.QtLibrary.pushButton_6_1_islemi_kaydet.clicked.connect(self.save_work)
-
-        self.list_user_6_2_1()
-        self.QtLibrary.pushButton_6_2_1_bul_kisi.clicked.connect(self.find_user_6_2_1)
-        self.QtLibrary.pushButton_6_2_1_bul_kisi_temizle.clicked.connect(self.clear_form_6_2_1)
-
-        self.QtLibrary.pushButton_6_2_2_bul_kitap.clicked.connect(self.find_item_6_2_2)
-        self.QtLibrary.pushButton_6_2_2_bul_kitap_temizle.clicked.connect(self.clear_form_6_2_2)
-        self.QtLibrary.pushButton_6_2_islemi_kaydet.clicked.connect(self.save_work2)
-
-        self.create_form_tab_6()
-        self.QtLibrary.pushButton_6_3_listele.clicked.connect(self.listele_6)
-        self.QtLibrary.pushButton_6_3_temizle.clicked.connect(self.temizle_6)
-
+        self.odunc=OduncEkrani(mesaj=lambda metin: self.QtLibrary.statusbar.showMessage(metin,8000),
+                               degisti=self.yenile)
+        eski_sekmeleri_degistir(ui.tabWidget_6,(ui.tab_6_1,ui.tab_6_2,ui.tab_6_3),self.odunc,"Ödünç ve İade")
+        self.odunc.btn_aktar.clicked.connect(lambda: disa_aktar(self,self.odunc.tablo,"Dışarıdaki Kitaplar"))
+        sag_tik_menusu(self,self.odunc.tablo,"Dışarıdaki Kitaplar")
         self.gecmis=OduncGecmisi()
         self.QtLibrary.tabWidget_6.addTab(self.gecmis,"Ödünç Geçmişi")
         self.QtLibrary.tabWidget_6.currentChanged.connect(self.odunc_sekmesi_degisti)
@@ -141,44 +110,20 @@ class Library(OrtakSekmeler, QMainWindow):
         l["yaklasan"].tablo.setToolTip("İade almak için çift tıklayın")
         self.ana_sayfa_yenile()
 
-        ###  Kitap Kayıt > Veri Düzeltme (sadece bu alt sekme açıkken yenilenir)  ###
-        ###  Kitap Kayıt: ekleme / düzenleme / silme tek ekranda (eski üç ekranın yerine)  ###
+        ###  Kitap Kayıt: ekleme / düzenleme / silme tek ekranda; Veri Düzeltme sadece açıkken yenilenir  ###
         ui=self.QtLibrary
-        for eski in (ui.tab_3_1,ui.tab_3_2,ui.tab_3_3):
-            ui.tabWidget_3.removeTab(ui.tabWidget_3.indexOf(eski))
         self.kitaplar=KitapEkrani(mesaj=lambda metin: self.QtLibrary.statusbar.showMessage(metin,self.dur_msj),
                                   degisti=self.yenile)
-        ui.tabWidget_3.insertTab(0,self.kitaplar,"Kitaplar")
-        ui.tabWidget_3.setCurrentIndex(0)
+        eski_sekmeleri_degistir(ui.tabWidget_3,(ui.tab_3_1,ui.tab_3_2,ui.tab_3_3),self.kitaplar,"Kitaplar")
         self.duzeltme=VeriDuzeltme(kitap_duzenle=self.kitap_duzenle, degisti=self.yenile)
         self.QtLibrary.tabWidget_3.addTab(self.duzeltme,"Veri Düzeltme")
         self.QtLibrary.tabWidget_3.currentChanged.connect(self.kayit_sekmesi_degisti)
 
-        ###  Çift tıklama: kitap satırı düzenleme ekranını, ödünç satırı iade ekranını açar  ###
+        ###  Çift tıklama: kitap satırı Kitap Kayıt ekranında açılır  ###
         ui=self.QtLibrary
         for tablo in (ui.tableWidget_2,self.filtre.tablo):
             tablo.setToolTip("Kitabı düzenlemek için satıra çift tıklayın")
             tablo.cellDoubleClicked.connect(lambda satir,_,t=tablo: self.tablodan_kitap_duzenle(t,satir))
-        tablo_ayarla(ui.tableWidget_6_2, bos_metin="Şu an dışarıda kitap yok.")
-        aktar_6_3=self.aktar_butonu(ui.tableWidget_6_2,"Dışarıdaki Kitaplar",ui.pushButton_6_3_temizle,(40,470,100,60))
-
-        ###  Kitap Verme esnek yerleşim: kitap ve üye kartları yan yana, alanlar pencereyle genişler  ###
-        islem_sayfasi(ui.tab_6_1,[
-            form_kutusu("Ödünç verilecek kitap",ui.comboBox_6_1_1_liste_kitap,
-                        [ui.pushButton_6_1_1_bul_kitap,ui.pushButton_6_1_1_bul_kitap_temizle],ui.formLayoutWidget_11,ui.label_47),
-            form_kutusu("Ödünç alacak üye",ui.comboBox_6_1_2_liste_kisi,
-                        [ui.pushButton_6_1_2_bul_kisi,ui.pushButton_6_1_2_bul_kisi_temizle],ui.formLayoutWidget_17,ui.label_78)],
-            ui.pushButton_6_1_islemi_kaydet)
-        islem_sayfasi(ui.tab_6_2,[
-            form_kutusu("İade edecek üye",ui.comboBox_6_2_1_liste_kisi,
-                        [ui.pushButton_6_2_1_bul_kisi,ui.pushButton_6_2_1_bul_kisi_temizle],ui.formLayoutWidget_18,ui.label_79),
-            form_kutusu("İade alınacak kitap",ui.comboBox_6_2_2_liste_kitap,
-                        [ui.pushButton_6_2_2_bul_kitap,ui.pushButton_6_2_2_bul_kitap_temizle],ui.formLayoutWidget_12,ui.label_57)],
-            ui.pushButton_6_2_islemi_kaydet)
-        ui.pushButton_3_3_Sil_2.hide()   # .ui'da tablonun arkasında kalmış, işlevsiz eski bir kopya
-        liste_sayfasi(ui.tab_6_3,[ui.pushButton_6_3_listele,ui.pushButton_6_3_temizle,aktar_6_3],ui.tableWidget_6_2)
-        ui.tableWidget_6_2.setToolTip("İade almak için satıra çift tıklayın")
-        ui.tableWidget_6_2.cellDoubleClicked.connect(lambda satir,_: self.tablodan_iade(satir))
 
         # Sekme değişince listeler güncellensin (ör. Tab 1'den eklenen yeni üye)
         self.QtLibrary.tabWidget.currentChanged.connect(self.yenile)
@@ -189,14 +134,11 @@ class Library(OrtakSekmeler, QMainWindow):
                                                ui.tab_5:"tab_5",ui.tab_6:"tab_6",self.ayarlar:"ayarlar"})
 
     def yenile(self):
-        ###  Kayıt/üye değişikliklerinden sonra açılır listeleri ve istatistikleri güncelleme  ###
+        ###  Kayıt/üye/ödünç değişikliklerinden sonra listeleri ve istatistikleri güncelleme  ###
         self.kitaplar.yenile()
-        for cmb in (self.QtLibrary.comboBox_6_1_1_liste_kitap, self.QtLibrary.comboBox_6_1_2_liste_kisi):
-            cmb.clear()
         self.filtre.yenile()
         self.create_tab_5()
-        self.list_items_6_1_1()
-        self.list_user_6_1_2()
+        self.odunc.yenile()
         self.gecmis.yenile()
         self.gecikme_bildir()
         self.ayarlar.yenile()
@@ -224,7 +166,7 @@ class Library(OrtakSekmeler, QMainWindow):
 
     def disaridakileri_goster(self):
         self.QtLibrary.tabWidget.setCurrentWidget(self.QtLibrary.tab_6)
-        self.QtLibrary.tabWidget_6.setCurrentWidget(self.QtLibrary.tab_6_3)
+        self.QtLibrary.tabWidget_6.setCurrentWidget(self.odunc)
 
     def gecikme_bildir(self):
         ###  Teslim süresi geçen kitap varsa Kitap Verme sekmesinin adında göster  ###
@@ -233,7 +175,7 @@ class Library(OrtakSekmeler, QMainWindow):
         self.QtLibrary.tabWidget.setTabText(sekme, f"Kitap Verme ({sayi} gecikmiş)" if sayi else "Kitap Verme")
         if sayi:
             self.QtLibrary.statusbar.showMessage(
-                f"Teslim süresi ({ODUNC_SURESI_GUN} gün) geçmiş {sayi} kitap var. Kitap Verme > Dışarıdaki Kitaplar", 10000)
+                f"Teslim süresi ({ODUNC_SURESI_GUN} gün) geçmiş {sayi} kitap var. Kitap Verme > Ödünç ve İade", 10000)
         return sayi
 
     def kayit_sekmesi_degisti(self):
@@ -243,8 +185,8 @@ class Library(OrtakSekmeler, QMainWindow):
     def odunc_sekmesi_degisti(self):
         ###  Dışarıdaki kitaplar ve geçmiş sekmesi açılınca güncel hali göster  ###
         sayfa=self.QtLibrary.tabWidget_6.currentWidget()
-        if sayfa is self.QtLibrary.tab_6_3:
-            self.listele_6()
+        if sayfa is self.odunc:
+            self.odunc.yenile()
         elif sayfa is self.gecmis:
             self.gecmis.yenile()
 
@@ -263,29 +205,10 @@ class Library(OrtakSekmeler, QMainWindow):
             return
         self.kitaplar.sec(kitap_id)
 
-    def tablodan_iade(self,satir):
-        idler=satir_verisi(self.QtLibrary.tableWidget_6_2,satir)
-        if idler:
-            self.iade_ekrani(*idler)
-
     def iade_ekrani(self,user_id,book_id):
-        ###  Kitap Verme > Alma Kaydı ekranını bu üye ve kitap seçili olarak aç  ###
-        q=self.QtLibrary
-        q.tabWidget_6.setCurrentWidget(q.tab_6_2)
-        self.clear_form_6_2_1()
-        sayi=lambda x: int(x) if str(x).isdigit() else -1
-        i=q.comboBox_6_2_1_liste_kisi.findData(sayi(user_id))
-        if i<0:
-            q.statusbar.showMessage("Bu ödüncü alan üye silinmiş; iade ekranından seçilemez.",self.dur_msj)
-            return
-        q.comboBox_6_2_1_liste_kisi.setCurrentIndex(i)
-        self.find_user_6_2_1()
-        j=q.comboBox_6_2_2_liste_kitap.findData(sayi(book_id))
-        if j<0:
-            q.statusbar.showMessage("Bu kitap silinmiş; iade ekranından seçilemez.",self.dur_msj)
-            return
-        q.comboBox_6_2_2_liste_kitap.setCurrentIndex(j)
-        self.find_item_6_2_2()
+        ###  Kitap Verme > Ödünç ve İade ekranını bu ödünç seçili olarak aç  ###
+        self.disaridakileri_goster()
+        self.odunc.sec(user_id,book_id)
 
     ##################################
     #####   Tab_1 Fonksiyonlar   #####
@@ -334,259 +257,7 @@ class Library(OrtakSekmeler, QMainWindow):
             return
         onceki=geri_yukle(yol)
         self.yenile()
-        self.clear_form_6_2_1()
         QMessageBox.information(self,"Bilgi",f"Yedek geri yüklendi.\n\nÖnceki hal şuraya yedeklendi:\n{onceki}")
-
-    ##################################
-    #####   Tab_6 Fonksiyonlar   #####
-    ##################################
-
-### Tablo 1 İşlemleri  ###
-
-    def list_items_6_1_1 (self):
-        kitap_listesi(self.QtLibrary.comboBox_6_1_1_liste_kitap)
-
-    def find_item_6_1_1(self):
-        id=secili_veri(self.QtLibrary.comboBox_6_1_1_liste_kitap)
-        if id is None:
-            self.QtLibrary.statusbar.showMessage("Seçim yapınız",self.dur_msj)
-            return
-        kopya,disarida=kopya_durumu(id)
-        if disarida>=kopya:
-            QMessageBox.information(self,"Uyarı!","Bu kitap başka bir üyededir!" if kopya==1 else
-                                    f"Bu kitabın {kopya} kopyasının hepsi üyelerde!")
-        else:
-            self.show_items_6_1_1(df_book_find_by_id(id))
-            if kopya>1:
-                self.QtLibrary.statusbar.showMessage(f"Müsait kopya: {kopya-disarida} / {kopya}",8000)
-
-    def show_items_6_1_1(self,kyt):
-        kayit=kyt
-        self.QtLibrary.lineEdit_6_1_id.setText(str(kayit[0]))
-        self.QtLibrary.lineEdit_6_1_adi.setText(kayit[1])
-        self.QtLibrary.lineEdit_6_1_yazari.setText(kayit[2])
-        self.QtLibrary.lineEdit_6_1_ceviren.setText(kayit[3])
-        self.QtLibrary.lineEdit_6_1_turu.setText(kayit[4])
-        self.QtLibrary.lineEdit_6_1_yayinevi.setText(kayit[5])
-        self.QtLibrary.lineEdit_6_1_yili.setText(kayit[6])
-        self.QtLibrary.lineEdit_6_1_sayfa.setText(kayit[7])
-        self.flag_book=True
-        self.check_bottom()
-        self.QtLibrary.pushButton_6_1_1_bul_kitap_temizle.setEnabled(True)
-        self.QtLibrary.statusbar.showMessage(f"{self.QtLibrary.comboBox_6_1_1_liste_kitap.currentText()} bilgileri yazıldı.",self.dur_msj)
-
-    def clear_form_6_1_1(self):
-        self.QtLibrary.lineEdit_6_1_id.clear()
-        self.QtLibrary.lineEdit_6_1_ceviren.clear()
-        self.QtLibrary.lineEdit_6_1_yazari.clear()
-        self.QtLibrary.lineEdit_6_1_adi.clear()
-        self.QtLibrary.lineEdit_6_1_turu.clear()
-        self.QtLibrary.lineEdit_6_1_yayinevi.clear()
-        self.QtLibrary.lineEdit_6_1_yili.clear()
-        self.QtLibrary.lineEdit_6_1_sayfa.clear()
-        self.flag_book=False
-        self.QtLibrary.pushButton_6_1_islemi_kaydet.setEnabled(False)
-        self.QtLibrary.pushButton_6_1_1_bul_kitap_temizle.setEnabled(False)
-        self.QtLibrary.comboBox_6_1_1_liste_kitap.setCurrentIndex(0)
-
-    def list_user_6_1_2 (self):
-        # Aynı isimde iki üye olabileceği için her satırda kullanıcı id'si saklanır
-        self.QtLibrary.comboBox_6_1_2_liste_kisi.addItem(SECINIZ)
-        for id,adi,kullanici in df_user_id_list():
-            self.QtLibrary.comboBox_6_1_2_liste_kisi.addItem(f"{adi} ({kullanici})",id)
-
-    def find_user_6_1_2(self):
-        id=secili_veri(self.QtLibrary.comboBox_6_1_2_liste_kisi)
-        if id is None:
-            self.QtLibrary.statusbar.showMessage("Seçim yapınız",self.dur_msj)
-        else:
-            kyt=df_user_find_by_id(id)
-            self.show_user_6_1_2(kyt)
-
-    def show_user_6_1_2(self,kyt):
-        kayit=kyt
-        self.kisi_6_1=kayit[0]
-        self.QtLibrary.lineEdit_6_1_kullanici.setText(kayit[1])
-        self.QtLibrary.lineEdit_6_1_adi_soyadi.setText(kayit[3])
-        self.QtLibrary.lineEdit_6_1_telefon.setText(kayit[4])
-        self.QtLibrary.lineEdit_6_1_mail.setText(kayit[5])
-        self.QtLibrary.lineEdit_6_1_yetki.setText(kayit[6])
-        self.flag_user=True
-        self.check_bottom()
-        self.QtLibrary.pushButton_6_1_2_bul_kisi_temizle.setEnabled(True)
-        self.QtLibrary.statusbar.showMessage(f"{self.QtLibrary.comboBox_6_1_2_liste_kisi.currentText()} bilgileri yazıldı.",self.dur_msj)
-
-    def clear_form_6_1_2(self):
-        self.QtLibrary.lineEdit_6_1_kullanici.clear()
-        self.QtLibrary.lineEdit_6_1_adi_soyadi.clear()
-        self.QtLibrary.lineEdit_6_1_telefon.clear()
-        self.QtLibrary.lineEdit_6_1_mail.clear()
-        self.QtLibrary.lineEdit_6_1_yetki.clear()
-        self.kisi_6_1=None
-        self.flag_user=False
-        self.QtLibrary.pushButton_6_1_islemi_kaydet.setEnabled(False)
-        self.QtLibrary.pushButton_6_1_2_bul_kisi_temizle.setEnabled(False)
-        self.QtLibrary.comboBox_6_1_2_liste_kisi.setCurrentIndex(0)
-
-    def check_bottom(self):
-        self.QtLibrary.pushButton_6_1_islemi_kaydet.setEnabled(self.flag_book and self.flag_user)
-
-    def save_work(self):
-        if self.flag_book and self.flag_user and uyede_mi(self.kisi_6_1,self.QtLibrary.lineEdit_6_1_id.text()):
-            QMessageBox.information(self,"Uyarı!","Bu kitabın bir kopyası zaten bu üyede. Önce iade alın.")
-        elif self.flag_book and self.flag_user:
-            cvb=onay("İşlemi kaydetmek istiyor musunuz?")
-            if cvb==QMessageBox.Yes:
-                tdy=datetime.datetime.today()
-                kayit=[str(self.kisi_6_1),
-                        self.QtLibrary.lineEdit_6_1_id.text(),
-                        tdy.date(), datetime.datetime.strftime(tdy, '%X '),"out","",""]
-                save_work_to_db(kayit)
-                self.QtLibrary.statusbar.showMessage(
-                    f"İşlem kaydedildi. Teslim tarihi: {tarih_yazi(teslim_tarihi(tdy.date()))}",8000)
-                self.clear_form_6_1_1()
-                self.clear_form_6_1_2()
-                self.clear_form_6_2_1()  # İade listesi yeni kaydı göstersin
-                self.gecikme_bildir()
-        else:
-            self.QtLibrary.statusbar.showMessage("Kayıtta eksik var. Kontrol edin.",self.dur_msj)
-
-### Tablo 2 İşlemleri  ###
-
-    def list_user_6_2_1 (self):
-        self.QtLibrary.comboBox_6_2_1_liste_kisi.clear()
-        self.QtLibrary.comboBox_6_2_1_liste_kisi.addItem(SECINIZ)
-        for id,adi,kullanici in df_work_user_list():
-            self.QtLibrary.comboBox_6_2_1_liste_kisi.addItem(f"{adi} ({kullanici})",id)
-
-    def find_user_6_2_1(self):
-        id=secili_veri(self.QtLibrary.comboBox_6_2_1_liste_kisi)
-        if id is None:
-            self.QtLibrary.statusbar.showMessage("Seçim yapınız",self.dur_msj)
-        else:
-            kyt=df_user_find_by_id(id)
-            self.show_user_6_2_1(kyt)
-            self.QtLibrary.comboBox_6_2_2_liste_kitap.clear()
-            self.QtLibrary.comboBox_6_2_2_liste_kitap.addItem(SECINIZ)
-            for kitap_id,adi in df_work_perbook(id):
-                self.QtLibrary.comboBox_6_2_2_liste_kitap.addItem(adi,kitap_id)
-            self.QtLibrary.comboBox_6_2_2_liste_kitap.setEnabled(True)
-            self.QtLibrary.pushButton_6_2_2_bul_kitap.setEnabled(True)
-
-    def show_user_6_2_1(self,kyt):
-        kayit=kyt
-        self.kisi_6_2=kayit[0]
-        self.QtLibrary.lineEdit_6_2_kullanici.setText(kayit[1])
-        self.QtLibrary.lineEdit_6_2_adi_soyadi.setText(kayit[3])
-        self.QtLibrary.lineEdit_6_2_telefon.setText(kayit[4])
-        self.QtLibrary.lineEdit_6_2_mail.setText(kayit[5])
-        self.QtLibrary.lineEdit_6_2_yetki.setText(kayit[6])
-        self.flag_user2=True
-        self.check_bottom2()
-        self.QtLibrary.pushButton_6_2_1_bul_kisi_temizle.setEnabled(True)
-        self.QtLibrary.statusbar.showMessage(f"{self.QtLibrary.comboBox_6_2_1_liste_kisi.currentText()} bilgileri yazıldı.",self.dur_msj)
-
-    def clear_form_6_2_1(self):
-        self.QtLibrary.lineEdit_6_2_kullanici.clear()
-        self.QtLibrary.lineEdit_6_2_adi_soyadi.clear()
-        self.QtLibrary.lineEdit_6_2_telefon.clear()
-        self.QtLibrary.lineEdit_6_2_mail.clear()
-        self.QtLibrary.lineEdit_6_2_yetki.clear()
-        self.kisi_6_2=None
-        self.flag_user2=False
-        self.QtLibrary.pushButton_6_2_islemi_kaydet.setEnabled(False)
-        self.QtLibrary.pushButton_6_2_1_bul_kisi_temizle.setEnabled(False)
-        self.list_user_6_2_1()
-        self.QtLibrary.comboBox_6_2_2_liste_kitap.setEnabled(False)
-        self.QtLibrary.comboBox_6_2_2_liste_kitap.clear()
-        self.QtLibrary.pushButton_6_2_2_bul_kitap.setEnabled(False)
-        self.clear_form_6_2_2()
-
-    def find_item_6_2_2(self):
-        kitap_id=secili_veri(self.QtLibrary.comboBox_6_2_2_liste_kitap)
-        if kitap_id is None:
-            self.QtLibrary.statusbar.showMessage("Seçim yapınız",self.dur_msj)
-        else:
-            self.show_items_6_2_2(df_book_find_by_id(kitap_id))
-
-    def show_items_6_2_2(self,kyt):
-        kayit=kyt
-        self.QtLibrary.lineEdit_6_2_id.setText(str(kayit[0]))
-        self.QtLibrary.lineEdit_6_2_adi.setText(kayit[1])
-        self.QtLibrary.lineEdit_6_2_yazari.setText(kayit[2])
-        self.QtLibrary.lineEdit_6_2_ceviren.setText(kayit[3])
-        self.QtLibrary.lineEdit_6_2_turu.setText(kayit[4])
-        self.QtLibrary.lineEdit_6_2_yayinevi.setText(kayit[5])
-        self.QtLibrary.lineEdit_6_2_yili.setText(kayit[6])
-        self.QtLibrary.lineEdit_6_2_sayfa.setText(kayit[7])
-        self.flag_book2=True
-        self.check_bottom2()
-        self.QtLibrary.pushButton_6_2_2_bul_kitap_temizle.setEnabled(True)
-        verilis=odunc_verilis(self.kisi_6_2,kayit[0])
-        bilgi=f"Veriliş: {tarih_yazi(verilis)}, teslim: {tarih_yazi(teslim_tarihi(verilis))}"
-        gecikme=gecikme_gunu(verilis)
-        self.QtLibrary.statusbar.showMessage(f"{bilgi} ({gecikme} gün gecikti)" if gecikme else bilgi, 10000)
-
-    def clear_form_6_2_2(self):
-        self.QtLibrary.lineEdit_6_2_id.clear()
-        self.QtLibrary.lineEdit_6_2_ceviren.clear()
-        self.QtLibrary.lineEdit_6_2_yazari.clear()
-        self.QtLibrary.lineEdit_6_2_adi.clear()
-        self.QtLibrary.lineEdit_6_2_turu.clear()
-        self.QtLibrary.lineEdit_6_2_yayinevi.clear()
-        self.QtLibrary.lineEdit_6_2_yili.clear()
-        self.QtLibrary.lineEdit_6_2_sayfa.clear()
-        self.flag_book2=False
-        self.QtLibrary.pushButton_6_2_islemi_kaydet.setEnabled(False)
-        self.QtLibrary.pushButton_6_2_2_bul_kitap_temizle.setEnabled(False)
-        self.QtLibrary.comboBox_6_2_2_liste_kitap.setCurrentIndex(0)
-
-    def check_bottom2(self):
-        self.QtLibrary.pushButton_6_2_islemi_kaydet.setEnabled(self.flag_book2 and self.flag_user2)
-
-    def save_work2(self):
-        if self.flag_book2 and self.flag_user2:
-            cvb=onay("İşlemi kaydetmek istiyor musunuz?")
-            if cvb==QMessageBox.Yes:
-                tdy=datetime.datetime.today()
-                kayit=[str(self.kisi_6_2),
-                        self.QtLibrary.lineEdit_6_2_id.text(),"","","in",
-                        tdy.date(), datetime.datetime.strftime(tdy, '%X ')]
-                update_work_to_db(kayit)
-                self.QtLibrary.statusbar.showMessage("İşlem kaydedildi.",self.dur_msj)
-                self.clear_form_6_2_1()
-                self.gecikme_bildir()
-        else:
-            self.QtLibrary.statusbar.showMessage("Kayıtta eksik var. Kontrol edin.",self.dur_msj)
-
-### Tablo 3 İşlemleri  ###
-
-    def create_form_tab_6(self):
-        self.QtLibrary.tableWidget_6_2.setColumnCount(9)
-        self.QtLibrary.tableWidget_6_2.setRowCount(1)
-        tablo_basliklari(self.QtLibrary.tableWidget_6_2,
-                         [(190,"Kitap Adı"),(160,"Yazarı"),(90,"Türü"),(160,"Alan Kişi"),(110,"Telefon"),
-                          (160,"Mail"),(95,"Aldığı Tarih"),(95,"Teslim Tarihi"),(45,"Gün")])
-
-    def listele_6(self):
-        ###  En eski ödünç en üstte; teslim süresi geçenler kırmızı  ###
-        satirlar,idler,gecikenler=[],[],set()
-        for r,(kitap,yazar,tur,kisi,telefon,mail,verilis,user_id,book_id) in enumerate(df_work_table_book()):
-            gun=gun_sayisi(verilis)
-            satirlar.append([kitap,yazar,tur,kisi,telefon,mail,tarih_yazi(verilis),
-                             tarih_yazi(teslim_tarihi(verilis)),"" if gun is None else gun])
-            idler.append((user_id,book_id))
-            if gecikme_gunu(verilis):
-                gecikenler.add(r)
-        tabloya_yaz(self.QtLibrary.tableWidget_6_2, satirlar, vurgulu=gecikenler, veri=idler)
-        gecikmis=len(gecikenler)
-        mesaj=f"Dışarıda {len(satirlar)} kitap var"
-        self.QtLibrary.statusbar.showMessage(f"{mesaj}, {gecikmis} tanesinin teslim süresi geçmiş." if gecikmis else mesaj+".",self.dur_msj)
-
-    def temizle_6(self):
-        self.QtLibrary.tableWidget_6_2.clear()
-        self.create_form_tab_6()
-        self.QtLibrary.statusbar.showMessage("Liste temizlendi.",self.dur_msj)
 
 # Uygulamanın sürekli çalışması
 if __name__=="__main__":

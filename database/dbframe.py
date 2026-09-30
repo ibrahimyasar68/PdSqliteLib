@@ -150,18 +150,6 @@ def giris_kontrol(name,paw):
 def kitap_oduncte(book_id):
     return baglantı.execute("SELECT COUNT(*) FROM follow WHERE bookId=? AND status='out'",(str(book_id),)).fetchone()[0]>0
 
-## İade ekranı için kitap alan kullanıcıların (id, adı soyadı, kullanıcı adı) listesi
-def df_work_user_list():
-    return baglantı.execute("""SELECT DISTINCT u.id, u.adi_soyadi, u.kullanici FROM follow f
-                               JOIN users u ON u.id=f.userId
-                               WHERE f.status='out' ORDER BY u.adi_soyadi""").fetchall()
-
-## Kullanıcıdaki kitapların (id, adı) listesi
-def df_work_perbook(id):
-    return baglantı.execute("""SELECT k.Id, k.Adi FROM follow f
-                               JOIN kayitlistesi k ON k.Id=f.bookId
-                               WHERE f.status='out' AND f.userId=? ORDER BY k.Adi""",(str(id),)).fetchall()
-
 ## Kitabın tüm bilgileri: Id, Adi, Yazari, Ceviren, Turu, Yayinevi, Yili, Sayfa, ISBN, Kopya, Raf, Notlar
 def df_book_find_by_id(id):
     return list(baglantı.execute(f"SELECT {TUM_KOLONLAR} FROM kayitlistesi WHERE Id=?",(id,)).fetchone())

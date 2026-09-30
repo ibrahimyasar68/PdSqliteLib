@@ -3,8 +3,8 @@ from conftest import ADMIN_SIFRE, ESKI_SIFRE
 from database.dbbase import (degistir_kayit, ekle_kayit, save_work_to_db, sifre_dogrula,
                              sifre_hashle, update_work_to_db, user_ekle)
 from database.dbframe import (df_all_list, df_book_id_list, df_sort_list,
-                              df_user_query, df_work_perbook, df_work_table_book,
-                              df_work_user_list, giris_kontrol, kitap_filtrele, kitap_oduncte, rapor)
+                              df_user_query, df_work_table_book,
+                              giris_kontrol, kitap_filtrele, kitap_oduncte, rapor)
 
 
 def odunc_ver(user_id, book_id, tarih="2026-01-01"):
@@ -94,11 +94,9 @@ def test_istatistik_sayilari():
 def test_odunc_ve_iade(db):
     odunc_ver(3, 1)
     assert kitap_oduncte(1)
-    assert [k[0] for k in df_work_perbook(3)] == [1]
-    assert [u[0] for u in df_work_user_list()] == [3]
+    assert [s[7:] for s in df_work_table_book()] == [["3", "1"]]
     iade_al(3, 1)
-    assert not kitap_oduncte(1)
-    assert df_work_user_list() == []
+    assert not kitap_oduncte(1) and df_work_table_book() == []
 
 
 def test_iade_gecmis_kayitlari_bozmaz(db):

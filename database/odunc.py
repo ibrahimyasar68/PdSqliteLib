@@ -51,13 +51,6 @@ def geciken_sayisi(bugun=None):
     return sum(1 for (verilis,) in satirlar if gecikme_gunu(verilis, bugun=bugun) > 0)
 
 
-## Üyedeki kitabın veriliş tarihi (iade ekranında gecikmeyi göstermek için)
-def odunc_verilis(user_id, book_id):
-    satir = baglantı.execute("SELECT outdate FROM follow WHERE userId=? AND bookId=? AND status='out'",
-                             (str(user_id), str(book_id))).fetchone()
-    return satir[0] if satir else None
-
-
 ## Ödünç geçmişi: (kitap, üye, veriliş, durum, iade) — en yeni en üstte
 def odunc_gecmisi(user_id=None, book_id=None):
     kosullar, parametreler = [], []
@@ -122,3 +115,9 @@ def odunc_alan_uyeler():
 def odunc_verilen_kitaplar():
     return baglantı.execute("""SELECT DISTINCT k.Id, k.Adi, k.Yayinevi, k.Yili FROM follow f
                                JOIN kayitlistesi k ON k.Id=f.bookId ORDER BY k.Adi, k.Yili""").fetchall()
+
+
+## Ödünç verirken üye bilgisi: elindeki kitap sayısı ve bunlardan kaçının teslim süresi geçmiş
+def uye_durumu(user_id, bugun=None):
+    satirlar = baglantı.execute("SELECT outdate FROM follow WHERE userId=? AND status='out'", (str(user_id),)).fetchall()
+    return len(satirlar), sum(1 for (verilis,) in satirlar if gecikme_gunu(verilis, bugun=bugun) > 0)

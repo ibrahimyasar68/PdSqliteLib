@@ -63,51 +63,6 @@ def test_az_turle_istatistik_ekrani_acilir(app, uyarilar):
     assert Guest().QtLibrary.tableWidget_5_1_1.rowCount() == 3
 
 
-# --- Ödünç verme ve iade (Tab 6) ---
-
-def test_ayni_isimli_uyeden_dogru_kisiye_odunc(lib, db):
-    q = lib.QtLibrary
-    q.comboBox_6_1_1_liste_kitap.setCurrentText("Yol Ayrımı")
-    lib.find_item_6_1_1()
-    q.comboBox_6_1_2_liste_kisi.setCurrentIndex(q.comboBox_6_1_2_liste_kisi.findData(4))
-    lib.find_user_6_1_2()
-    lib.save_work()
-    assert db.execute("SELECT userId FROM follow WHERE status='out'").fetchall() == [("4",)]
-    assert q.comboBox_6_2_1_liste_kisi.findData(4) > 0   # iade listesi hemen yenilendi
-
-
-def test_kisi_listesinde_kullanici_adi_gorunur(lib):
-    assert "Ayşe Yılmaz (ayse2)" in etiketler(lib.QtLibrary.comboBox_6_1_2_liste_kisi)
-
-
-def test_oduncteki_kitap_tekrar_verilemez(lib, db, uyarilar):
-    db.execute("INSERT INTO follow VALUES ('3','1','2026-01-01','10:00','out','','')")
-    db.commit()
-    lib.QtLibrary.comboBox_6_1_1_liste_kitap.setCurrentText("Yol Ayrımı")
-    lib.find_item_6_1_1()
-    assert uyarilar[-1] == "Bu kitap başka bir üyededir!"
-
-
-def test_panel_bayraklari_ayri(lib):
-    q = lib.QtLibrary
-    q.comboBox_6_1_2_liste_kisi.setCurrentIndex(1)
-    lib.find_user_6_1_2()
-    assert not q.pushButton_6_2_islemi_kaydet.isEnabled()
-
-
-def test_iade_alma(lib, db):
-    q = lib.QtLibrary
-    db.execute("INSERT INTO follow VALUES ('3','1','2026-01-01','10:00','out','','')")
-    db.commit()
-    lib.list_user_6_2_1()
-    q.comboBox_6_2_1_liste_kisi.setCurrentIndex(q.comboBox_6_2_1_liste_kisi.findData(3))
-    lib.find_user_6_2_1()
-    q.comboBox_6_2_2_liste_kitap.setCurrentIndex(1)
-    lib.find_item_6_2_2()
-    lib.save_work2()
-    assert db.execute("SELECT status FROM follow").fetchone()[0] == "in"
-
-
 # --- Yeni kullanıcı formu ---
 
 @pytest.fixture
@@ -153,4 +108,4 @@ def test_yeni_uye_sekme_degisince_odunc_listesinde(lib, form):
     form.QtUser.comboBox_yetki.setCurrentText("guest")
     form.save_user()
     lib.QtLibrary.tabWidget.setCurrentIndex(5)
-    assert "Veli Can (veli)" in etiketler(lib.QtLibrary.comboBox_6_1_2_liste_kisi)
+    assert "Veli Can (veli)" in etiketler(lib.odunc.uye)

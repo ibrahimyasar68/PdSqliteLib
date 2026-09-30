@@ -69,9 +69,7 @@ def test_seciniz_secenegi_veri_vermez(cmb):
 
 def test_panelde_aranabilir_listeler(app, uyarilar):
     lib = Library()
-    q = lib.QtLibrary
-    for c in (q.comboBox_6_1_1_liste_kitap,
-              q.comboBox_6_1_2_liste_kisi, q.comboBox_6_2_1_liste_kisi, lib.filtre.combo["Yazari"]):
+    for c in (lib.odunc.kitap, lib.odunc.uye, lib.filtre.combo["Yazari"]):
         assert c.isEditable() and c.completer() is not None
 
 

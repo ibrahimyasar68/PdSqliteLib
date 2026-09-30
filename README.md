@@ -15,7 +15,7 @@ Giriş ekranında kullanıcının yetkisine göre iki farklı panel açılır:
 | **Kitap Kayıt**: tek ekranda ekleme, güncelleme, silme; veri düzeltme | ✓ | |
 | **Filtre**: tür, yazar, yayınevi ve yıl tek panelde, çoklu seçim | ✓ | ✓ |
 | **İstatistik**: çizelgeler ve güncel grafikler (tür, yazar, yayınevi, basım yılı) | ✓ | ✓ |
-| **Kitap Verme**: ödünç verme, iade alma, dışarıdaki kitaplar, ödünç geçmişi | ✓ | |
+| **Kitap Verme**: ödünç verme, iade alma ve dışarıdaki kitaplar tek ekranda; ödünç geçmişi | ✓ | |
 | **Kitaplarım**: üyenin elindeki kitaplar (teslim tarihi, kalan gün) ve geçmişi | | ✓ |
 | **Ayarlar**: kullanıcılar, yedekleme, kütüphane bilgileri / hesap bilgileri ve şifre | ✓ | ✓ (Hesabım) |
 
@@ -52,7 +52,7 @@ seçimi kaldırır. Aynı ölçütteki seçimlerden **biri**, farklı ölçütle
 
 Kitap Verme'deki kitap/üye seçimleri ile Filtre'deki tür, yazar, yayınevi ve yıl
 listelerine yazdıkça liste süzülür ("iklim" → iki "İklimler" baskısı); büyük/küçük harf ve Türkçe
-karakter farkı gözetilmez. Tam adı yazıp **Bul**'a basmak da yeterlidir.
+karakter farkı gözetilmez.
 
 ### Tablolar
 
@@ -61,8 +61,8 @@ karakter farkı gözetilmez. Tam adı yazıp **Bul**'a basmak da yeterlidir.
 - Hücreler salt okunurdur; değişiklikler ilgili düzenleme ekranlarından yapılır.
 - Admin panelinde **Kitap Listesi** veya **Filtre** sonuçlarında bir satıra çift tıklamak kitabı
   **Kitap Kayıt → Kitaplar** ekranında açar.
-- **Dışarıdaki Kitaplar**'da bir satıra çift tıklamak **Alma Kaydı** ekranını üye ve kitap seçili
-  olarak açar; sadece Kaydet'e basmak kalır.
+- Ana sayfadaki teslimi yaklaşan bir kitaba çift tıklamak **Kitap Verme → Ödünç ve İade** ekranını
+  o ödünç seçili olarak açar; sadece **İade Al**'a basmak kalır.
 
 ### Ek bilgiler: ISBN, kopya sayısı, raf yeri, notlar
 
@@ -89,7 +89,7 @@ kolonları görünür, arama bu alanlarda ve notlarda da yapılır.
 
 ### Dışa aktarma (Excel / CSV)
 
-Kitap Listesi, Filtre sonuçları, Dışarıdaki Kitaplar ve Ödünç Geçmişi'nde **Dışa Aktar** butonu vardır;
+Kitap Listesi, Filtre sonuçları, dışarıdaki kitaplar ve Ödünç Geçmişi'nde **Dışa Aktar** butonu vardır;
 tüm tablolarda (İstatistik çizelgeleri dahil) sağ tıklayarak da aktarılabilir. Tablo ekranda nasıl
 görünüyorsa (arama, filtre, sıralama) öyle kaydedilir.
 
@@ -101,8 +101,14 @@ görünüyorsa (arama, filtre, sıralama) öyle kaydedilir.
 
 - Ödünç süresi **15 gündür** (`database/odunc.py` içindeki `ODUNC_SURESI_GUN`). Teslim tarihi veriliş
   tarihinden hesaplanır; eski kayıtlar için de geçerlidir.
-- Kitap verilirken teslim tarihi, iade alınırken gecikme varsa kaç gün geciktiği gösterilir.
-- **Dışarıdaki Kitaplar**: teslim tarihi ve kaç gündür dışarıda olduğu; süresi geçenler kırmızı.
+- **Kitap Verme → Ödünç ve İade** ekranı tek yerde:
+  - Solda dışarıdaki kitaplar: veriliş ve teslim tarihi, kalan veya geciken gün; süresi geçenler kırmızı.
+    Kitap, yazar veya üye adıyla aranabilir.
+  - **Ödünç ver** kartı: kitap ve üye seçilince bilgileri kendiliğinden gelir. Müsait kopya sayısı,
+    üyenin elindeki ve geciken kitapları ile teslim tarihi gösterilir. Kitabın müsait kopyası yoksa
+    veya üyede zaten varsa **Ödünç Ver** kapalı kalır ve nedeni yazılır.
+  - **İade al** kartı: listeden seçilen ödüncün bilgileri ve gecikmesi; **İade Al** ile kapatılır.
+    Silinmiş bir üyenin ödüncü de iade alınabilir.
 - Süresi geçmiş kitap varsa sekme adı **Kitap Verme (N gecikmiş)** olur ve panel açılırken uyarı verilir.
 - **Ödünç Geçmişi**: tüm ödünç kayıtları; üye, kitap ve duruma (dışarıda / gecikmiş / iade edildi) göre süzülür.
 - Üyeler kendi panellerindeki **Kitaplarım** sekmesinde elindeki kitapları, teslim tarihini ve kalan
@@ -219,6 +225,7 @@ acodes/              Pencerelerin iş mantığı (login, library, guest, user)
 acodes/ortak.py      Admin ve Guest panellerinde ortak sekmeler (liste, filtre, istatistik)
 acodes/tema.py       Tek renk teması (renkler burada; .ui dosyalarındaki renkler açılışta silinir)
 acodes/kullanici_yonetimi.py  Kullanıcı yönetimi ve şifre değiştirme pencereleri
+acodes/odunc_ekrani.py        Kitap Verme > Ödünç ve İade (ödünç verme, iade, dışarıdakiler tek ekranda)
 acodes/odunc_gecmisi.py       Kitap Verme > Ödünç Geçmişi sekmesi
 acodes/grafikler.py           İstatistik > Grafikler (veritabanından her seferinde çizilir)
 acodes/tablo.py               Tablo doldurma, Türkçe sıralama, satır vurgulama, boş tablo mesajı

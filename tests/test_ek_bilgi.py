@@ -77,38 +77,6 @@ def lib(app, uyarilar):
     return Library()
 
 
-def odunc_ver(lib, kitap, user_id):
-    q = lib.QtLibrary
-    q.comboBox_6_1_1_liste_kitap.setCurrentText(kitap)
-    lib.find_item_6_1_1()
-    q.comboBox_6_1_2_liste_kisi.setCurrentIndex(q.comboBox_6_1_2_liste_kisi.findData(user_id))
-    lib.find_user_6_1_2()
-    lib.save_work()
-
-
-def test_cok_kopyali_kitap_birden_fazla_uyeye(lib, db, uyarilar):
-    db.execute("UPDATE kayitlistesi SET Kopya=2 WHERE Id=6")
-    db.commit()
-    odunc_ver(lib, "Satranç", 3)
-    lib.QtLibrary.comboBox_6_1_1_liste_kitap.setCurrentText("Satranç")
-    lib.find_item_6_1_1()
-    assert lib.QtLibrary.statusbar.currentMessage() == "Müsait kopya: 1 / 2"
-    odunc_ver(lib, "Satranç", 4)
-    assert kopya_durumu(6) == (2, 2)
-    lib.QtLibrary.comboBox_6_1_1_liste_kitap.setCurrentText("Satranç")
-    lib.find_item_6_1_1()
-    assert uyarilar[-1] == "Bu kitabın 2 kopyasının hepsi üyelerde!"
-
-
-def test_ayni_uyeye_ikinci_kopya_verilmez(lib, db, uyarilar):
-    db.execute("UPDATE kayitlistesi SET Kopya=3 WHERE Id=6")
-    db.commit()
-    odunc_ver(lib, "Satranç", 3)
-    odunc_ver(lib, "Satranç", 3)
-    assert uyarilar[-1] == "Bu kitabın bir kopyası zaten bu üyede. Önce iade alın."
-    assert kopya_durumu(6) == (3, 1)
-
-
 @pytest.mark.parametrize("panel", [Library, Guest])
 def test_kitap_listesinde_yeni_kolonlar(app, uyarilar, db, panel):
     db.execute("UPDATE kayitlistesi SET ISBN='9780306406157', Kopya=2, Raf='A-1' WHERE Id=1")

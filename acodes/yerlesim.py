@@ -3,7 +3,7 @@
 # Buradaki kalıplar mevcut bileşenleri yerleşim düzenlerine (layout) alır: tablolar ve alanlar pencereyle büyür.
 
 from PyQt5.QtCore import QPoint, QRect, QSize, Qt
-from PyQt5.QtWidgets import QFormLayout, QGroupBox, QHBoxLayout, QLayout, QLineEdit, QVBoxLayout
+from PyQt5.QtWidgets import QHBoxLayout, QLayout, QVBoxLayout
 
 SINIRSIZ = 16777215
 
@@ -33,52 +33,6 @@ def liste_sayfasi(sayfa, butonlar, tablo, ust=None):
     sag.addWidget(tablo, 1)
     duzen.addLayout(sol)
     duzen.addLayout(sag, 1)
-    return duzen
-
-
-def form_kutusu(baslik, secici, butonlar, form_bileseni, eski_baslik=None):
-    """Başlıklı kart: üstte seçim kutusu ve butonlar, altında etiket-alan formu (alanlar genişler)."""
-    kutu = QGroupBox(baslik)
-    dikey = QVBoxLayout(kutu)
-    dikey.setSpacing(12)
-    satir = QHBoxLayout()
-    secici.setMinimumWidth(200)
-    secici.setMaximumWidth(SINIRSIZ)
-    satir.addWidget(secici, 1)
-    for buton in butonlar:
-        buton_boyutu(buton, (100, 130), 36)
-        satir.addWidget(buton)
-    dikey.addLayout(satir)
-    form_bileseni.setParent(kutu)
-    form = form_bileseni.layout()
-    form.setFieldGrowthPolicy(QFormLayout.AllNonFixedFieldsGrow)
-    form.setContentsMargins(0, 6, 0, 0)
-    form.setVerticalSpacing(10)
-    for alan in form_bileseni.findChildren(QLineEdit):
-        alan.setMinimumSize(0, 30)
-        alan.setMaximumSize(SINIRSIZ, SINIRSIZ)
-    dikey.addWidget(form_bileseni)
-    dikey.addStretch()
-    if eski_baslik is not None:
-        eski_baslik.hide()            # başlık artık kartın üstünde
-    return kutu
-
-
-def islem_sayfasi(sayfa, kutular, ana_buton):
-    """Yan yana kartlar ve sağ altta ana işlem butonu (ör. Ödünç Ver)."""
-    duzen = QVBoxLayout(sayfa)
-    duzen.setContentsMargins(14, 12, 14, 12)
-    duzen.setSpacing(12)
-    satir = QHBoxLayout()
-    satir.setSpacing(14)
-    for kutu in kutular:
-        satir.addWidget(kutu, 1)
-    duzen.addLayout(satir, 1)
-    alt = QHBoxLayout()
-    alt.addStretch()
-    buton_boyutu(ana_buton, (180, 240), 46)
-    alt.addWidget(ana_buton)
-    duzen.addLayout(alt)
     return duzen
 
 

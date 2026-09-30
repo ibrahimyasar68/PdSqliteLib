@@ -28,11 +28,10 @@ def test_eslemelerdeki_ikonlar_tanimli():
 def test_panel_butonlarinda_ikon(app, uyarilar):
     lib = Library()
     q = lib.QtLibrary
-    for buton in (q.pushButton_2_listele, q.pushButton_2_temizle, q.pushButton_3_2_bul, q.pushButton_3_2_deg_kaydet,
-                  q.pushButton_3_3_Sil, q.pushButton_6_1_islemi_kaydet, q.pushButton_6_2_islemi_kaydet,
+    for buton in (q.pushButton_2_listele, q.pushButton_2_temizle, lib.kitaplar.btn_kaydet, lib.kitaplar.btn_sil,
+                  lib.odunc.btn_ver, lib.odunc.btn_iade, lib.odunc.btn_aktar, lib.filtre.btn_temizle,
                   q.pushButton_1_cikis, lib.ayarlar.buton("Yedek Al")):
         assert not buton.icon().isNull(), buton.text()
-    assert q.pushButton_3_2_deg_kaydet.text() == "Kaydet"
 
 
 def test_sekmelerde_ikon(app, uyarilar):

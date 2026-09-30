@@ -58,8 +58,8 @@ def test_gercek_islemde_bildirim(lib):
     lib.kitaplar.alan["Adi"].setText("bildirim kitabı")
     lib.kitaplar.kaydet()
     assert lib.bildirim.kutu.text() == "'Bildirim Kitabı' kaydedildi" and lib.bildirim.tur == "basari"
-    lib.find_item_6_1_1()                                                # seçim yapılmadan Bul
-    assert lib.bildirim.kutu.text() == "Seçim yapınız" and lib.bildirim.tur == "uyari"
+    lib.odunc.odunc_ver()                                                # kitap ve üye seçilmeden
+    assert lib.bildirim.kutu.text() == "Kitap ve üye seçiniz!" and lib.bildirim.tur == "uyari"
 
 
 def test_geciken_kitap_acilista_uyari(app, uyarilar, db):

@@ -73,7 +73,7 @@ def test_admin_listeleri(lib):
 def test_kart_tiklamalari(lib):
     q = lib.QtLibrary
     lib.ana_sayfa.kartlar["geciken"].tiklandi.emit()
-    assert q.tabWidget.currentWidget() is q.tab_6 and q.tabWidget_6.currentWidget() is q.tab_6_3
+    assert q.tabWidget.currentWidget() is q.tab_6 and q.tabWidget_6.currentWidget() is lib.odunc
     lib.ana_sayfa.kartlar["kitap"].tiklandi.emit()
     assert q.tabWidget.currentWidget() is q.tab_2 and q.tableWidget_2.rowCount() == 8
     lib.ana_sayfa.kartlar["uye"].tiklandi.emit()
@@ -85,7 +85,7 @@ def test_liste_cift_tiklama(lib):
     lib.ana_sayfa.listeler["son"].tablo.cellDoubleClicked.emit(0, 0)
     assert q.tabWidget_3.currentWidget() is lib.kitaplar and lib.kitaplar.alan["Adi"].text() == "Denemeler"
     lib.ana_sayfa.listeler["yaklasan"].tablo.cellDoubleClicked.emit(1, 0)
-    assert q.tabWidget_6.currentWidget() is q.tab_6_2 and q.lineEdit_6_2_adi.text() == "Satranç"
+    assert q.tabWidget_6.currentWidget() is lib.odunc and "Satranç" in lib.odunc.iade_bilgi.text()
 
 
 def test_ana_sayfa_guncellenir(lib, db):
