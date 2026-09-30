@@ -89,6 +89,10 @@ def genel_ozet():
             "disarida": tek("SELECT COUNT(*) FROM follow WHERE status='out'"),
             "odunc": tek("SELECT COUNT(*) FROM follow")}
 
+## Ana sayfa: son eklenen kitaplar (Id, Adi, Yazari)
+def son_eklenenler(adet=10):
+    return baglantı.execute("SELECT Id, Adi, Yazari FROM kayitlistesi ORDER BY Id DESC LIMIT ?",(adet,)).fetchall()
+
 ## Ayarlar > Hesabım için kullanıcının bilgileri: (kullanici, adi_soyadi, telefon, mail, yetki)
 def kullanici_bilgisi(kullanici):
     return baglantı.execute("SELECT kullanici, adi_soyadi, telefon, mail, yetki FROM users WHERE kullanici=?",

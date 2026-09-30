@@ -15,8 +15,8 @@ def sekmeler(panel):
 
 
 def gorunen_butonlar(panel):
-    ic = panel.QtLibrary.verticalLayoutWidget
-    return [b.text() for b in ic.findChildren(type(panel.QtLibrary.pushButton_1_cikis)) if b.isVisibleTo(panel)]
+    sayfa = panel.QtLibrary.tab_1
+    return [b.text() for b in sayfa.findChildren(type(panel.QtLibrary.pushButton_1_cikis)) if b.isVisibleTo(panel)]
 
 
 @pytest.fixture

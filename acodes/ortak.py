@@ -110,6 +110,8 @@ class OrtakSekmeler:
 
     def user_name(self,name):
         self.aktif_kullanici=name
+        if hasattr(self,"ana_sayfa"):
+            self.ana_sayfa.karsila(name,self.ROL)
         self.setWindowTitle(f"{self.PENCERE_BASLIGI} - {name}")
         self.QtLibrary.label_log_on.setText(name)
 

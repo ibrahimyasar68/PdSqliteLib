@@ -9,6 +9,7 @@ from acodes.odunc_gecmisi import OduncGecmisi
 from acodes.veri_duzeltme import VeriDuzeltme
 from acodes.ek_bilgi import EkBilgiler
 from acodes.aranabilir import aranabilir_yap, secili_veri
+from acodes.ana_sayfa import AnaSayfa, ana_sayfayi_yerlestir
 from acodes.ortak import OrtakSekmeler, FILTRELER, SECINIZ
 from acodes.tablo import satir_verisi, tablo_ayarla, tablo_basliklari, tabloya_yaz
 from database.dbframe import (df_book_id_list, df_book_find_by_id, df_user_id_list, df_user_find_by_id,
@@ -17,8 +18,9 @@ from database.dbbase import ekle_kayit, degistir_kayit, sil_kayit, save_work_to_
 from database.yedek import geri_yukle, otomatik_yedekler, son_otomatik_yedek, yedek_al, yedek_hatasi, yedek_klasoru
 from database.dbbase import DB_YOLU
 from database.dbframe import genel_ozet
-from database.odunc import (ODUNC_SURESI_GUN, gecikme_gunu, geciken_sayisi, gun_sayisi, odunc_verilis,
-                            tarih_yazi, teslim_tarihi)
+from database.odunc import (ODUNC_SURESI_GUN, gecikme_gunu, geciken_sayisi, gun_sayisi, kalan_gun_yazi,
+                            odunc_verilis, tarih_yazi, teslim_tarihi, yaklasan_teslimler)
+from database.dbframe import son_eklenenler
 from PyQt5.QtCore import pyqtSignal
 import os
 import datetime
@@ -49,6 +51,7 @@ def kitap_listesi(cmb):
 class Library(OrtakSekmeler, QMainWindow):
     oturum_kapandi = pyqtSignal()
     PENCERE_BASLIGI = "Yaşar Kütüphanesi - Yönetici Paneli"
+    ROL = "Yönetici"
 
     def __init__(self):
         super().__init__()
@@ -143,6 +146,29 @@ class Library(OrtakSekmeler, QMainWindow):
         ])
         self.QtLibrary.tabWidget.addTab(self.ayarlar,"Ayarlar")
 
+        ###  Ana sayfa özet panosu  ###
+        self.ana_sayfa=AnaSayfa(
+            kartlar=[("kitap","Kitap",tema.VURGU),("disarida","Dışarıda","#0EA5E9"),
+                     ("geciken","Geciken",tema.TEHLIKE),("uye","Üye","#16A34A")],
+            listeler=[("yaklasan","Teslimi yaklaşan ve geciken kitaplar",["Kitap","Üye","Teslim Tarihi","Durum"],
+                       "Önümüzdeki 3 gün içinde teslim edilecek\nveya teslim süresi geçmiş kitap yok."),
+                      ("son","Son eklenen kitaplar",["Adı","Yazarı","Kayıt No"],"Henüz kitap eklenmemiş.")],
+            cikis_butonu=self.QtLibrary.pushButton_1_cikis)
+        ana_sayfayi_yerlestir(self.QtLibrary,self.ana_sayfa)
+        k=self.ana_sayfa.kartlar
+        k["kitap"].tiklanabilir(self.tum_kitaplari_goster,"Kitap listesini aç")
+        k["disarida"].tiklanabilir(self.disaridakileri_goster,"Dışarıdaki kitapları aç")
+        k["geciken"].tiklanabilir(self.disaridakileri_goster,"Dışarıdaki kitapları aç (gecikenler kırmızı)")
+        k["uye"].tiklanabilir(lambda: self.QtLibrary.tabWidget.setCurrentWidget(self.ayarlar),"Ayarlar > Kullanıcılar")
+        l=self.ana_sayfa.listeler
+        l["son"].tablo.cellDoubleClicked.connect(
+            lambda satir,_: self.kitap_duzenle(satir_verisi(l["son"].tablo,satir)) if satir_verisi(l["son"].tablo,satir) else None)
+        l["son"].tablo.setToolTip("Kitabı düzenlemek için çift tıklayın")
+        l["yaklasan"].tablo.cellDoubleClicked.connect(
+            lambda satir,_: self.iade_ekrani(*satir_verisi(l["yaklasan"].tablo,satir)) if satir_verisi(l["yaklasan"].tablo,satir) else None)
+        l["yaklasan"].tablo.setToolTip("İade almak için çift tıklayın")
+        self.ana_sayfa_yenile()
+
         ###  Kitap Kayıt > Veri Düzeltme (sadece bu alt sekme açıkken yenilenir)  ###
         self.duzeltme=VeriDuzeltme(kitap_duzenle=self.kitap_duzenle, degisti=self.yenile)
         self.QtLibrary.tabWidget_3.addTab(self.duzeltme,"Veri Düzeltme")
@@ -176,6 +202,31 @@ class Library(OrtakSekmeler, QMainWindow):
         self.gecmis.yenile()
         self.gecikme_bildir()
         self.ayarlar.yenile()
+        self.ana_sayfa_yenile()
+
+    def ana_sayfa_yenile(self):
+        o=genel_ozet()
+        gecikmis=geciken_sayisi()
+        k=self.ana_sayfa.kartlar
+        k["kitap"].ayarla(o["kitap"],f"{o['kopya']} kopya")
+        k["disarida"].ayarla(o["disarida"],"şu an ödünçte")
+        k["geciken"].ayarla(gecikmis,"teslim süresi geçmiş",renk=None if gecikmis else "#94A3B8")
+        k["uye"].ayarla(o["uye"],f"{o['admin']} yönetici")
+        yaklasan=yaklasan_teslimler()
+        self.ana_sayfa.listeler["yaklasan"].doldur(
+            [[kitap,uye,tarih_yazi(teslim_tarihi(verilis)),kalan_gun_yazi(verilis)] for kitap,uye,verilis,_,_ in yaklasan],
+            vurgulu={i for i,(_,_,verilis,_,_) in enumerate(yaklasan) if gecikme_gunu(verilis)},
+            veri=[(u,b) for *_,u,b in yaklasan])
+        son=son_eklenenler()
+        self.ana_sayfa.listeler["son"].doldur([[adi,yazar,id] for id,adi,yazar in son],veri=[id for id,_,_ in son])
+
+    def tum_kitaplari_goster(self):
+        self.QtLibrary.tabWidget.setCurrentWidget(self.QtLibrary.tab_2)
+        self.listele()
+
+    def disaridakileri_goster(self):
+        self.QtLibrary.tabWidget.setCurrentWidget(self.QtLibrary.tab_6)
+        self.QtLibrary.tabWidget_6.setCurrentWidget(self.QtLibrary.tab_6_3)
 
     def gecikme_bildir(self):
         ###  Teslim süresi geçen kitap varsa Kitap Verme sekmesinin adında göster  ###

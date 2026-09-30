@@ -35,7 +35,6 @@ QTabBar::tab {{ background-color: #E3E7EE; color: {IKINCIL_METIN}; padding: 6px 
 QTabBar::tab:selected {{ background-color: {KART}; color: {VURGU_KOYU}; }}
 QTabBar::tab:hover:!selected {{ background-color: #EDF2FB; color: {METIN}; }}
 QStackedWidget > QWidget {{ background-color: {SAYFA}; }}
-#tab_1 {{ border-image: url(:/pic/autumn.jpg); }}
 
 QLabel {{ color: {METIN}; background: transparent; }}
 #label {{ color: #FFE14D; font: italic 50pt "Monotype Corsiva"; }}

@@ -10,7 +10,7 @@ Giriş ekranında kullanıcının yetkisine göre iki farklı panel açılır:
 
 | Sekme | Admin | Guest |
 |---|:---:|:---:|
-| **Giriş**: karşılama ekranı ve Oturumu Kapat | ✓ | ✓ |
+| **Giriş**: özet panosu (kitap, dışarıdaki, geciken sayıları; yaklaşan teslimler; son eklenenler) | ✓ | ✓ (kendi kitapları) |
 | **Kitap Listesi**: tüm kitaplar, anlık arama | ✓ | ✓ |
 | **Kitap Kayıt**: ekleme, güncelleme, silme, veri düzeltme | ✓ | |
 | **Filtre**: tür, yazar, yayınevi ve yıla göre çoklu seçim | ✓ | ✓ |
@@ -211,6 +211,7 @@ acodes/disa_aktar.py          Tabloları Excel / CSV olarak kaydetme
 acodes/veri_duzeltme.py       Kitap Kayıt > Veri Düzeltme sekmesi
 acodes/ek_bilgi.py            Kitap formlarındaki Ek Bilgiler kutusu, ISBN doğrulama
 acodes/kitaplarim.py          Guest paneli > Kitaplarım sekmesi
+acodes/ana_sayfa.py           Ana sayfa özet panosu (kartlar ve listeler)
 acodes/ayarlar.py             Ayarlar sekmesi (kullanıcılar, yedekleme, bilgiler / hesabım)
 bforms/              .ui dosyalarından üretilen formlar (elle düzenlenmez)
 cuis/                Qt Designer .ui kaynakları

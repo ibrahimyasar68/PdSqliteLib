@@ -77,6 +77,20 @@ def odunc_gecmisi(user_id=None, book_id=None):
                                 ORDER BY f.outdate DESC, f.rowid DESC""", parametreler).fetchall()
 
 
+## Ana sayfa: teslim tarihi geçmiş veya önümüzdeki `gun` gün içinde dolacak ödünçler
+## (kitap, üye, veriliş, userId, bookId) — teslim tarihi en yakın olan en üstte
+def yaklasan_teslimler(gun=3, bugun=None):
+    sinir = (bugun or datetime.date.today()) + datetime.timedelta(days=gun)
+    satirlar = baglantı.execute("""SELECT COALESCE(k.Adi,'(silinmiş kitap)'), COALESCE(u.adi_soyadi,'(silinmiş üye)'), f.outdate,
+                                          f.userId, f.bookId
+                                   FROM follow f
+                                   LEFT JOIN kayitlistesi k ON k.Id=f.bookId
+                                   LEFT JOIN users u ON u.id=f.userId
+                                   WHERE f.status='out'""").fetchall()
+    secilen = [s for s in satirlar if teslim_tarihi(s[2]) and teslim_tarihi(s[2]) <= sinir]
+    return sorted(secilen, key=lambda s: teslim_tarihi(s[2]))
+
+
 ## Bir üyenin ödünçleri: (kitap, yazar, veriliş, durum, iade) — dışarıdakiler önce, en yeni en üstte
 def uye_odunc(kullanici):
     return baglantı.execute("""SELECT COALESCE(k.Adi,'(silinmiş kitap)'), COALESCE(k.Yazari,''),
