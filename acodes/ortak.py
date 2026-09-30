@@ -8,6 +8,8 @@ from database.dbframe import df_sort_list, df_srt_fltr, kitap_ara, rapor
 from acodes.grafikler import GrafikPaneli
 from acodes import tema
 from acodes.aranabilir import aranabilir_yap
+from acodes.yerlesim import liste_sayfasi
+from PyQt5.QtWidgets import QHBoxLayout
 from acodes.tablo import tablo_ayarla, tablo_basliklari, tabloya_yaz  # noqa: F401  (library.py de buradan alır)
 from acodes.disa_aktar import disa_aktar, sag_tik_menusu
 from acodes.kullanici_yonetimi import SifreDegistir, panel_butonu
@@ -76,12 +78,21 @@ class OrtakSekmeler:
             tablo_ayarla(getattr(ui,f"tableWidget_5_1_{no}"))
 
         ###  Dışa aktarma: ana tablolarda buton, tüm tablolarda sağ tık menüsü  ###
-        self.aktar_butonu(ui.tableWidget_2,"Kitap Listesi",ui.pushButton_2_temizle,(40,480,100,60))
+        self.aktar_liste=self.aktar_butonu(ui.tableWidget_2,"Kitap Listesi",ui.pushButton_2_temizle,(40,480,100,60))
         for no,_,_ in FILTRELER:
             self.aktar_butonu(getattr(ui,f"tableWidget_4_{no}_2"),f"Filtre - {FILTRE_ADLARI[no]}",
                               getattr(ui,f"pushButton_4_{no}_temizle"),(80,570,111,51))
         for no,_,baslik,_ in ISTATISTIKLER:
             sag_tik_menusu(self,getattr(ui,f"tableWidget_5_1_{no}"),f"İstatistik - {baslik}")
+
+        ###  Kitap Listesi esnek yerleşim: solda butonlar, üstte arama, tablo pencereyle büyür  ###
+        ust=QHBoxLayout()
+        self.arama.setMinimumSize(320,36)
+        self.arama.setMaximumWidth(620)
+        ust.addWidget(self.arama,1)
+        ust.addWidget(self.arama_sonuc)
+        ust.addStretch()
+        liste_sayfasi(ui.tab_2,[ui.pushButton_2_listele,ui.pushButton_2_temizle,self.aktar_liste],ui.tableWidget_2,ust)
 
     def aktar_butonu(self,tablo,ad,ornek,konum):
         ###  Örnek butonla aynı stilde "Dışa Aktar" butonu ve tabloya sağ tık menüsü  ###

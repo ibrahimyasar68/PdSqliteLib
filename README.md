@@ -209,6 +209,7 @@ acodes/tablo.py               Tablo doldurma, Türkçe sıralama, satır vurgula
 acodes/aranabilir.py          Yazdıkça süzülen açılır listeler
 acodes/ikonlar.py             Buton ve sekme ikonları (Qt ile çizilir, dosya gerektirmez)
 acodes/bildirim.py            Kısa süre görünen bildirimler (başarı yeşil, uyarı kırmızı)
+acodes/yerlesim.py            Esnek yerleşim kalıpları (.ui sayfalarını pencereyle büyüyen düzene alır)
 acodes/disa_aktar.py          Tabloları Excel / CSV olarak kaydetme
 acodes/veri_duzeltme.py       Kitap Kayıt > Veri Düzeltme sekmesi
 acodes/ek_bilgi.py            Kitap formlarındaki Ek Bilgiler kutusu, ISBN doğrulama

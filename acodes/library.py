@@ -11,6 +11,7 @@ from acodes.ek_bilgi import EkBilgiler
 from acodes.aranabilir import aranabilir_yap, secili_veri
 from acodes.ana_sayfa import AnaSayfa, ana_sayfayi_yerlestir
 from acodes import bildirim, ikonlar
+from acodes.yerlesim import form_kutusu, islem_sayfasi, liste_sayfasi
 from acodes.ortak import OrtakSekmeler, FILTRELER, SECINIZ
 from acodes.tablo import satir_verisi, tablo_ayarla, tablo_basliklari, tabloya_yaz
 from database.dbframe import (df_book_id_list, df_book_find_by_id, df_user_id_list, df_user_find_by_id,
@@ -182,7 +183,23 @@ class Library(OrtakSekmeler, QMainWindow):
             tablo.setToolTip("Kitabı düzenlemek için satıra çift tıklayın")
             tablo.cellDoubleClicked.connect(lambda satir,_,t=tablo: self.tablodan_kitap_duzenle(t,satir))
         tablo_ayarla(ui.tableWidget_6_2, bos_metin="Şu an dışarıda kitap yok.")
-        self.aktar_butonu(ui.tableWidget_6_2,"Dışarıdaki Kitaplar",ui.pushButton_6_3_temizle,(40,470,100,60))
+        aktar_6_3=self.aktar_butonu(ui.tableWidget_6_2,"Dışarıdaki Kitaplar",ui.pushButton_6_3_temizle,(40,470,100,60))
+
+        ###  Kitap Verme esnek yerleşim: kitap ve üye kartları yan yana, alanlar pencereyle genişler  ###
+        islem_sayfasi(ui.tab_6_1,[
+            form_kutusu("Ödünç verilecek kitap",ui.comboBox_6_1_1_liste_kitap,
+                        [ui.pushButton_6_1_1_bul_kitap,ui.pushButton_6_1_1_bul_kitap_temizle],ui.formLayoutWidget_11,ui.label_47),
+            form_kutusu("Ödünç alacak üye",ui.comboBox_6_1_2_liste_kisi,
+                        [ui.pushButton_6_1_2_bul_kisi,ui.pushButton_6_1_2_bul_kisi_temizle],ui.formLayoutWidget_17,ui.label_78)],
+            ui.pushButton_6_1_islemi_kaydet)
+        islem_sayfasi(ui.tab_6_2,[
+            form_kutusu("İade edecek üye",ui.comboBox_6_2_1_liste_kisi,
+                        [ui.pushButton_6_2_1_bul_kisi,ui.pushButton_6_2_1_bul_kisi_temizle],ui.formLayoutWidget_18,ui.label_79),
+            form_kutusu("İade alınacak kitap",ui.comboBox_6_2_2_liste_kitap,
+                        [ui.pushButton_6_2_2_bul_kitap,ui.pushButton_6_2_2_bul_kitap_temizle],ui.formLayoutWidget_12,ui.label_57)],
+            ui.pushButton_6_2_islemi_kaydet)
+        ui.pushButton_3_3_Sil_2.hide()   # .ui'da tablonun arkasında kalmış, işlevsiz eski bir kopya
+        liste_sayfasi(ui.tab_6_3,[ui.pushButton_6_3_listele,ui.pushButton_6_3_temizle,aktar_6_3],ui.tableWidget_6_2)
         ui.tableWidget_6_2.setToolTip("İade almak için satıra çift tıklayın")
         ui.tableWidget_6_2.cellDoubleClicked.connect(lambda satir,_: self.tablodan_iade(satir))
 
