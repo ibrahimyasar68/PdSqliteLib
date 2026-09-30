@@ -30,7 +30,7 @@ def giris_yap(kullanici, sifre):
 def test_giris_yanlis_bilgide_tek_mesaj(app):
     for kullanici, sifre in (("admin", "yanlis"), ("olmayan", ADMIN_SIFRE)):
         w = giris_yap(kullanici, sifre)
-        assert w.QtLogin.statusbar.currentMessage() == "Kullanıcı adı veya parola yanlış!"
+        assert w.mesaj.text() == "Kullanıcı adı veya parola yanlış!"
         assert w.library is None and w.guest is None
 
 
