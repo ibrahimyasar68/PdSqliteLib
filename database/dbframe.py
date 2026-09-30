@@ -79,6 +79,21 @@ def yil_dagilimi():
             sayilar[onluk]=sayilar.get(onluk,0)+1
     return [(f"{o}'{_ONLUK_EK[o//10%10]}", sayilar[o]) for o in sorted(sayilar)]
 
+## Ayarlar > Kütüphane Bilgileri için özet sayılar
+def genel_ozet():
+    tek=lambda sql: baglantı.execute(sql).fetchone()[0]
+    return {"kitap": tek("SELECT COUNT(*) FROM kayitlistesi"),
+            "kopya": tek("SELECT COALESCE(SUM(COALESCE(Kopya,1)),0) FROM kayitlistesi"),
+            "uye": tek("SELECT COUNT(*) FROM users WHERE yetki='guest'"),
+            "admin": tek("SELECT COUNT(*) FROM users WHERE yetki='admin'"),
+            "disarida": tek("SELECT COUNT(*) FROM follow WHERE status='out'"),
+            "odunc": tek("SELECT COUNT(*) FROM follow")}
+
+## Ayarlar > Hesabım için kullanıcının bilgileri: (kullanici, adi_soyadi, telefon, mail, yetki)
+def kullanici_bilgisi(kullanici):
+    return baglantı.execute("SELECT kullanici, adi_soyadi, telefon, mail, yetki FROM users WHERE kullanici=?",
+                            (kullanici,)).fetchone()
+
 ######################
 ###  User Table   ####
 ######################

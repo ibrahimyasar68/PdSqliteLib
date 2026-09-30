@@ -10,20 +10,21 @@ Giriş ekranında kullanıcının yetkisine göre iki farklı panel açılır:
 
 | Sekme | Admin | Guest |
 |---|:---:|:---:|
-| **Giriş**: yeni kullanıcı, kullanıcı yönetimi, yedekleme | ✓ | sadece kendi şifresini değiştirme |
+| **Giriş**: karşılama ekranı ve Oturumu Kapat | ✓ | ✓ |
 | **Kitap Listesi**: tüm kitaplar, anlık arama | ✓ | ✓ |
 | **Kitap Kayıt**: ekleme, güncelleme, silme, veri düzeltme | ✓ | |
 | **Filtre**: tür, yazar, yayınevi ve yıla göre çoklu seçim | ✓ | ✓ |
 | **İstatistik**: çizelgeler ve güncel grafikler (tür, yazar, yayınevi, basım yılı) | ✓ | ✓ |
 | **Kitap Verme**: ödünç verme, iade alma, dışarıdaki kitaplar, ödünç geçmişi | ✓ | |
 | **Kitaplarım**: üyenin elindeki kitaplar (teslim tarihi, kalan gün) ve geçmişi | | ✓ |
+| **Ayarlar**: kullanıcılar, yedekleme, kütüphane bilgileri / hesap bilgileri ve şifre | ✓ | ✓ (Hesabım) |
 
 Panellerdeki **Oturumu Kapat** butonu giriş ekranına döner; başka bir kullanıcıyla giriş yapılabilir.
 Programdan çıkmak için giriş ekranındaki kırmızı çıkış butonu kullanılır. Paneller macOS'ta büyütülmüş
 pencerede (küçültülebilir, diğer programlara geçilebilir), Windows'ta tam ekran açılır.
 
 Yeni kullanıcı ve üye kayıtlarını (`admin` veya `guest`) sadece giriş yapmış bir admin,
-**Giriş** sekmesindeki **Yeni Kullanıcı Girişi** butonuyla oluşturabilir.
+**Ayarlar → Yeni Kullanıcı Ekle** ile oluşturabilir.
 
 ### Arama
 
@@ -87,7 +88,7 @@ görünüyorsa (arama, filtre, sıralama) öyle kaydedilir.
 
 ### Kullanıcı yönetimi
 
-Admin panelinde **Giriş → Kullanıcı Yönetimi**: kullanıcıları listeleme, bilgilerini ve yetkisini
+Admin panelinde **Ayarlar → Kullanıcı Yönetimi**: kullanıcıları listeleme, bilgilerini ve yetkisini
 düzenleme, şifresini sıfırlama ve silme. Kilitlenmeyi önleyen kurallar:
 
 - Kimse kendi hesabını silemez veya kendi yetkisini değiştiremez.
@@ -95,13 +96,13 @@ düzenleme, şifresini sıfırlama ve silme. Kilitlenmeyi önleyen kurallar:
 - Elinde iade edilmemiş kitap olan kullanıcı silinemez. Silinen kullanıcının ödünç geçmişi korunur.
 - Şifreler en az 6 karakter olmalıdır.
 
-Guest kullanıcılar **Giriş → Şifremi Değiştir** ile kendi şifrelerini değiştirebilir (mevcut şifre sorulur).
+Herkes **Ayarlar → Şifremi Değiştir** ile kendi şifresini değiştirebilir (mevcut şifre sorulur).
 
 ### Yedekleme
 
 - **Otomatik:** Program her gün ilk açılışta veritabanının yedeğini alır; son 10 otomatik yedek saklanır.
-- **Elle:** Admin panelinde **Giriş → Yedek Al** ile istenen yere (ör. USB bellek) yedek alınır.
-- **Geri yükleme:** **Giriş → Yedekten Geri Yükle**. Dosya önce doğrulanır (PdSqliteLib veritabanı mı,
+- **Elle:** Admin panelinde **Ayarlar → Yedek Al** ile istenen yere (ör. USB bellek) yedek alınır.
+- **Geri yükleme:** **Ayarlar → Yedekten Geri Yükle**. Dosya önce doğrulanır (PdSqliteLib veritabanı mı,
   içinde admin kullanıcı var mı); geri yüklemeden önce mevcut halin yedeği otomatik alınır.
 
 Yedekler veritabanının yanındaki `yedekler/` klasöründedir
@@ -202,6 +203,7 @@ acodes/disa_aktar.py          Tabloları Excel / CSV olarak kaydetme
 acodes/veri_duzeltme.py       Kitap Kayıt > Veri Düzeltme sekmesi
 acodes/ek_bilgi.py            Kitap formlarındaki Ek Bilgiler kutusu, ISBN doğrulama
 acodes/kitaplarim.py          Guest paneli > Kitaplarım sekmesi
+acodes/ayarlar.py             Ayarlar sekmesi (kullanıcılar, yedekleme, bilgiler / hesabım)
 bforms/              .ui dosyalarından üretilen formlar (elle düzenlenmez)
 cuis/                Qt Designer .ui kaynakları
 database/dbbase.py   Yazma işlemleri, şifre hash'leme, veritabanı yolu

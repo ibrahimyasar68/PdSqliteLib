@@ -46,6 +46,17 @@ def otomatik_yedekler():
     return sorted(glob.glob(os.path.join(yedek_klasoru(), f"{OTOMATIK_ONEK}[0-9]*.db")))
 
 
+def son_otomatik_yedek():
+    """Son otomatik yedeğin tarihi (datetime) veya None."""
+    yedekler = otomatik_yedekler()
+    if not yedekler:
+        return None
+    try:
+        return datetime.datetime.strptime(os.path.basename(yedekler[-1])[len(OTOMATIK_ONEK):-3], "%Y%m%d_%H%M%S")
+    except ValueError:
+        return None
+
+
 def otomatik_yedek():
     """Bugün otomatik yedek alınmadıysa alır, eski otomatik yedekleri temizler.
     Alınan yedeğin yolunu, gerek yoksa None döndürür."""

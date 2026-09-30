@@ -170,13 +170,13 @@ def test_yeni_kullanici_formu_kisa_sifreyi_reddeder(app, uyarilar, db):
 
 # --- Panel butonları ---
 
-def test_panellerde_yeni_butonlar(app, uyarilar):
+def test_ayarlarda_kullanici_butonlari(app, uyarilar):
     lib = Library()
-    assert [lib.btn_kullanicilar.text(), lib.btn_yedek_al.text(), lib.btn_geri_yukle.text()] == \
-        ["Kullanıcı Yönetimi", "Yedek Al", "Yedekten Geri Yükle"]
+    for metin in ("Yeni Kullanıcı Ekle", "Kullanıcı Yönetimi", "Şifremi Değiştir"):
+        assert lib.ayarlar.buton(metin).text() == metin
     g = Guest()
     g.user_name("ayse1")
-    assert g.btn_sifre.text() == "Şifremi Değiştir" and g.aktif_kullanici == "ayse1"
+    assert g.ayarlar.buton("Şifremi Değiştir") and g.aktif_kullanici == "ayse1"
 
 
 def test_giriste_aktif_kullanici_kaydedilir(app):

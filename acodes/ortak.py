@@ -8,7 +8,7 @@ from database.dbframe import df_sort_list, df_srt_fltr, kitap_ara, rapor
 from acodes.grafikler import GrafikPaneli
 from acodes.tablo import tablo_ayarla, tablo_basliklari, tabloya_yaz  # noqa: F401  (library.py de buradan alır)
 from acodes.disa_aktar import disa_aktar, sag_tik_menusu
-from acodes.kullanici_yonetimi import panel_butonu
+from acodes.kullanici_yonetimi import SifreDegistir, panel_butonu
 
 SECINIZ = ' Seçiniz...'
 
@@ -97,6 +97,9 @@ class OrtakSekmeler:
             self.user.close()
         self.oturum_kapandi.emit()   # giriş ekranı önce görünür olur, böylece program kapanmaz
         self.close()
+
+    def sifremi_degistir(self):
+        SifreDegistir(self.aktif_kullanici, eski_sor=True, parent=self).exec_()
 
     def user_name(self,name):
         self.aktif_kullanici=name

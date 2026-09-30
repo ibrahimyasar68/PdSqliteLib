@@ -59,7 +59,7 @@ def test_her_oturumda_yeni_panel(w):
 def test_oturum_kapaninca_yeni_kullanici_formu_kapanir(w):
     giris_yap(w, "admin", ADMIN_SIFRE)
     form = w.library.user
-    w.library.QtLibrary.pushButton_1_yeni_kullanici.click()
+    w.library.ayarlar.buton("Yeni Kullanıcı Ekle").click()
     assert form.isVisible()
     w.library.oturumu_kapat()
     assert not form.isVisible()

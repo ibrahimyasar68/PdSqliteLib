@@ -1,8 +1,9 @@
-from PyQt5.QtWidgets import QApplication, QFileDialog, QMainWindow, QMessageBox, QVBoxLayout, QWidget
+from PyQt5.QtWidgets import QApplication, QFileDialog, QMainWindow, QMessageBox
 from bforms.library_py import Ui_MainWindow
 from bforms.onay import onay
 from acodes.user import User
-from acodes.kullanici_yonetimi import KullaniciYonetimi, panel_butonu
+from acodes.kullanici_yonetimi import KullaniciYonetimi
+from acodes.ayarlar import Ayarlar, klasoru_ac
 from acodes.odunc_gecmisi import OduncGecmisi
 from acodes.veri_duzeltme import VeriDuzeltme
 from acodes.ek_bilgi import EkBilgiler
@@ -11,7 +12,9 @@ from acodes.tablo import satir_verisi, tablo_ayarla, tablo_basliklari, tabloya_y
 from database.dbframe import (df_book_id_list, df_book_find_by_id, df_user_id_list, df_user_find_by_id,
                               kitap_oduncte, kopya_durumu, uyede_mi, df_work_user_list, df_work_perbook, df_work_table_book)
 from database.dbbase import ekle_kayit, degistir_kayit, sil_kayit, save_work_to_db, update_work_to_db
-from database.yedek import geri_yukle, yedek_al, yedek_hatasi, yedek_klasoru
+from database.yedek import geri_yukle, otomatik_yedekler, son_otomatik_yedek, yedek_al, yedek_hatasi, yedek_klasoru
+from database.dbbase import DB_YOLU
+from database.dbframe import genel_ozet
 from database.odunc import (ODUNC_SURESI_GUN, gecikme_gunu, geciken_sayisi, gun_sayisi, odunc_verilis,
                             tarih_yazi, teslim_tarihi)
 from PyQt5.QtCore import pyqtSignal
@@ -64,8 +67,8 @@ class Library(OrtakSekmeler, QMainWindow):
 
         ###  Tab_1, 2, 4, 5 (Guest ile ortak)  #########
         self.ortak_sekmeleri_kur()
-        self.QtLibrary.pushButton_1_yeni_kullanici.clicked.connect(self.user.show)
-        self.yonetim_butonlari()
+        # Ana sayfa sade: işlem butonları Ayarlar sekmesinde, burada sadece Oturumu Kapat kalır
+        self.QtLibrary.pushButton_1_yeni_kullanici.hide()
 
         ###  Tab_3 Olaylar  #########
         # Ek bilgiler (ISBN, kopya, raf, notlar) formların yanındaki boş alana
@@ -112,6 +115,21 @@ class Library(OrtakSekmeler, QMainWindow):
         self.QtLibrary.tabWidget_6.currentChanged.connect(self.odunc_sekmesi_degisti)
         self.gecikme_bildir()
 
+        ###  Ayarlar sekmesi: kullanıcılar, yedekleme ve kütüphane bilgileri  ###
+        self.ayarlar=Ayarlar([
+            ("Kullanıcılar", [
+                ("Yeni Kullanıcı Ekle", self.user.show, "Yeni üye veya yönetici kaydı"),
+                ("Kullanıcı Yönetimi", self.kullanici_yonetimi, "Kullanıcıları düzenleme, şifre sıfırlama, silme"),
+                ("Şifremi Değiştir", self.sifremi_degistir, "Kendi şifrenizi değiştirin")], None),
+            ("Yedekleme", [
+                ("Yedek Al", self.yedek_al_ekrani, "Veritabanının kopyasını istediğiniz yere kaydedin"),
+                ("Yedekten Geri Yükle", self.geri_yukle_ekrani, "Önceki bir yedeğe dönün"),
+                ("Yedek Klasörünü Aç", lambda: klasoru_ac(yedek_klasoru()), "Otomatik yedeklerin bulunduğu klasör")],
+                self.yedek_bilgisi),
+            ("Kütüphane Bilgileri", [], self.kutuphane_bilgisi),
+        ])
+        self.QtLibrary.tabWidget.addTab(self.ayarlar,"Ayarlar")
+
         ###  Kitap Kayıt > Veri Düzeltme (sadece bu alt sekme açıkken yenilenir)  ###
         self.duzeltme=VeriDuzeltme(kitap_duzenle=self.kitap_duzenle, degisti=self.yenile)
         self.QtLibrary.tabWidget_3.addTab(self.duzeltme,"Veri Düzeltme")
@@ -144,6 +162,7 @@ class Library(OrtakSekmeler, QMainWindow):
         self.list_user_6_1_2()
         self.gecmis.yenile()
         self.gecikme_bildir()
+        self.ayarlar.yenile()
 
     def gecikme_bildir(self):
         ###  Teslim süresi geçen kitap varsa Kitap Verme sekmesinin adında göster  ###
@@ -212,21 +231,18 @@ class Library(OrtakSekmeler, QMainWindow):
     #####   Tab_1 Fonksiyonlar   #####
     ##################################
 
-    def yonetim_butonlari(self):
-        ###  Giriş sekmesine ikinci buton sütunu (mevcut butonlarla aynı stilde)  ###
-        ornek=self.QtLibrary.pushButton_1_yeni_kullanici
-        sutun=QWidget(self.QtLibrary.tab_1)
-        sutun.setGeometry(810,440,221,170)
-        duzen=QVBoxLayout(sutun)
-        duzen.setContentsMargins(0,0,0,0)
-        self.btn_kullanicilar=panel_butonu(ornek,"Kullanıcı Yönetimi","pushButton_1_kullanicilar")
-        self.btn_yedek_al=panel_butonu(ornek,"Yedek Al","pushButton_1_yedek_al")
-        self.btn_geri_yukle=panel_butonu(ornek,"Yedekten Geri Yükle","pushButton_1_geri_yukle")
-        for b in (self.btn_kullanicilar,self.btn_yedek_al,self.btn_geri_yukle):
-            duzen.addWidget(b)
-        self.btn_kullanicilar.clicked.connect(self.kullanici_yonetimi)
-        self.btn_yedek_al.clicked.connect(self.yedek_al_ekrani)
-        self.btn_geri_yukle.clicked.connect(self.geri_yukle_ekrani)
+    def yedek_bilgisi(self):
+        son=son_otomatik_yedek()
+        return [("Son otomatik yedek", son.strftime("%d.%m.%Y %H:%M") if son else "Henüz alınmadı"),
+                ("Saklanan otomatik yedek", f"{len(otomatik_yedekler())} (en fazla 10, günde bir)"),
+                ("Yedek klasörü", yedek_klasoru())]
+
+    def kutuphane_bilgisi(self):
+        o=genel_ozet()
+        return [("Kitap", f"{o['kitap']} kayıt, {o['kopya']} kopya"),
+                ("Kullanıcı", f"{o['uye']} üye, {o['admin']} yönetici"),
+                ("Ödünç", f"{o['disarida']} kitap dışarıda, toplam {o['odunc']} işlem"),
+                ("Veritabanı", os.path.normpath(DB_YOLU))]
 
     def kullanici_yonetimi(self):
         KullaniciYonetimi(self.aktif_kullanici, self).exec_()
