@@ -16,10 +16,12 @@ from database.dbframe import admin_sayisi, df_user_all, giris_kontrol, kullanici
 YETKILER = ["admin", "guest"]
 
 # Formlar koyu arka planlı panellerin üstünde açıldığı için açık ve okunur bir görünüm
-# Pencereler panelden bağımsız açılsa da (ör. testlerde) aynı temayla görünür
-PENCERE_STILI = tema.TEMA + f"""
+def pencere_stili():
+    """Pencereler panelden bağımsız açılsa da (ör. testlerde) aynı temayla, biraz daha büyük yazıyla görünür."""
+    return tema.qss() + f"""
 QDialog {{ background-color: {tema.SAYFA}; }}
-QLabel, QLineEdit, QComboBox, QTableWidget, QPushButton {{ font: 12pt "Verdana"; }}
+QWidget {{ font-size: 14px; }}
+QPushButton {{ padding: 6px 14px; }}
 """
 
 
@@ -30,7 +32,7 @@ class SifreDegistir(QDialog):
         super().__init__(parent)
         self.kullanici = kullanici
         self.setWindowTitle(f"Şifre Değiştir: {kullanici}")
-        self.setStyleSheet(PENCERE_STILI)
+        self.setStyleSheet(pencere_stili())
         form = QFormLayout(self)
         self.eski = None
         if eski_sor:
@@ -67,7 +69,7 @@ class KullaniciDuzenle(QDialog):
         super().__init__(parent)
         self.id, self.kullanici, adi_soyadi, telefon, mail, self.eski_yetki = kayit
         self.setWindowTitle(f"Kullanıcı Düzenle: {self.kullanici}")
-        self.setStyleSheet(PENCERE_STILI)
+        self.setStyleSheet(pencere_stili())
         form = QFormLayout(self)
         self.adi_soyadi = QLineEdit(adi_soyadi or "")
         self.telefon = QLineEdit(telefon or "")
@@ -121,7 +123,7 @@ class KullaniciYonetimi(QDialog):
         super().__init__(parent)
         self.aktif_kullanici = aktif_kullanici
         self.setWindowTitle("Kullanıcı Yönetimi")
-        self.setStyleSheet(PENCERE_STILI)
+        self.setStyleSheet(pencere_stili())
         self.resize(900, 500)
 
         self.tablo = QTableWidget(0, len(self.KOLONLAR))

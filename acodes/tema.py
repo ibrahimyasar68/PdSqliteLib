@@ -2,6 +2,7 @@
 # .ui dosyalarından gelen sekme/buton renkleri silinir, yerine bu tema uygulanır.
 # Kodla eklenen sekmeler (Ayarlar, Veri Düzeltme, ...) renk tanımlamaz; temayı panelden devralır.
 
+from PyQt5.QtGui import QFont, QFontDatabase
 from PyQt5.QtWidgets import QWidget
 
 # Renkler
@@ -16,6 +17,10 @@ VURGU_KOYU = "#1D4ED8"
 VURGU_ACIK = "#DBEAFE"     # seçili satır
 TEHLIKE = "#DC2626"        # geri alınamayan işlemler (Sil)
 TEHLIKE_KOYU = "#B91C1C"
+
+# Yazı: sistemin kendi yazı tipi (Mac: San Francisco, Windows: Segoe UI). Boyutlar piksel cinsinden
+# verilir; Mac ve Windows nokta (pt) boyutlarını farklı ölçeklediği için iki sistemde de aynı görünür.
+YAZI_PX = 13
 
 # Geri alınamayan işlem butonları kırmızı gösterilir
 TEHLIKELI_BUTONLAR = ["pushButton_3_3_Sil"]
@@ -34,7 +39,7 @@ QStackedWidget > QWidget {{ background-color: {SAYFA}; }}
 
 QLabel {{ color: {METIN}; background: transparent; }}
 #label {{ color: #FFE14D; font: italic 50pt "Monotype Corsiva"; }}
-#label_32, #label_log_on {{ color: white; }}
+#label_32, #label_log_on {{ color: white; font-size: 18px; font-weight: bold; }}
 
 QPushButton {{ background-color: {VURGU}; color: white; border: none; border-radius: 6px; padding: 4px 8px; }}
 QPushButton:hover {{ background-color: {VURGU_KOYU}; }}
@@ -52,7 +57,7 @@ QComboBox QAbstractItemView {{ background-color: {KART}; color: {METIN};
 
 QTableWidget, QTreeWidget {{ background-color: {KART}; color: {METIN}; gridline-color: #E5E7EB;
                border: 1px solid {KENAR}; selection-background-color: {VURGU_ACIK}; selection-color: {METIN}; }}
-QHeaderView::section {{ background-color: {ZEMIN}; color: #334155; padding: 4px 6px; border: none;
+QHeaderView::section {{ background-color: {ZEMIN}; color: #334155; padding: 4px 6px; border: none; font-weight: bold;
                border-right: 1px solid {KENAR}; border-bottom: 1px solid {KENAR}; }}
 
 QGroupBox {{ background-color: {KART}; border: 1px solid {KENAR}; border-radius: 8px;
@@ -64,9 +69,29 @@ QToolTip {{ background-color: {METIN}; color: white; border: none; padding: 4px 
 """
 
 
+def yazi_ailesi():
+    return QFontDatabase.systemFont(QFontDatabase.GeneralFont).family()
+
+
+def yazi_tipi(px=YAZI_PX, kalin=False):
+    """Kodla çizilen metinler (ör. grafikler) için temadaki yazı tipi."""
+    yazi = QFont(yazi_ailesi())
+    yazi.setPixelSize(px)
+    yazi.setBold(kalin)
+    return yazi
+
+
+def qss():
+    """Tema + yazı tipi kuralları (yazı ailesi uygulama açıkken belirlenebildiği için fonksiyon)."""
+    return TEMA + f"""
+* {{ font-family: "{yazi_ailesi()}"; font-style: normal; }}
+QWidget {{ font-size: {YAZI_PX}px; }}
+"""
+
+
 def uygula(pencere):
     """setupUi'den hemen sonra çağrılır: .ui'dan gelen stilleri siler, temayı uygular."""
     for bilesen in pencere.findChildren(QWidget):
         if bilesen.styleSheet():
             bilesen.setStyleSheet("")
-    pencere.setStyleSheet(TEMA)
+    pencere.setStyleSheet(qss())

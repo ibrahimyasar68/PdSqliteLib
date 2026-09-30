@@ -27,11 +27,10 @@ class Kitaplarim(QWidget):
         self.setAttribute(Qt.WA_StyledBackground, True)
         self.setStyleSheet(f"""
             #tab_kitaplarim {{ background-color: {tema.SAYFA}; }}
-            QLabel, QTableWidget, QGroupBox {{ font: 11pt "Verdana"; }}
             QGroupBox {{ font-weight: bold; }}
         """)
         self.ozet = QLabel()
-        self.ozet.setStyleSheet('font: bold 13pt "Verdana";')
+        self.ozet.setStyleSheet('font-size: 16px; font-weight: bold;')
         self.elimdeki = tablo_olustur(["Kitap", "Yazar", "Aldığım Tarih", "Teslim Tarihi", "Durum"])
         self.gecmis = tablo_olustur(["Kitap", "Yazar", "Aldığım Tarih", "İade Tarihi", "Gün"])
 
@@ -67,5 +66,5 @@ class Kitaplarim(QWidget):
             if gecikenler:
                 metin += f" {len(gecikenler)} tanesinin teslim süresi geçti, lütfen iade edin."
         self.ozet.setText(metin)
-        self.ozet.setStyleSheet('font: bold 13pt "Verdana"; color: %s;' % (tema.TEHLIKE if gecikenler else tema.METIN))
+        self.ozet.setStyleSheet('font-size: 16px; font-weight: bold; color: %s;' % (tema.TEHLIKE if gecikenler else tema.METIN))
         return len(gecikenler)

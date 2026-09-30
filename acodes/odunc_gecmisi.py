@@ -34,7 +34,6 @@ class OduncGecmisi(QWidget):
         self.setAttribute(Qt.WA_StyledBackground, True)
         self.setStyleSheet(f"""
             #tab_6_4 {{ background-color: {tema.SAYFA}; }}
-            QLabel, QComboBox, QTableWidget, QPushButton {{ font: 11pt "Verdana"; }}
         """)
         self.uye = QComboBox()
         self.kitap = QComboBox()

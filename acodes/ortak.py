@@ -124,10 +124,10 @@ class OrtakSekmeler:
         self.arama.setGeometry(160,10,520,36)
         self.arama.setPlaceholderText("Ara: kitap adı, yazar, çevirmen, tür, yayınevi, yıl, ISBN, raf, not...")
         self.arama.setClearButtonEnabled(True)
-        self.arama.setStyleSheet('font: 12pt "Verdana"; border-radius: 6px; padding: 2px 8px;')
+        self.arama.setStyleSheet('font-size: 15px; border-radius: 6px; padding: 2px 8px;')
         self.arama_sonuc=QLabel(ui.tab_2)
         self.arama_sonuc.setGeometry(700,10,400,36)
-        self.arama_sonuc.setStyleSheet(f'font: bold 12pt "Verdana"; color: {tema.VURGU_KOYU};')
+        self.arama_sonuc.setStyleSheet(f'font-size: 14px; font-weight: bold; color: {tema.VURGU_KOYU};')
         self.arama.textChanged.connect(self.listele)
 
     def listele(self):

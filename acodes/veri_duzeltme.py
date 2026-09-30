@@ -6,7 +6,6 @@ import datetime
 import os
 
 from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QFont
 from PyQt5.QtWidgets import (QComboBox, QGroupBox, QHBoxLayout, QHeaderView, QLabel, QLineEdit, QMessageBox,
                              QPushButton, QTableWidget, QTreeWidget, QTreeWidgetItem, QVBoxLayout, QWidget)
 from bforms.onay import onay
@@ -30,7 +29,7 @@ class VeriDuzeltme(QWidget):
         self.setAttribute(Qt.WA_StyledBackground, True)
         self.setStyleSheet(f"""
             #tab_3_4 {{ background-color: {tema.SAYFA}; }}
-            QLabel, QComboBox, QLineEdit, QTableWidget, QGroupBox, QPushButton {{ font: 11pt "Verdana"; }}
+            QGroupBox {{ font-weight: bold; }}
         """)
 
         # --- Benzer yazımlar
@@ -39,7 +38,6 @@ class VeriDuzeltme(QWidget):
             self.alan.addItem(ad, kol)
         self.ozet = QLabel()
         self.agac = QTreeWidget()
-        self.agac.setFont(QFont("Verdana", 11))
         # Pencerenin stil sayfası altında macOS onay kutularını boş çiziyor; görünümleri açıkça verilir
         self.agac.setStyleSheet(f"""
             QTreeWidget::indicator {{ width: 14px; height: 14px; border: 1px solid #5A5A5A;

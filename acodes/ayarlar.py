@@ -12,10 +12,10 @@ from PyQt5.QtWidgets import (QFormLayout, QGroupBox, QHBoxLayout, QLabel, QPushB
 
 STIL = f"""
 #ayarlar_ic {{ background-color: {tema.SAYFA}; }}
-QGroupBox {{ font: bold 13pt "Verdana"; border-radius: 10px; padding: 16px 12px 12px 12px; }}
-QLabel {{ font: 11pt "Verdana"; color: {tema.IKINCIL_METIN}; }}
+QGroupBox {{ font-size: 16px; font-weight: bold; border-radius: 10px; padding: 16px 12px 12px 12px; }}
+QLabel {{ color: {tema.IKINCIL_METIN}; }}
 QLabel[rol="deger"] {{ color: {tema.METIN}; }}
-QPushButton {{ font: 11pt "Verdana"; padding: 9px 16px; min-width: 150px; }}
+QPushButton {{ padding: 9px 16px; min-width: 150px; }}
 """
 
 

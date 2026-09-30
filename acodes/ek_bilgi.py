@@ -25,10 +25,7 @@ def isbn_gecerli(metin):
 class EkBilgiler(QGroupBox):
     def __init__(self, parent=None, salt_okunur=False):
         super().__init__("Ek Bilgiler", parent)
-        self.setStyleSheet("""
-            QGroupBox { font: bold 12pt "Verdana"; }
-            QLabel, QLineEdit, QSpinBox, QPlainTextEdit { font: 11pt "Verdana"; }
-        """)
+        self.setStyleSheet("QGroupBox { font-weight: bold; font-size: 14px; }")
         self.isbn = QLineEdit()
         self.isbn.setPlaceholderText("ör. 978-975-07-0321-5 (isteğe bağlı)")
         self.kopya = QSpinBox()

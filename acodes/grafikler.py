@@ -3,9 +3,10 @@
 # Ek kütüphane gerektirmemek için Qt'nin kendi çizim araçları (QPainter) kullanılır.
 
 from PyQt5.QtCore import QRectF, Qt
-from PyQt5.QtGui import QColor, QFont, QPainter, QPen
+from PyQt5.QtGui import QColor, QPainter, QPen
 from PyQt5.QtWidgets import QGridLayout, QWidget
 
+from acodes import tema
 from database.dbframe import rapor, yil_dagilimi
 
 RENKLER = [QColor(c) for c in ("#4e79a7", "#f28e2b", "#59a14f", "#e15759", "#76b7b2",
@@ -35,10 +36,10 @@ class Grafik(QWidget):
         p.setBrush(Qt.white)
         p.drawRoundedRect(kutu, 8, 8)
         p.setPen(Qt.black)
-        p.setFont(QFont("Verdana", 12, QFont.Bold))
+        p.setFont(tema.yazi_tipi(15, kalin=True))
         p.drawText(kutu.adjusted(12, 8, -12, 0), Qt.AlignLeft | Qt.AlignTop, self.baslik)
         alan = kutu.adjusted(14, 38, -14, -12)
-        p.setFont(QFont("Verdana", 10))
+        p.setFont(tema.yazi_tipi(12))
         if not self.veri:
             p.setPen(QColor(120, 120, 120))
             p.drawText(alan, Qt.AlignCenter, "Gösterilecek veri yok")
