@@ -10,7 +10,7 @@ from acodes.veri_duzeltme import VeriDuzeltme
 from acodes.ek_bilgi import EkBilgiler
 from acodes.aranabilir import aranabilir_yap, secili_veri
 from acodes.ana_sayfa import AnaSayfa, ana_sayfayi_yerlestir
-from acodes import ikonlar
+from acodes import bildirim, ikonlar
 from acodes.ortak import OrtakSekmeler, FILTRELER, SECINIZ
 from acodes.tablo import satir_verisi, tablo_ayarla, tablo_basliklari, tabloya_yaz
 from database.dbframe import (df_book_id_list, df_book_find_by_id, df_user_id_list, df_user_find_by_id,
@@ -59,6 +59,7 @@ class Library(OrtakSekmeler, QMainWindow):
         self.QtLibrary = Ui_MainWindow()
         self.QtLibrary.setupUi(self)
         tema.uygula(self)   # .ui renkleri yerine tek tema
+        self.bildirim=bildirim.baglan(self,self.QtLibrary.statusbar)   # mesajlar kısa süreli bildirim olarak
         self.user=User()
         self.QtLibrary.tabWidget.setCurrentIndex(0)
 
