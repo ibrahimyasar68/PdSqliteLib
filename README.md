@@ -17,7 +17,7 @@ Giriş ekranında kullanıcının yetkisine göre iki farklı panel açılır:
 | **İstatistik**: çizelgeler ve güncel grafikler (tür, yazar, yayınevi, basım yılı) | ✓ | ✓ |
 | **Kitap Verme**: ödünç verme, iade alma ve dışarıdaki kitaplar tek ekranda; ödünç geçmişi | ✓ | |
 | **Kitaplarım**: üyenin elindeki kitaplar (teslim tarihi, kalan gün) ve geçmişi | | ✓ |
-| **Ayarlar**: kullanıcılar, yedekleme, kütüphane bilgileri / hesap bilgileri ve şifre | ✓ | ✓ (Hesabım) |
+| **Ayarlar**: kullanıcılar, yedekleme, kütüphane bilgileri / hesap bilgileri ve şifre; kullanma kılavuzu | ✓ | ✓ (Hesabım) |
 
 Panellerdeki **Oturumu Kapat** butonu giriş ekranına döner; başka bir kullanıcıyla giriş yapılabilir.
 Programdan çıkmak için giriş ekranındaki kırmızı çıkış butonu kullanılır. Paneller macOS'ta büyütülmüş
@@ -25,6 +25,9 @@ pencerede (küçültülebilir, diğer programlara geçilebilir), Windows'ta tam 
 Panellerin arka planı yaprak fotoğrafıdır (`media/autumn.jpg`). Giriş sekmesinde fotoğraf olduğu gibi
 görünür; diğer sayfalar yarı saydam olduğu için içeriğin arkasından hafifçe görünür, tablolar ve formlar
 okunaklı kalsın diye beyazdır (saydamlık `acodes/arka_plan.py` içindeki `SAYFA_SAYDAMLIK` ile ayarlanır).
+
+**Ayarlar**'ın en altında **Kullanma Kılavuzu** vardır: program hakkında kısa bilgi ve her sekmenin nasıl
+kullanıldığını anlatan, tıklanınca açılan başlıklar (yönetici ve üye panellerinde kendi sekmelerine göre).
 
 Yeni kullanıcı ve üye kayıtlarını (`admin` veya `guest`) sadece giriş yapmış bir admin,
 **Ayarlar → Yeni Kullanıcı Ekle** ile oluşturabilir.
@@ -250,6 +253,7 @@ acodes/ek_bilgi.py            Kitap formundaki Ek Bilgiler kutusu, ISBN doğrula
 acodes/kitaplarim.py          Guest paneli > Kitaplarım sekmesi
 acodes/ana_sayfa.py           Ana sayfa özet panosu (kartlar ve listeler)
 acodes/arka_plan.py           Panellerin arka plan fotoğrafı
+acodes/kilavuz.py             Ayarlar > Kullanma Kılavuzu metinleri (yönetici ve üye)
 acodes/ayarlar.py             Ayarlar sekmesi (kullanıcılar, yedekleme, bilgiler / hesabım)
 bforms/              .ui dosyalarından üretilen formlar (elle düzenlenmez)
 cuis/                Qt Designer .ui kaynakları

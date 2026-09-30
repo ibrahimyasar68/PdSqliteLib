@@ -4,6 +4,7 @@ from bforms.guest_py import Ui_MainWindow
 from acodes.ortak import OrtakSekmeler
 from acodes.kitaplarim import Kitaplarim
 from acodes.ayarlar import Ayarlar
+from acodes import kilavuz
 from acodes.ana_sayfa import AnaSayfa, ana_sayfayi_yerlestir
 from acodes import arka_plan, bildirim, ikonlar
 from database.dbframe import genel_ozet, son_eklenenler
@@ -36,7 +37,7 @@ class Guest(OrtakSekmeler, QMainWindow):
 
         ###  Ayarlar: hesap bilgileri ve şifre değiştirme  ###
         self.ayarlar=Ayarlar([("Hesabım", [("Şifremi Değiştir", self.sifremi_degistir, "Kendi şifrenizi değiştirin")],
-                               self.hesap_bilgisi)])
+                               self.hesap_bilgisi)], kilavuz=kilavuz.UYE)
         self.QtLibrary.tabWidget.addTab(self.ayarlar,"Ayarlar")
 
         ###  Ana sayfa özet panosu  ###

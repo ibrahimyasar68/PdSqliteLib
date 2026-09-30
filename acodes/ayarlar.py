@@ -7,6 +7,7 @@ import os
 from PyQt5.QtCore import Qt, QUrl
 from PyQt5.QtGui import QDesktopServices
 from acodes import tema
+from acodes.kilavuz import Kilavuz
 from PyQt5.QtWidgets import (QFormLayout, QGroupBox, QHBoxLayout, QLabel, QPushButton, QScrollArea,
                              QVBoxLayout, QWidget)
 
@@ -57,9 +58,10 @@ class Bolum(QGroupBox):
 
 
 class Ayarlar(QScrollArea):
-    """bolumler: [(başlık, butonlar, bilgiler)] — ortalanmış tek sütunda alt alta gösterilir."""
+    """bolumler: [(başlık, butonlar, bilgiler)] — ortalanmış tek sütunda alt alta gösterilir.
+    kilavuz: en altta gösterilecek Kullanma Kılavuzu konuları [(başlık, metin)]."""
 
-    def __init__(self, bolumler, parent=None):
+    def __init__(self, bolumler, kilavuz=None, parent=None):
         super().__init__(parent)
         self.setWidgetResizable(True)
         self.setFrameShape(QScrollArea.NoFrame)
@@ -78,6 +80,9 @@ class Ayarlar(QScrollArea):
             bolum = Bolum(baslik, butonlar, bilgiler)
             dikey.addWidget(bolum)
             self.bolumler.append(bolum)
+        self.kilavuz = Kilavuz(kilavuz) if kilavuz else None
+        if self.kilavuz:
+            dikey.addWidget(self.kilavuz)
         dikey.addStretch()
         yatay = QHBoxLayout(ic)
         yatay.setContentsMargins(30, 10, 30, 10)

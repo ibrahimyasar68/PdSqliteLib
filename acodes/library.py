@@ -4,6 +4,7 @@ from bforms.onay import onay
 from acodes.user import User
 from acodes.kullanici_yonetimi import KullaniciYonetimi
 from acodes.ayarlar import Ayarlar, klasoru_ac
+from acodes import kilavuz
 from acodes import tema
 from acodes.odunc_gecmisi import OduncGecmisi
 from acodes.veri_duzeltme import VeriDuzeltme
@@ -85,7 +86,7 @@ class Library(OrtakSekmeler, QMainWindow):
                 ("Yedek Klasörünü Aç", lambda: klasoru_ac(yedek_klasoru()), "Otomatik yedeklerin bulunduğu klasör")],
                 self.yedek_bilgisi),
             ("Kütüphane Bilgileri", [], self.kutuphane_bilgisi),
-        ])
+        ], kilavuz=kilavuz.YONETICI)
         self.QtLibrary.tabWidget.addTab(self.ayarlar,"Ayarlar")
 
         ###  Ana sayfa özet panosu  ###
