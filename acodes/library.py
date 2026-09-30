@@ -8,6 +8,7 @@ from acodes import tema
 from acodes.odunc_gecmisi import OduncGecmisi
 from acodes.veri_duzeltme import VeriDuzeltme
 from acodes.ek_bilgi import EkBilgiler
+from acodes.aranabilir import aranabilir_yap, secili_veri
 from acodes.ortak import OrtakSekmeler, FILTRELER, SECINIZ
 from acodes.tablo import satir_verisi, tablo_ayarla, tablo_basliklari, tabloya_yaz
 from database.dbframe import (df_book_id_list, df_book_find_by_id, df_user_id_list, df_user_find_by_id,
@@ -71,6 +72,16 @@ class Library(OrtakSekmeler, QMainWindow):
         self.ortak_sekmeleri_kur()
         # Ana sayfa sade: işlem butonları Ayarlar sekmesinde, burada sadece Oturumu Kapat kalır
         self.QtLibrary.pushButton_1_yeni_kullanici.hide()
+
+        ###  Uzun açılır listeler yazdıkça süzülür  ###
+        ui=self.QtLibrary
+        for cmb,ipucu in ((ui.comboBox_3_2_bul_adi,"Kitap adı yazarak arayın..."),
+                          (ui.comboBox_3_3_bul_adi,"Kitap adı yazarak arayın..."),
+                          (ui.comboBox_6_1_1_liste_kitap,"Kitap adı yazarak arayın..."),
+                          (ui.comboBox_6_1_2_liste_kisi,"Üye adı yazarak arayın..."),
+                          (ui.comboBox_6_2_1_liste_kisi,"Üye adı yazarak arayın..."),
+                          (ui.comboBox_6_2_2_liste_kitap,"Kitap adı yazarak arayın...")):
+            aranabilir_yap(cmb,ipucu)
 
         ###  Tab_3 Olaylar  #########
         # Ek bilgiler (ISBN, kopya, raf, notlar) formların yanındaki boş alana
@@ -323,7 +334,7 @@ class Library(OrtakSekmeler, QMainWindow):
         kitap_listesi(self.QtLibrary.comboBox_3_2_bul_adi)
 
     def find_item_3_2(self):
-        id=self.QtLibrary.comboBox_3_2_bul_adi.currentData()
+        id=secili_veri(self.QtLibrary.comboBox_3_2_bul_adi)
         if id is None:
             self.QtLibrary.statusbar.showMessage("Seçim yapınız",self.dur_msj)
         else:
@@ -391,7 +402,7 @@ class Library(OrtakSekmeler, QMainWindow):
         kitap_listesi(self.QtLibrary.comboBox_3_3_bul_adi)
 
     def find_item_3_3(self):
-        id=self.QtLibrary.comboBox_3_3_bul_adi.currentData()
+        id=secili_veri(self.QtLibrary.comboBox_3_3_bul_adi)
         if id is None:
             self.QtLibrary.statusbar.showMessage("Seçim yapınız",self.dur_msj)
         else:
@@ -447,7 +458,7 @@ class Library(OrtakSekmeler, QMainWindow):
         kitap_listesi(self.QtLibrary.comboBox_6_1_1_liste_kitap)
 
     def find_item_6_1_1(self):
-        id=self.QtLibrary.comboBox_6_1_1_liste_kitap.currentData()
+        id=secili_veri(self.QtLibrary.comboBox_6_1_1_liste_kitap)
         if id is None:
             self.QtLibrary.statusbar.showMessage("Seçim yapınız",self.dur_msj)
             return
@@ -496,7 +507,7 @@ class Library(OrtakSekmeler, QMainWindow):
             self.QtLibrary.comboBox_6_1_2_liste_kisi.addItem(f"{adi} ({kullanici})",id)
 
     def find_user_6_1_2(self):
-        id=self.QtLibrary.comboBox_6_1_2_liste_kisi.currentData()
+        id=secili_veri(self.QtLibrary.comboBox_6_1_2_liste_kisi)
         if id is None:
             self.QtLibrary.statusbar.showMessage("Seçim yapınız",self.dur_msj)
         else:
@@ -560,7 +571,7 @@ class Library(OrtakSekmeler, QMainWindow):
             self.QtLibrary.comboBox_6_2_1_liste_kisi.addItem(f"{adi} ({kullanici})",id)
 
     def find_user_6_2_1(self):
-        id=self.QtLibrary.comboBox_6_2_1_liste_kisi.currentData()
+        id=secili_veri(self.QtLibrary.comboBox_6_2_1_liste_kisi)
         if id is None:
             self.QtLibrary.statusbar.showMessage("Seçim yapınız",self.dur_msj)
         else:
@@ -603,7 +614,7 @@ class Library(OrtakSekmeler, QMainWindow):
         self.clear_form_6_2_2()
 
     def find_item_6_2_2(self):
-        kitap_id=self.QtLibrary.comboBox_6_2_2_liste_kitap.currentData()
+        kitap_id=secili_veri(self.QtLibrary.comboBox_6_2_2_liste_kitap)
         if kitap_id is None:
             self.QtLibrary.statusbar.showMessage("Seçim yapınız",self.dur_msj)
         else:

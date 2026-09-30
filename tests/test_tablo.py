@@ -5,6 +5,7 @@ import pytest
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QAbstractItemView, QTableWidget
 
+from conftest import sec
 from acodes.guest import Guest
 from acodes.kullanici_yonetimi import KullaniciYonetimi
 from acodes.library import Library
@@ -95,7 +96,7 @@ def test_listeden_cift_tiklama_kitabi_duzenlemede_acar(lib):
 
 def test_filtreden_cift_tiklama(lib):
     q = lib.QtLibrary
-    q.comboBox_4_2_turu.setCurrentText("Stefan ZWEIG")
+    sec(q.comboBox_4_2_turu, "Stefan ZWEIG")
     lib.filtre_listele(2, "Yazari")
     lib.tablodan_kitap_duzenle(q.tableWidget_4_2_2, 0)
     assert q.lineEdit_3_2_adi.text() == "Satranç"

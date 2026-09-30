@@ -48,6 +48,13 @@ def ornek_veri_yukle():
     baglantı.commit()
 
 
+def sec(cmb, metin):
+    """Açılır listede bir seçeneği kullanıcı gibi listeden seçer."""
+    i = cmb.findText(metin)
+    assert i >= 0, f"{metin!r} listede yok"
+    cmb.setCurrentIndex(i)
+
+
 @pytest.fixture(scope="session")
 def app():
     return QApplication.instance() or QApplication([])

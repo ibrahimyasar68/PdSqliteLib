@@ -2,7 +2,7 @@
 # Pencereler ekranda açılmaz; butonlara basmak yerine aynı fonksiyonlar çağrılır.
 import pytest
 
-from conftest import ADMIN_SIFRE, UYE_SIFRE
+from conftest import ADMIN_SIFRE, UYE_SIFRE, sec
 from acodes.guest import Guest
 from acodes.library import Library, buyuk_harf
 from acodes.login import Login
@@ -102,8 +102,8 @@ def test_oduncteki_kitap_silinemez(lib, db, uyarilar):
 
 def test_filtre_coklu_secim_ve_temizleme(lib):
     q = lib.QtLibrary
-    q.comboBox_4_1_turu.setCurrentText("Roman")
-    q.comboBox_4_1_turu.setCurrentText("Deneme")
+    sec(q.comboBox_4_1_turu, "Roman")
+    sec(q.comboBox_4_1_turu, "Deneme")
     lib.filtre_listele(1, "Turu")
     assert lib.filtre_secimleri[1] == ["Deneme", "Roman"]
     assert q.tableWidget_4_1_2.rowCount() == 7
@@ -112,9 +112,10 @@ def test_filtre_coklu_secim_ve_temizleme(lib):
 
 
 def test_tirnakli_yazara_gore_filtre(lib):
-    lib.QtLibrary.comboBox_4_2_turu.setCurrentText("O'brien")
+    sec(lib.QtLibrary.comboBox_4_2_turu, "O'brien")
     lib.filtre_listele(2, "Yazari")
-    assert lib.QtLibrary.tableWidget_4_2_2.rowCount() == 1
+    t = lib.QtLibrary.tableWidget_4_2_2
+    assert t.rowCount() == 1 and t.item(0, 1).text() == "Anne'nin Günlüğü"
 
 
 def test_az_turle_istatistik_ekrani_acilir(app, uyarilar):

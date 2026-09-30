@@ -32,6 +32,12 @@ Yeni kullanıcı ve üye kayıtlarını (`admin` veya `guest`) sadece giriş yap
 tür, yayınevi ve yılda arar; büyük/küçük harf ve Türkçe karakter farkı gözetmez ("sahin" → "Şahin",
 "kuyucakli" → "Kuyucaklı"). Birden fazla kelime yazılırsa hepsini içeren kitaplar listelenir.
 
+### Aranabilir listeler
+
+Kitap Kayıt ve Kitap Verme'deki kitap/üye seçimleri ile Filtre'deki tür, yazar, yayınevi ve yıl
+listelerine yazdıkça liste süzülür ("iklim" → iki "İklimler" baskısı); büyük/küçük harf ve Türkçe
+karakter farkı gözetilmez. Tam adı yazıp **Bul**'a basmak da yeterlidir.
+
 ### Tablolar
 
 - Kolon başlığına tıklayınca tablo o kolona göre sıralanır (tekrar tıklayınca ters sırada).
@@ -199,7 +205,8 @@ acodes/tema.py       Tek renk teması (renkler burada; .ui dosyalarındaki renkl
 acodes/kullanici_yonetimi.py  Kullanıcı yönetimi ve şifre değiştirme pencereleri
 acodes/odunc_gecmisi.py       Kitap Verme > Ödünç Geçmişi sekmesi
 acodes/grafikler.py           İstatistik > Grafikler (veritabanından her seferinde çizilir)
-acodes/tablo.py               Tablo doldurma, Türkçe sıralama, satır vurgulama
+acodes/tablo.py               Tablo doldurma, Türkçe sıralama, satır vurgulama, boş tablo mesajı
+acodes/aranabilir.py          Yazdıkça süzülen açılır listeler
 acodes/disa_aktar.py          Tabloları Excel / CSV olarak kaydetme
 acodes/veri_duzeltme.py       Kitap Kayıt > Veri Düzeltme sekmesi
 acodes/ek_bilgi.py            Kitap formlarındaki Ek Bilgiler kutusu, ISBN doğrulama

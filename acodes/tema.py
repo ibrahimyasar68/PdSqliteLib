@@ -52,6 +52,7 @@ QLineEdit, QComboBox, QSpinBox, QPlainTextEdit {{ background-color: {KART}; colo
                border: 1px solid #C7CDD8; border-radius: 5px; padding: 3px 6px; }}
 QLineEdit:focus, QComboBox:focus, QSpinBox:focus, QPlainTextEdit:focus {{ border-color: {VURGU}; }}
 QLineEdit:read-only {{ background-color: #F1F4F8; }}
+QListView::item {{ padding: 4px 8px; }}
 QComboBox QAbstractItemView {{ background-color: {KART}; color: {METIN};
                selection-background-color: {VURGU_ACIK}; selection-color: {METIN}; }}
 

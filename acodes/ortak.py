@@ -7,6 +7,7 @@ from bforms.onay import onay
 from database.dbframe import df_sort_list, df_srt_fltr, kitap_ara, rapor
 from acodes.grafikler import GrafikPaneli
 from acodes import tema
+from acodes.aranabilir import aranabilir_yap
 from acodes.tablo import tablo_ayarla, tablo_basliklari, tabloya_yaz  # noqa: F401  (library.py de buradan alır)
 from acodes.disa_aktar import disa_aktar, sag_tik_menusu
 from acodes.kullanici_yonetimi import SifreDegistir, panel_butonu
@@ -51,7 +52,9 @@ class OrtakSekmeler:
         self.filtre_secimleri={no:[] for no,_,_ in FILTRELER}
         for no,kolon,baslik in FILTRELER:
             self.filtre_kur(no,kolon,baslik)
-            self.filtre_combo(no).currentTextChanged.connect(lambda _,no=no: self.filtre_ekle(no))
+            # Yazdıkça süzülen liste; seçime ekleme bir seçenek seçilince yapılır (yazarken değil)
+            aranabilir_yap(self.filtre_combo(no), f"{FILTRE_ADLARI[no]} yazarak arayın...")
+            self.filtre_combo(no).currentIndexChanged.connect(lambda _,no=no: self.filtre_ekle(no))
             getattr(ui,f"pushButton_4_{no}_listele").clicked.connect(lambda _,no=no,kolon=kolon: self.filtre_listele(no,kolon))
             getattr(ui,f"pushButton_4_{no}_temizle").clicked.connect(lambda _,no=no,baslik=baslik: self.filtre_temizle(no,baslik))
 
