@@ -112,11 +112,22 @@ SEKME_IKONLARI = {"tab_1": "ev", "tab_2": "liste", "tab_3": "kalem", "tab_4": "h
                   "tab_6": "takas", "ayarlar": "disli", "kitaplarim": "kitap"}
 
 
+# Yardımcı işlemler beyaz zeminli, çerçeveli (ikincil) gösterilir; asıl işlem (Kaydet, Ödünç Ver ...) mavi kalır
+IKINCIL_BUTONLAR = {"Vazgeç", "Temizle", "Kapat", "Dışa Aktar", "Yeni Kitap", "Yedek Klasörünü Aç",
+                    "Bu Öneriyi Yoksay", "İptal"}
+IKINCIL_RENK = "#334155"
+
+
 def butonlara_uygula(pencere):
     for buton in pencere.findChildren(QPushButton):
+        ikincil = buton.text() in IKINCIL_BUTONLAR
+        if ikincil and buton.property("rol") is None:
+            buton.setProperty("rol", "ikincil")
+            buton.style().unpolish(buton)
+            buton.style().polish(buton)
         ad = BUTON_IKONLARI.get(buton.text())
         if ad and buton.icon().isNull():
-            buton.setIcon(ikon(ad))
+            buton.setIcon(ikon(ad, IKINCIL_RENK) if ikincil else ikon(ad))
 
 
 def sekmelere_uygula(sekmeler, sayfa_adlari):

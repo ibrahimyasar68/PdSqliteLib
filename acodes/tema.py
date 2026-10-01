@@ -23,7 +23,7 @@ TEHLIKE_KOYU = "#B91C1C"
 YAZI_PX = 15
 
 # Geri alınamayan işlem butonları kırmızı gösterilir
-TEHLIKELI_BUTONLAR = ["kitap_sil"]
+TEHLIKELI_BUTONLAR = ["kitap_sil", "kullanici_sil"]
 
 TEMA = f"""
 QMainWindow, #centralwidget {{ background-color: {ZEMIN}; }}

@@ -46,3 +46,14 @@ def test_pencerelerde_ikon(app):
     s = SifreDegistir("admin")
     from PyQt5.QtWidgets import QPushButton
     assert all(not b.icon().isNull() for b in s.findChildren(QPushButton))
+
+
+def test_ikincil_ve_asil_butonlar(app, uyarilar):
+    lib = Library()
+    k = lib.kitaplar
+    assert k.btn_kaydet.property("rol") is None                         # asıl işlem: dolu mavi
+    assert k.btn_vazgec.property("rol") == "ikincil" and k.btn_yeni.property("rol") == "ikincil"
+    assert lib.odunc.btn_ver.property("rol") is None and lib.odunc.btn_aktar.property("rol") == "ikincil"
+    assert lib.QtLibrary.pushButton_2_temizle.property("rol") == "ikincil"
+    y = KullaniciYonetimi("admin")
+    assert y.btn_sil.objectName() == "kullanici_sil"                    # silme kırmızı

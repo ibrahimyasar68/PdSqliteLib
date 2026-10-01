@@ -138,7 +138,7 @@ class KullaniciYonetimi(QDialog):
 
         self.btn_duzenle = QPushButton("Düzenle")
         self.btn_sifre = QPushButton("Şifre Değiştir")
-        self.btn_sil = QPushButton("Sil")
+        self.btn_sil = QPushButton("Sil", objectName="kullanici_sil")
         btn_kapat = QPushButton("Kapat")
         self.btn_duzenle.clicked.connect(self.duzenle)
         self.btn_sifre.clicked.connect(self.sifre_degistir)
