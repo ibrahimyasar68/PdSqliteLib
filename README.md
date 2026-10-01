@@ -6,6 +6,9 @@ Windows ve macOS üzerinde çalışır.
 
 **IY Labs** tarafından 2025 yılında üretilmiştir.
 
+"Yaşar Kütüphanesi" başlığındaki el yazısı [Great Vibes](https://github.com/googlefonts/great-vibes) fontudur;
+SIL Open Font License 1.1 ile programa gömülüdür (`media/fonts/`, lisans metni `media/fonts/OFL.txt`).
+
 ## Özellikler
 
 Giriş ekranında kullanıcının yetkisine göre iki farklı panel açılır:

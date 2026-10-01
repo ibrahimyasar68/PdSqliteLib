@@ -1,6 +1,7 @@
-from PyQt5.QtWidgets import (QAction, QApplication, QLabel, QLineEdit, QMainWindow, QSizePolicy, QVBoxLayout,
+from PyQt5.QtWidgets import (QAction, QApplication, QGraphicsDropShadowEffect, QLabel, QLineEdit, QMainWindow, QSizePolicy, QVBoxLayout,
                              QWidget)
 from PyQt5.QtCore import Qt
+from PyQt5.QtGui import QColor
 import sys
 from acodes.library import Library
 from acodes.guest import Guest
@@ -20,6 +21,7 @@ def panel_goster(panel):
 # Sağ taraf: geçişli zemin yerine beyaz kart; soldaki fotoğraf ve başlık korunur
 GIRIS_STILI = f"""
 #label_2 {{ background-color: {tema.KART}; border-top-right-radius: 16px; border-bottom-right-radius: 16px; }}
+#label_5 {{ color: white; font-family: "{tema.BASLIK_YAZISI}"; font-size: 48px; font-style: normal; }}
 #giris_karti QLabel {{ color: #334155; font-size: 13px; font-weight: bold; }}
 #giris_karti QLabel#giris_baslik {{ color: {tema.METIN}; font-size: 26px; font-weight: bold; }}
 #giris_karti QLabel#giris_alt {{ color: {tema.IKINCIL_METIN}; font-size: 13px; font-weight: normal; }}
@@ -57,9 +59,17 @@ class Login(QMainWindow):
     def tasarim(self):
         ###  Sağ tarafa beyaz giriş kartı: başlık, etiketli alanlar, kart içinde mesaj, tam genişlikte buton  ###
         ui=self.QtLogin
-        for eski in (ui.label_2, ui.formFrame, ui.label_3, ui.label_4, ui.pushButton_giris, ui.pushButton_cikis):
+        for eski in (ui.label_2, ui.label_5, ui.formFrame, ui.label_3, ui.label_4, ui.pushButton_giris, ui.pushButton_cikis):
             eski.setStyleSheet("")
         ui.formFrame.hide()
+        # Başlık fotoğrafın genişliğinde ve ortada (gömülü el yazısı .ui'daki dar kutuya sığmıyordu)
+        ui.label_5.setGeometry(18,70,400,150)
+        ui.label_5.setAlignment(Qt.AlignCenter)
+        golge=QGraphicsDropShadowEffect(ui.label_5)
+        golge.setBlurRadius(16)
+        golge.setOffset(0,2)
+        golge.setColor(QColor(0,0,0,180))
+        ui.label_5.setGraphicsEffect(golge)
         ui.statusbar.hide()                       # mesajlar kartın içinde gösterilir
 
         kart=QWidget(ui.widget)

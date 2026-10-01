@@ -2,6 +2,9 @@
 # .ui dosyalarından gelen sekme/buton renkleri silinir, yerine bu tema uygulanır.
 # Kodla eklenen sekmeler (Ayarlar, Veri Düzeltme, ...) renk tanımlamaz; temayı panelden devralır.
 
+import os
+import sys
+
 from PyQt5.QtGui import QFont, QFontDatabase
 from PyQt5.QtWidgets import QWidget
 
@@ -38,7 +41,6 @@ QTabBar::tab:hover:!selected {{ background-color: #EDF2FB; color: {METIN}; }}
 QStackedWidget > QWidget {{ background-color: {SAYFA}; }}
 
 QLabel {{ color: {METIN}; background: transparent; }}
-#label {{ color: #FFE14D; font: italic 50pt "Monotype Corsiva"; }}
 #label_32, #label_log_on {{ color: white; font-size: 18px; font-weight: bold; }}
 
 QPushButton {{ background-color: {VURGU}; color: white; border: none; border-radius: 6px; padding: 4px 8px; }}
@@ -96,8 +98,27 @@ def yazi_tipi(px=YAZI_PX, kalin=False):
     return yazi
 
 
+# "Yaşar Kütüphanesi" başlığı için programa gömülü el yazısı (Great Vibes, SIL Open Font License; media/fonts)
+BASLIK_YAZISI = "Great Vibes"
+_baslik_yuklendi = False
+
+
+def font_klasoru():
+    kok = sys._MEIPASS if getattr(sys, "frozen", False) else os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    return os.path.join(kok, "media", "fonts")
+
+
+def baslik_yazisini_yukle():
+    """Gömülü başlık fontunu bir kez yükler; yüklenemezse başlık sistemin italik yazısıyla görünür."""
+    global _baslik_yuklendi
+    if not _baslik_yuklendi:
+        _baslik_yuklendi = QFontDatabase.addApplicationFont(os.path.join(font_klasoru(), "GreatVibes-Regular.ttf")) >= 0
+    return _baslik_yuklendi
+
+
 def qss():
     """Tema + yazı tipi kuralları (yazı ailesi uygulama açıkken belirlenebildiği için fonksiyon)."""
+    baslik_yazisini_yukle()
     return TEMA + denetimler() + f"""
 * {{ font-family: "{yazi_ailesi()}"; font-style: normal; }}
 QWidget {{ font-size: {YAZI_PX}px; }}

@@ -27,6 +27,7 @@ if not exist ".venv\Scripts\python.exe" (
     --exclude-module PIL ^
     --exclude-module tkinter ^
     --add-data "%CD%\data\DBL_Kayit.db;data" ^
+    --add-data "%CD%\media\fonts;media\fonts" ^
     --workpath build\pyinstaller ^
     --specpath build\pyinstaller ^
     --distpath dist || goto hata

@@ -1,4 +1,6 @@
 ## Buton ve sekme ikonları testleri ##
+import os
+
 import pytest
 from PyQt5.QtGui import QIcon
 
@@ -66,3 +68,11 @@ def test_acilir_liste_ve_sayi_kutusu_oklari(app):
     assert all(os.path.getsize(y) > 0 for y in yollar.values())
     stil = tema.qss()
     assert yollar["asagi"] in stil and "QSpinBox::up-arrow" in stil and "QComboBox::drop-down" in stil
+
+
+def test_baslik_yazisi_gomulu(app):
+    from PyQt5.QtGui import QFontDatabase
+    from acodes import tema
+    assert tema.baslik_yazisini_yukle()
+    assert tema.BASLIK_YAZISI in QFontDatabase().families()
+    assert os.path.exists(os.path.join(tema.font_klasoru(), "OFL.txt"))      # lisans fontla birlikte dağıtılır
