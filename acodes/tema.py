@@ -98,9 +98,32 @@ def yazi_tipi(px=YAZI_PX, kalin=False):
 
 def qss():
     """Tema + yazı tipi kuralları (yazı ailesi uygulama açıkken belirlenebildiği için fonksiyon)."""
-    return TEMA + f"""
+    return TEMA + denetimler() + f"""
 * {{ font-family: "{yazi_ailesi()}"; font-style: normal; }}
 QWidget {{ font-size: {YAZI_PX}px; }}
+"""
+
+
+def denetimler():
+    """Açılır liste ve sayı kutusu: çerçeveli ok kutusu yerine sade ok, odakta mavi çerçeve, üstüne gelince vurgu."""
+    from acodes.ikonlar import ok_resimleri    # ikonlar QPixmap ister: uygulama açıldıktan sonra çizilir
+    ok = ok_resimleri("#475569")
+    return f"""
+QComboBox {{ padding-right: 30px; }}
+QComboBox:hover, QSpinBox:hover, QLineEdit:hover {{ border-color: #94A3B8; }}
+QComboBox:focus, QSpinBox:focus, QLineEdit:focus, QPlainTextEdit:focus {{ border: 2px solid {VURGU}; }}
+QComboBox::drop-down {{ subcontrol-origin: padding; subcontrol-position: center right; width: 28px; border: none;
+               background: transparent; }}
+QComboBox::down-arrow {{ image: url("{ok['asagi']}"); width: 18px; height: 18px; }}
+QComboBox::down-arrow:on {{ image: url("{ok['yukari']}"); }}
+QSpinBox {{ padding-right: 26px; }}
+QSpinBox::up-button, QSpinBox::down-button {{ subcontrol-origin: padding; width: 22px; border: none;
+               background: transparent; margin-right: 2px; }}
+QSpinBox::up-button {{ subcontrol-position: top right; margin-top: 2px; }}
+QSpinBox::down-button {{ subcontrol-position: bottom right; margin-bottom: 2px; }}
+QSpinBox::up-button:hover, QSpinBox::down-button:hover {{ background: {VURGU_ACIK}; border-radius: 4px; }}
+QSpinBox::up-arrow {{ image: url("{ok['yukari']}"); width: 12px; height: 12px; }}
+QSpinBox::down-arrow {{ image: url("{ok['asagi']}"); width: 12px; height: 12px; }}
 """
 
 

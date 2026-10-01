@@ -57,3 +57,12 @@ def test_ikincil_ve_asil_butonlar(app, uyarilar):
     assert lib.QtLibrary.pushButton_2_temizle.property("rol") == "ikincil"
     y = KullaniciYonetimi("admin")
     assert y.btn_sil.objectName() == "kullanici_sil"                    # silme kırmızı
+
+
+def test_acilir_liste_ve_sayi_kutusu_oklari(app):
+    import os
+    from acodes import tema
+    yollar = ikonlar.ok_resimleri("#475569")
+    assert all(os.path.getsize(y) > 0 for y in yollar.values())
+    stil = tema.qss()
+    assert yollar["asagi"] in stil and "QSpinBox::up-arrow" in stil and "QComboBox::drop-down" in stil

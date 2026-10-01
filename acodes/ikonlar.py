@@ -3,6 +3,8 @@
 # Mac ve Windows'ta aynı görünür. Çizimler 24x24'lük bir ızgarada ince çizgili sade bir stildedir.
 
 import math
+import os
+import tempfile
 
 from PyQt5.QtCore import QPointF, QRectF, Qt
 from PyQt5.QtGui import QColor, QIcon, QPainter, QPainterPath, QPen, QPixmap, QPolygonF
@@ -64,6 +66,8 @@ CIZIMLER = {
                         _cizgi(p, (4, 19.5), (6.5, 17), (20, 17))),
     "goz": lambda p: (_goz(p), _daire(p, 12, 12, 3)),
     "goz_kapali": lambda p: (_goz(p), _cizgi(p, (3, 3), (21, 21))),
+    "asagi": lambda p: _cizgi(p, (5, 8.5), (12, 15.5), (19, 8.5)),
+    "yukari": lambda p: _cizgi(p, (5, 15.5), (12, 8.5), (19, 15.5)),
 }
 
 
@@ -88,6 +92,19 @@ def _resim(ad, renk, boyut=64):
     CIZIMLER[ad](p)
     p.end()
     return resim
+
+
+def ok_resimleri(renk="#64748B"):
+    """Açılır liste ve sayı kutusu okları için stil sayfasının kullanacağı PNG dosyaları.
+    Stil sayfası resmi dosyadan okuduğu için geçici klasöre çizilir: {ad: yol}."""
+    klasor = os.path.join(tempfile.gettempdir(), "pdsqlitelib_oklar")
+    os.makedirs(klasor, exist_ok=True)
+    yollar = {}
+    for ad in ("asagi", "yukari"):
+        yol = os.path.join(klasor, f"{ad}_{renk.strip('#')}.png")
+        _resim(ad, renk, 48).save(yol)          # her açılışta yazılır: çizim değişirse eskisi kalmaz
+        yollar[ad] = yol.replace(os.sep, "/")
+    return yollar
 
 
 def ikon(ad, renk=BUTON_RENGI, pasif=PASIF_RENGI):
