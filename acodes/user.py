@@ -1,5 +1,5 @@
 from PyQt5.QtWidgets import QApplication, QHBoxLayout, QLabel, QListView, QMainWindow, QMessageBox, QVBoxLayout, QWidget
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, pyqtSignal
 from acodes import ikonlar, tema
 from bforms.user_py import Ui_MainWindow
 from database.dbframe import df_user_query
@@ -28,8 +28,15 @@ def sifre_hatasi(sifre, tekrar=None):
 
 
 class User(QMainWindow):
-    def __init__(self):
-        super().__init__()
+    kaydedildi = pyqtSignal(str)      # kullanıcı adı: panel listeleri yeniler ve bildirim gösterir
+
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        if parent is not None:
+            # Panelin üzerinde, ona bağlı pencere: kapanınca kalınan menüye dönülür (Mac'te tam ekran/büyütülmüş
+            # panelden ayrı bir masaüstü alanına geçip siyah ekranda kalmıyordu)
+            self.setWindowFlags(Qt.Dialog)
+            self.setWindowModality(Qt.WindowModal)
         self.QtUser = Ui_MainWindow()
         self.QtUser.setupUi(self)
         self.dur_msj=3000
@@ -112,9 +119,26 @@ class User(QMainWindow):
 QLineEdit, QComboBox {{ font-size: 16px; padding: 4px 10px; border-radius: 8px; }}
 """)
 
+    def ac(self):
+        ###  Panelin ortasında, önde açılır  ###
+        panel=self.parentWidget()
+        if panel is not None:
+            merkez=panel.frameGeometry().center()
+            self.move(merkez.x()-self.width()//2, max(panel.frameGeometry().top()+20, merkez.y()-self.height()//2))
+        self.show()
+        self.raise_()
+        self.activateWindow()
+
     def user_exit(self):
         self.clear_form()
         self.close()
+
+    def closeEvent(self,olay):
+        super().closeEvent(olay)
+        panel=self.parentWidget()
+        if panel is not None:                    # odak panele döner
+            panel.raise_()
+            panel.activateWindow()
 
     def chk_kullanici_adi(self):
         if df_user_query('kullanici',self.QtUser.lineEdit_kullanici_adi.text()):
@@ -165,10 +189,12 @@ QLineEdit, QComboBox {{ font-size: 16px; padding: 4px 10px; border-radius: 8px; 
                 kayit.append(self.QtUser.lineEdit_telefon.text())
                 kayit.append(self.QtUser.lineEdit_mail.text())
                 kayit.append(self.QtUser.comboBox_yetki.currentText())
-                cvb=onay(f"{kayit[0]} kaydı yapılsın mı?")
+                cvb=onay(f"{kayit[0]} kaydı yapılsın mı?",self)
                 if cvb==QMessageBox.Yes:
                     user_ekle(kayit)
                     self.clear_form()
+                    self.close()                     # form kapanır, kalınan menüye dönülür
+                    self.kaydedildi.emit(kayit[0])
 
     def cmb_yetki(self):
         cmb=["Yetki Seçin...","admin","guest"]

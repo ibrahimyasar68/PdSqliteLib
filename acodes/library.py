@@ -51,7 +51,8 @@ class Library(OrtakSekmeler, QMainWindow):
         tema.uygula(self)   # .ui renkleri yerine tek tema
         self.arka_plan=arka_plan.uygula(self)   # yaprak fotoğrafı tüm panelin zemininde
         self.bildirim=bildirim.baglan(self,self.QtLibrary.statusbar)   # mesajlar kısa süreli bildirim olarak
-        self.user=User()
+        self.user=User(self)
+        self.user.kaydedildi.connect(self.kullanici_eklendi)
         self.QtLibrary.tabWidget.setCurrentIndex(0)
 
         ###  Property  #########
@@ -78,7 +79,7 @@ class Library(OrtakSekmeler, QMainWindow):
         ###  Ayarlar sekmesi: kullanıcılar, yedekleme ve kütüphane bilgileri  ###
         self.ayarlar=Ayarlar([
             ("Kullanıcılar", [
-                ("Yeni Kullanıcı Ekle", self.user.show, "Yeni üye veya yönetici kaydı"),
+                ("Yeni Kullanıcı Ekle", self.user.ac, "Yeni üye veya yönetici kaydı"),
                 ("Kullanıcı Yönetimi", self.kullanici_yonetimi, "Kullanıcıları düzenleme, şifre sıfırlama, silme"),
                 ("Şifremi Değiştir", self.sifremi_degistir, "Kendi şifrenizi değiştirin")], None),
             ("Yedekleme", [
@@ -237,6 +238,11 @@ class Library(OrtakSekmeler, QMainWindow):
                 ("Kullanıcı", f"{o['uye']} üye, {o['admin']} yönetici"),
                 ("Ödünç", f"{o['disarida']} kitap dışarıda, toplam {o['odunc']} işlem"),
                 ("Veritabanı", os.path.normpath(DB_YOLU))]
+
+    def kullanici_eklendi(self,kullanici):
+        ###  Yeni kullanıcı kaydından sonra: listeler (ödünç verme, bilgiler) yenilenir, aynı menüde kalınır  ###
+        self.yenile()
+        self.QtLibrary.statusbar.showMessage(f"'{kullanici}' kullanıcısı kaydedildi.",self.dur_msj*2)
 
     def kullanici_yonetimi(self):
         KullaniciYonetimi(self.aktif_kullanici, self).exec_()

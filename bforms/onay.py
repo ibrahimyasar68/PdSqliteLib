@@ -1,7 +1,8 @@
 from PyQt5.QtWidgets import *
 
-def onay(msj):
-    mesaj=QMessageBox()
+def onay(msj, parent=None):
+    # Açık pencereye bağlı açılır: Mac'te ayrı bir masaüstü alanına geçip panelin kaybolmasını önler
+    mesaj=QMessageBox(parent or QApplication.activeWindow())
     mesaj.setIcon(QMessageBox.Information)
     mesaj.setWindowTitle("Onay")
     mesaj.setText(msj)

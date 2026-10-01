@@ -1,6 +1,7 @@
 ## Arayüz (acodes/) testleri ##
 # Pencereler ekranda açılmaz; butonlara basmak yerine aynı fonksiyonlar çağrılır.
 import pytest
+from PyQt5.QtCore import Qt
 
 from conftest import ADMIN_SIFRE, UYE_SIFRE
 from acodes.guest import Guest
@@ -118,3 +119,30 @@ def test_yeni_kullanici_penceresi_temada(form):
     assert not ui.pushButton_kaydet.icon().isNull()
     ui.statusbar.showMessage("Deneme mesajı")
     assert form.mesaj.text() == "Deneme mesajı"                                        # mesaj formun içinde
+
+
+def test_yeni_uye_kaydindan_sonra_kalinan_menuye_donulur(lib, form, db):
+    q = lib.QtLibrary
+    q.tabWidget.setCurrentWidget(lib.ayarlar)
+    lib.ayarlar.buton("Yeni Kullanıcı Ekle").click()
+    assert form.isVisible() and form.parentWidget() is lib            # panele bağlı açılır (ayrı pencere değil)
+    assert form.isWindow() and form.windowModality() == Qt.WindowModal
+    formu_doldur(form, kullanici_adi="veli", sifre="gizli123", adi_soyadi="Veli Can",
+                 telefon="5551234567", mail="veli@ornek.com")
+    form.QtUser.comboBox_yetki.setCurrentText("guest")
+    form.save_user()
+    assert db.execute("SELECT COUNT(*) FROM users WHERE kullanici='veli'").fetchone()[0] == 1
+    assert not form.isVisible()                                         # form kapandı
+    assert q.tabWidget.currentWidget() is lib.ayarlar                   # aynı menüde kalındı
+    assert q.statusbar.currentMessage() == "'veli' kullanıcısı kaydedildi."
+    assert "Veli Can (veli)" in etiketler(lib.odunc.uye)                 # listeler hemen yenilendi
+    assert form.QtUser.lineEdit_kullanici_adi.text() == ""
+
+
+def test_onay_kutusu_acik_pencereye_baglanir(app, monkeypatch):
+    from PyQt5.QtWidgets import QMessageBox, QWidget
+    from bforms import onay as onay_modulu
+    ebeveynler = []
+    monkeypatch.setattr(QMessageBox, "exec_", lambda self: ebeveynler.append(self.parentWidget()) or QMessageBox.Yes)
+    w = QWidget()
+    assert onay_modulu.onay("Emin misiniz?", w) == QMessageBox.Yes and ebeveynler == [w]
