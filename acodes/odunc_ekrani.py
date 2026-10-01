@@ -1,12 +1,12 @@
 ## Kitap Verme > Ödünç ve İade: ödünç verme, iade alma ve dışarıdaki kitaplar tek ekranda ##
-# Solda dışarıdaki kitaplar (gecikenler kırmızı), sağda iki kart: "Ödünç ver" (kitap ve üye seçilince
-# bilgileri kendiliğinden gelir) ve "İade al" (listeden seçilen ödünç). Eski üç ayrı ekranın yerine.
+# Üstte tam genişlikte dışarıdaki kitaplar (gecikenler kırmızı), altta yan yana iki kart: "Ödünç ver" (kitap
+# ve üye seçilince bilgileri kendiliğinden gelir) ve "İade al" (listeden seçilen ödünç). Eski üç ekranın yerine.
 
 import datetime
 
 from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import (QComboBox, QFormLayout, QFrame, QGroupBox, QHBoxLayout, QHeaderView, QLabel, QLineEdit,
-                             QMessageBox, QPushButton, QScrollArea, QTableWidget, QVBoxLayout, QWidget)
+from PyQt5.QtWidgets import (QComboBox, QGridLayout, QGroupBox, QHBoxLayout, QHeaderView, QLabel, QLineEdit,
+                             QMessageBox, QPushButton, QTableWidget, QVBoxLayout, QWidget)
 
 from bforms.onay import onay
 from acodes import tema
@@ -73,29 +73,21 @@ class OduncEkrani(QWidget):
         baslik = self.tablo.horizontalHeader()
         baslik.setStretchLastSection(False)
         baslik.setMinimumSectionSize(50)
+        # Liste tam genişlikte: kitap, yazar ve üye kalan yeri paylaşır, kısa kolonlar içeriğe göre
         for kolon in range(len(LISTE_KOLONLARI)):
-            baslik.setSectionResizeMode(kolon, QHeaderView.ResizeToContents)
-        baslik.setSectionResizeMode(0, QHeaderView.Stretch)
-        for kolon in (1, 2):
-            baslik.setSectionResizeMode(kolon, QHeaderView.Interactive)
-            self.tablo.setColumnWidth(kolon, 130)
-        self.tablo.setColumnHidden(3, True)      # telefon iade kartında gösterilir, dar pencerede yer açılır
+            baslik.setSectionResizeMode(kolon, QHeaderView.Stretch if kolon in (0, 1, 2) else QHeaderView.ResizeToContents)
         self.tablo.itemSelectionChanged.connect(self.secim_degisti)
         ust = QHBoxLayout()
         ust.addWidget(self.arama, 1)
         ust.addWidget(self.btn_aktar)
-        sol = QVBoxLayout()
-        sol.addLayout(ust)
-        sol.addWidget(self.ozet)
-        sol.addWidget(self.tablo, 1)
 
-        # --- Sağ üst: ödünç ver
+        # --- Alt sol: ödünç ver (kitap ve üye yan yana, bilgileri altlarında, buton sağda)
         self.kitap = QComboBox()
         self.uye = QComboBox()
         for cmb, ipucu in ((self.kitap, "Kitap adı yazarak arayın..."), (self.uye, "Üye adı yazarak arayın...")):
-            cmb.setMinimumHeight(32)
+            cmb.setMinimumHeight(34)
             cmb.setSizeAdjustPolicy(QComboBox.AdjustToMinimumContentsLengthWithIcon)
-            cmb.setMinimumContentsLength(16)
+            cmb.setMinimumContentsLength(12)
             aranabilir_yap(cmb, ipucu)
             cmb.currentIndexChanged.connect(self.ver_durumu)
         self.kitap_bilgi = QLabel(wordWrap=True)
@@ -104,57 +96,47 @@ class OduncEkrani(QWidget):
         self.btn_ver = QPushButton("Ödünç Ver")
         self.btn_ver.clicked.connect(self.odunc_ver)
         ver = QGroupBox("Ödünç ver")
-        form = QFormLayout(ver)
-        form.setFieldGrowthPolicy(QFormLayout.AllNonFixedFieldsGrow)
-        form.setVerticalSpacing(8)
-        form.addRow("Kitap:", self.kitap)
-        form.addRow("", self.kitap_bilgi)
-        form.addRow("Üye:", self.uye)
-        form.addRow("", self.uye_bilgi)
-        form.addRow(self.ver_bilgi)
-        form.addRow(self._sagda(self.btn_ver))
+        izgara = QGridLayout(ver)
+        izgara.setHorizontalSpacing(10)
+        izgara.setVerticalSpacing(6)
+        izgara.addWidget(QLabel("Kitap:"), 0, 0)
+        izgara.addWidget(self.kitap, 0, 1)
+        izgara.addWidget(QLabel("Üye:"), 0, 2)
+        izgara.addWidget(self.uye, 0, 3)
+        izgara.addWidget(self.kitap_bilgi, 1, 1, Qt.AlignTop)
+        izgara.addWidget(self.uye_bilgi, 1, 3, Qt.AlignTop)
+        izgara.addWidget(self.ver_bilgi, 2, 0, 1, 3)
+        izgara.addWidget(self.btn_ver, 2, 3, Qt.AlignRight)
+        izgara.setColumnStretch(1, 1)
+        izgara.setColumnStretch(3, 1)
 
-        # --- Sağ alt: iade al
+        # --- Alt sağ: iade al (listeden seçilen ödünç)
         self.iade_bilgi = QLabel(wordWrap=True, objectName="iade_bilgi")
         self.iade_bilgi.setTextFormat(Qt.RichText)
+        self.iade_bilgi.setAlignment(Qt.AlignTop | Qt.AlignLeft)
         self.btn_iade = QPushButton("İade Al")
         self.btn_iade.clicked.connect(self.iade_al)
         iade = QGroupBox("İade al")
         dikey = QVBoxLayout(iade)
-        dikey.addWidget(self.iade_bilgi)
-        dikey.addWidget(self._sagda(self.btn_iade))
+        dikey.addWidget(self.iade_bilgi, 1)
+        dikey.addWidget(self.btn_iade, 0, Qt.AlignRight)
         for b in (self.btn_ver, self.btn_iade):
             b.setMinimumSize(140, 40)
 
-        kartlar = QVBoxLayout()
-        kartlar.setContentsMargins(0, 0, 0, 0)
-        kartlar.addWidget(ver)
-        kartlar.addWidget(iade)
-        kartlar.addStretch()
-        icerik = QWidget(objectName="odunc_kartlari")
-        icerik.setLayout(kartlar)
-        kaydirma = QScrollArea()
-        kaydirma.setWidgetResizable(True)
-        kaydirma.setFrameShape(QFrame.NoFrame)
-        kaydirma.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-        kaydirma.setWidget(icerik)
-        kaydirma.setStyleSheet("QScrollArea, #odunc_kartlari { background: transparent; }")
+        alt = QHBoxLayout()
+        alt.setSpacing(16)
+        alt.addWidget(ver, 3)
+        alt.addWidget(iade, 2)
 
-        duzen = QHBoxLayout(self)
+        # Liste üstte ve tam genişlikte (kalan yüksekliği alır), işlem kartları altta yan yana
+        duzen = QVBoxLayout(self)
         duzen.setContentsMargins(14, 12, 14, 12)
-        duzen.setSpacing(16)
-        duzen.addLayout(sol, 3)
-        duzen.addWidget(kaydirma, 2)
+        duzen.setSpacing(10)
+        duzen.addLayout(ust)
+        duzen.addWidget(self.ozet)
+        duzen.addWidget(self.tablo, 1)
+        duzen.addLayout(alt)
         self.yenile()
-
-    @staticmethod
-    def _sagda(buton):
-        satir = QWidget()
-        yatay = QHBoxLayout(satir)
-        yatay.setContentsMargins(0, 4, 0, 0)
-        yatay.addStretch()
-        yatay.addWidget(buton)
-        return satir
 
     # --- Yenileme
 
@@ -283,14 +265,14 @@ class OduncEkrani(QWidget):
         secili = self.secili_odunc()
         self.btn_iade.setEnabled(secili is not None)
         if secili is None:
-            renkli(self.iade_bilgi, "İade almak için soldaki listeden bir kitap seçin.", tema.IKINCIL_METIN)
+            renkli(self.iade_bilgi, "İade almak için üstteki listeden bir kitap seçin.", tema.IKINCIL_METIN)
             return
         r = self.tablo.selectionModel().selectedRows()[0].row()
         hucre = lambda c: self.tablo.item(r, c).text()
         renk = KOTU if hucre(6).endswith("gecikti") else IYI
         durum = f"<span style='color:{renk}'><b>{hucre(6)}</b></span>"
         renkli(self.iade_bilgi,
-               f"<b>{hucre(0)}</b><br>{hucre(1)}<br><br>Üye: <b>{hucre(2)}</b> {hucre(3)}<br>"
+               f"<b>{hucre(0)}</b> · {hucre(1)}<br>Üye: <b>{hucre(2)}</b> {hucre(3)}<br>"
                f"Veriliş: {hucre(4)} · Teslim: {hucre(5)}<br>{durum}")
 
     def iade_al(self):

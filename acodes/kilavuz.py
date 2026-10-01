@@ -93,14 +93,14 @@ YONETICI = [
     ("Filtre", FILTRE + " Bir satıra çift tıklamak kitabı düzenleme ekranında açar."),
     ("İstatistik", ISTATISTIK),
     ("Kitap Verme: ödünç verme ve iade alma",
-     f"Ödünç süresi <b>{ODUNC_SURESI_GUN} gündür</b>. <b>Ödünç ve İade</b> alt sekmesinde solda şu an "
+     f"Ödünç süresi <b>{ODUNC_SURESI_GUN} gündür</b>. <b>Ödünç ve İade</b> alt sekmesinde üstte, tam genişlikte şu an "
      "dışarıdaki kitaplar listelenir; teslim süresi geçenler kırmızıdır. Kitap, yazar veya üye adıyla "
-     "aranabilir.<ul>"
+     "aranabilir. İşlem kartları listenin altında yan yana durur.<ul>"
      "<li><b>Ödünç verme:</b> <b>Ödünç ver</b> kartında kitabı ve üyeyi seçin (yazarak arayabilirsiniz). "
      "Kitabın müsait kopya sayısı, üyenin elindeki ve geciken kitapları ile teslim tarihi gösterilir. "
      "<b>Ödünç Ver</b>'e basın. Kitabın müsait kopyası yoksa ya da üyede zaten varsa buton kapalı kalır "
      "ve nedeni yazılır.</li>"
-     "<li><b>İade alma:</b> Soldaki listeden kitabı seçin; bilgileri <b>İade al</b> kartında görünür. "
+     "<li><b>İade alma:</b> Üstteki listeden kitabı seçin; bilgileri <b>İade al</b> kartında görünür. "
      "<b>İade Al</b>'a basın. Gecikme varsa kaç gün geciktiği bildirilir.</li></ul>"
      "Teslim süresi geçmiş kitap varsa sekmenin adında sayısı yazar (<i>Kitap Verme (2 gecikmiş)</i>). "
      "<b>Ödünç Geçmişi</b> alt sekmesi tüm ödünç kayıtlarını gösterir; üye, kitap ve duruma göre süzülebilir."),

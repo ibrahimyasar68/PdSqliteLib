@@ -130,12 +130,12 @@ görünüyorsa (arama, filtre, sıralama) öyle kaydedilir.
 - Ödünç süresi **15 gündür** (`database/odunc.py` içindeki `ODUNC_SURESI_GUN`). Teslim tarihi veriliş
   tarihinden hesaplanır; eski kayıtlar için de geçerlidir.
 - **Kitap Verme → Ödünç ve İade** ekranı tek yerde:
-  - Solda dışarıdaki kitaplar: veriliş ve teslim tarihi, kalan veya geciken gün; süresi geçenler kırmızı.
+  - Üstte, tam genişlikte dışarıdaki kitaplar: veriliş ve teslim tarihi, kalan veya geciken gün; süresi geçenler kırmızı.
     Kitap, yazar veya üye adıyla aranabilir.
-  - **Ödünç ver** kartı: kitap ve üye seçilince bilgileri kendiliğinden gelir. Müsait kopya sayısı,
+  - Altta yan yana iki kart. **Ödünç ver**: kitap ve üye seçilince bilgileri kendiliğinden gelir. Müsait kopya sayısı,
     üyenin elindeki ve geciken kitapları ile teslim tarihi gösterilir. Kitabın müsait kopyası yoksa
     veya üyede zaten varsa **Ödünç Ver** kapalı kalır ve nedeni yazılır.
-  - **İade al** kartı: listeden seçilen ödüncün bilgileri ve gecikmesi; **İade Al** ile kapatılır.
+  - **İade al**: listeden seçilen ödüncün bilgileri ve gecikmesi; **İade Al** ile kapatılır.
     Silinmiş bir üyenin ödüncü de iade alınabilir.
 - Süresi geçmiş kitap varsa sekme adı **Kitap Verme (N gecikmiş)** olur ve panel açılırken uyarı verilir.
 - **Ödünç Geçmişi**: tüm ödünç kayıtları; üye, kitap ve duruma (dışarıda / gecikmiş / iade edildi) göre süzülür.

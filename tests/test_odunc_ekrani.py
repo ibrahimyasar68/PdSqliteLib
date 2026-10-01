@@ -84,7 +84,7 @@ def test_arama(o, db):
 
 def test_bos_liste_mesaji(o):
     assert o.tablo.rowCount() == 0 and o.tablo.bos_durum.etiket.text() == "Şu an dışarıda kitap yok."
-    assert not o.btn_iade.isEnabled() and "soldaki listeden" in o.iade_bilgi.text()
+    assert not o.btn_iade.isEnabled() and "üstteki listeden" in o.iade_bilgi.text()
 
 
 # --- Ödünç verme ---
