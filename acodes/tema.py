@@ -29,7 +29,8 @@ TEMA = f"""
 QMainWindow, #centralwidget {{ background-color: {ZEMIN}; }}
 
 QTabWidget::pane {{ border: 1px solid {KENAR}; background-color: {SAYFA}; border-radius: 6px; }}
-QTabBar::tab {{ background-color: #E3E7EE; color: {IKINCIL_METIN}; padding: 6px 16px; margin-right: 2px;
+QTabBar {{ font-size: 17px; font-weight: bold; }}
+QTabBar::tab {{ background-color: #E3E7EE; color: {IKINCIL_METIN}; padding: 7px 18px; margin-right: 2px;
                border: 1px solid {KENAR}; border-bottom: none;
                border-top-left-radius: 6px; border-top-right-radius: 6px; }}
 QTabBar::tab:selected {{ background-color: {KART}; color: {VURGU_KOYU}; }}

@@ -3,8 +3,9 @@
 # Yönetici ve üye panelleri aynı bileşeni farklı kartlar/listelerle kurar.
 
 from PyQt5.QtCore import Qt, pyqtSignal
-from PyQt5.QtWidgets import (QFrame, QGridLayout, QGroupBox, QHBoxLayout, QHeaderView, QLabel, QTableWidget,
-                             QVBoxLayout, QWidget)
+from PyQt5.QtGui import QColor
+from PyQt5.QtWidgets import (QFrame, QGraphicsDropShadowEffect, QGridLayout, QGroupBox, QHBoxLayout, QHeaderView,
+                             QLabel, QTableWidget, QVBoxLayout, QWidget)
 
 from acodes import tema
 from acodes.tablo import tablo_ayarla, tabloya_yaz
@@ -12,7 +13,8 @@ from acodes.tablo import tablo_ayarla, tabloya_yaz
 STIL = f"""
 #ana_sayfa {{ background: transparent; }}
 #ana_baslik {{ background: transparent; }}
-#baslik_yazi {{ color: #FFE14D; font: italic 46px "Monotype Corsiva"; }}
+#baslik_yazi {{ color: #FFE14D; font: italic 92px "Monotype Corsiva"; }}
+#hosgeldin {{ color: #FDBA74; font-size: 30px; font-weight: bold; }}
 #karsilama {{ color: white; font-size: 17px; font-weight: bold; }}
 #kart {{ background-color: {tema.KART}; border: 1px solid {tema.KENAR}; border-radius: 10px; }}
 #kart:hover {{ border-color: {tema.VURGU}; }}
@@ -88,20 +90,33 @@ class AnaSayfa(QWidget):
         self.setAttribute(Qt.WA_StyledBackground, True)
         self.setStyleSheet(STIL)
 
+        # Başlık şeridi: ortada büyük kütüphane adı, altında "Hoş geldiniz" ve kullanıcı adı · yetki;
+        # sağda Oturumu Kapat. Soldaki boşluk butonla aynı genişlikte, böylece yazılar tam ortada kalır.
         baslik = QFrame(objectName="ana_baslik")
-        baslik.setFixedHeight(150)
+        baslik.setFixedHeight(240)
+        self.baslik_yazi = QLabel("Yaşar Kütüphanesi", objectName="baslik_yazi")
+        self.hosgeldin = QLabel("Hoş geldiniz", objectName="hosgeldin")
         self.karsilama = QLabel("", objectName="karsilama")
         yazi = QVBoxLayout()
+        yazi.setSpacing(2)
         yazi.addStretch()
-        yazi.addWidget(QLabel("Yaşar Kütüphanesi", objectName="baslik_yazi"))
-        yazi.addWidget(self.karsilama)
+        for etiket in (self.baslik_yazi, self.hosgeldin, self.karsilama):
+            etiket.setAlignment(Qt.AlignCenter)
+            golge = QGraphicsDropShadowEffect(etiket)     # fotoğraf üzerinde okunaklı olsun
+            golge.setBlurRadius(14)
+            golge.setOffset(0, 2)
+            golge.setColor(QColor(0, 0, 0, 200))
+            etiket.setGraphicsEffect(golge)
+            yazi.addWidget(etiket)
         yazi.addStretch()
         serit = QHBoxLayout(baslik)
-        serit.setContentsMargins(28, 10, 28, 10)
+        serit.setContentsMargins(28, 6, 28, 6)
+        bosluk = QWidget()
+        bosluk.setFixedWidth(200)
+        serit.addWidget(bosluk)
         serit.addLayout(yazi, 1)
         cikis_butonu.setParent(baslik)
-        cikis_butonu.setMinimumSize(170, 44)
-        cikis_butonu.setMaximumSize(220, 44)
+        cikis_butonu.setFixedSize(200, 44)
         serit.addWidget(cikis_butonu, 0, Qt.AlignVCenter)
 
         self.kartlar = {}
@@ -126,7 +141,7 @@ class AnaSayfa(QWidget):
         duzen.addLayout(alt, 1)
 
     def karsila(self, kullanici, rol):
-        self.karsilama.setText(f"Hoş geldiniz, {kullanici}  ·  {rol}")
+        self.karsilama.setText(f"{kullanici}  ·  {rol}")
 
 
 def ana_sayfayi_yerlestir(ui, ana_sayfa):

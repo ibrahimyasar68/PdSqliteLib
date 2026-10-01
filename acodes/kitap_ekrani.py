@@ -59,8 +59,8 @@ class KitapEkrani(QWidget):
         self.tablo = QTableWidget(0, len(LISTE_KOLONLARI))
         self.tablo.setHorizontalHeaderLabels(LISTE_KOLONLARI)
         tablo_ayarla(self.tablo, bos_metin="Aramanıza uyan kitap yok.")
-        # Kitap adı kalan yeri alır; yazar ve yayınevi makul genişlikte başlar (elle genişletilebilir),
-        # kısa kolonlar içeriğe göre: dar pencerede de Yılı ve Kopya görünür kalır
+        # Kitap adı, yazar ve yayınevi kalan yeri paylaşır; kısa kolonlar içeriğe göre:
+        # dar pencerede de yatay kaydırma olmadan Yılı ve Kopya görünür kalır
         baslik = self.tablo.horizontalHeader()
         baslik.setStretchLastSection(False)
         baslik.setMinimumSectionSize(50)
@@ -68,8 +68,7 @@ class KitapEkrani(QWidget):
                            (4, QHeaderView.ResizeToContents), (5, QHeaderView.ResizeToContents)):
             baslik.setSectionResizeMode(kolon, kip)
         for kolon in (2, 3):
-            baslik.setSectionResizeMode(kolon, QHeaderView.Interactive)
-            self.tablo.setColumnWidth(kolon, 160)
+            baslik.setSectionResizeMode(kolon, QHeaderView.Stretch)
         self.tablo.setSelectionMode(QTableWidget.SingleSelection)
         ust = QHBoxLayout()
         ust.addWidget(self.arama, 1)

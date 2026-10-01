@@ -2,6 +2,7 @@
 import datetime
 
 import pytest
+from PyQt5.QtCore import Qt
 
 from acodes.guest import Guest
 from acodes.library import Library
@@ -50,7 +51,9 @@ def test_eski_ana_sayfa_icerigi_gizli(lib):
     q = lib.QtLibrary
     assert q.label.isHidden() and q.verticalLayoutWidget.isHidden()
     assert q.pushButton_1_cikis.isVisibleTo(lib) and q.pushButton_1_cikis.text() == "Oturumu Kapat"
-    assert lib.ana_sayfa.karsilama.text() == "Hoş geldiniz, admin  ·  Yönetici"
+    a = lib.ana_sayfa
+    assert a.hosgeldin.text() == "Hoş geldiniz" and a.karsilama.text() == "admin  ·  Yönetici"
+    assert a.baslik_yazi.alignment() & Qt.AlignHCenter and a.hosgeldin.alignment() & Qt.AlignHCenter
 
 
 def test_admin_kartlari(lib):
@@ -99,7 +102,7 @@ def test_ana_sayfa_guncellenir(lib, db):
 def test_guest_panosu(app, veri):
     g = Guest()
     g.user_name("ayse1")
-    assert g.ana_sayfa.karsilama.text() == "Hoş geldiniz, ayse1  ·  Üye"
+    assert g.ana_sayfa.karsilama.text() == "ayse1  ·  Üye"
     assert kart(g, "elimdeki") == ("2", "şu an sizde")
     assert kart(g, "geciken") == ("1", "teslim süresi geçmiş")
     assert kart(g, "teslim") == (odunc.tarih_yazi(BUGUN - datetime.timedelta(days=5)), "5 gün gecikti")
