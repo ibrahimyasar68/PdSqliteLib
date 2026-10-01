@@ -9,11 +9,16 @@ from acodes import tema
 from database.odunc import ODUNC_SURESI_GUN
 from database.yedek import OTOMATIK_SAKLA
 
+URETICI = "IY Labs"
+URETIM_YILI = 2025
+IMZA = f"{URETICI} · {URETIM_YILI}"      # giriş ekranında ve kılavuzda gösterilir
+
 HAKKINDA = (
     "<b>Yaşar Kütüphanesi</b> (PdSqliteLib), ev ya da küçük kurum kütüphaneleri için hazırlanmış bir masaüstü "
     "programıdır. Kitapların kaydını tutar, üyelere ödünç verilen kitapları ve teslim tarihlerini izler, "
     "kitaplığın istatistiklerini gösterir. Veriler bilgisayardaki tek bir veritabanı dosyasında saklanır; "
     "internet bağlantısı gerekmez. Python, PyQt5 ve SQLite ile yazılmıştır.<br><br>"
+    f"<b>{URETICI}</b> tarafından {URETIM_YILI} yılında üretilmiştir.<br><br>"
     "Programı iki tür kullanıcı kullanır: <b>yönetici</b> kitapları, üyeleri ve ödünç işlemlerini yönetir; "
     "<b>üye</b> kitapları arar, istatistikleri görür ve kendi ödünç aldığı kitapları izler. "
     "Aşağıdaki başlıklara tıklayarak her bölümün nasıl kullanıldığını okuyabilirsiniz."

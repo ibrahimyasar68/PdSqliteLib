@@ -4,7 +4,7 @@ from PyQt5.QtCore import Qt
 import sys
 from acodes.library import Library
 from acodes.guest import Guest
-from acodes import ikonlar, tema
+from acodes import ikonlar, kilavuz, tema
 from bforms.login_py import Ui_MainWindow
 from database.dbframe import giris_kontrol
 
@@ -26,6 +26,7 @@ GIRIS_STILI = f"""
 #giris_karti QLineEdit {{ font-size: 15px; padding: 8px 10px; border-radius: 8px; min-height: 22px; }}
 #giris_karti QLabel#giris_mesaj {{ color: {tema.TEHLIKE}; font-weight: normal; }}
 #giris_karti QLabel#giris_mesaj[tur="bilgi"] {{ color: #15803D; }}
+#giris_karti QLabel#giris_imza {{ color: {tema.IKINCIL_METIN}; font-size: 12px; font-weight: normal; }}
 #pushButton_giris {{ font-size: 16px; font-weight: bold; padding: 10px; border-radius: 8px; }}
 #pushButton_cikis {{ background-color: #F1F5F9; border: 1px solid {tema.KENAR}; border-radius: 22px; }}
 #pushButton_cikis:hover {{ background-color: {tema.TEHLIKE}; border-color: {tema.TEHLIKE}; }}
@@ -94,6 +95,9 @@ class Login(QMainWindow):
         duzen.addWidget(self.mesaj)
         duzen.addWidget(ui.pushButton_giris)
         duzen.addStretch()
+        self.imza=QLabel(kilavuz.IMZA,objectName="giris_imza")
+        self.imza.setAlignment(Qt.AlignRight)
+        duzen.addWidget(self.imza)
 
         # Parolayı göster/gizle
         self.goster=QAction(ikonlar.ikon("goz",ikonlar.SEKME_RENGI),"Parolayı göster",ui.lineEdit_parola)

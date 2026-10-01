@@ -55,3 +55,10 @@ def test_konular_tiklaninca_acilir_ve_tek_konu_acik(panel):
 def test_odunc_suresi_ayardan_gelir():
     metin = dict(kilavuz.YONETICI)["Kitap Verme: ödünç verme ve iade alma"]
     assert f"{ODUNC_SURESI_GUN} gündür" in metin
+
+
+def test_uretici_imzasi(app, uyarilar):
+    from acodes.login import Login
+    assert kilavuz.IMZA == "IY Labs · 2025"
+    assert Login().imza.text() == "IY Labs · 2025"
+    assert "<b>IY Labs</b> tarafından 2025 yılında üretilmiştir." in kilavuz.HAKKINDA

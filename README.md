@@ -4,6 +4,8 @@ PyQt5, SQLite ve pandas ile yazılmış masaüstü kütüphane yönetim uygulama
 Kitap kaydı, üye yönetimi, ödünç verme / iade takibi ve istatistikler içerir.
 Windows ve macOS üzerinde çalışır.
 
+**IY Labs** tarafından 2025 yılında üretilmiştir.
+
 ## Özellikler
 
 Giriş ekranında kullanıcının yetkisine göre iki farklı panel açılır:
