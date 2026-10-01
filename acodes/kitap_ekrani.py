@@ -9,7 +9,7 @@ from PyQt5.QtWidgets import (QCompleter, QFormLayout, QFrame, QGroupBox, QHBoxLa
 from bforms.onay import onay
 from acodes import tema
 from acodes.ek_bilgi import EkBilgiler
-from acodes.tablo import satir_verisi, tablo_ayarla, tabloya_yaz
+from acodes.tablo import KolonSecici, satir_verisi, tablo_ayarla, tabloya_yaz
 from database.dbbase import baglantı, degistir_kayit, ekle_kayit, sil_kayit
 from database.dbframe import df_book_find_by_id, df_sort_list, kitap_ara, kitap_oduncte, kopya_durumu
 
@@ -73,9 +73,13 @@ class KitapEkrani(QWidget):
         ust = QHBoxLayout()
         ust.addWidget(self.arama, 1)
         ust.addWidget(self.btn_yeni)
+        self.kolonlar = KolonSecici(self.tablo, "kitaplar")
+        self.kolonlar.buton.setMinimumHeight(36)
+        ust.addWidget(self.kolonlar.buton)
         sol = QVBoxLayout()
         sol.addLayout(ust)
         sol.addWidget(self.sonuc)
+        sol.addWidget(self.kolonlar.soru)
         sol.addWidget(self.tablo, 1)
 
         # --- Sağ: form

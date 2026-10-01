@@ -34,6 +34,8 @@ KITAP_LISTESI = (
     "Sekmeye gelince bütün kitaplar kendiliğinden listelenir. Üstteki kutuya yazdıkça liste süzülür; kitap adı, "
     "yazar, çevirmen, tür, yayınevi, yıl, ISBN, raf yeri ve notlarda aranır. " + ORTAK_ARAMA + "<br><br>"
     "Kolon başlığına tıklayınca liste o kolona göre sıralanır (tekrar tıklayınca ters sırada). "
+    "<b>Kolonlar</b> butonu (veya kolon başlığına sağ tık) listede gösterilecek kolonları seçtirir; liste "
+    "pencereye sığmazsa tablonun üstünde hangi kolonların gizleneceği sorulur. Seçim hatırlanır. "
     "<b>Temizle</b> aramayı silip tüm listeye döner. <b>Dışa Aktar</b> listeyi ekranda göründüğü haliyle "
     "Excel veya CSV dosyası olarak kaydeder; tabloya sağ tıklayarak da aktarabilirsiniz."
 )
@@ -59,12 +61,18 @@ ISTATISTIK = (
 )
 
 YONETICI = [
+    ("Menü ve gezinme",
+     "Bölümler soldaki menüdedir; açık bölüm mavi zeminle işaretlenir. Menünün sağ üstündeki düğme menüyü "
+     "daraltır: yalnızca simgeler kalır, içeriğe daha çok yer açılır (simgenin üzerine gelince bölümün adı görünür); "
+     "aynı düğme menüyü yeniden açar. Bu tercih bir sonraki açılışta hatırlanır. Menünün altında kullanıcı "
+     "adınız, yetkiniz ve <b>Oturumu Kapat</b> vardır. Alt bölümleri olan sayfalarda (ör. Kitaplar / Veri "
+     "Düzeltme) sayfanın üstündeki anahtar kullanılır."),
     ("Giriş (ana sayfa)",
      "Özet kartları kitap, dışarıdaki, geciken ve üye sayılarını gösterir; bir karta tıklamak ilgili sekmeyi "
      "açar. <b>Teslimi yaklaşan ve geciken kitaplar</b> listesinde bir satıra çift tıklamak o ödüncü iade "
      "ekranında seçili olarak açar. <b>Son eklenen kitaplar</b> listesinde çift tıklamak kitabı düzenleme "
-     "ekranında açar. <b>Oturumu Kapat</b> giriş ekranına döner; programdan çıkmak için giriş ekranındaki "
-     "çıkış düğmesi kullanılır."),
+     "ekranında açar. Programdan çıkmak için önce oturumu kapatıp giriş ekranındaki çıkış düğmesini "
+     "kullanın."),
     ("Kitap Listesi",
      KITAP_LISTESI + " Bir satıra çift tıklamak kitabı <b>Kitap Kayıt</b> ekranında açar."),
     ("Kitap Kayıt: kitap ekleme, düzenleme, silme",
@@ -114,9 +122,15 @@ YONETICI = [
 ]
 
 UYE = [
+    ("Menü ve gezinme",
+     "Bölümler soldaki menüdedir; açık bölüm mavi zeminle işaretlenir. Menünün sağ üstündeki düğme menüyü "
+     "daraltır: yalnızca simgeler kalır, içeriğe daha çok yer açılır (simgenin üzerine gelince bölümün adı görünür); "
+     "aynı düğme menüyü yeniden açar. Bu tercih bir sonraki açılışta hatırlanır. Menünün altında kullanıcı "
+     "adınız, yetkiniz ve <b>Oturumu Kapat</b> vardır. Alt bölümleri olan sayfalarda (ör. Kitaplar / Veri "
+     "Düzeltme) sayfanın üstündeki anahtar kullanılır."),
     ("Giriş (ana sayfa)",
      "Özet kartları kütüphanedeki kitap sayısını, elinizdeki ve gecikmiş kitapları ve en yakın teslim "
-     "tarihini gösterir; bir karta tıklamak ilgili sekmeyi açar. <b>Oturumu Kapat</b> giriş ekranına döner."),
+     "tarihini gösterir; bir karta tıklamak ilgili sekmeyi açar."),
     ("Kitap Listesi", KITAP_LISTESI),
     ("Filtre", FILTRE),
     ("İstatistik", ISTATISTIK),

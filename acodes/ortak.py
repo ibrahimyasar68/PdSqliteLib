@@ -2,14 +2,14 @@
 # Giriş (çıkış ve kullanıcı adı), Kitap Listesi, Filtre ve İstatistik sekmeleri.
 # İki panelin .ui dosyasında bu sekmelerdeki nesne adları aynı olduğu için kod tek yerde tutulur.
 
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import QEvent, Qt
 from PyQt5.QtWidgets import QGroupBox, QHBoxLayout, QHeaderView, QLabel, QLineEdit, QVBoxLayout
 from database.dbframe import kitap_ara, rapor
 from acodes.grafikler import GrafikPaneli
 from acodes.filtre_paneli import FiltrePaneli
 from acodes import tema
 from acodes.yerlesim import liste_sayfasi
-from acodes.tablo import tablo_ayarla, tablo_basliklari, tabloya_yaz  # noqa: F401  (library.py de buradan alır)
+from acodes.tablo import KolonSecici, tablo_ayarla, tablo_basliklari, tabloya_yaz  # noqa: F401  (library.py de buradan alır)
 from acodes.disa_aktar import disa_aktar, sag_tik_menusu
 from acodes.kullanici_yonetimi import SifreDegistir, panel_butonu
 
@@ -73,7 +73,11 @@ class OrtakSekmeler:
         ust.addWidget(self.arama,1)
         ust.addWidget(self.arama_sonuc)
         ust.addStretch()
-        liste_sayfasi(ui.tab_2,[ui.pushButton_2_temizle,self.aktar_liste],ui.tableWidget_2,ust)
+        self.liste_kolonlari=KolonSecici(ui.tableWidget_2,"kitap_listesi")
+        self.liste_kolonlari.buton.setMinimumHeight(36)
+        ust.addWidget(self.liste_kolonlari.buton)
+        liste_sayfasi(ui.tab_2,[ui.pushButton_2_temizle,self.aktar_liste],ui.tableWidget_2,ust,
+                      uyari=self.liste_kolonlari.soru)
 
     def aktar_butonu(self,tablo,ad,ornek,konum):
         ###  Örnek butonla aynı stilde "Dışa Aktar" butonu ve tabloya sağ tık menüsü  ###
@@ -104,6 +108,8 @@ class OrtakSekmeler:
         self.aktif_kullanici=name
         if hasattr(self,"ana_sayfa"):
             self.ana_sayfa.karsila(name,self.ROL)
+        if hasattr(self,"yan_menu"):
+            self.yan_menu.kullanici(name,self.ROL)
         self.setWindowTitle(f"{self.PENCERE_BASLIGI} - {name}")
         self.QtLibrary.label_log_on.setText(name)
 
@@ -154,15 +160,36 @@ class OrtakSekmeler:
         for etiket in (ui.label_25,ui.label_56,ui.label_58,ui.label_59):
             etiket.hide()
         basliklar={1:"Türlere Göre",2:"Yazarlara Göre",3:"Yayınevlerine Göre",4:"Basım Yıllarına Göre"}
+        self.cizelge_kartlari=[]
         for no,*_ in ISTATISTIKLER:
             tablo=getattr(ui,f"tableWidget_5_1_{no}")
             tablo_ayarla(tablo)
             tablo.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
             ui.gridLayout_5.removeWidget(tablo)
             kart=QGroupBox(basliklar[no])
-            QVBoxLayout(kart).addWidget(tablo)
-            ui.gridLayout_5.addWidget(kart,0,no-1)
+            ic=QVBoxLayout(kart)
+            ic.setContentsMargins(0,0,0,0)
+            ic.addWidget(tablo)
+            self.cizelge_kartlari.append(kart)
         ui.gridLayout_5.setHorizontalSpacing(14)
+        ui.gridLayout_5.setVerticalSpacing(14)
+        self.cizelgeleri_diz()
+        ui.tab_5_1.installEventFilter(self)
+
+    def cizelgeleri_diz(self):
+        ###  Geniş pencerede dört çizelge yan yana, dar pencerede (ör. menü açıkken) 2x2  ###
+        sutun=4 if self.QtLibrary.tab_5_1.width()>=1500 else 2
+        if getattr(self,"cizelge_sutun",None)==sutun:
+            return
+        self.cizelge_sutun=sutun
+        for i,kart in enumerate(self.cizelge_kartlari):
+            self.QtLibrary.gridLayout_5.removeWidget(kart)
+            self.QtLibrary.gridLayout_5.addWidget(kart,i//sutun,i%sutun)
+
+    def eventFilter(self,nesne,olay):
+        if olay.type()==QEvent.Resize and nesne is self.QtLibrary.tab_5_1:
+            self.cizelgeleri_diz()
+        return super().eventFilter(nesne,olay)
 
     def create_tab_5(self):
         for no,kolon,baslik,adet in ISTATISTIKLER:

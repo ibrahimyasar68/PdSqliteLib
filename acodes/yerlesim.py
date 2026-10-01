@@ -13,7 +13,7 @@ def buton_boyutu(buton, en=(110, 170), boy=40):
     buton.setMaximumSize(en[1], boy)
 
 
-def liste_sayfasi(sayfa, butonlar, tablo, ust=None):
+def liste_sayfasi(sayfa, butonlar, tablo, ust=None, uyari=None):
     """Solda alt alta butonlar, sağda (isteğe bağlı üst satır ve) pencereyle büyüyen tablo."""
     duzen = QHBoxLayout(sayfa)
     duzen.setContentsMargins(14, 12, 14, 12)
@@ -30,6 +30,8 @@ def liste_sayfasi(sayfa, butonlar, tablo, ust=None):
     sag.setSpacing(10)
     if ust is not None:
         sag.addLayout(ust)
+    if uyari is not None:
+        sag.addWidget(uyari)          # ör. "liste sığmıyor, kolon gizlensin mi?" sorusu
     sag.addWidget(tablo, 1)
     duzen.addLayout(sol)
     duzen.addLayout(sag, 1)

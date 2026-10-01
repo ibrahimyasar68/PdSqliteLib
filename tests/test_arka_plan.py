@@ -26,9 +26,10 @@ def test_giris_sayfasinda_fotograf_perdesiz(app, uyarilar, panel):
     assert arka_plan.RESIM == ":/pic/autumn.jpg" and not p.arka_plan.resim.isNull()
     goruntu = goster(p)                            # ilk açılış (sekme değiştirilmeden)
     # başlık şeridinde tema zemini değil, fotoğrafın kendisi görünür (koyu yaprak renkleri)
-    renkler = {renk(goruntu, x, 100) for x in range(100, 1100, 50)}
+    sol = p.yan_menu.width() + 40                 # menünün sağı, karşılama yazısının üstü
+    renkler = {renk(goruntu, x, 20) for x in range(sol, 1150, 40)}
     assert "#f7f8fb" not in renkler and len(renkler) > 5
-    assert all(goruntu.pixelColor(x, 100).lightness() < 200 for x in range(100, 1100, 100))
+    assert all(goruntu.pixelColor(x, 20).lightness() < 200 for x in range(sol, 1150, 80))
     p.close()
 
 

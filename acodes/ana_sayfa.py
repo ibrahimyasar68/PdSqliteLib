@@ -13,9 +13,8 @@ from acodes.tablo import tablo_ayarla, tabloya_yaz
 STIL = f"""
 #ana_sayfa {{ background: transparent; }}
 #ana_baslik {{ background: transparent; }}
-#baslik_yazi {{ color: #FFE14D; font-family: "{tema.BASLIK_YAZISI}"; font-size: 104px; font-style: normal; }}
-#hosgeldin {{ color: #FDBA74; font-size: 30px; font-weight: bold; }}
-#karsilama {{ color: white; font-size: 17px; font-weight: bold; }}
+#hosgeldin {{ color: #FDBA74; font-size: 40px; font-weight: bold; }}
+#karsilama {{ color: white; font-size: 19px; font-weight: bold; }}
 #kart {{ background-color: {tema.KART}; border: 1px solid {tema.KENAR}; border-radius: 10px; }}
 #kart:hover {{ border-color: {tema.VURGU}; }}
 #kart_sayi {{ font-size: 30px; font-weight: bold; color: {tema.METIN}; }}
@@ -82,25 +81,23 @@ class Liste(QGroupBox):
 
 
 class AnaSayfa(QWidget):
-    def __init__(self, kartlar, listeler, cikis_butonu, parent=None):
+    def __init__(self, kartlar, listeler, parent=None):
         """kartlar: [(anahtar, başlık, renk)]; listeler: [(anahtar, başlık, kolonlar, boş metin)].
-        cikis_butonu: .ui'daki Oturumu Kapat butonu başlık şeridine taşınır."""
+        Kütüphane adı ve Oturumu Kapat sol kenar menüsündedir; burada karşılama yazısı kalır."""
         super().__init__(parent)
         self.setObjectName("ana_sayfa")
         self.setAttribute(Qt.WA_StyledBackground, True)
         self.setStyleSheet(STIL)
 
-        # Başlık şeridi: ortada büyük kütüphane adı, altında "Hoş geldiniz" ve kullanıcı adı · yetki;
-        # sağda Oturumu Kapat. Soldaki boşluk butonla aynı genişlikte, böylece yazılar tam ortada kalır.
+        # Başlık şeridi: ortada "Hoş geldiniz", altında kullanıcı adı · yetki (fotoğrafın üzerinde)
         baslik = QFrame(objectName="ana_baslik")
-        baslik.setFixedHeight(240)
-        self.baslik_yazi = QLabel("Yaşar Kütüphanesi", objectName="baslik_yazi")
+        baslik.setFixedHeight(150)
         self.hosgeldin = QLabel("Hoş geldiniz", objectName="hosgeldin")
         self.karsilama = QLabel("", objectName="karsilama")
         yazi = QVBoxLayout()
         yazi.setSpacing(2)
         yazi.addStretch()
-        for etiket in (self.baslik_yazi, self.hosgeldin, self.karsilama):
+        for etiket in (self.hosgeldin, self.karsilama):
             etiket.setAlignment(Qt.AlignCenter)
             golge = QGraphicsDropShadowEffect(etiket)     # fotoğraf üzerinde okunaklı olsun
             golge.setBlurRadius(14)
@@ -111,13 +108,7 @@ class AnaSayfa(QWidget):
         yazi.addStretch()
         serit = QHBoxLayout(baslik)
         serit.setContentsMargins(28, 6, 28, 6)
-        bosluk = QWidget()
-        bosluk.setFixedWidth(200)
-        serit.addWidget(bosluk)
         serit.addLayout(yazi, 1)
-        cikis_butonu.setParent(baslik)
-        cikis_butonu.setFixedSize(200, 44)
-        serit.addWidget(cikis_butonu, 0, Qt.AlignVCenter)
 
         self.kartlar = {}
         kart_satiri = QHBoxLayout()

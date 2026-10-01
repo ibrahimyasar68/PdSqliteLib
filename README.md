@@ -24,7 +24,16 @@ Giriş ekranında kullanıcının yetkisine göre iki farklı panel açılır:
 | **Kitaplarım**: üyenin elindeki kitaplar (teslim tarihi, kalan gün) ve geçmişi | | ✓ |
 | **Ayarlar**: kullanıcılar, yedekleme, kütüphane bilgileri / hesap bilgileri ve şifre; kullanma kılavuzu | ✓ | ✓ (Hesabım) |
 
-Panellerdeki **Oturumu Kapat** butonu giriş ekranına döner; başka bir kullanıcıyla giriş yapılabilir.
+Bölümler soldaki **kenar menüsündedir**: en üstte "Yaşar Kütüphanesi", altta kullanıcı adı, yetki ve
+**Oturumu Kapat** (giriş ekranına döner; başka bir kullanıcıyla giriş yapılabilir). Menünün sağ üstündeki
+düğme menüyü daraltır (yalnızca simgeler kalır) ve yeniden açar; tercih hatırlanır. Teslim süresi geçen
+kitap sayısı menüde kırmızı rozetle görünür. Alt bölümler (Kitaplar / Veri Düzeltme, Çizelgeler / Grafikler,
+Ödünç ve İade / Ödünç Geçmişi) sayfanın üstündeki anahtarla seçilir.
+
+Kitap listelerinde **Kolonlar** butonu (veya kolon başlığına sağ tık) gösterilecek kolonları seçtirir;
+liste pencereye sığmazsa tablonun üstünde hangi kolonların gizleneceği sorulur. Menü ve kolon tercihleri
+veritabanının yanındaki `tercihler.ini` dosyasında tutulur.
+
 Programdan çıkmak için giriş ekranındaki kırmızı çıkış butonu kullanılır. Paneller macOS'ta büyütülmüş
 pencerede (küçültülebilir, diğer programlara geçilebilir), Windows'ta tam ekran açılır.
 Panellerin arka planı yaprak fotoğrafıdır (`media/autumn.jpg`). Giriş sekmesinde fotoğraf olduğu gibi
@@ -260,6 +269,8 @@ acodes/ek_bilgi.py            Kitap formundaki Ek Bilgiler kutusu, ISBN doğrula
 acodes/kitaplarim.py          Guest paneli > Kitaplarım sekmesi
 acodes/ana_sayfa.py           Ana sayfa özet panosu (kartlar ve listeler)
 acodes/arka_plan.py           Panellerin arka plan fotoğrafı
+acodes/yan_menu.py            Sol kenar menüsü (daraltılabilir) ve alt bölümler için üst anahtar
+acodes/tercihler.py           Menü ve kolon tercihleri (tercihler.ini)
 acodes/kilavuz.py             Ayarlar > Kullanma Kılavuzu metinleri (yönetici ve üye)
 acodes/ayarlar.py             Ayarlar sekmesi (kullanıcılar, yedekleme, bilgiler / hesabım)
 bforms/              .ui dosyalarından üretilen formlar (elle düzenlenmez)

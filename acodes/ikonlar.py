@@ -66,6 +66,8 @@ CIZIMLER = {
                         _cizgi(p, (4, 19.5), (6.5, 17), (20, 17))),
     "goz": lambda p: (_goz(p), _daire(p, 12, 12, 3)),
     "goz_kapali": lambda p: (_goz(p), _cizgi(p, (3, 3), (21, 21))),
+    "menu": lambda p: [_cizgi(p, (4, y), (20, y)) for y in (6, 12, 18)],
+    "daralt": lambda p: (_cizgi(p, (15, 6), (9, 12), (15, 18)), _cizgi(p, (4, 4), (4, 20))),
     "asagi": lambda p: _cizgi(p, (5, 8.5), (12, 15.5), (19, 8.5)),
     "yukari": lambda p: _cizgi(p, (5, 15.5), (12, 8.5), (19, 15.5)),
 }

@@ -147,3 +147,110 @@ def satir_verisi(tablo, satir):
     """tabloya_yaz(veri=...) ile saklanan bilgi; boş satırda None."""
     hucre=tablo.item(satir,0)
     return hucre.data(Qt.UserRole) if hucre else None
+
+
+class KolonSecici(QObject):
+    """Kitap listelerinde gösterilecek kolonların seçimi (seçim hatırlanır).
+    "Kolonlar" butonu ve kolon başlığına sağ tık aynı seçim listesini açar. Liste pencereye sığmazsa tablonun
+    üstünde kullanıcıya hangi kolonları gizlemek istediği sorulur ("Bir daha sorma" ile kapatılabilir)."""
+
+    def __init__(self, tablo, anahtar, zorunlu=(0, 1), parent=None):
+        super().__init__(parent or tablo)
+        from PyQt5.QtWidgets import QFrame, QHBoxLayout, QPushButton
+        from acodes import tercihler
+        self.tablo, self.anahtar, self.zorunlu = tablo, anahtar, set(zorunlu)
+        self.tercihler = tercihler
+        self.buton = QPushButton("Kolonlar")
+        self.buton.setProperty("rol", "ikincil")
+        self.buton.setToolTip("Listede gösterilecek kolonları seçin")
+        self.buton.clicked.connect(lambda: self.menu().exec_(self.buton.mapToGlobal(self.buton.rect().bottomLeft())))
+        baslik = tablo.horizontalHeader()
+        baslik.setContextMenuPolicy(Qt.CustomContextMenu)
+        baslik.customContextMenuRequested.connect(lambda konum: self.menu().exec_(baslik.mapToGlobal(konum)))
+
+        self.soru = QFrame(objectName="kolon_sorusu")
+        self.soru.setStyleSheet("#kolon_sorusu { background-color: #FEF3C7; border: 1px solid #FCD34D; border-radius: 8px; }"
+                                "#kolon_sorusu QLabel { color: #78350F; }")
+        satir = QHBoxLayout(self.soru)
+        satir.setContentsMargins(12, 6, 8, 6)
+        satir.addWidget(QLabel("Liste pencereye sığmıyor. Hangi kolonların gizleneceğini seçmek ister misiniz?"), 1)
+        self.btn_sec = QPushButton("Kolonları Seç")
+        self.btn_sec.clicked.connect(lambda: self.menu().exec_(self.btn_sec.mapToGlobal(self.btn_sec.rect().bottomLeft())))
+        self.btn_sorma = QPushButton("Bir daha sorma")
+        self.btn_sorma.setProperty("rol", "ikincil")
+        self.btn_sorma.clicked.connect(self.sorma)
+        satir.addWidget(self.btn_sec)
+        satir.addWidget(self.btn_sorma)
+        self.soru.hide()
+
+        for kolon in tercihler.sayi_listesi(f"kolonlar/{anahtar}"):
+            if kolon not in self.zorunlu and kolon < tablo.columnCount():
+                tablo.setColumnHidden(kolon, True)
+        self.bekliyor = False
+        tablo.viewport().installEventFilter(self)
+        model = tablo.model()
+        for sinyal in (model.rowsInserted, model.modelReset, model.layoutChanged):
+            sinyal.connect(self.denetle_sonra)
+
+    def menu(self):
+        from PyQt5.QtWidgets import QMenu
+        menu = QMenu(self.tablo)
+        for c in range(self.tablo.columnCount()):
+            baslik = self.tablo.horizontalHeaderItem(c)
+            eylem = menu.addAction(baslik.text() if baslik else str(c + 1))
+            eylem.setCheckable(True)
+            eylem.setChecked(not self.tablo.isColumnHidden(c))
+            eylem.setEnabled(c not in self.zorunlu)
+            eylem.toggled.connect(lambda gorunsun, c=c: self.goster(c, gorunsun))
+        menu.addSeparator()
+        menu.addAction("Tüm kolonları göster", self.hepsini_goster)
+        return menu
+
+    def gizli(self):
+        return [c for c in range(self.tablo.columnCount()) if self.tablo.isColumnHidden(c)]
+
+    def goster(self, kolon, gorunsun):
+        if kolon in self.zorunlu:
+            return
+        self.tablo.setColumnHidden(kolon, not gorunsun)
+        self.tercihler.yaz(f"kolonlar/{self.anahtar}", ",".join(map(str, self.gizli())))
+        self.denetle_sonra()
+
+    def hepsini_goster(self):
+        for c in self.gizli():
+            self.goster(c, True)
+
+    def sorma(self):
+        self.tercihler.yaz(f"kolonlar/{self.anahtar}_sorma", "1")
+        self.soru.hide()
+
+    def sigmiyor(self):
+        """Yatay kaydırma çıkıyorsa ya da bir kolon içeriğinin %60'ından dar kaldıysa liste sığmıyor sayılır."""
+        if self.tablo.rowCount() == 0 or not self.tablo.isVisible():
+            return False
+        kaydirma = self.tablo.horizontalScrollBar()
+        if kaydirma.isVisible() and kaydirma.maximum() > 0:
+            return True
+        baslik = self.tablo.horizontalHeader()
+        for c in range(self.tablo.columnCount()):
+            if self.tablo.isColumnHidden(c):
+                continue
+            icerik = max(baslik.sectionSizeHint(c), self.tablo.sizeHintForColumn(c))
+            if self.tablo.columnWidth(c) < 0.6 * icerik:
+                return True
+        return False
+
+    def denetle_sonra(self, *_):
+        if not self.bekliyor:
+            self.bekliyor = True
+            QTimer.singleShot(0, self.denetle)
+
+    def denetle(self):
+        self.bekliyor = False
+        sor = not self.tercihler.mantiksal(f"kolonlar/{self.anahtar}_sorma") and self.sigmiyor()
+        self.soru.setVisible(sor)
+
+    def eventFilter(self, nesne, olay):
+        if olay.type() in (QEvent.Resize, QEvent.Show):
+            self.denetle_sonra()
+        return False

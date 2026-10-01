@@ -24,10 +24,10 @@ def lib(app, uyarilar):
     return Library()
 
 
-def test_ana_sayfada_sadece_oturumu_kapat(lib, app):
-    assert gorunen_butonlar(lib) == ["Oturumu Kapat"]
-    g = Guest()
-    assert gorunen_butonlar(g) == ["Oturumu Kapat"]
+def test_ana_sayfada_buton_yok_oturumu_kapat_menude(lib, app):
+    for panel in (lib, Guest()):
+        assert gorunen_butonlar(panel) == []
+        assert panel.QtLibrary.pushButton_1_cikis.parentWidget() is panel.yan_menu.kart
 
 
 def test_ayarlar_son_sekme(lib, app):

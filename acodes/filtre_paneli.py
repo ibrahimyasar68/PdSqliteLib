@@ -10,7 +10,7 @@ from PyQt5.QtWidgets import (QComboBox, QFrame, QGroupBox, QHBoxLayout, QHeaderV
                              QScrollArea, QTableWidget, QVBoxLayout, QWidget)
 
 from acodes.aranabilir import aranabilir_yap
-from acodes.tablo import tablo_ayarla, tabloya_yaz
+from acodes.tablo import KolonSecici, tablo_ayarla, tabloya_yaz
 from acodes.yerlesim import AkisDuzeni
 from database.dbframe import filtre_secenekleri, kitap_filtrele, tr_sirala
 
@@ -91,7 +91,12 @@ class FiltrePaneli(QWidget):
             baslik.setSectionResizeMode(kolon, QHeaderView.ResizeToContents)
         baslik.setSectionResizeMode(1, QHeaderView.Stretch)
         sag = QVBoxLayout()
-        sag.addWidget(self.sonuc)
+        self.kolonlar = KolonSecici(self.tablo, "filtre")
+        ust_satir = QHBoxLayout()
+        ust_satir.addWidget(self.sonuc, 1)
+        ust_satir.addWidget(self.kolonlar.buton)
+        sag.addLayout(ust_satir)
+        sag.addWidget(self.kolonlar.soru)
         sag.addWidget(self.tablo, 1)
 
         solda = QWidget()

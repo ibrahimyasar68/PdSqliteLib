@@ -7,6 +7,7 @@ from acodes.ayarlar import Ayarlar
 from acodes import kilavuz
 from acodes.ana_sayfa import AnaSayfa, ana_sayfayi_yerlestir
 from acodes import arka_plan, bildirim, ikonlar
+from acodes.yan_menu import YanMenu, menuyu_yerlestir, segmente_cevir
 from database.dbframe import genel_ozet, son_eklenenler
 from database.odunc import gecikme_gunu, kalan_gun_yazi, tarih_yazi, teslim_tarihi, uye_odunc
 from acodes import tema
@@ -45,8 +46,7 @@ class Guest(OrtakSekmeler, QMainWindow):
             kartlar=[("kitap","Kütüphanedeki kitap",tema.VURGU),("elimdeki","Elimdeki kitap","#0EA5E9"),
                      ("geciken","Gecikmiş",tema.TEHLIKE),("teslim","En yakın teslim","#16A34A")],
             listeler=[("elimdeki","Elimdeki kitaplar",["Kitap","Teslim Tarihi","Durum"],"Şu an elinizde ödünç kitap yok."),
-                      ("son","Son eklenen kitaplar",["Adı","Yazarı"],"Henüz kitap eklenmemiş.")],
-            cikis_butonu=self.QtLibrary.pushButton_1_cikis)
+                      ("son","Son eklenen kitaplar",["Adı","Yazarı"],"Henüz kitap eklenmemiş.")])
         ana_sayfayi_yerlestir(self.QtLibrary,self.ana_sayfa)
         k=self.ana_sayfa.kartlar
         k["kitap"].tiklanabilir(self.tum_kitaplari_goster,"Kitap listesini aç")
@@ -58,8 +58,14 @@ class Guest(OrtakSekmeler, QMainWindow):
         ###  İkonlar  ###
         ui=self.QtLibrary
         ikonlar.butonlara_uygula(self)
-        ikonlar.sekmelere_uygula(ui.tabWidget,{ui.tab_1:"tab_1",ui.tab_2:"tab_2",ui.tab_4:"tab_4",ui.tab_5:"tab_5",
-                                               self.kitaplarim:"kitaplarim",self.ayarlar:"ayarlar"})
+        sayfalar={ui.tab_1:"tab_1",ui.tab_2:"tab_2",ui.tab_4:"tab_4",ui.tab_5:"tab_5",
+                  self.kitaplarim:"kitaplarim",self.ayarlar:"ayarlar"}
+        ikonlar.sekmelere_uygula(ui.tabWidget,sayfalar)
+
+        ###  Sol kenar menüsü (sekme çubuğu yerine) ve alt sekmeler yerine üstte anahtar  ###
+        self.yan_menu=YanMenu(ui.tabWidget,sayfalar,ui.pushButton_1_cikis)
+        menuyu_yerlestir(self,self.yan_menu)
+        segmente_cevir(ui.tabWidget_5)
 
     def user_name(self,name):
         super().user_name(name)
@@ -72,6 +78,8 @@ class Guest(OrtakSekmeler, QMainWindow):
         sayi=self.kitaplarim.yukle(self.aktif_kullanici)
         sekme=self.QtLibrary.tabWidget.indexOf(self.kitaplarim)
         self.QtLibrary.tabWidget.setTabText(sekme, f"Kitaplarım ({sayi} gecikmiş)" if sayi else "Kitaplarım")
+        if hasattr(self,"yan_menu"):
+            self.yan_menu.yenile()
         return sayi
 
     def sekme_degisti(self):

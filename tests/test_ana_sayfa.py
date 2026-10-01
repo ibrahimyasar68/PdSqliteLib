@@ -51,9 +51,11 @@ def test_eski_ana_sayfa_icerigi_gizli(lib):
     q = lib.QtLibrary
     assert q.label.isHidden() and q.verticalLayoutWidget.isHidden()
     assert q.pushButton_1_cikis.isVisibleTo(lib) and q.pushButton_1_cikis.text() == "Oturumu Kapat"
+    assert q.pushButton_1_cikis.parentWidget() is lib.yan_menu.kart                    # Oturumu Kapat menüde
     a = lib.ana_sayfa
     assert a.hosgeldin.text() == "Hoş geldiniz" and a.karsilama.text() == "admin  ·  Yönetici"
-    assert a.baslik_yazi.alignment() & Qt.AlignHCenter and a.hosgeldin.alignment() & Qt.AlignHCenter
+    assert a.hosgeldin.alignment() & Qt.AlignHCenter
+    assert not hasattr(a, "baslik_yazi")                         # "Yaşar Kütüphanesi" sadece menüde
 
 
 def test_admin_kartlari(lib):
