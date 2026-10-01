@@ -55,7 +55,8 @@ tür, yayınevi ve yılda arar; büyük/küçük harf ve Türkçe karakter fark�
 
 ### Kitap kayıt ekranı
 
-**Kitap Kayıt → Kitaplar** ekranında solda aranabilir kitap listesi, sağda seçili kitabın formu vardır.
+**Kitap Kayıt → Kitaplar** ekranında üstte tam genişlikte aranabilir kitap listesi, altta seçili kitabın formu
+(Kitap bilgileri ve Ek Bilgiler yan yana) vardır; Kitap Verme ekranıyla aynı düzen.
 Listeden bir kitap seçince bilgileri forma gelir; değiştirip **Kaydet**'e basmak günceller, **Sil**
 siler (ödünçteki kitap iade alınmadan silinemez), **Vazgeç** kaydedilmemiş değişiklikleri geri alır.
 **Yeni Kitap** formu boşaltır; Kaydet yeni kitabı ekler ve listede seçili bırakır. Yazar, çevirmen,

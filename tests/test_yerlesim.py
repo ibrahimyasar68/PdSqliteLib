@@ -52,3 +52,18 @@ def test_odunc_ekraninda_liste_ustte_kartlar_altta(lib):
     assert o.tablo.width() > o.width() - 60                                   # liste tam genişlikte
     assert not o.tablo.isColumnHidden(3)                                      # telefon da görünür
     assert o.tablo.horizontalScrollBar().maximum() == 0                       # yatay kaydırma yok
+
+
+def test_kitap_kayitta_liste_ustte_form_altta(lib):
+    q = lib.QtLibrary
+    k = lib.kitaplar
+    q.tabWidget.setCurrentWidget(q.tab_3)
+    genislikler(lib, [], 1280, 760)
+    tablo_alt = k.tablo.mapTo(k, k.tablo.rect().bottomLeft()).y()
+    kutu = k.alan["Adi"].parentWidget()
+    assert kutu.mapTo(k, kutu.rect().topLeft()).y() > tablo_alt                # form listenin altında
+    assert kutu.mapTo(k, kutu.rect().topLeft()).y() == k.ek.mapTo(k, k.ek.rect().topLeft()).y()   # kartlar yan yana
+    assert k.tablo.width() > k.width() - 60                                    # liste tam genişlikte
+    assert k.tablo.horizontalScrollBar().maximum() == 0
+    k.kolonlar.denetle()
+    assert not k.kolonlar.soru.isVisible()                                     # liste sığıyor, soru çıkmaz

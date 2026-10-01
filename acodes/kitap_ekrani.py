@@ -1,10 +1,10 @@
 ## Kitap Kayıt > Kitaplar: ekleme, düzenleme ve silme tek ekranda ##
-# Solda aranabilir kitap listesi, sağda seçili kitabın formu. "Yeni Kitap" formu boşaltır;
-# Kaydet yeni kitapta ekler, seçili kitapta günceller. Pencere büyüdükçe liste ve form genişler.
+# Üstte tam genişlikte aranabilir kitap listesi, altta seçili kitabın formu (Kitap Verme ekranıyla aynı düzen).
+# "Yeni Kitap" formu boşaltır; Kaydet yeni kitapta ekler, seçili kitapta günceller.
 
 from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import (QCompleter, QFormLayout, QFrame, QGroupBox, QHBoxLayout, QHeaderView, QLabel, QLineEdit,
-                             QMessageBox, QPushButton, QScrollArea, QTableWidget, QVBoxLayout, QWidget)
+from PyQt5.QtWidgets import (QCompleter, QGridLayout, QGroupBox, QHBoxLayout, QHeaderView, QLabel, QLineEdit,
+                             QMessageBox, QPushButton, QTableWidget, QVBoxLayout, QWidget)
 
 from bforms.onay import onay
 from acodes import tema
@@ -48,7 +48,7 @@ class KitapEkrani(QWidget):
             QGroupBox {{ font-weight: bold; }}
         """)
 
-        # --- Sol: arama ve liste
+        # --- Üst: arama ve liste
         self.arama = QLineEdit(objectName="kitap_arama")
         self.arama.setPlaceholderText("Ara: kitap adı, yazar, yayınevi, ISBN, raf, not...")
         self.arama.setClearButtonEnabled(True)
@@ -59,8 +59,7 @@ class KitapEkrani(QWidget):
         self.tablo = QTableWidget(0, len(LISTE_KOLONLARI))
         self.tablo.setHorizontalHeaderLabels(LISTE_KOLONLARI)
         tablo_ayarla(self.tablo, bos_metin="Aramanıza uyan kitap yok.")
-        # Kitap adı, yazar ve yayınevi kalan yeri paylaşır; kısa kolonlar içeriğe göre:
-        # dar pencerede de yatay kaydırma olmadan Yılı ve Kopya görünür kalır
+        # Kitap adı, yazar ve yayınevi kalan yeri paylaşır; kısa kolonlar içeriğe göre
         baslik = self.tablo.horizontalHeader()
         baslik.setStretchLastSection(False)
         baslik.setMinimumSectionSize(50)
@@ -76,65 +75,60 @@ class KitapEkrani(QWidget):
         self.kolonlar = KolonSecici(self.tablo, "kitaplar")
         self.kolonlar.buton.setMinimumHeight(36)
         ust.addWidget(self.kolonlar.buton)
-        sol = QVBoxLayout()
-        sol.addLayout(ust)
-        sol.addWidget(self.sonuc)
-        sol.addWidget(self.kolonlar.soru)
-        sol.addWidget(self.tablo, 1)
 
-        # --- Sağ: form
+        # --- Alt: form (Kitap bilgileri ve Ek Bilgiler yan yana, alanlar iki sütunda)
         self.form_baslik = QLabel(objectName="form_baslik")
         self.alan = {}
         kutu = QGroupBox("Kitap bilgileri")
-        form = QFormLayout(kutu)
-        form.setFieldGrowthPolicy(QFormLayout.AllNonFixedFieldsGrow)
-        form.setVerticalSpacing(8)
+        izgara = QGridLayout(kutu)
+        izgara.setHorizontalSpacing(10)
+        izgara.setVerticalSpacing(8)
+        # (kolon, satır, sütun, genişlik): kitap adı tam satır, diğerleri ikişer
+        yerler = {"Adi": (0, 0, 3), "Yazari": (1, 0, 1), "Ceviren": (1, 2, 1), "Turu": (2, 0, 1),
+                  "Yayinevi": (2, 2, 1), "Yili": (3, 0, 1), "Sayfa": (3, 2, 1)}
         for kolon, etiket, oneri in ALANLAR:
             alan = QLineEdit()
             alan.setMinimumHeight(30)
             self.alan[kolon] = alan
-            form.addRow(etiket + ":", alan)
+            satir, sutun, genislik = yerler[kolon]
+            izgara.addWidget(QLabel(etiket + ":"), satir, sutun, Qt.AlignRight | Qt.AlignVCenter)
+            izgara.addWidget(alan, satir, sutun + 1, 1, genislik)
+        izgara.setColumnStretch(1, 1)
+        izgara.setColumnStretch(3, 1)
         self.alan["Yili"].setMaximumWidth(120)
         self.alan["Sayfa"].setMaximumWidth(120)
-        self.ek = EkBilgiler()
+        self.ek = EkBilgiler(izgara=True)
+        self.ek.notlar.setMaximumHeight(64)
         self.kopya_bilgi = QLabel(objectName="kopya_bilgi")
+        self.ek.layout().addWidget(self.kopya_bilgi, 3, 1, 1, 3)
         self.btn_kaydet = QPushButton("Kaydet")
         self.btn_sil = QPushButton("Sil", objectName="kitap_sil")
         self.btn_vazgec = QPushButton("Vazgeç")
         for b in (self.btn_kaydet, self.btn_sil, self.btn_vazgec):
             b.setMinimumSize(110, 38)
-        butonlar = QHBoxLayout()
-        butonlar.addWidget(self.btn_kaydet)
-        butonlar.addWidget(self.btn_vazgec)
-        butonlar.addStretch()
-        butonlar.addWidget(self.btn_sil)
-        alanlar = QVBoxLayout()
-        alanlar.setContentsMargins(0, 0, 0, 0)
-        alanlar.addWidget(kutu)
-        alanlar.addWidget(self.ek)
-        alanlar.addWidget(self.kopya_bilgi)
-        alanlar.addStretch()
+        # Form başlığı ve butonlar bir satırda: solda "Kitap #12" / "Yeni kitap", sağda Kaydet, Vazgeç, Sil
+        islem = QHBoxLayout()
+        islem.addWidget(self.form_baslik)
+        islem.addStretch()
+        islem.addWidget(self.btn_kaydet)
+        islem.addWidget(self.btn_vazgec)
+        islem.addSpacing(16)
+        islem.addWidget(self.btn_sil)
+        kartlar = QHBoxLayout()
+        kartlar.setSpacing(16)
+        kartlar.addWidget(kutu, 3)
+        kartlar.addWidget(self.ek, 2)
 
-        duzen = QHBoxLayout(self)
+        # Liste üstte ve tam genişlikte (kalan yüksekliği alır), form altta (Kitap Verme ekranıyla aynı düzen)
+        duzen = QVBoxLayout(self)
         duzen.setContentsMargins(14, 12, 14, 12)
-        duzen.setSpacing(16)
-        duzen.addLayout(sol, 3)
-        # Küçük pencerede alanlar üst üste binmesin: sığmazsa alanlar kaydırılır, başlık ve butonlar yerinde kalır
-        form_alani = QWidget(objectName="kitap_formu")
-        form_alani.setLayout(alanlar)
-        kaydirma = QScrollArea()
-        kaydirma.setWidgetResizable(True)
-        kaydirma.setFrameShape(QFrame.NoFrame)
-        kaydirma.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-        kaydirma.setWidget(form_alani)
-        kaydirma.setStyleSheet("QScrollArea, #kitap_formu { background: transparent; }")
-        sag = QVBoxLayout()
-        sag.addWidget(self.form_baslik)
-        sag.addWidget(kaydirma, 1)
-        sag.addLayout(butonlar)
-        duzen.addLayout(sag, 2)
-        self.ek.layout().setVerticalSpacing(8)
-        self.ek.notlar.setMaximumHeight(70)
+        duzen.setSpacing(10)
+        duzen.addLayout(ust)
+        duzen.addWidget(self.sonuc)
+        duzen.addWidget(self.kolonlar.soru)
+        duzen.addWidget(self.tablo, 1)
+        duzen.addLayout(islem)
+        duzen.addLayout(kartlar)
 
         self.arama.textChanged.connect(self.listele)
         self.tablo.itemSelectionChanged.connect(self.secim_degisti)

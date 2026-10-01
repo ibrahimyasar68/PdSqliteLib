@@ -225,7 +225,8 @@ class KolonSecici(QObject):
         self.soru.hide()
 
     def sigmiyor(self):
-        """Yatay kaydırma çıkıyorsa ya da bir kolon içeriğinin %60'ından dar kaldıysa liste sığmıyor sayılır."""
+        """Yatay kaydırma çıkıyorsa ya da bir kolon içeriğinin %60'ından dar kaldıysa liste sığmıyor sayılır.
+        Uzun metinli kolonlarda (ör. kitap adı) en uzun değerin tamamı değil makul bir genişlik (220 px) beklenir."""
         if self.tablo.rowCount() == 0 or not self.tablo.isVisible():
             return False
         kaydirma = self.tablo.horizontalScrollBar()
@@ -235,7 +236,7 @@ class KolonSecici(QObject):
         for c in range(self.tablo.columnCount()):
             if self.tablo.isColumnHidden(c):
                 continue
-            icerik = max(baslik.sectionSizeHint(c), self.tablo.sizeHintForColumn(c))
+            icerik = min(220, max(baslik.sectionSizeHint(c), self.tablo.sizeHintForColumn(c)))
             if self.tablo.columnWidth(c) < 0.6 * icerik:
                 return True
         return False

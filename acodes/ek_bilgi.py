@@ -2,7 +2,8 @@
 
 import re
 
-from PyQt5.QtWidgets import QFormLayout, QGroupBox, QLineEdit, QPlainTextEdit, QSpinBox
+from PyQt5.QtCore import Qt
+from PyQt5.QtWidgets import QFormLayout, QGridLayout, QGroupBox, QLabel, QLineEdit, QPlainTextEdit, QSpinBox
 
 
 def isbn_normal(metin):
@@ -23,7 +24,8 @@ def isbn_gecerli(metin):
 
 
 class EkBilgiler(QGroupBox):
-    def __init__(self, parent=None, salt_okunur=False):
+    def __init__(self, parent=None, salt_okunur=False, izgara=False):
+        """izgara=True: alanlar iki sütunda (geniş ve alçak form, ör. listenin altındaki kitap formu)."""
         super().__init__("Ek Bilgiler", parent)
         self.setStyleSheet("QGroupBox { font-weight: bold; font-size: 16px; }")
         self.isbn = QLineEdit()
@@ -35,12 +37,28 @@ class EkBilgiler(QGroupBox):
         self.raf.setPlaceholderText("ör. A-3")
         self.notlar = QPlainTextEdit()
         self.notlar.setMaximumHeight(90)
-        form = QFormLayout(self)
-        form.setVerticalSpacing(12)
-        form.addRow("ISBN:", self.isbn)
-        form.addRow("Kopya sayısı:", self.kopya)
-        form.addRow("Raf yeri:", self.raf)
-        form.addRow("Notlar:", self.notlar)
+        if izgara:
+            g = QGridLayout(self)
+            g.setHorizontalSpacing(10)
+            g.setVerticalSpacing(8)
+            sag = Qt.AlignRight | Qt.AlignVCenter
+            g.addWidget(QLabel("ISBN:"), 0, 0, sag)
+            g.addWidget(self.isbn, 0, 1, 1, 3)
+            g.addWidget(QLabel("Kopya sayısı:"), 1, 0, sag)
+            g.addWidget(self.kopya, 1, 1)
+            g.addWidget(QLabel("Raf yeri:"), 1, 2, sag)
+            g.addWidget(self.raf, 1, 3)
+            g.addWidget(QLabel("Notlar:"), 2, 0, Qt.AlignRight | Qt.AlignTop)
+            g.addWidget(self.notlar, 2, 1, 1, 3)
+            g.setColumnStretch(1, 1)
+            g.setColumnStretch(3, 1)
+        else:
+            form = QFormLayout(self)
+            form.setVerticalSpacing(12)
+            form.addRow("ISBN:", self.isbn)
+            form.addRow("Kopya sayısı:", self.kopya)
+            form.addRow("Raf yeri:", self.raf)
+            form.addRow("Notlar:", self.notlar)
         if salt_okunur:
             for alan in (self.isbn, self.kopya, self.raf, self.notlar):
                 alan.setReadOnly(True)

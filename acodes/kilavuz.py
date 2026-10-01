@@ -110,7 +110,7 @@ YONETICI = [
     ("Kitap Listesi",
      KITAP_LISTESI + " Bir satıra çift tıklamak kitabı <b>Kitap Kayıt</b> ekranında açar."),
     ("Kitap Kayıt: kitap ekleme, düzenleme, silme",
-     "<b>Kitaplar</b> alt sekmesinde solda kitap listesi, sağda seçili kitabın formu vardır.<ul>"
+     "<b>Kitaplar</b> alt sekmesinde üstte tam genişlikte kitap listesi, altta seçili kitabın formu vardır; Kaydet, Vazgeç ve Sil formun üstündedir.<ul>"
      "<li><b>Yeni kitap:</b> <b>Yeni Kitap</b>'a basın, bilgileri yazıp <b>Kaydet</b>'e basın. "
      "Yalnızca kitap adı zorunludur.</li>"
      "<li><b>Düzenleme:</b> Listeden kitabı seçin, bilgileri değiştirip <b>Kaydet</b>'e basın. "
