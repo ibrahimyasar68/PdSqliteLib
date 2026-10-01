@@ -43,7 +43,7 @@ def test_panellerde_sabit_resim_yerine_grafik(app, uyarilar):
         q = panel.QtLibrary
         assert q.widget.isHidden()
         assert panel.grafikler.parent() is q.tab_5_2
-        assert panel.grafikler.yazarlar.veri[0] == ("Kemal TAHİR", 2)
+        assert panel.grafikler.yazarlar.veri[:2] == [("Andre MAUROIS", 2), ("Kemal TAHİR", 2)]   # eşitlikte alfabetik
         assert panel.grafikler.yillar.veri == yil_dagilimi()
 
 
@@ -61,3 +61,10 @@ def test_panel_tek_basina_kullanilabilir(app):
     p.yenile()
     p.resize(900, 600)
     assert p.turler.veri and not p.grab().isNull()
+
+
+def test_en_cok_yazar_grafiginde_bos_yazar_yok(app, uyarilar, db):
+    db.executemany("INSERT INTO kayitlistesi (Adi, Yazari) VALUES (?, '')", [("a",), ("b",), ("c",)])
+    db.commit()
+    lib = Library()
+    assert all(ad != "(belirtilmemiş)" for ad, _ in lib.grafikler.yazarlar.veri)

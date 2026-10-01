@@ -106,10 +106,18 @@ def filtre_secenekleri(kosullar, kolonlar):
     return secenekler
 
 ## İstatistik: kolondaki her değer için kitap sayısı (en çok olan cnt tanesi)
-def rapor(sor,cnt):
-    dfbook=pd.read_sql_query("SELECT * FROM kayitlistesi",baglantı)
-    snc=dfbook.groupby(sor)['Yili'].count().sort_values().tail(cnt)[::-1]
-    return snc
+## Boş değerli kitaplar "(belirtilmemiş)" olarak sayılır (eskiden adsız bir satır olarak görünüyordu)
+BELIRTILMEMIS="(belirtilmemiş)"
+
+## En çok kitabı olan cnt değer; eşit sayıda olanlar Türk alfabesine göre. bos_dahil=False ise boşlar atlanır.
+def rapor(sor,cnt,bos_dahil=True):
+    dfbook=pd.read_sql_query(f"SELECT {kolon(sor,KITAP_KOLON)} FROM kayitlistesi",baglantı)
+    degerler=dfbook[sor].fillna("").astype(str).str.strip()
+    degerler=degerler.replace("",BELIRTILMEMIS) if bos_dahil else degerler[degerler!=""]
+    # Her kitap sayılır (eskiden Yılı boş olan kitaplar türe/yazara göre sayımda atlanıyordu)
+    sayim=degerler.value_counts()
+    sira=sorted(sayim.index,key=lambda d:(-sayim[d],tr_sirala(d)))[:cnt]
+    return sayim[sira]
 
 ## Basım yıllarına göre on yıllık dağılım: [("1980'ler", 45), ("1990'lar", 120), ...]
 _ONLUK_EK = {0:"ler", 1:"lar", 2:"ler", 3:"lar", 4:"lar", 5:"ler", 6:"lar", 7:"ler", 8:"ler", 9:"lar"}

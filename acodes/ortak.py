@@ -2,7 +2,8 @@
 # Giriş (çıkış ve kullanıcı adı), Kitap Listesi, Filtre ve İstatistik sekmeleri.
 # İki panelin .ui dosyasında bu sekmelerdeki nesne adları aynı olduğu için kod tek yerde tutulur.
 
-from PyQt5.QtWidgets import QHBoxLayout, QLabel, QLineEdit
+from PyQt5.QtCore import Qt
+from PyQt5.QtWidgets import QGroupBox, QHBoxLayout, QHeaderView, QLabel, QLineEdit, QVBoxLayout
 from database.dbframe import kitap_ara, rapor
 from acodes.grafikler import GrafikPaneli
 from acodes.filtre_paneli import FiltrePaneli
@@ -56,8 +57,7 @@ class OrtakSekmeler:
 
         ###  Tablolar: başlığa tıklayınca sıralama, hücreler salt okunur, boşken yönlendirici mesaj  ###
         tablo_ayarla(ui.tableWidget_2, bos_metin="Aramanıza uyan kitap yok.")
-        for no,*_ in ISTATISTIKLER:
-            tablo_ayarla(getattr(ui,f"tableWidget_5_1_{no}"))
+        self.cizelgeleri_kartla()
 
         ###  Dışa aktarma: ana tablolarda buton, tüm tablolarda sağ tık menüsü  ###
         self.aktar_liste=self.aktar_butonu(ui.tableWidget_2,"Kitap Listesi",ui.pushButton_2_temizle,(40,480,100,60))
@@ -148,10 +148,30 @@ class OrtakSekmeler:
     #####   Tab_5 Fonksiyonlar   #####
     ##################################
 
+    def cizelgeleri_kartla(self):
+        ###  Dört çizelge: başlıklı beyaz kartlar; ad kolonu kalan yeri alır, sayılar sığar, yatay kaydırma yok  ###
+        ui=self.QtLibrary
+        for etiket in (ui.label_25,ui.label_56,ui.label_58,ui.label_59):
+            etiket.hide()
+        basliklar={1:"Türlere Göre",2:"Yazarlara Göre",3:"Yayınevlerine Göre",4:"Basım Yıllarına Göre"}
+        for no,*_ in ISTATISTIKLER:
+            tablo=getattr(ui,f"tableWidget_5_1_{no}")
+            tablo_ayarla(tablo)
+            tablo.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+            ui.gridLayout_5.removeWidget(tablo)
+            kart=QGroupBox(basliklar[no])
+            QVBoxLayout(kart).addWidget(tablo)
+            ui.gridLayout_5.addWidget(kart,0,no-1)
+        ui.gridLayout_5.setHorizontalSpacing(14)
+
     def create_tab_5(self):
         for no,kolon,baslik,adet in ISTATISTIKLER:
             tablo=getattr(self.QtLibrary,f"tableWidget_5_1_{no}")
             tablo_basliklari(tablo,[(225,baslik),(50,"Adet")])
+            baslik_cubugu=tablo.horizontalHeader()
+            baslik_cubugu.setStretchLastSection(False)
+            baslik_cubugu.setSectionResizeMode(0,QHeaderView.Stretch)
+            baslik_cubugu.setSectionResizeMode(1,QHeaderView.ResizeToContents)
             kayit=rapor(kolon,adet)
             if kolon=='Yili':
                 kayit=kayit.sort_index()

@@ -112,3 +112,13 @@ def test_silinmis_kitap_ve_uye_listeyi_bozmaz(db):
     odunc_ver(999, 9999)
     satir = df_work_table_book()[0]
     assert satir[0] == "(silinmiş kitap)" and satir[3] == "(silinmiş üye)"
+
+
+def test_istatistik_her_kitabi_sayar_bos_degerler_belirtilmemis(db):
+    from database.dbframe import BELIRTILMEMIS
+    db.execute("INSERT INTO kayitlistesi (Adi, Turu, Yili) VALUES ('Yılsız', 'Roman', NULL), ('Türsüz', '', '2000')")
+    db.commit()
+    turler = rapor("Turu", 35)
+    assert turler["Roman"] == 7                      # yılı boş olan da sayıldı
+    assert turler[BELIRTILMEMIS] == 1
+    assert rapor("Yili", 35)[BELIRTILMEMIS] == 2     # Kuyucaklı Yusuf ve Yılsız

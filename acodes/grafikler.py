@@ -134,6 +134,6 @@ class GrafikPaneli(QWidget):
     def yenile(self):
         self.turler.veri_ver(tur_dagilimi())
         for grafik, kolon in ((self.yazarlar, 'Yazari'), (self.yayinevleri, 'Yayinevi')):
-            r = rapor(kolon, CUBUK_SAYISI)
+            r = rapor(kolon, CUBUK_SAYISI, bos_dahil=False)
             grafik.veri_ver(zip(r.index, r.values))
         self.yillar.veri_ver(yil_dagilimi())

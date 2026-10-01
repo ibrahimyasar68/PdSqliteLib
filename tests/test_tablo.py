@@ -195,3 +195,13 @@ def test_listelerde_sira_numarasi(app, uyarilar):
 def test_bos_listede_sira_numarasi_yok(app, uyarilar):
     lib = Library()
     assert lib.QtLibrary.tableWidget_2.rowCount() == 0      # sekme açılmadan boş satır ("1") görünmez
+
+
+def test_istatistik_cizelgeleri_kartlarda_ve_sayilar_sigar(app, uyarilar):
+    from PyQt5.QtWidgets import QGroupBox
+    lib = Library()
+    q = lib.QtLibrary
+    t = q.tableWidget_5_1_2
+    assert isinstance(t.parentWidget(), QGroupBox) and t.parentWidget().title() == "Yazarlara Göre"
+    assert q.label_56.isHidden() and t.horizontalScrollBarPolicy() == Qt.ScrollBarAlwaysOff
+    assert t.horizontalHeader().sectionResizeMode(1) == QHeaderView.ResizeToContents
