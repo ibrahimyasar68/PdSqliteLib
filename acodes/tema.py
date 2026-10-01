@@ -71,9 +71,9 @@ QHeaderView::section:vertical {{ color: {IKINCIL_METIN}; font-weight: normal; pa
 QHeaderView::section {{ background-color: {ZEMIN}; color: #334155; padding: 4px 6px; border: none; font-weight: bold;
                border-right: 1px solid {KENAR}; border-bottom: 1px solid {KENAR}; }}
 
-QGroupBox {{ background-color: {KART}; border: 1px solid {KENAR}; border-radius: 8px;
-               margin-top: 14px; padding: 12px 10px 10px 10px; color: #334155; }}
-QGroupBox::title {{ subcontrol-origin: margin; left: 12px; padding: 0 6px; }}
+QGroupBox {{ background-color: {KART}; border: 1px solid {KENAR}; border-radius: 8px; color: #334155;
+               font-weight: bold; margin-top: 0; padding: 44px 12px 12px 12px; }}
+QGroupBox::title {{ subcontrol-origin: padding; subcontrol-position: top left; left: 14px; top: 12px; }}
 
 QStatusBar {{ background-color: #E3E7EE; color: #334155; }}
 QToolTip {{ background-color: {METIN}; color: white; border: none; padding: 4px 6px; }}

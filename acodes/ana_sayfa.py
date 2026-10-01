@@ -21,7 +21,7 @@ STIL = f"""
 #kart_sayi {{ font-size: 30px; font-weight: bold; color: {tema.METIN}; }}
 #kart_baslik {{ font-size: 16px; font-weight: bold; color: #334155; }}
 #kart_alt {{ font-size: 14px; color: {tema.IKINCIL_METIN}; }}
-QGroupBox {{ font-weight: bold; color: white; }}
+QGroupBox {{ font-weight: bold; }}
 #ana_sayfa QTableWidget, #ana_sayfa QHeaderView {{ color: {tema.METIN}; }}
 """
 

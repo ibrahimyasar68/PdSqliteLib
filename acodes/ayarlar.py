@@ -13,7 +13,7 @@ from PyQt5.QtWidgets import (QFormLayout, QGroupBox, QHBoxLayout, QLabel, QPushB
 
 STIL = f"""
 #ayarlar_ic {{ background: transparent; }}
-QGroupBox {{ font-size: 18px; font-weight: bold; border-radius: 10px; padding: 16px 12px 12px 12px; }}
+QGroupBox {{ font-size: 18px; font-weight: bold; border-radius: 10px; padding: 48px 14px 14px 14px; }}
 QLabel {{ color: {tema.IKINCIL_METIN}; }}
 QLabel[rol="deger"] {{ color: {tema.METIN}; }}
 QPushButton {{ padding: 9px 16px; min-width: 150px; }}
