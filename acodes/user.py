@@ -1,5 +1,6 @@
-from PyQt5.QtWidgets import QApplication, QListView, QMainWindow, QMessageBox
+from PyQt5.QtWidgets import QApplication, QHBoxLayout, QLabel, QListView, QMainWindow, QMessageBox, QVBoxLayout, QWidget
 from PyQt5.QtCore import Qt
+from acodes import ikonlar, tema
 from bforms.user_py import Ui_MainWindow
 from database.dbframe import df_user_query
 from database.dbbase import user_ekle
@@ -32,21 +33,8 @@ class User(QMainWindow):
         self.QtUser = Ui_MainWindow()
         self.QtUser.setupUi(self)
         self.dur_msj=3000
-        self.setWindowFlags(Qt.FramelessWindowHint)
-        self.QtUser.label_2.setText("Y E N İ   K U L L A N I C I")
-        # Mac: tam ekran panelin üstünde açılınca ekrana yayılmasın
-        self.setFixedSize(900,680)
-        self.move(240,20)
         self.setWindowTitle("Yaşar Kütüphanesi - Yeni Kullanıcı")
-        # Mac'te yetki kutusu saydam kalıp koyu arka planda görünmüyordu
-        self.QtUser.comboBox_yetki.setFixedSize(300,30)
-        self.QtUser.comboBox_yetki.setView(QListView())  # Mac'in yerel listesi seçenekleri kesiyordu
-        self.QtUser.comboBox_yetki.setStyleSheet(
-            'QComboBox { font: 11pt "Verdana"; color: black; background-color: rgba(255,255,255,220);'
-            ' border-radius: 6px; padding-left: 4px; }'
-            'QComboBox QAbstractItemView { background-color: white; color: black;'
-            ' selection-background-color: rgb(80,140,240); selection-color: white; }'
-            'QComboBox QAbstractItemView::item { min-height: 26px; padding-left: 4px; }')
+        self.tasarim()
 
         self.cmb_yetki()
 
@@ -59,6 +47,70 @@ class User(QMainWindow):
         self.QtUser.pushButton_cikis.clicked.connect(self.user_exit)
         self.QtUser.pushButton_kaydet.clicked.connect(self.save_user)
         self.QtUser.pushButton_temizle.clicked.connect(self.clear_form)
+
+    def tasarim(self):
+        ###  Temadaki sade form: başlık, etiketli alanlar, kart içinde mesaj, sağ altta butonlar  ###
+        ui=self.QtUser
+        for eski in (ui.label, ui.label_2, ui.groupBox, ui.layoutWidget):
+            eski.hide()
+        ui.statusbar.hide()                       # mesajlar formun içinde gösterilir
+        alanlar=[(ui.lineEdit_kullanici_adi,"Kullanıcı adı *","ör. ayse"),
+                 (ui.lineEdit_sifre,"Şifre *",f"En az {SIFRE_EN_AZ} karakter"),
+                 (ui.lineEdit_adi_soyadi,"Adı soyadı *","ör. Ayşe Yılmaz"),
+                 (ui.lineEdit_telefon,"Telefon","10 hane, ör. 5321234567"),
+                 (ui.lineEdit_mail,"E-posta","ör. ayse@ornek.com"),
+                 (ui.comboBox_yetki,"Yetki *",None)]
+        kart=QWidget(objectName="kullanici_karti")
+        duzen=QVBoxLayout(kart)
+        duzen.setContentsMargins(36,30,36,26)
+        duzen.setSpacing(4)
+        duzen.addWidget(QLabel("Yeni Kullanıcı",objectName="form_baslik"))
+        alt=QLabel("Üye (guest) veya yönetici (admin) kaydı oluşturun. * işaretli alanlar zorunludur.",
+                   objectName="form_alt")
+        alt.setWordWrap(True)
+        duzen.addWidget(alt)
+        duzen.addSpacing(14)
+        for alan,etiket,ipucu in alanlar:
+            alan.setParent(kart)
+            alan.setStyleSheet("")
+            alan.setMinimumSize(0,38)
+            alan.setMaximumSize(16777215,38)
+            if ipucu:
+                alan.setPlaceholderText(ipucu)
+            duzen.addWidget(QLabel(etiket,objectName="form_etiket"))
+            duzen.addWidget(alan)
+            duzen.addSpacing(8)
+        ui.comboBox_yetki.setView(QListView())    # Mac'in yerel listesi seçenekleri kesiyordu
+        self.mesaj=QLabel("",objectName="form_mesaj")
+        self.mesaj.setWordWrap(True)
+        ui.statusbar.messageChanged.connect(self.mesaj.setText)
+        duzen.addWidget(self.mesaj)
+        duzen.addStretch()
+        butonlar=QHBoxLayout()
+        butonlar.addStretch()
+        for buton,metin,rol in ((ui.pushButton_cikis,"Kapat","ikincil"),(ui.pushButton_temizle,"Temizle","ikincil"),
+                                (ui.pushButton_kaydet,"Kaydet",None)):
+            buton.setParent(kart)
+            buton.setStyleSheet("")
+            buton.setText(metin)
+            buton.setMinimumSize(110,40)
+            buton.setMaximumSize(160,40)
+            buton.setCursor(Qt.PointingHandCursor)
+            if rol:
+                buton.setProperty("rol",rol)
+            butonlar.addWidget(buton)
+        duzen.addLayout(butonlar)
+        self.setCentralWidget(kart)
+        ikonlar.butonlara_uygula(self)
+        self.setFixedSize(520,700)                # Mac: tam ekran panelin üstünde ekrana yayılmasın
+        self.setStyleSheet(tema.qss()+f"""
+#kullanici_karti {{ background-color: {tema.KART}; }}
+#form_baslik {{ font-size: 26px; font-weight: bold; color: {tema.METIN}; }}
+#form_alt {{ color: {tema.IKINCIL_METIN}; }}
+#form_etiket {{ font-weight: bold; color: #334155; }}
+#form_mesaj {{ color: {tema.TEHLIKE}; }}
+QLineEdit, QComboBox {{ font-size: 16px; padding: 4px 10px; border-radius: 8px; }}
+""")
 
     def user_exit(self):
         self.clear_form()

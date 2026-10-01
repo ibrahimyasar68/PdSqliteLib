@@ -109,3 +109,12 @@ def test_yeni_uye_sekme_degisince_odunc_listesinde(lib, form):
     form.save_user()
     lib.QtLibrary.tabWidget.setCurrentIndex(5)
     assert "Veli Can (veli)" in etiketler(lib.odunc.uye)
+
+
+def test_yeni_kullanici_penceresi_temada(form):
+    ui = form.QtUser
+    assert ui.label.isHidden() and ui.label_2.isHidden() and ui.statusbar.isHidden()   # eski desenli arka plan yok
+    assert ui.pushButton_kaydet.property("rol") is None and ui.pushButton_cikis.property("rol") == "ikincil"
+    assert not ui.pushButton_kaydet.icon().isNull()
+    ui.statusbar.showMessage("Deneme mesajı")
+    assert form.mesaj.text() == "Deneme mesajı"                                        # mesaj formun içinde

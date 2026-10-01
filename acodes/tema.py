@@ -45,6 +45,10 @@ QPushButton {{ background-color: {VURGU}; color: white; border: none; border-rad
 QPushButton:hover {{ background-color: {VURGU_KOYU}; }}
 QPushButton:pressed {{ background-color: #1E40AF; }}
 QPushButton:disabled {{ background-color: #E2E8F0; color: #64748B; }}
+QPushButton[rol="ikincil"] {{ background-color: {KART}; color: #334155; border: 1px solid #CBD5E1; }}
+QPushButton[rol="ikincil"]:hover {{ background-color: #F1F5F9; border-color: #94A3B8; }}
+QPushButton[rol="ikincil"]:pressed {{ background-color: #E2E8F0; }}
+QPushButton[rol="ikincil"]:disabled {{ background-color: #F8FAFC; color: #94A3B8; border-color: #E2E8F0; }}
 {", ".join("#" + ad for ad in TEHLIKELI_BUTONLAR)} {{ background-color: {TEHLIKE}; }}
 {", ".join("#" + ad + ":hover" for ad in TEHLIKELI_BUTONLAR)} {{ background-color: {TEHLIKE_KOYU}; }}
 {", ".join("#" + ad + ":disabled" for ad in TEHLIKELI_BUTONLAR)} {{ background-color: #E2E8F0; color: #64748B; }}
