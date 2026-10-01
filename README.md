@@ -160,6 +160,8 @@ Herkes **Ayarlar → Şifremi Değiştir** ile kendi şifresini değiştirebilir
 - **Elle:** Admin panelinde **Ayarlar → Yedek Al** ile istenen yere (ör. USB bellek) yedek alınır.
 - **Geri yükleme:** **Ayarlar → Yedekten Geri Yükle**. Dosya önce doğrulanır (PdSqliteLib veritabanı mı,
   içinde admin kullanıcı var mı); geri yüklemeden önce mevcut halin yedeği otomatik alınır.
+- **Güvenlik yedekleri:** Veri Düzeltme'de birleştirmeden önce (`duzeltme_oncesi_...`) ve geri yüklemeden
+  önce (`geri_yukleme_oncesi_...`) alınan yedeklerin her türünden son 10 tanesi saklanır, eskileri silinir.
 
 Yedekler veritabanının yanındaki `yedekler/` klasöründedir
 (`data/yedekler/` veya `~/Library/Application Support/PdSqliteLib/yedekler/`).

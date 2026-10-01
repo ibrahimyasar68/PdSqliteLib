@@ -7,7 +7,7 @@ from PyQt5.QtWidgets import QGroupBox, QLabel, QPushButton, QVBoxLayout
 
 from acodes import tema
 from database.odunc import ODUNC_SURESI_GUN
-from database.yedek import OTOMATIK_SAKLA
+from database.yedek import GUVENLIK_SAKLA, OTOMATIK_SAKLA
 
 URETICI = "IY Labs"
 URETIM_YILI = 2025
@@ -60,6 +60,40 @@ ISTATISTIK = (
     "veritabanından yeniden hesaplanır."
 )
 
+YEDEKLEME = (
+    "<b>Yedek</b>, bütün kütüphanenin (kitaplar, üyeler, ödünç kayıtları) tek bir <i>.db</i> dosyası olarak "
+    "kopyasıdır; program açıkken alınsa da tutarlıdır.<ul>"
+    f"<li><b>Otomatik yedek:</b> Program her gün ilk açıldığında kendiliğinden yedek alır; son {OTOMATIK_SAKLA} "
+    "otomatik yedek saklanır, daha eskileri silinir. Dosya adı tarih ve saati gösterir "
+    "(<i>DBL_Kayit_20261001_001948.db</i>).</li>"
+    "<li><b>Güvenlik yedekleri:</b> Geri alınması zor işlemlerden önce de yedek alınır: Veri Düzeltme'de "
+    "birleştirmeden önce (<i>duzeltme_oncesi_...</i>) ve yedekten geri yüklemeden önce mevcut hal "
+    f"(<i>geri_yukleme_oncesi_...</i>). Her türden son {GUVENLIK_SAKLA} tanesi saklanır.</li>"
+    "<li><b>Yedek klasörü:</b> Veritabanının yanındaki <i>yedekler</i> klasörüdür (Mac'te "
+    "<i>~/Library/Application Support/PdSqliteLib/yedekler</i>, Windows'ta "
+    "<i>%APPDATA%\\PdSqliteLib\\yedekler</i>). <b>Ayarlar → Yedek Klasörünü Aç</b> bu klasörü açar.</li>"
+    "<li><b>Yedek Al:</b> Yedeği istediğiniz yere kaydeder. Otomatik yedekler aynı bilgisayarda durduğu için "
+    "disk arızasına karşı korumaz; ara sıra USB belleğe veya bulut klasörüne yedek alın.</li>"
+    "<li><b>Yedekten Geri Yükle:</b> Seçilen yedeğe döner; mevcut tüm kayıtlar o yedektekilerle değişir. "
+    "Önce mevcut halin yedeği alınır, yani yanlışlıkla yapılırsa geri dönülebilir. Geçerli bir kütüphane "
+    "yedeği olmayan dosya yüklenmez; eski sürümlerin yedeklerine yeni alanlar kendiliğinden eklenir.</li>"
+    "<li><b>Mac ↔ Windows:</b> Bir bilgisayarda <b>Yedek Al</b> ile USB belleğe kaydedip diğerinde "
+    "<b>Yedekten Geri Yükle</b> ile açarak veriyi taşıyabilirsiniz.</li></ul>"
+)
+
+DISA_AKTARMA = (
+    "<b>Dışa aktarma</b> bir listeyi rapor veya çıktı için Excel ya da CSV dosyasına kaydeder; geri "
+    "yüklenemez, yedek yerine geçmez.<ul>"
+    "<li><b>Dışa Aktar</b> butonu Kitap Listesi, Filtre sonuçları, dışarıdaki kitaplar ve Ödünç Geçmişi'nde "
+    "vardır; bütün tablolarda (İstatistik çizelgeleri dahil) sağ tıklayıp <i>Excel / CSV olarak dışa "
+    "aktar</i> da seçilebilir.</li>"
+    "<li>Tablo ekranda nasıl görünüyorsa öyle kaydedilir: arama, filtre, sıralama ve gizlenen kolonlar dahil.</li>"
+    "<li><b>Excel (.xlsx):</b> kalın başlık, sabit ilk satır ve filtre okları; sayılar ve tarihler Excel'de "
+    "hesaplanabilir. <b>CSV:</b> Türkçe karakterler bozulmadan, kolonlara ayrılmış olarak Excel'de açılır.</li>"
+    "<li>Önerilen dosya adı liste adı ve tarihtir (<i>Kitap_Listesi_20261001.xlsx</i>); kayıt yeri olarak "
+    "Belgeler klasörü önerilir.</li></ul>"
+)
+
 YONETICI = [
     ("Menü ve gezinme",
      "Bölümler soldaki menüdedir; açık bölüm mavi zeminle işaretlenir. Menünün sağ üstündeki düğme menüyü "
@@ -108,11 +142,8 @@ YONETICI = [
      "<b>Yeni Kullanıcı Ekle</b> ile üye (guest) veya yönetici (admin) kaydı açılır. "
      "<b>Kullanıcı Yönetimi</b>nde kullanıcıların bilgileri ve yetkileri düzenlenir, şifreleri sıfırlanır "
      "veya silinir; elinde kitap olan kullanıcı ve son yönetici silinemez. <b>Şifremi Değiştir</b> kendi "
-     "şifrenizi değiştirir.<br><br>"
-     f"Program her gün ilk açılışta veritabanının otomatik yedeğini alır; son {OTOMATIK_SAKLA} yedek saklanır. "
-     "<b>Yedek Al</b> istediğiniz bir yere (ör. USB bellek) yedek kaydeder. <b>Yedekten Geri Yükle</b> "
-     "seçilen yedeğe döner; bunu yapmadan önce mevcut halin yedeği otomatik olarak alınır. "
-     "<b>Yedek Klasörünü Aç</b> otomatik yedeklerin bulunduğu klasörü açar."),
+     "şifrenizi değiştirir. Yedekleme butonları için <b>Yedekleme ve dışa aktarma</b> başlığına bakın."),
+    ("Yedekleme ve dışa aktarma", YEDEKLEME + "<br><br>" + DISA_AKTARMA),
     ("İpuçları",
      "<ul><li>Uzun açılır listelerde (kitap, üye, filtre ölçütleri) kaydırmak yerine yazarak arayın.</li>"
      "<li>İşlemlerin sonucu pencerenin altında birkaç saniye görünen bildirimlerle haber verilir: "
@@ -139,6 +170,7 @@ UYE = [
      f"{ODUNC_SURESI_GUN} gün). Teslim süresi geçen kitaplar kırmızıdır ve sekmenin adında sayısı yazar. "
      "Daha önce aldığınız kitaplar da ne zaman aldığınız ve iade ettiğiniz bilgisiyle aşağıda görünür. "
      "Kitap ödünç almak veya iade etmek için kütüphane yöneticisine başvurun."),
+    ("Dışa aktarma", DISA_AKTARMA),
     ("Ayarlar: hesabım",
      "<b>Hesabım</b> bölümünde kullanıcı adınız, adınız ve iletişim bilgileriniz görünür. "
      "<b>Şifremi Değiştir</b> ile mevcut şifrenizi girerek yeni şifre belirleyebilirsiniz. "

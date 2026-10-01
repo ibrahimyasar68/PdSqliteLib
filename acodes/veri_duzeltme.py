@@ -2,9 +2,6 @@
 # Sol: aynı değerin farklı yazımları (ör. "Adam Yayınları" / "Adam yayınları") ve birleştirme.
 # Sağ: yılı, yayınevi, yazarı veya türü boş olan kitaplar (çift tıklayınca düzenlemede açılır).
 
-import datetime
-import os
-
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import (QComboBox, QGroupBox, QHBoxLayout, QHeaderView, QLabel, QLineEdit, QMessageBox,
                              QPushButton, QTableWidget, QTreeWidget, QTreeWidgetItem, QVBoxLayout, QWidget)
@@ -12,7 +9,7 @@ from bforms.onay import onay
 from acodes import tema
 from acodes.tablo import tablo_ayarla, tabloya_yaz
 from database.duzeltme import benzer_gruplar, birlestir, eksik_kitaplar, yoksay
-from database.yedek import yedek_al, yedek_klasoru
+from database.yedek import guvenlik_yedegi_al
 
 ALANLAR = [("Yazari", "Yazar"), ("Yayinevi", "Yayınevi"), ("Ceviren", "Çevirmen"), ("Turu", "Tür")]
 EKSIK_ALANLAR = [("Yili", "Basım yılı"), ("Yayinevi", "Yayınevi"), ("Yazari", "Yazar"), ("Turu", "Tür")]
@@ -170,8 +167,7 @@ class VeriDuzeltme(QWidget):
                 "Değişiklikten önce yedek alınır. Devam edilsin mi?") != QMessageBox.Yes:
             return
         if self.yedek_alindi is None:   # oturumdaki ilk birleştirmeden önce bir kez
-            self.yedek_alindi = yedek_al(os.path.join(
-                yedek_klasoru(), f"duzeltme_oncesi_{datetime.datetime.now():%Y%m%d_%H%M%S}.db"))
+            self.yedek_alindi = guvenlik_yedegi_al("duzeltme_oncesi_")
         degisen = birlestir(self.alan.currentData(), eskiler, yeni)
         self.gruplari_yukle()
         self.eksikleri_yukle()

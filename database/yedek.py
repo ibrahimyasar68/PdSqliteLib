@@ -15,6 +15,9 @@ from database.sema import GEREKLI_TABLOLAR, sema_olustur, tablolar
 
 OTOMATIK_SAKLA = 10
 OTOMATIK_ONEK = "DBL_Kayit_"      # otomatik yedekler: DBL_Kayit_20260929_101500.db
+# Riskli işlemlerden önce alınan güvenlik yedekleri: her türden son GUVENLIK_SAKLA tanesi tutulur
+GUVENLIK_SAKLA = 10
+GUVENLIK_ONEKLERI = ("duzeltme_oncesi_", "geri_yukleme_oncesi_")
 
 
 def yedek_klasoru():
@@ -39,6 +42,24 @@ def yedek_al(hedef=None):
     finally:
         kopya.close()
     return hedef
+
+
+def guvenlik_yedegi_al(onek):
+    """Riskli bir işlemden önce yedek alır (ör. duzeltme_oncesi_...), aynı türün eskilerini temizler."""
+    yol = yedek_al(os.path.join(yedek_klasoru(), f"{onek}{_zaman()}.db"))
+    guvenlik_yedeklerini_temizle()
+    return yol
+
+
+def guvenlik_yedeklerini_temizle():
+    """Her güvenlik yedeği türünden en yeni GUVENLIK_SAKLA tanesi kalır; silinen dosya sayısını döndürür."""
+    silinen = 0
+    for onek in GUVENLIK_ONEKLERI:
+        yedekler = sorted(glob.glob(os.path.join(yedek_klasoru(), f"{onek}[0-9]*.db")))
+        for eski in yedekler[:-GUVENLIK_SAKLA]:
+            os.remove(eski)
+            silinen += 1
+    return silinen
 
 
 def otomatik_yedekler():
@@ -66,6 +87,7 @@ def otomatik_yedek():
     yol = yedek_al()
     for eski in otomatik_yedekler()[:-OTOMATIK_SAKLA]:
         os.remove(eski)
+    guvenlik_yedeklerini_temizle()      # önceki sürümlerden birikmiş olanlar da temizlenir
     return yol
 
 
@@ -93,7 +115,7 @@ def geri_yukle(yol):
     hata = yedek_hatasi(yol)
     if hata:
         raise ValueError(hata)
-    onceki = yedek_al(os.path.join(yedek_klasoru(), f"geri_yukleme_oncesi_{_zaman()}.db"))
+    onceki = guvenlik_yedegi_al("geri_yukleme_oncesi_")
     kaynak = sqlite3.connect(f"file:{yol}?mode=ro", uri=True)
     try:
         kaynak.backup(baglantı)

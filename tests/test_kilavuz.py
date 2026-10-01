@@ -62,3 +62,11 @@ def test_uretici_imzasi(app, uyarilar):
     assert kilavuz.IMZA == "IY Labs · 2025"
     assert Login().imza.text() == "IY Labs · 2025"
     assert "<b>IY Labs</b> tarafından 2025 yılında üretilmiştir." in kilavuz.HAKKINDA
+
+
+def test_yedekleme_ve_disa_aktarma_konusu():
+    from database.yedek import GUVENLIK_SAKLA, OTOMATIK_SAKLA
+    metin = dict(kilavuz.YONETICI)["Yedekleme ve dışa aktarma"]
+    assert f"son {OTOMATIK_SAKLA}" in metin and f"son {GUVENLIK_SAKLA} tanesi" in metin
+    assert "Yedekten Geri Yükle" in metin and "Excel (.xlsx)" in metin
+    assert "Yedekten Geri Yükle" not in dict(kilavuz.UYE)["Dışa aktarma"]     # üyede yedekleme yok

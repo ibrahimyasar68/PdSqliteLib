@@ -13,7 +13,8 @@ from acodes.tablo import tablo_ayarla, tabloya_yaz
 STIL = f"""
 #ana_sayfa {{ background: transparent; }}
 #ana_baslik {{ background: transparent; }}
-#hosgeldin {{ color: #FDBA74; font-size: 40px; font-weight: bold; }}
+#hosgeldin {{ color: #FDBA74; font-family: "{tema.BASLIK_YAZISI}"; font-size: 84px; font-weight: normal;
+               font-style: normal; }}
 #karsilama {{ color: white; font-size: 19px; font-weight: bold; }}
 #kart {{ background-color: {tema.KART}; border: 1px solid {tema.KENAR}; border-radius: 10px; }}
 #kart:hover {{ border-color: {tema.VURGU}; }}

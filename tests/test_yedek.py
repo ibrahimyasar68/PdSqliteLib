@@ -115,3 +115,25 @@ def test_panel_hatali_yedegi_yuklemez(app, uyarilar, monkeypatch, db, tmp_path):
 def yedek_modulu_dialog():
     from PyQt5.QtWidgets import QFileDialog
     return QFileDialog
+
+
+def test_guvenlik_yedekleri_sinirli_sayida_tutulur():
+    klasor = yedek.yedek_klasoru()
+    for onek in yedek.GUVENLIK_ONEKLERI:
+        for i in range(yedek.GUVENLIK_SAKLA + 4):
+            open(os.path.join(klasor, f"{onek}20250101_{i:06d}.db"), "w").close()
+    open(os.path.join(klasor, "elle_alinan.db"), "w").close()       # başka yedeklere dokunulmaz
+    assert yedek.guvenlik_yedeklerini_temizle() == 8
+    for onek in yedek.GUVENLIK_ONEKLERI:
+        kalan = sorted(f for f in os.listdir(klasor) if f.startswith(onek))
+        assert len(kalan) == yedek.GUVENLIK_SAKLA and kalan[-1].endswith("000013.db")   # en yeniler kalır
+    assert os.path.exists(os.path.join(klasor, "elle_alinan.db"))
+
+
+def test_geri_yuklemede_guvenlik_yedegi_alinir_ve_temizlenir(db, tmp_path):
+    klasor = yedek.yedek_klasoru()
+    for i in range(yedek.GUVENLIK_SAKLA):
+        open(os.path.join(klasor, f"geri_yukleme_oncesi_20200101_{i:06d}.db"), "w").close()
+    onceki = yedek.geri_yukle(yedek.yedek_al(str(tmp_path / "y.db")))
+    kalan = [f for f in os.listdir(klasor) if f.startswith("geri_yukleme_oncesi_")]
+    assert len(kalan) == yedek.GUVENLIK_SAKLA and os.path.basename(onceki) in kalan
