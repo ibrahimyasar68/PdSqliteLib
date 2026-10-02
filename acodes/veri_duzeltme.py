@@ -3,6 +3,7 @@
 # Sağ: yılı, yayınevi, yazarı veya türü boş olan kitaplar (çift tıklayınca düzenlemede açılır).
 
 from PyQt5.QtCore import Qt
+from PyQt5.QtGui import QColor
 from PyQt5.QtWidgets import (QComboBox, QGroupBox, QHBoxLayout, QHeaderView, QLabel, QLineEdit, QMessageBox,
                              QPushButton, QTableWidget, QTreeWidget, QTreeWidgetItem, QVBoxLayout, QWidget)
 from acodes.onay import onay
@@ -33,8 +34,8 @@ class VeriDuzeltme(QWidget):
         self.agac = QTreeWidget()
         # Pencerenin stil sayfası altında macOS onay kutularını boş çiziyor; görünümleri açıkça verilir
         self.agac.setStyleSheet(f"""
-            QTreeWidget::indicator {{ width: 14px; height: 14px; border: 1px solid #5A5A5A;
-                                     border-radius: 3px; background-color: white; }}
+            QTreeWidget::indicator {{ width: 14px; height: 14px; border: 1px solid {tema.SOLUK};
+                                     border-radius: 3px; background-color: {tema.KART}; }}
             QTreeWidget::indicator:checked {{ background-color: {tema.VURGU}; border-color: {tema.VURGU_KOYU}; }}
         """)
         self.agac.setHeaderLabels(["Yazım (birleştirilecekleri işaretleyin)", "Kitap"])
@@ -113,7 +114,7 @@ class VeriDuzeltme(QWidget):
             ust = QTreeWidgetItem([f"{'Kesin' if grup['kesin'] else 'Olası'}: {grup['degerler'][0][0]}", str(toplam)])
             ust.setToolTip(0, "Sadece büyük/küçük harf veya noktalama farkı" if grup["kesin"]
                            else "Harf farkı var; gerçekten aynı değer mi kontrol edin")
-            ust.setForeground(0, Qt.darkGreen if grup["kesin"] else Qt.darkYellow)
+            ust.setForeground(0, QColor(tema.BASARI if grup["kesin"] else tema.UYARI))
             for deger, sayi in grup["degerler"]:
                 cocuk = QTreeWidgetItem([deger, str(sayi)])
                 cocuk.setFlags(cocuk.flags() | Qt.ItemIsUserCheckable)

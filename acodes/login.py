@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import (QAction, QGraphicsDropShadowEffect, QLabel, QLineEdit, QMainWindow, QSizePolicy, QVBoxLayout,
+from PyQt5.QtWidgets import (QAction, QApplication, QGraphicsDropShadowEffect, QLabel, QLineEdit, QMainWindow, QSizePolicy, QVBoxLayout,
                              QWidget)
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QColor
@@ -19,18 +19,19 @@ def panel_goster(panel):
 
 
 # Sağ taraf: geçişli zemin yerine beyaz kart; soldaki fotoğraf ve başlık korunur
-GIRIS_STILI = f"""
+def giris_stili():
+    return f"""
 #label_2 {{ background-color: {tema.KART}; border-top-right-radius: 16px; border-bottom-right-radius: 16px; }}
 #label_5 {{ color: white; font-family: "{tema.BASLIK_YAZISI}"; font-size: 48px; font-style: normal; }}
-#giris_karti QLabel {{ color: #334155; font-size: 13px; font-weight: bold; }}
+#giris_karti QLabel {{ color: {tema.ETIKET}; font-size: 13px; font-weight: bold; }}
 #giris_karti QLabel#giris_baslik {{ color: {tema.METIN}; font-size: 26px; font-weight: bold; }}
 #giris_karti QLabel#giris_alt {{ color: {tema.IKINCIL_METIN}; font-size: 13px; font-weight: normal; }}
 #giris_karti QLineEdit {{ font-size: 15px; padding: 8px 10px; border-radius: 8px; min-height: 22px; }}
 #giris_karti QLabel#giris_mesaj {{ color: {tema.TEHLIKE}; font-weight: normal; }}
-#giris_karti QLabel#giris_mesaj[tur="bilgi"] {{ color: #15803D; }}
+#giris_karti QLabel#giris_mesaj[tur="bilgi"] {{ color: {tema.BASARI}; }}
 #giris_karti QLabel#giris_imza {{ color: {tema.IKINCIL_METIN}; font-size: 12px; font-weight: normal; }}
 #pushButton_giris {{ font-size: 16px; font-weight: bold; padding: 10px; border-radius: 8px; }}
-#pushButton_cikis {{ background-color: #F1F5F9; border: 1px solid {tema.KENAR}; border-radius: 22px; }}
+#pushButton_cikis {{ background-color: {tema.YUZEY}; border: 1px solid {tema.KENAR}; border-radius: 22px; }}
 #pushButton_cikis:hover {{ background-color: {tema.TEHLIKE}; border-color: {tema.TEHLIKE}; }}
 """
 
@@ -106,22 +107,28 @@ class Login(QMainWindow):
         duzen.addWidget(self.imza)
 
         # Parolayı göster/gizle
-        self.goster=QAction(ikonlar.ikon("goz",ikonlar.SEKME_RENGI),"Parolayı göster",ui.lineEdit_parola)
+        self.goster=QAction("Parolayı göster",ui.lineEdit_parola)
         self.goster.triggered.connect(self.parola_goster_gizle)
         ui.lineEdit_parola.addAction(self.goster,QLineEdit.TrailingPosition)
 
         ui.pushButton_giris.setIcon(ikonlar.ikon("ok_sag"))
         ui.pushButton_cikis.setGeometry(752,574,44,44)
-        ui.pushButton_cikis.setIcon(ikonlar.ikon("guc",ikonlar.SEKME_RENGI))
         ui.pushButton_cikis.setIconSize(ui.pushButton_cikis.size()*0.45)
         ui.pushButton_cikis.setCursor(Qt.PointingHandCursor)
-        self.setStyleSheet(tema.qss()+GIRIS_STILI)
+        self.stil_uygula()
+
+    def stil_uygula(self):
+        ###  Temaya bağlı renkler (açılışta ve görünüm değişince)  ###
+        gizli=self.QtLogin.lineEdit_parola.echoMode()==QLineEdit.Password
+        self.goster.setIcon(ikonlar.ikon("goz" if gizli else "goz_kapali",tema.IKON))
+        self.QtLogin.pushButton_cikis.setIcon(ikonlar.ikon("guc",tema.IKON))
+        self.setStyleSheet(tema.qss()+giris_stili())
 
     def parola_goster_gizle(self):
         alan=self.QtLogin.lineEdit_parola
         gizli=alan.echoMode()==QLineEdit.Password
         alan.setEchoMode(QLineEdit.Normal if gizli else QLineEdit.Password)
-        self.goster.setIcon(ikonlar.ikon("goz_kapali" if gizli else "goz",ikonlar.SEKME_RENGI))
+        self.goster.setIcon(ikonlar.ikon("goz_kapali" if gizli else "goz",tema.IKON))
         self.goster.setText("Parolayı gizle" if gizli else "Parolayı göster")
 
     def mesaj_goster(self,metin,tur="hata"):
@@ -158,17 +165,36 @@ class Login(QMainWindow):
             elif yetki in ('admin','guest'):
                 # Her oturumda panel sıfırdan oluşturulur; önceki kullanıcıdan bir şey kalmaz
                 self.mesaj_goster("")
-                panel=Library() if yetki=='admin' else Guest()
-                if yetki=='admin':
-                    self.library=panel
-                else:
-                    self.guest=panel
-                panel.user_name(ad)
-                panel.oturum_kapandi.connect(self.giris_ekranina_don)
-                panel_goster(panel)
+                self.panel_ac(yetki,ad)
                 self.hide()
             else:
                 self.mesaj_goster("Yetkiniz yok!")
+
+    def panel_ac(self,yetki,ad):
+        panel=Library() if yetki=='admin' else Guest()
+        if yetki=='admin':
+            self.library=panel
+        else:
+            self.guest=panel
+        panel.user_name(ad)
+        panel.oturum_kapandi.connect(self.giris_ekranina_don)
+        panel.ayarlar.gorunum.degisti.connect(self.gorunumu_degistir)
+        panel_goster(panel)
+        return panel
+
+    def gorunumu_degistir(self,gorunum):
+        ###  Ayarlar > Görünüm: tema değişir, panel aynı kullanıcı ve aynı sayfayla yeniden kurulur  ###
+        tema.ayarla(gorunum)
+        tema.uygulamaya_uygula(QApplication.instance())
+        self.stil_uygula()
+        eski=self.library or self.guest
+        if eski is None:
+            return
+        sekme=eski.QtLibrary.tabWidget.currentIndex()
+        yeni=self.panel_ac('admin' if eski is self.library else 'guest',eski.aktif_kullanici)
+        yeni.QtLibrary.tabWidget.setCurrentIndex(sekme)
+        eski.hide()
+        eski.deleteLater()
 
     def giris_ekranina_don(self):
         for panel in (self.library,self.guest):

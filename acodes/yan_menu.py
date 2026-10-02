@@ -15,7 +15,8 @@ ACIK_EN, KAPALI_EN = 260, 76
 YAZI_RENGI = "#E2E8F0"
 _SAYI = re.compile(r"^(.*) \((\d+) gecikmiş\)$")
 
-STIL = f"""
+def stil():
+    return f"""
 #yan_menu {{ background-color: rgba(15, 23, 42, 0.88); border-radius: 14px; }}
 #menu_baslik {{ color: #FFE14D; font-family: "{tema.BASLIK_YAZISI}"; font-size: 27px; font-style: normal; }}
 QPushButton#menu_ogesi {{ background: transparent; color: #CBD5E1; border: none; border-radius: 8px; text-align: left;
@@ -48,7 +49,7 @@ class YanMenu(QFrame):
         """sayfa_ikonlari: {sekme sayfası: SEKME_IKONLARI anahtarı}; cikis_butonu kullanıcı kartına taşınır."""
         super().__init__(parent)
         self.setObjectName("yan_menu")
-        self.setStyleSheet(STIL)
+        self.setStyleSheet(stil())
         self.sekmeler = sekmeler
         dikey = QVBoxLayout(self)
         dikey.setContentsMargins(10, 14, 8, 12)
@@ -183,12 +184,13 @@ def menuyu_yerlestir(pencere, menu):
     sekmeler.setStyleSheet("QTabWidget#tabWidget::pane { border: none; }")
 
 
-SEGMENT_STIL = f"""
-#segment {{ background-color: #E2E8F0; border-radius: 10px; }}
-QPushButton#segment_ogesi {{ background: transparent; color: #475569; border: none; border-radius: 8px;
+def segment_stil():
+    return f"""
+#segment {{ background-color: {tema.YUZEY_2}; border-radius: 10px; }}
+QPushButton#segment_ogesi {{ background: transparent; color: {tema.IKON}; border: none; border-radius: 8px;
                padding: 7px 18px; font-size: 15px; font-weight: bold; }}
 QPushButton#segment_ogesi:hover {{ color: {tema.METIN}; }}
-QPushButton#segment_ogesi:checked {{ background-color: white; color: {tema.VURGU_KOYU}; }}
+QPushButton#segment_ogesi:checked {{ background-color: {tema.KART}; color: {tema.VURGU_YAZI}; }}
 """
 
 
@@ -198,7 +200,7 @@ class SegmentAnahtari(QFrame):
     def __init__(self, sekmeler, parent=None):
         super().__init__(parent)
         self.setObjectName("segment")
-        self.setStyleSheet(SEGMENT_STIL)
+        self.setStyleSheet(segment_stil())
         self.sekmeler = sekmeler
         yatay = QHBoxLayout(self)
         yatay.setContentsMargins(4, 4, 4, 4)

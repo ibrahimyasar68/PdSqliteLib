@@ -10,13 +10,14 @@ from PyQt5.QtWidgets import (QComboBox, QFrame, QGroupBox, QHBoxLayout, QHeaderV
                              QScrollArea, QTableWidget, QVBoxLayout, QWidget)
 
 from acodes.aranabilir import aranabilir_yap
-from acodes.tablo import KolonSecici, tablo_ayarla, tabloya_yaz
+from acodes.kisayollar import arama_kutusu_yap
+from acodes.tablo import KolonSecici, durum_ekle, tablo_ayarla, tabloya_yaz
 from acodes.yerlesim import AkisDuzeni
 from database.dbframe import filtre_secenekleri, kitap_filtrele, tr_sirala
 
 # (veritabanı kolonu, ölçüt adı)
 OLCUTLER = [("Turu", "Tür"), ("Yazari", "Yazar"), ("Yayinevi", "Yayınevi"), ("Yili", "Yıl")]
-SONUC_KOLONLARI = ["Kayıt No", "Adı", "Yazarı", "Çeviren", "Türü", "Yayınevi", "Yılı", "Sayfa"]
+SONUC_KOLONLARI = ["Kayıt No", "Adı", "Yazarı", "Çeviren", "Türü", "Yayınevi", "Yılı", "Sayfa", "Durum"]
 SECIM_YOK = "Soldaki ölçütlere yazın veya listeden seçin;\nuyan kitaplar burada listelenir."
 SONUC_YOK = "Ölçütlerin hepsine uyan kitap yok.\nBir seçimi kaldırmayı veya aramayı değiştirmeyi deneyin."
 
@@ -57,6 +58,7 @@ class FiltrePaneli(QWidget):
             self.combo[kolon], self.kutu[kolon], self.etiketler[kolon] = cmb, kutu, etiketler
             olcutler.addWidget(kutu)
         olcutler.addStretch()
+        arama_kutusu_yap(self.combo["Turu"].lineEdit())       # Ctrl+F ilk ölçüte gider
         icerik = QWidget(objectName="filtre_olcutleri")
         icerik.setLayout(olcutler)
         kaydirma = QScrollArea()
@@ -182,7 +184,8 @@ class FiltrePaneli(QWidget):
         secim_var = any(kosullar.values())
         self._secenekleri_yaz(filtre_secenekleri(kosullar, [kolon for kolon, _ in OLCUTLER]))
         satirlar = kitap_filtrele(kosullar)
-        tabloya_yaz(self.tablo, satirlar)
+        satirlar_durumlu, renkler = durum_ekle(satirlar)
+        tabloya_yaz(self.tablo, satirlar_durumlu, renkler=renkler)
         self.tablo.bos_durum.etiket.setText(SONUC_YOK if secim_var else SECIM_YOK)
         self.sonuc.setText(f"{len(satirlar)} kitap bulundu" if secim_var else "")
         self.btn_temizle.setEnabled(secim_var)

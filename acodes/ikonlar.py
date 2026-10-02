@@ -10,9 +10,9 @@ from PyQt5.QtCore import QPointF, QRectF, Qt
 from PyQt5.QtGui import QColor, QIcon, QPainter, QPainterPath, QPen, QPixmap, QPolygonF
 from PyQt5.QtWidgets import QPushButton
 
-BUTON_RENGI = "#FFFFFF"
-PASIF_RENGI = "#64748B"
-SEKME_RENGI = "#475569"
+from acodes import tema
+
+BUTON_RENGI = "#FFFFFF"      # mavi butonların üstünde; diğer renkler temadan (tema.IKON, tema.PASIF ...)
 
 
 def _cizgi(p, *noktalar):
@@ -96,7 +96,7 @@ def _resim(ad, renk, boyut=64):
     return resim
 
 
-def ok_resimleri(renk="#64748B"):
+def ok_resimleri(renk):
     """Açılır liste ve sayı kutusu okları için stil sayfasının kullanacağı PNG dosyaları.
     Stil sayfası resmi dosyadan okuduğu için geçici klasöre çizilir: {ad: yol}."""
     klasor = os.path.join(tempfile.gettempdir(), "pdsqlitelib_oklar")
@@ -109,10 +109,10 @@ def ok_resimleri(renk="#64748B"):
     return yollar
 
 
-def ikon(ad, renk=BUTON_RENGI, pasif=PASIF_RENGI):
+def ikon(ad, renk=BUTON_RENGI, pasif=None):
     simge = QIcon()
     simge.addPixmap(_resim(ad, renk), QIcon.Normal)
-    simge.addPixmap(_resim(ad, pasif), QIcon.Disabled)
+    simge.addPixmap(_resim(ad, pasif or tema.PASIF), QIcon.Disabled)
     return simge
 
 
@@ -134,7 +134,6 @@ SEKME_IKONLARI = {"tab_1": "ev", "tab_2": "liste", "tab_3": "kalem", "tab_4": "h
 # Yardımcı işlemler beyaz zeminli, çerçeveli (ikincil) gösterilir; asıl işlem (Kaydet, Ödünç Ver ...) mavi kalır
 IKINCIL_BUTONLAR = {"Vazgeç", "Temizle", "Kapat", "Dışa Aktar", "Yeni Kitap", "Yedek Klasörünü Aç",
                     "Bu Öneriyi Yoksay", "İptal"}
-IKINCIL_RENK = "#334155"
 
 
 def butonlara_uygula(pencere):
@@ -146,10 +145,10 @@ def butonlara_uygula(pencere):
             buton.style().polish(buton)
         ad = BUTON_IKONLARI.get(buton.text())
         if ad and buton.icon().isNull():
-            buton.setIcon(ikon(ad, IKINCIL_RENK) if ikincil else ikon(ad))
+            buton.setIcon(ikon(ad, tema.ETIKET) if ikincil else ikon(ad))
 
 
 def sekmelere_uygula(sekmeler, sayfa_adlari):
     """sayfa_adlari: {sayfa bileşeni: SEKME_IKONLARI anahtarı}"""
     for sayfa, anahtar in sayfa_adlari.items():
-        sekmeler.setTabIcon(sekmeler.indexOf(sayfa), ikon(SEKME_IKONLARI[anahtar], SEKME_RENGI, SEKME_RENGI))
+        sekmeler.setTabIcon(sekmeler.indexOf(sayfa), ikon(SEKME_IKONLARI[anahtar], tema.IKON, tema.IKON))

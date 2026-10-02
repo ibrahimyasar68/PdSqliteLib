@@ -4,13 +4,12 @@
 from PyQt5.QtWidgets import (QComboBox, QHBoxLayout, QHeaderView, QLabel, QPushButton, QTableWidget,
                              QVBoxLayout, QWidget)
 from acodes.disa_aktar import disa_aktar, sag_tik_menusu
-from acodes.tablo import VURGU_ARKA, tablo_ayarla, tabloya_yaz
+from acodes.tablo import tablo_ayarla, tabloya_yaz
 from database.odunc import (gecikme_gunu, gun_sayisi, odunc_alan_uyeler, odunc_gecmisi,
                             odunc_verilen_kitaplar, tarih_yazi, teslim_tarihi)
 
 TUMU = "Tümü"
 DURUMLAR = [TUMU, "Dışarıda", "Gecikmiş", "İade edildi"]
-GECIKME_ARKA = VURGU_ARKA
 
 
 def durum_bilgisi(verilis, durum, iade):

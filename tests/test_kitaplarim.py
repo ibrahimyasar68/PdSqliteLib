@@ -6,7 +6,8 @@ import pytest
 from conftest import UYE_SIFRE
 from acodes.guest import Guest
 from acodes.login import Login
-from acodes.tablo import VURGU_ARKA
+from PyQt5.QtGui import QColor
+from acodes import tema
 from database import odunc
 
 BUGUN = datetime.date.today()
@@ -58,7 +59,7 @@ def test_elimdeki_ve_eski_kitaplar(guest):
     durumlar = {k.elimdeki.item(r, 0).text(): k.elimdeki.item(r, 4).text() for r in range(2)}
     assert durumlar == {"Esir Şehrin İnsanları": "5 gün gecikti", "Satranç": "11 gün kaldı"}
     gecikmis = next(r for r in range(2) if k.elimdeki.item(r, 0).text() == "Esir Şehrin İnsanları")
-    assert k.elimdeki.item(gecikmis, 0).background().color() == VURGU_ARKA
+    assert k.elimdeki.item(gecikmis, 0).background().color() == QColor(tema.GECIKME_ARKA)
     assert [k.gecmis.item(0, c).text() for c in (0, 2, 3, 4)] == ["Yol Ayrımı", "01.01.2025", "25.01.2025", "24"]
     assert k.ozet.text() == "Şu an sizde 2 kitap var. 1 tanesinin teslim süresi geçti, lütfen iade edin."
 

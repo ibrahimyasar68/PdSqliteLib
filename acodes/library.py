@@ -12,7 +12,7 @@ from acodes.kitap_ekrani import KitapEkrani
 from acodes.odunc_ekrani import OduncEkrani
 from acodes.disa_aktar import disa_aktar, sag_tik_menusu
 from acodes.ana_sayfa import AnaSayfa, ana_sayfayi_yerlestir
-from acodes import arka_plan, bildirim, ikonlar
+from acodes import arka_plan, bildirim, ikonlar, kisayollar
 from acodes.yan_menu import YanMenu, menuyu_yerlestir, segmente_cevir
 from acodes.ortak import OrtakSekmeler
 from acodes.tablo import satir_verisi
@@ -79,8 +79,8 @@ class Library(OrtakSekmeler, QMainWindow):
 
         ###  Ana sayfa özet panosu  ###
         self.ana_sayfa=AnaSayfa(
-            kartlar=[("kitap","Kitap",tema.VURGU),("disarida","Dışarıda","#0EA5E9"),
-                     ("geciken","Geciken",tema.TEHLIKE),("uye","Üye","#16A34A")],
+            kartlar=[("kitap","Kitap",tema.VURGU),("disarida","Dışarıda",tema.BILGI),
+                     ("geciken","Geciken",tema.TEHLIKE),("uye","Üye",tema.YESIL)],
             listeler=[("yaklasan","Teslimi yaklaşan ve geciken kitaplar",["Kitap","Üye","Teslim Tarihi","Durum"],
                        "Önümüzdeki 3 gün içinde teslim edilecek\nveya teslim süresi geçmiş kitap yok."),
                       ("son","Son eklenen kitaplar",["Adı","Yazarı","Kayıt No"],"Henüz kitap eklenmemiş.")])
@@ -126,6 +126,7 @@ class Library(OrtakSekmeler, QMainWindow):
         ###  Sol kenar menüsü (sekme çubuğu yerine) ve alt sekmeler yerine üstte anahtar  ###
         self.yan_menu=YanMenu(ui.tabWidget,sayfalar,ui.pushButton_1_cikis)
         menuyu_yerlestir(self,self.yan_menu)
+        kisayollar.panele_kur(self,ui.tabWidget,ui.tab_2,self.arama)   # Ctrl+1..9 menü, Ctrl+F arama
         for alt_sekmeler in (ui.tabWidget_3,ui.tabWidget_5,ui.tabWidget_6):
             segmente_cevir(alt_sekmeler)
 
@@ -146,7 +147,7 @@ class Library(OrtakSekmeler, QMainWindow):
         k=self.ana_sayfa.kartlar
         k["kitap"].ayarla(o["kitap"],f"{o['kopya']} kopya")
         k["disarida"].ayarla(o["disarida"],"şu an ödünçte")
-        k["geciken"].ayarla(gecikmis,"teslim süresi geçmiş",renk=None if gecikmis else "#94A3B8")
+        k["geciken"].ayarla(gecikmis,"teslim süresi geçmiş",renk=None if gecikmis else tema.SOLUK)
         k["uye"].ayarla(o["uye"],f"{o['admin']} yönetici")
         yaklasan=yaklasan_teslimler()
         self.ana_sayfa.listeler["yaklasan"].doldur(

@@ -2,13 +2,15 @@
 
 import pytest
 from PyQt5.QtCore import Qt
+from PyQt5.QtGui import QColor
 from PyQt5.QtWidgets import QAbstractItemView, QHeaderView, QTableWidget
 
 from conftest import sec
+from acodes import tema
 from acodes.guest import Guest
 from acodes.kullanici_yonetimi import KullaniciYonetimi
 from acodes.library import Library
-from acodes.tablo import VURGU_ARKA, siralama_anahtari, tablo_ayarla, tabloya_yaz
+from acodes.tablo import siralama_anahtari, tablo_ayarla, tabloya_yaz
 from database.dbframe import df_sort_list, tr_sirala
 
 
@@ -52,7 +54,7 @@ def test_basliga_tiklayinca_siralanir_ve_veri_satirla_tasinir(app):
     t.sortItems(1, Qt.AscendingOrder)
     assert kolon(t, 1) == ["9", "10", "100"]
     assert [t.item(r, 0).data(Qt.UserRole) for r in range(3)] == ["A", "B", "C"]
-    assert t.item(1, 1).background().color() == VURGU_ARKA   # "b" satırı hâlâ vurgulu
+    assert t.item(1, 1).background().color() == QColor(tema.GECIKME_ARKA)   # "b" satırı hâlâ vurgulu
     tabloya_yaz(t, [["z", "2"], ["y", "1"]])        # yenilemede seçilen sıralama korunur
     assert kolon(t, 1) == ["1", "2"]
 

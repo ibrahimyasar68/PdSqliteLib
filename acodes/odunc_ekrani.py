@@ -8,6 +8,7 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import (QComboBox, QGridLayout, QGroupBox, QHBoxLayout, QHeaderView, QLabel, QLineEdit,
                              QMessageBox, QPushButton, QTableWidget, QVBoxLayout, QWidget)
 
+from acodes.kisayollar import arama_kutusu_yap
 from acodes.onay import onay
 from acodes import tema
 from acodes.aranabilir import aranabilir_yap, secili_veri
@@ -20,7 +21,6 @@ from database.odunc import (ODUNC_SURESI_GUN, gecikme_gunu, kalan_gun_yazi, tari
 
 SECINIZ = ' Seçiniz...'
 LISTE_KOLONLARI = ["Kitap", "Yazarı", "Üye", "Telefon", "Veriliş", "Teslim", "Durum"]
-IYI, KOTU = "#15803D", tema.TEHLIKE
 
 
 def kitap_listesi(cmb):
@@ -56,7 +56,7 @@ class OduncEkrani(QWidget):
         self.degisti = degisti
 
         # --- Sol: dışarıdaki kitaplar
-        self.arama = QLineEdit(objectName="odunc_arama")
+        self.arama = arama_kutusu_yap(QLineEdit(objectName="odunc_arama"))
         self.arama.setPlaceholderText("Ara: kitap, yazar, üye...")
         self.arama.setClearButtonEnabled(True)
         self.arama.setMinimumHeight(36)
@@ -191,12 +191,12 @@ class OduncEkrani(QWidget):
             tanim = " · ".join(str(x) for x in (k[2], k[5], k[6]) if x) if k else ""
             if k is None:
                 engel = "Bu kitap silinmiş."
-                renkli(self.kitap_bilgi, engel, KOTU)
+                renkli(self.kitap_bilgi, engel, tema.TEHLIKE)
             elif disarida >= kopya:
                 engel = "Bu kitap başka bir üyede." if kopya == 1 else f"Bu kitabın {kopya} kopyasının hepsi üyelerde."
-                renkli(self.kitap_bilgi, f"{tanim}\nMüsait kopya yok", KOTU)
+                renkli(self.kitap_bilgi, f"{tanim}\nMüsait kopya yok", tema.TEHLIKE)
             else:
-                renkli(self.kitap_bilgi, f"{tanim}\nMüsait kopya: {kopya - disarida} / {kopya}", IYI)
+                renkli(self.kitap_bilgi, f"{tanim}\nMüsait kopya: {kopya - disarida} / {kopya}", tema.BASARI)
         if uye_id is None:
             renkli(self.uye_bilgi, "")
         else:
@@ -208,12 +208,12 @@ class OduncEkrani(QWidget):
             durum = f"Elinde {elinde} kitap var" if elinde else "Elinde kitap yok"
             if geciken:
                 durum += f", {geciken} tanesinin teslim süresi geçmiş"
-            renkli(self.uye_bilgi, f"{iletisim}\n{durum}" if iletisim else durum, KOTU if geciken else None)
+            renkli(self.uye_bilgi, f"{iletisim}\n{durum}" if iletisim else durum, tema.TEHLIKE if geciken else None)
             if engel is None and kitap_id is not None and uyede_mi(uye_id, kitap_id):
                 engel = "Bu kitabın bir kopyası zaten bu üyede. Önce iade alın."
         hazir = kitap_id is not None and uye_id is not None and engel is None
         if engel:
-            renkli(self.ver_bilgi, engel, KOTU)
+            renkli(self.ver_bilgi, engel, tema.TEHLIKE)
         elif hazir:
             renkli(self.ver_bilgi, f"Teslim tarihi: {tarih_yazi(teslim_tarihi(datetime.date.today()))} "
                                    f"({ODUNC_SURESI_GUN} gün)")
@@ -274,7 +274,7 @@ class OduncEkrani(QWidget):
             return
         r = self.tablo.selectionModel().selectedRows()[0].row()
         hucre = lambda c: self.tablo.item(r, c).text()
-        renk = KOTU if hucre(6).endswith("gecikti") else IYI
+        renk = tema.TEHLIKE if hucre(6).endswith("gecikti") else tema.BASARI
         durum = f"<span style='color:{renk}'><b>{hucre(6)}</b></span>"
         renkli(self.iade_bilgi,
                f"<b>{hucre(0)}</b> · {hucre(1)}<br>Üye: <b>{hucre(2)}</b> {hucre(3)}<br>"

@@ -4,14 +4,15 @@
 
 import os
 
-from PyQt5.QtCore import Qt, QUrl
+from PyQt5.QtCore import Qt, QUrl, pyqtSignal
 from PyQt5.QtGui import QDesktopServices
-from acodes import tema
+from acodes import tema, tercihler
 from acodes.kilavuz import Kilavuz
-from PyQt5.QtWidgets import (QFormLayout, QGroupBox, QHBoxLayout, QLabel, QPushButton, QScrollArea,
+from PyQt5.QtWidgets import (QButtonGroup, QFormLayout, QGroupBox, QHBoxLayout, QLabel, QPushButton, QScrollArea,
                              QVBoxLayout, QWidget)
 
-STIL = f"""
+def stil():
+    return f"""
 #ayarlar_ic {{ background: transparent; }}
 QGroupBox {{ font-size: 18px; font-weight: bold; border-radius: 10px; padding: 48px 14px 14px 14px; }}
 QLabel {{ color: {tema.IKINCIL_METIN}; }}
@@ -57,18 +58,50 @@ class Bolum(QGroupBox):
             self.form.addRow(f"{etiket}:", yazi)
 
 
+class GorunumBolumu(QGroupBox):
+    """Açık / koyu / sistemle aynı görünüm seçimi. Seçim değişince degisti(görünüm) yayınlanır."""
+    degisti = pyqtSignal(str)
+
+    def __init__(self, parent=None):
+        super().__init__("Görünüm", parent)
+        duzen = QVBoxLayout(self)
+        satir = QHBoxLayout()
+        self.grup = QButtonGroup(self)
+        self.butonlar = {}
+        for anahtar, ad in tema.GORUNUMLER.items():
+            b = QPushButton(ad, checkable=True)
+            b.setCursor(Qt.PointingHandCursor)
+            b.setProperty("rol", "ikincil")
+            b.setChecked(anahtar == tema.GORUNUM)
+            b.clicked.connect(lambda _, a=anahtar: self.sec(a))
+            self.grup.addButton(b)
+            satir.addWidget(b)
+            self.butonlar[anahtar] = b
+        satir.addStretch()
+        duzen.addLayout(satir)
+        aciklama = QLabel("“Sistemle aynı” bilgisayarın açık/koyu görünümünü izler. Tercih hatırlanır.")
+        aciklama.setWordWrap(True)
+        duzen.addWidget(aciklama)
+
+    def sec(self, gorunum):
+        if gorunum != tema.GORUNUM:
+            tercihler.yaz("gorunum/tema", gorunum)
+            self.degisti.emit(gorunum)
+
+
 class Ayarlar(QScrollArea):
     """bolumler: [(başlık, butonlar, bilgiler)] — ortalanmış tek sütunda alt alta gösterilir.
     kilavuz: en altta gösterilecek Kullanma Kılavuzu konuları [(başlık, metin)]."""
 
     def __init__(self, bolumler, kilavuz=None, parent=None):
+        """Bölümlerin altında Görünüm seçimi, en altta (varsa) Kullanma Kılavuzu gösterilir."""
         super().__init__(parent)
         self.setWidgetResizable(True)
         self.setFrameShape(QScrollArea.NoFrame)
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         ic = QWidget()
         ic.setObjectName("ayarlar_ic")
-        ic.setStyleSheet(STIL)
+        ic.setStyleSheet(stil())
         self.setWidget(ic)
         sutun = QWidget()
         sutun.setMaximumWidth(900)
@@ -80,6 +113,8 @@ class Ayarlar(QScrollArea):
             bolum = Bolum(baslik, butonlar, bilgiler)
             dikey.addWidget(bolum)
             self.bolumler.append(bolum)
+        self.gorunum = GorunumBolumu()
+        dikey.addWidget(self.gorunum)
         self.kilavuz = Kilavuz(kilavuz) if kilavuz else None
         if self.kilavuz:
             dikey.addWidget(self.kilavuz)

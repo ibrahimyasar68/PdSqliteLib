@@ -33,6 +33,9 @@ ORTAK_ARAMA = (
 KITAP_LISTESI = (
     "Sekmeye gelince bütün kitaplar kendiliğinden listelenir. Üstteki kutuya yazdıkça liste süzülür; kitap adı, "
     "yazar, çevirmen, tür, yayınevi, yıl, ISBN, raf yeri ve notlarda aranır. " + ORTAK_ARAMA + "<br><br>"
+    "<b>Durum</b> kolonu kitabın şu an rafta mı ödünçte mi olduğunu gösterir: <i>Rafta</i> yeşil, "
+    "<i>Ödünçte</i> kırmızı; birden fazla kopyası olan kitaplarda kaç kopyanın rafta olduğu turuncu yazar "
+    "(<i>1/2 kopya rafta</i>). Filtre sonuçlarında da aynı kolon vardır.<br><br>"
     "Kolon başlığına tıklayınca liste o kolona göre sıralanır (tekrar tıklayınca ters sırada). "
     "<b>Kolonlar</b> butonu (veya kolon başlığına sağ tık) listede gösterilecek kolonları seçtirir; liste "
     "pencereye sığmazsa tablonun üstünde hangi kolonların gizleneceği sorulur. Seçim hatırlanır. "
@@ -94,6 +97,17 @@ DISA_AKTARMA = (
     "Belgeler klasörü önerilir.</li></ul>"
 )
 
+def kisayollar_ve_gorunum(yonetici):
+    kayit = ("<li>Kitap Kayıt ekranında <b>Ctrl+N</b> yeni kitap, <b>Ctrl+S</b> kaydet, <b>Esc</b> vazgeç "
+             "(kaydedilmemiş değişiklikleri geri alır).</li>") if yonetici else ""
+    return ("Mac'te <b>Ctrl</b> yerine <b>⌘ (Cmd)</b> tuşu kullanılır.<ul>"
+            "<li><b>Ctrl+1</b>, <b>Ctrl+2</b> ... menüdeki bölümleri yukarıdan aşağıya sırayla açar.</li>"
+            "<li><b>Ctrl+F</b> açık sayfadaki arama kutusuna gider; sayfada arama yoksa Kitap Listesi'ni açıp "
+            "aramaya gider.</li>" + kayit + "</ul>"
+            "<b>Görünüm:</b> <b>Ayarlar → Görünüm</b> bölümünden açık veya koyu renkler seçilebilir; "
+            "<b>Sistemle aynı</b> bilgisayarın açık/koyu ayarını izler. Seçim hemen uygulanır ve hatırlanır.")
+
+
 YONETICI = [
     ("Menü ve gezinme",
      "Bölümler soldaki menüdedir; açık bölüm mavi zeminle işaretlenir. Menünün sağ üstündeki düğme menüyü "
@@ -144,6 +158,7 @@ YONETICI = [
      "veya silinir; elinde kitap olan kullanıcı ve son yönetici silinemez. <b>Şifremi Değiştir</b> kendi "
      "şifrenizi değiştirir. Yedekleme butonları için <b>Yedekleme ve dışa aktarma</b> başlığına bakın."),
     ("Yedekleme ve dışa aktarma", YEDEKLEME + "<br><br>" + DISA_AKTARMA),
+    ("Kısayollar ve görünüm", kisayollar_ve_gorunum(yonetici=True)),
     ("İpuçları",
      "<ul><li>Uzun açılır listelerde (kitap, üye, filtre ölçütleri) kaydırmak yerine yazarak arayın.</li>"
      "<li>İşlemlerin sonucu pencerenin altında birkaç saniye görünen bildirimlerle haber verilir: "
@@ -175,15 +190,17 @@ UYE = [
      "<b>Hesabım</b> bölümünde kullanıcı adınız, adınız ve iletişim bilgileriniz görünür. "
      "<b>Şifremi Değiştir</b> ile mevcut şifrenizi girerek yeni şifre belirleyebilirsiniz. "
      "Bilgilerinizin değişmesi gerekiyorsa kütüphane yöneticisine başvurun."),
+    ("Kısayollar ve görünüm", kisayollar_ve_gorunum(yonetici=False)),
 ]
 
-STIL = f"""
+def stil():
+    return f"""
 #kilavuz_hakkinda {{ color: {tema.METIN}; font-size: 16px; font-weight: normal; }}
 QPushButton#kilavuz_konu {{ background: transparent; color: {tema.METIN}; border: none; border-radius: 0;
                border-top: 1px solid {tema.KENAR}; padding: 10px 4px; min-width: 0; text-align: left;
                font-size: 17px; font-weight: bold; }}
-QPushButton#kilavuz_konu:hover {{ color: {tema.VURGU_KOYU}; }}
-QPushButton#kilavuz_konu:checked {{ color: {tema.VURGU_KOYU}; }}
+QPushButton#kilavuz_konu:hover {{ color: {tema.VURGU_YAZI}; }}
+QPushButton#kilavuz_konu:checked {{ color: {tema.VURGU_YAZI}; }}
 #kilavuz_metin {{ color: {tema.METIN}; font-size: 16px; font-weight: normal; padding: 0 8px 10px 22px; }}
 """
 
@@ -193,7 +210,7 @@ class Kilavuz(QGroupBox):
 
     def __init__(self, konular, parent=None):
         super().__init__("Kullanma Kılavuzu", parent)
-        self.setStyleSheet(STIL)
+        self.setStyleSheet(stil())
         duzen = QVBoxLayout(self)
         duzen.setSpacing(0)
         hakkinda = QLabel(HAKKINDA, objectName="kilavuz_hakkinda")

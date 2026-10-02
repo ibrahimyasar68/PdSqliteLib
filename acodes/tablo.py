@@ -6,10 +6,9 @@ from PyQt5.QtCore import QEvent, QObject, Qt, QTimer
 from PyQt5.QtGui import QColor
 from PyQt5.QtWidgets import QAbstractItemView, QHeaderView, QLabel, QTableWidgetItem
 
-from database.dbframe import tr_sirala
+from acodes import tema
+from database.dbframe import kitap_durumlari, tr_sirala
 
-VURGU_ARKA = QColor(255, 205, 205)    # ör. teslim süresi geçmiş ödünçler
-VURGU_YAZI = QColor(150, 0, 0)
 _TARIH = re.compile(r"(\d{2})\.(\d{2})\.(\d{4})")
 _SAYI = re.compile(r"-?\d+")
 
@@ -51,7 +50,7 @@ class BosDurum(QObject):
         self.etiket.setObjectName("bos_durum")
         self.etiket.setAlignment(Qt.AlignCenter)
         self.etiket.setWordWrap(True)
-        self.etiket.setStyleSheet("color: #8A94A6; font-size: 17px; background: transparent;")
+        self.etiket.setStyleSheet(f"color: {tema.BOS_METIN}; font-size: 17px; background: transparent;")
         self.etiket.setAttribute(Qt.WA_TransparentForMouseEvents)
         self.bekliyor = False
         model = tablo.model()
@@ -115,9 +114,10 @@ def tablo_basliklari(tablo, kolonlar):
         tablo.setHorizontalHeaderItem(i,QTableWidgetItem(baslik))
 
 
-def tabloya_yaz(tablo, satirlar, vurgulu=(), veri=None):
+def tabloya_yaz(tablo, satirlar, vurgulu=(), veri=None, renkler=None):
     """satirlar: yazılacak değerler. vurgulu: kırmızı gösterilecek satırların sırası.
-    veri: her satır için ilk hücrede saklanacak ek bilgi (ör. id'ler), sıralamada satırla birlikte taşınır."""
+    veri: her satır için ilk hücrede saklanacak ek bilgi (ör. id'ler), sıralamada satırla birlikte taşınır.
+    renkler: {(satır, kolon): yazı rengi} (ör. Durum kolonu)."""
     siralama=tablo.isSortingEnabled()
     tablo.setSortingEnabled(False)   # doldururken satırlar yer değiştirmesin
     # "İçeriğe göre genişlik" kolonları her hücrede baştan ölçülür (737 kitapta ~18 sn);
@@ -132,8 +132,10 @@ def tabloya_yaz(tablo, satirlar, vurgulu=(), veri=None):
         for c,deger in enumerate(satir):
             hucre=SiraliHucre(deger)
             if r in vurgulu:
-                hucre.setBackground(VURGU_ARKA)
-                hucre.setForeground(VURGU_YAZI)
+                hucre.setBackground(QColor(tema.GECIKME_ARKA))     # ör. teslim süresi geçmiş ödünçler
+                hucre.setForeground(QColor(tema.GECIKME_YAZI))
+            if renkler and (r,c) in renkler:
+                hucre.setForeground(QColor(renkler[r,c]))
             if c==0 and veri is not None:
                 hucre.setData(Qt.UserRole, veri[r])
             tablo.setItem(r,c,hucre)
@@ -141,6 +143,15 @@ def tabloya_yaz(tablo, satirlar, vurgulu=(), veri=None):
         if kip==QHeaderView.ResizeToContents:
             baslik.setSectionResizeMode(c,kip)
     tablo.setSortingEnabled(siralama)
+
+
+def durum_ekle(satirlar):
+    """Kitap satırlarının (ilk değer kitap numarası) sonuna "Durum" kolonunu ekler: Rafta / Ödünçte / 1/2 kopya rafta.
+    tabloya_yaz için (satırlar, renkler) döndürür."""
+    durumlar = kitap_durumlari([s[0] for s in satirlar])
+    renk = {"rafta": tema.BASARI, "kismen": tema.UYARI, "yok": tema.TEHLIKE}
+    yeni = [list(s) + [yazi] for s, (yazi, _) in zip(satirlar, durumlar)]
+    return yeni, {(r, len(s) - 1): renk[tur] for r, (s, (_, tur)) in enumerate(zip(yeni, durumlar))}
 
 
 def satir_verisi(tablo, satir):
@@ -169,8 +180,8 @@ class KolonSecici(QObject):
         baslik.customContextMenuRequested.connect(lambda konum: self.menu().exec_(baslik.mapToGlobal(konum)))
 
         self.soru = QFrame(objectName="kolon_sorusu")
-        self.soru.setStyleSheet("#kolon_sorusu { background-color: #FEF3C7; border: 1px solid #FCD34D; border-radius: 8px; }"
-                                "#kolon_sorusu QLabel { color: #78350F; }")
+        self.soru.setStyleSheet(f"#kolon_sorusu {{ background-color: {tema.UYARI_ARKA}; border: 1px solid {tema.UYARI_KENAR};"
+                                f" border-radius: 8px; }} #kolon_sorusu QLabel {{ color: {tema.UYARI_METIN}; }}")
         satir = QHBoxLayout(self.soru)
         satir.setContentsMargins(12, 6, 8, 6)
         satir.addWidget(QLabel("Liste pencereye sığmıyor. Hangi kolonların gizleneceğini seçmek ister misiniz?"), 1)

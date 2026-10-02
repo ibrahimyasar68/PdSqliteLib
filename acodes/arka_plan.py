@@ -6,15 +6,19 @@
 from PyQt5.QtCore import QEvent, QObject, QRect, Qt
 from PyQt5.QtGui import QPainter, QPixmap
 
+from acodes import tema
+
 RESIM = ":/pic/autumn.jpg"      # kaynak dosyası (media_rc) panellerin .ui formlarıyla yüklenir
 SAYFA_SAYDAMLIK = 0.62          # sekme sayfalarının örtücülüğü (0: fotoğraf tam görünür, 1: hiç görünmez)
+SAYFA_SAYDAMLIK_KOYU = 0.80     # koyu temada yazılar okunaklı kalsın diye fotoğraf daha az görünür
 
 # Perde ana sekmelerin sayfalarına verilir (iç içe sekmelerde tekrar etmez); Giriş sayfası (tab_1) perdesizdir
-STIL = f"""
+def stil():
+    return f"""
 #centralwidget {{ background: transparent; }}
 QTabWidget::pane {{ background: transparent; }}
 QStackedWidget > QWidget {{ background: transparent; }}
-QTabWidget#tabWidget > QStackedWidget > QWidget {{ background-color: rgba(247, 248, 251, {SAYFA_SAYDAMLIK}); }}
+QTabWidget#tabWidget > QStackedWidget > QWidget {{ background-color: rgba({tema.SAYFA_RGB}, {SAYFA_SAYDAMLIK_KOYU if tema.KOYU_MU else SAYFA_SAYDAMLIK}); }}
 QTabWidget#tabWidget > QStackedWidget > QWidget#tab_1 {{ background: transparent; }}
 """
 
@@ -53,5 +57,5 @@ class ArkaPlan(QObject):
 
 def uygula(pencere):
     """Panelin orta bileşenine fotoğrafı çizer, sayfaları yarı saydam yapar (Giriş sayfası perdesiz)."""
-    pencere.setStyleSheet(pencere.styleSheet() + STIL)
+    pencere.setStyleSheet(pencere.styleSheet() + stil())
     return ArkaPlan(pencere)

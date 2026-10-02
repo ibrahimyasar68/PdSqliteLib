@@ -85,5 +85,31 @@ def test_kitap_listesinde_yeni_kolonlar(app, uyarilar, db, panel):
     t = p.QtLibrary.tableWidget_2
     p.arama.setText("yol ayrımı")
     basliklar = [t.horizontalHeaderItem(c).text() for c in range(t.columnCount())]
-    assert basliklar[-3:] == ["ISBN", "Kopya", "Raf"]
-    assert [t.item(0, c).text() for c in (8, 9, 10)] == ["9780306406157", "2", "A-1"]
+    assert basliklar[-4:] == ["ISBN", "Kopya", "Raf", "Durum"]
+    assert [t.item(0, c).text() for c in (8, 9, 10, 11)] == ["9780306406157", "2", "A-1", "Rafta"]
+
+
+def test_durum_yazisi():
+    from database.dbframe import durum_yazi
+    assert durum_yazi(1, 0) == ("Rafta", "rafta")
+    assert durum_yazi(1, 1) == ("Ödünçte", "yok")
+    assert durum_yazi(3, 1) == ("2/3 kopya rafta", "kismen")
+    assert durum_yazi(2, 2) == ("2 kopyanın hepsi ödünçte", "yok")
+
+
+@pytest.mark.parametrize("panel", [Library, Guest])
+def test_listelerde_durum_kolonu_renkli(app, uyarilar, db, panel):
+    from acodes import tema
+    db.execute("UPDATE kayitlistesi SET Kopya=2 WHERE Id=1")
+    db.execute("INSERT INTO follow VALUES ('3','1','2026-01-01','10:00 ','out','','')")
+    db.execute("INSERT INTO follow VALUES ('3','6','2026-01-01','10:00 ','out','','')")
+    db.commit()
+    p = panel()
+    t = p.QtLibrary.tableWidget_2
+    p.listele()
+    durum = {t.item(r, 1).text(): t.item(r, 11) for r in range(t.rowCount())}
+    assert durum["Yol Ayrımı"].text() == "1/2 kopya rafta" and durum["Satranç"].text() == "Ödünçte"
+    assert durum["Denemeler"].text() == "Rafta"
+    assert durum["Satranç"].foreground().color().name() == tema.TEHLIKE.lower()
+    p.filtre.ekle("Yazari", "Stefan ZWEIG")                       # Filtre sonuçlarında da var
+    assert p.filtre.tablo.item(0, 8).text() == "Ödünçte"

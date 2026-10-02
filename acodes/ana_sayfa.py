@@ -10,7 +10,8 @@ from PyQt5.QtWidgets import (QFrame, QGraphicsDropShadowEffect, QGridLayout, QGr
 from acodes import tema
 from acodes.tablo import tablo_ayarla, tabloya_yaz
 
-STIL = f"""
+def stil():
+    return f"""
 #ana_sayfa {{ background: transparent; }}
 #ana_baslik {{ background: transparent; }}
 #hosgeldin {{ color: #FDBA74; font-family: "{tema.BASLIK_YAZISI}"; font-size: 84px; font-weight: normal;
@@ -19,7 +20,7 @@ STIL = f"""
 #kart {{ background-color: {tema.KART}; border: 1px solid {tema.KENAR}; border-radius: 10px; }}
 #kart:hover {{ border-color: {tema.VURGU}; }}
 #kart_sayi {{ font-size: 30px; font-weight: bold; color: {tema.METIN}; }}
-#kart_baslik {{ font-size: 16px; font-weight: bold; color: #334155; }}
+#kart_baslik {{ font-size: 16px; font-weight: bold; color: {tema.ETIKET}; }}
 #kart_alt {{ font-size: 14px; color: {tema.IKINCIL_METIN}; }}
 QGroupBox {{ font-weight: bold; }}
 #ana_sayfa QTableWidget, #ana_sayfa QHeaderView {{ color: {tema.METIN}; }}
@@ -88,7 +89,7 @@ class AnaSayfa(QWidget):
         super().__init__(parent)
         self.setObjectName("ana_sayfa")
         self.setAttribute(Qt.WA_StyledBackground, True)
-        self.setStyleSheet(STIL)
+        self.setStyleSheet(stil())
 
         # Başlık şeridi: ortada "Hoş geldiniz", altında kullanıcı adı · yetki (fotoğrafın üzerinde)
         baslik = QFrame(objectName="ana_baslik")

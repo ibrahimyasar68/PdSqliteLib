@@ -6,7 +6,8 @@ from PyQt5.QtCore import Qt
 
 from acodes.guest import Guest
 from acodes.library import Library
-from acodes.tablo import VURGU_ARKA
+from PyQt5.QtGui import QColor
+from acodes import tema
 from database import odunc
 
 BUGUN = datetime.date.today()
@@ -69,7 +70,7 @@ def test_admin_listeleri(lib):
     yak = lib.ana_sayfa.listeler["yaklasan"].tablo
     assert yak.rowCount() == 2
     assert [yak.item(0, c).text() for c in (0, 1, 3)] == ["Yol Ayrımı", "Ayşe Yılmaz", "5 gün gecikti"]
-    assert yak.item(0, 0).background().color() == VURGU_ARKA
+    assert yak.item(0, 0).background().color() == QColor(tema.GECIKME_ARKA)
     assert yak.item(1, 3).text() == "2 gün kaldı"
     son = lib.ana_sayfa.listeler["son"].tablo
     assert son.item(0, 0).text() == "Denemeler" and son.rowCount() == 8

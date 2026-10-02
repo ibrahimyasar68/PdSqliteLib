@@ -3,13 +3,15 @@
 # "Yeni Kitap" formu boşaltır; Kaydet yeni kitapta ekler, seçili kitapta günceller.
 
 from PyQt5.QtCore import Qt
+from PyQt5.QtGui import QKeySequence
 from PyQt5.QtWidgets import (QCompleter, QGridLayout, QGroupBox, QHBoxLayout, QHeaderView, QLabel, QLineEdit,
                              QMessageBox, QPushButton, QTableWidget, QVBoxLayout, QWidget)
 
 from acodes.onay import onay
 from acodes import tema
 from acodes.ek_bilgi import EkBilgiler
-from acodes.tablo import KolonSecici, satir_verisi, tablo_ayarla, tabloya_yaz
+from acodes.kisayollar import arama_kutusu_yap, kisayol, metin
+from acodes.tablo import KolonSecici, durum_ekle, satir_verisi, tablo_ayarla, tabloya_yaz
 from database.dbbase import baglantı, degistir_kayit, ekle_kayit, sil_kayit
 from database.dbframe import df_book_find_by_id, df_sort_list, kitap_ara, kitap_oduncte, kopya_durumu
 
@@ -18,7 +20,7 @@ ALANLAR = [("Adi", "Kitap adı *", False), ("Yazari", "Yazarı", True), ("Cevire
            ("Turu", "Türü", True), ("Yayinevi", "Yayınevi", True), ("Yili", "Basım yılı", False),
            ("Sayfa", "Sayfa", False)]
 BUYUK_HARFLI = {"Adi", "Yazari", "Ceviren", "Turu", "Yayinevi"}
-LISTE_KOLONLARI = ["Kayıt No", "Adı", "Yazarı", "Yayınevi", "Yılı", "Kopya"]
+LISTE_KOLONLARI = ["Kayıt No", "Adı", "Yazarı", "Yayınevi", "Yılı", "Kopya", "Durum"]
 
 
 def buyuk_harf(metin):
@@ -49,7 +51,7 @@ class KitapEkrani(QWidget):
         """)
 
         # --- Üst: arama ve liste
-        self.arama = QLineEdit(objectName="kitap_arama")
+        self.arama = arama_kutusu_yap(QLineEdit(objectName="kitap_arama"))
         self.arama.setPlaceholderText("Ara: kitap adı, yazar, yayınevi, ISBN, raf, not...")
         self.arama.setClearButtonEnabled(True)
         self.arama.setMinimumHeight(36)
@@ -64,7 +66,8 @@ class KitapEkrani(QWidget):
         baslik.setStretchLastSection(False)
         baslik.setMinimumSectionSize(50)
         for kolon, kip in ((0, QHeaderView.ResizeToContents), (1, QHeaderView.Stretch),
-                           (4, QHeaderView.ResizeToContents), (5, QHeaderView.ResizeToContents)):
+                           (4, QHeaderView.ResizeToContents), (5, QHeaderView.ResizeToContents),
+                           (6, QHeaderView.ResizeToContents)):
             baslik.setSectionResizeMode(kolon, kip)
         for kolon in (2, 3):
             baslik.setSectionResizeMode(kolon, QHeaderView.Stretch)
@@ -136,6 +139,11 @@ class KitapEkrani(QWidget):
         self.btn_kaydet.clicked.connect(self.kaydet)
         self.btn_sil.clicked.connect(self.sil)
         self.btn_vazgec.clicked.connect(self.vazgec)
+        for tus, buton, ipucu in ((QKeySequence.New, self.btn_yeni, "Formu yeni kitap için boşalt"),
+                                  (QKeySequence.Save, self.btn_kaydet, "Kaydet"),
+                                  ("Esc", self.btn_vazgec, "Kaydedilmemiş değişiklikleri geri al")):
+            kisayol(tus, self, buton.click)
+            buton.setToolTip(f"{ipucu} ({metin(tus)})")
         self.alan["Adi"].returnPressed.connect(self.kaydet)
         self.yenile()
         self.yeni()
@@ -156,8 +164,8 @@ class KitapEkrani(QWidget):
         secili = self.kitap_id
         kitaplar = kitap_ara(self.arama.text().strip())
         self.tablo.blockSignals(True)
-        tabloya_yaz(self.tablo, [[k[0], k[1], k[2], k[5], k[6], k[9] or 1] for k in kitaplar],
-                    veri=[k[0] for k in kitaplar])
+        satirlar, renkler = durum_ekle([[k[0], k[1], k[2], k[5], k[6], k[9] or 1] for k in kitaplar])
+        tabloya_yaz(self.tablo, satirlar, veri=[k[0] for k in kitaplar], renkler=renkler)
         self.tablo.blockSignals(False)
         self.sonuc.setText(f"{len(kitaplar)} kitap" + (" bulundu" if self.arama.text().strip() else ""))
         self._satiri_sec(secili)

@@ -9,12 +9,13 @@ from acodes.grafikler import GrafikPaneli
 from acodes.filtre_paneli import FiltrePaneli
 from acodes import tema
 from acodes.yerlesim import liste_sayfasi
-from acodes.tablo import KolonSecici, tablo_ayarla, tablo_basliklari, tabloya_yaz
+from acodes.tablo import KolonSecici, durum_ekle, tablo_ayarla, tablo_basliklari, tabloya_yaz
 from acodes.disa_aktar import disa_aktar, sag_tik_menusu
+from acodes.kisayollar import arama_kutusu_yap
 from acodes.kullanici_yonetimi import SifreDegistir, panel_butonu
 
 LISTE_KOLONLARI = [(70,"Kayıt No"),(200,"Adı"),(160,"Yazarı"),(120,"Çeviren"),(90,"Türü"),
-                   (160,"Yayınevi"),(50,"Yılı"),(55,"Sayfa"),(120,"ISBN"),(55,"Kopya"),(60,"Raf")]
+                   (160,"Yayınevi"),(50,"Yılı"),(55,"Sayfa"),(120,"ISBN"),(55,"Kopya"),(60,"Raf"),(150,"Durum")]
 
 # Tab 5 istatistikleri: (tablo no, veritabanı kolonu, başlık, gösterilecek en fazla satır)
 ISTATISTIKLER = [(1,'Turu','Yayın Türü',35), (2,'Yazari','Yazar',40),
@@ -118,18 +119,19 @@ class OrtakSekmeler:
     def arama_kutusu_kur(self):
         ###  Tablonun üstüne arama kutusu ve sonuç sayısı (yerleşimi liste_sayfasi kurar)  ###
         ui=self.QtLibrary
-        self.arama=QLineEdit(ui.tab_2)
+        self.arama=arama_kutusu_yap(QLineEdit(ui.tab_2))
         self.arama.setPlaceholderText("Ara: kitap adı, yazar, çevirmen, tür, yayınevi, yıl, ISBN, raf, not...")
         self.arama.setClearButtonEnabled(True)
         self.arama.setStyleSheet('font-size: 17px; border-radius: 6px; padding: 2px 8px;')
         self.arama_sonuc=QLabel(ui.tab_2)
-        self.arama_sonuc.setStyleSheet(f'font-size: 16px; font-weight: bold; color: {tema.VURGU_KOYU};')
+        self.arama_sonuc.setStyleSheet(f'font-size: 16px; font-weight: bold; color: {tema.VURGU_YAZI};')
         self.arama.textChanged.connect(self.listele)
 
     def listele(self):
         sorgu=self.arama.text().strip()
         kitaplar=kitap_ara(sorgu)
-        tabloya_yaz(self.QtLibrary.tableWidget_2, kitaplar)
+        satirlar, renkler=durum_ekle(kitaplar)
+        tabloya_yaz(self.QtLibrary.tableWidget_2, satirlar, renkler=renkler)
         self.arama_sonuc.setText(f"{len(kitaplar)} kitap bulundu" if sorgu else f"Toplam {len(kitaplar)} kitap")
 
     def liste_sekmesi_acildi(self):

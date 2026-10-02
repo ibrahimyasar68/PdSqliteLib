@@ -204,6 +204,22 @@ def kopya_durumu(book_id):
     disarida=baglantı.execute("SELECT COUNT(*) FROM follow WHERE bookId=? AND status='out'",(str(book_id),)).fetchone()[0]
     return (kopya[0] if kopya else 0), disarida
 
+## Kitap listelerindeki "Durum" kolonu: her kitap için (yazı, tür); tür "rafta", "kismen" veya "yok"
+def kitap_durumlari(kitap_idler):
+    kopyalar=dict(baglantı.execute("SELECT Id, COALESCE(Kopya,1) FROM kayitlistesi"))
+    disarida={}
+    for (b,) in baglantı.execute("SELECT bookId FROM follow WHERE status='out'"):
+        if str(b).isdigit():
+            disarida[int(b)]=disarida.get(int(b),0)+1
+    return [durum_yazi(kopyalar.get(i,1),disarida.get(i,0)) for i in kitap_idler]
+
+def durum_yazi(kopya, disarida):
+    if disarida<=0:
+        return ("Rafta","rafta")
+    if disarida>=kopya:
+        return ("Ödünçte","yok") if kopya==1 else (f"{kopya} kopyanın hepsi ödünçte","yok")
+    return (f"{kopya-disarida}/{kopya} kopya rafta","kismen")
+
 ## Üyede bu kitabın iade edilmemiş bir kopyası var mı?
 def uyede_mi(user_id, book_id):
     return baglantı.execute("SELECT COUNT(*) FROM follow WHERE userId=? AND bookId=? AND status='out'",

@@ -6,7 +6,7 @@ from acodes.kitaplarim import Kitaplarim
 from acodes.ayarlar import Ayarlar
 from acodes import kilavuz
 from acodes.ana_sayfa import AnaSayfa, ana_sayfayi_yerlestir
-from acodes import arka_plan, bildirim, ikonlar
+from acodes import arka_plan, bildirim, ikonlar, kisayollar
 from acodes.yan_menu import YanMenu, menuyu_yerlestir, segmente_cevir
 from database.dbframe import genel_ozet, kullanici_bilgisi, son_eklenenler
 from database.odunc import gecikme_gunu, kalan_gun_yazi, tarih_yazi, teslim_tarihi, uye_odunc
@@ -42,8 +42,8 @@ class Guest(OrtakSekmeler, QMainWindow):
 
         ###  Ana sayfa özet panosu  ###
         self.ana_sayfa=AnaSayfa(
-            kartlar=[("kitap","Kütüphanedeki kitap",tema.VURGU),("elimdeki","Elimdeki kitap","#0EA5E9"),
-                     ("geciken","Gecikmiş",tema.TEHLIKE),("teslim","En yakın teslim","#16A34A")],
+            kartlar=[("kitap","Kütüphanedeki kitap",tema.VURGU),("elimdeki","Elimdeki kitap",tema.BILGI),
+                     ("geciken","Gecikmiş",tema.TEHLIKE),("teslim","En yakın teslim",tema.YESIL)],
             listeler=[("elimdeki","Elimdeki kitaplar",["Kitap","Teslim Tarihi","Durum"],"Şu an elinizde ödünç kitap yok."),
                       ("son","Son eklenen kitaplar",["Adı","Yazarı"],"Henüz kitap eklenmemiş.")])
         ana_sayfayi_yerlestir(self.QtLibrary,self.ana_sayfa)
@@ -64,6 +64,7 @@ class Guest(OrtakSekmeler, QMainWindow):
         ###  Sol kenar menüsü (sekme çubuğu yerine) ve alt sekmeler yerine üstte anahtar  ###
         self.yan_menu=YanMenu(ui.tabWidget,sayfalar,ui.pushButton_1_cikis)
         menuyu_yerlestir(self,self.yan_menu)
+        kisayollar.panele_kur(self,ui.tabWidget,ui.tab_2,self.arama)   # Ctrl+1..9 menü, Ctrl+F arama
         segmente_cevir(ui.tabWidget_5)
 
     def user_name(self,name):
@@ -96,7 +97,7 @@ class Guest(OrtakSekmeler, QMainWindow):
         k["kitap"].ayarla(genel_ozet()["kitap"],"kitap listesinde aranabilir")
         k["elimdeki"].ayarla(len(elimdeki),"şu an sizde")
         k["geciken"].ayarla(len(gecikmis),"teslim süresi geçmiş" if gecikmis else "gecikmiş kitabınız yok",
-                            renk=None if gecikmis else "#94A3B8")
+                            renk=None if gecikmis else tema.SOLUK)
         en_yakin=min((teslim_tarihi(v) for _,v in elimdeki if teslim_tarihi(v)),default=None)
         k["teslim"].ayarla(tarih_yazi(en_yakin) if en_yakin else "-",
                            kalan_gun_yazi(min(elimdeki,key=lambda e: teslim_tarihi(e[1]))[1]) if en_yakin else "ödünç kitabınız yok")

@@ -46,6 +46,16 @@ kullanıldığını anlatan, tıklanınca açılan başlıklar (yönetici ve üy
 Yeni kullanıcı ve üye kayıtlarını (`admin` veya `guest`) sadece giriş yapmış bir admin,
 **Ayarlar → Yeni Kullanıcı Ekle** ile oluşturabilir.
 
+### Durum, kısayollar ve görünüm
+
+- Kitap Listesi, Filtre sonuçları ve Kitap Kayıt listesindeki **Durum** kolonu kitabın rafta mı ödünçte mi
+  olduğunu gösterir: *Rafta* (yeşil), *Ödünçte* (kırmızı), çok kopyalı kitaplarda *1/2 kopya rafta* (turuncu).
+- Klavye kısayolları (Mac'te Ctrl yerine ⌘): **Ctrl+1 … Ctrl+9** menü bölümleri, **Ctrl+F** açık sayfanın
+  arama kutusu; Kitap Kayıt'ta **Ctrl+N** yeni kitap, **Ctrl+S** kaydet, **Esc** vazgeç (`acodes/kisayollar.py`).
+- **Ayarlar → Görünüm:** *Sistemle aynı*, *Açık* veya *Koyu*. Seçim hemen uygulanır (panel aynı sayfada
+  yeniden açılır) ve `tercihler.ini`'de hatırlanır. Renkler `acodes/tema.py`'deki iki palettedir; modüllerde
+  sabit renk yazılmaz (`tests/test_gorunum.py` denetler).
+
 ### Arama
 
 **Kitap Listesi** sekmesine gelince tüm kitaplar kendiliğinden listelenir (her gelişte güncel hali);
@@ -254,7 +264,7 @@ Paket imzasız olduğu için Windows SmartScreen ilk açılışta uyarabilir: **
 main.py              Giriş noktası
 acodes/              Pencerelerin iş mantığı (login, library, guest, user)
 acodes/ortak.py      Admin ve Guest panellerinde ortak sekmeler (liste, filtre, istatistik)
-acodes/tema.py       Tek renk teması (tüm renk ve yazı tipleri burada; .ui dosyalarında stil yoktur)
+acodes/tema.py       Açık ve koyu renk paletleri, stil sayfası (tüm renkler burada; .ui dosyalarında stil yoktur)
 acodes/kullanici_yonetimi.py  Kullanıcı yönetimi ve şifre değiştirme pencereleri
 acodes/odunc_ekrani.py        Kitap Verme > Ödünç ve İade (ödünç verme, iade, dışarıdakiler tek ekranda)
 acodes/odunc_gecmisi.py       Kitap Verme > Ödünç Geçmişi sekmesi
@@ -264,6 +274,7 @@ acodes/aranabilir.py          Yazdıkça süzülen açılır listeler
 acodes/ikonlar.py             Buton ve sekme ikonları (Qt ile çizilir, dosya gerektirmez)
 acodes/bildirim.py            Kısa süre görünen bildirimler (başarı yeşil, uyarı kırmızı)
 acodes/onay.py                Evet / Hayır onay kutusu
+acodes/kisayollar.py          Klavye kısayolları (menü, arama, Kitap Kayıt)
 acodes/yerlesim.py            Esnek yerleşim kalıpları (sayfaları pencereyle büyüyen düzene alır)
 acodes/disa_aktar.py          Tabloları Excel / CSV olarak kaydetme
 acodes/kitap_ekrani.py        Kitap Kayıt > Kitaplar (liste ve form tek ekranda)

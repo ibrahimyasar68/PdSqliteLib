@@ -4,7 +4,8 @@ import datetime
 import pytest
 
 from acodes.library import Library
-from acodes.odunc_gecmisi import GECIKME_ARKA
+from PyQt5.QtGui import QColor
+from acodes import tema
 from database import odunc
 
 BUGUN = datetime.date.today()
@@ -101,7 +102,7 @@ def test_gecmis_sekmesi(lib, db):
     assert g.tablo.rowCount() == 3 and g.ozet.text() == "3 kayıt, 2 dışarıda"
     durumlar = [g.tablo.item(r, 6).text() for r in range(3)]
     assert durumlar == ["Dışarıda", "Gecikmiş (5 gün)", "İade edildi (9 gün geç)"]
-    assert g.tablo.item(1, 0).background().color() == GECIKME_ARKA
+    assert g.tablo.item(1, 0).background().color() == QColor(tema.GECIKME_ARKA)
 
     g.durum.setCurrentText("Gecikmiş")
     assert g.tablo.rowCount() == 1

@@ -6,7 +6,8 @@ from PyQt5.QtCore import Qt
 
 from conftest import sec
 from acodes.library import Library
-from acodes.odunc_gecmisi import GECIKME_ARKA
+from PyQt5.QtGui import QColor
+from acodes import tema
 from database import odunc
 from database.dbframe import kopya_durumu
 
@@ -67,8 +68,8 @@ def test_disaridaki_kitaplar(lib, o, db):
     assert kolon(o.tablo, 0) == ["Esir Şehrin İnsanları", "Yol Ayrımı"]
     assert o.tablo.item(0, 2).text() == "Ayşe Yılmaz" and o.tablo.item(0, 6).text() == "5 gün gecikti"
     assert o.tablo.item(0, 5).text() == odunc.tarih_yazi(BUGUN - datetime.timedelta(days=5))
-    assert o.tablo.item(0, 0).background().color() == GECIKME_ARKA
-    assert o.tablo.item(1, 0).background().color() != GECIKME_ARKA and o.tablo.item(1, 6).text() == "12 gün kaldı"
+    assert o.tablo.item(0, 0).background().color() == QColor(tema.GECIKME_ARKA)
+    assert o.tablo.item(1, 0).background().color() != QColor(tema.GECIKME_ARKA) and o.tablo.item(1, 6).text() == "12 gün kaldı"
     assert o.ozet.text() == "Dışarıda 2 kitap, 1 tanesinin teslim süresi geçmiş"
 
 
