@@ -2,9 +2,9 @@
 from conftest import ADMIN_SIFRE, ESKI_SIFRE
 from database.dbbase import (degistir_kayit, ekle_kayit, save_work_to_db, sifre_dogrula,
                              sifre_hashle, update_work_to_db, user_ekle)
-from database.dbframe import (df_all_list, df_book_id_list, df_sort_list,
+from database.dbframe import (df_book_id_list, df_sort_list,
                               df_user_query, df_work_table_book,
-                              giris_kontrol, kitap_filtrele, kitap_oduncte, rapor)
+                              giris_kontrol, kitap_ara, kitap_filtrele, kitap_oduncte, rapor)
 
 
 def odunc_ver(user_id, book_id, tarih="2026-01-01"):
@@ -84,9 +84,9 @@ def test_ayni_adli_kitaplar_ayri_idlerle_listelenir():
 
 def test_istatistik_sayilari():
     turler = rapor("Turu", 35)
-    assert turler.index[0] == "Roman" and turler.iloc[0] == 6
+    assert list(turler.items())[0] == ("Roman", 6)
     assert len(rapor("Turu", 2)) == 2   # en fazla istenen kadar
-    assert len(df_all_list()) == 8
+    assert len(kitap_ara("")) == 8
 
 
 # --- Ödünç ve iade ---
@@ -122,3 +122,8 @@ def test_istatistik_her_kitabi_sayar_bos_degerler_belirtilmemis(db):
     assert turler["Roman"] == 7                      # yılı boş olan da sayıldı
     assert turler[BELIRTILMEMIS] == 1
     assert rapor("Yili", 35)[BELIRTILMEMIS] == 2     # Kuyucaklı Yusuf ve Yılsız
+
+
+def test_olmayan_kayit_none_dondurur():
+    from database.dbframe import df_book_find_by_id, df_user_find_by_id
+    assert df_book_find_by_id(999) is None and df_user_find_by_id(999) is None

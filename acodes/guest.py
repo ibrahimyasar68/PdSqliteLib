@@ -1,5 +1,5 @@
 from PyQt5.QtCore import pyqtSignal
-from PyQt5.QtWidgets import QApplication, QMainWindow
+from PyQt5.QtWidgets import QMainWindow
 from bforms.guest_py import Ui_MainWindow
 from acodes.ortak import OrtakSekmeler
 from acodes.kitaplarim import Kitaplarim
@@ -8,10 +8,9 @@ from acodes import kilavuz
 from acodes.ana_sayfa import AnaSayfa, ana_sayfayi_yerlestir
 from acodes import arka_plan, bildirim, ikonlar
 from acodes.yan_menu import YanMenu, menuyu_yerlestir, segmente_cevir
-from database.dbframe import genel_ozet, son_eklenenler
+from database.dbframe import genel_ozet, kullanici_bilgisi, son_eklenenler
 from database.odunc import gecikme_gunu, kalan_gun_yazi, tarih_yazi, teslim_tarihi, uye_odunc
 from acodes import tema
-from database.dbframe import kullanici_bilgisi
 
 
 ## Guest paneli: Giriş, Kitap Listesi, Filtre ve İstatistik sekmeleri (salt okunur)
@@ -116,10 +115,3 @@ class Guest(OrtakSekmeler, QMainWindow):
         kullanici,adi_soyadi,telefon,mail,_=kayit
         return [("Kullanıcı adı",kullanici),("Adı soyadı",adi_soyadi or "-"),
                 ("Telefon",telefon or "-"),("Mail",mail or "-")]
-
-
-if __name__=="__main__":
-    app=QApplication([])
-    pencere = Guest()
-    pencere.show()
-    app.exec_()

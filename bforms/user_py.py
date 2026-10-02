@@ -21,7 +21,6 @@ class Ui_MainWindow(object):
         self.label = QtWidgets.QLabel(self.centralwidget)
         self.label.setGeometry(QtCore.QRect(0, 0, 1000, 680))
         self.label.setMinimumSize(QtCore.QSize(1000, 680))
-        self.label.setStyleSheet("border-image: url(:/pic/colorful.jpg);")
         self.label.setText("")
         self.label.setObjectName("label")
         self.label_2 = QtWidgets.QLabel(self.centralwidget)

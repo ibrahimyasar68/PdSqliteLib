@@ -141,8 +141,35 @@ def test_yeni_uye_kaydindan_sonra_kalinan_menuye_donulur(lib, form, db):
 
 def test_onay_kutusu_acik_pencereye_baglanir(app, monkeypatch):
     from PyQt5.QtWidgets import QMessageBox, QWidget
-    from bforms import onay as onay_modulu
+    from acodes import onay as onay_modulu
     ebeveynler = []
     monkeypatch.setattr(QMessageBox, "exec_", lambda self: ebeveynler.append(self.parentWidget()) or QMessageBox.Yes)
     w = QWidget()
     assert onay_modulu.onay("Emin misiniz?", w) == QMessageBox.Yes and ebeveynler == [w]
+
+
+def test_istege_bagli_alanlar_bos_birakilinca_uyarmaz(form, uyarilar):
+    form.chk_telefon()
+    form.chk_mail()
+    assert uyarilar == []
+
+
+def test_hatali_telefon_veya_mail_ile_kaydedilmez(form, db, uyarilar):
+    formu_doldur(form, kullanici_adi="veli", sifre="gizli123", adi_soyadi="Veli Can", telefon="123")
+    form.QtUser.comboBox_yetki.setCurrentText("guest")
+    form.save_user()
+    assert db.execute("SELECT COUNT(*) FROM users WHERE kullanici='veli'").fetchone()[0] == 0
+    assert "telefon" in uyarilar[-1]
+
+
+def test_kisa_sifre_formda_hemen_bildirilir(form, uyarilar):
+    formu_doldur(form, kullanici_adi="veli", sifre="abc")
+    form.chk_sifre()
+    assert "en az 6" in form.mesaj.text() and uyarilar == []
+
+
+def test_silinmis_kitap_duzenlenmek_istenince_mesaj(lib, db):
+    db.execute("DELETE FROM kayitlistesi WHERE Id=6")
+    db.commit()
+    lib.kitap_duzenle(6)
+    assert lib.QtLibrary.statusbar.currentMessage() == "Kitap bulunamadı (silinmiş olabilir)."

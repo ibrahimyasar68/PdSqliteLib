@@ -23,6 +23,8 @@ fi
     --exclude-module matplotlib \
     --exclude-module PIL \
     --exclude-module tkinter \
+    --exclude-module pandas \
+    --exclude-module numpy \
     --add-data "$PWD/data/DBL_Kayit.db:data" \
     --add-data "$PWD/media/fonts:media/fonts" \
     --workpath build/pyinstaller \

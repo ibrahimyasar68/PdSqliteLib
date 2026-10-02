@@ -1689,7 +1689,6 @@ class Ui_MainWindow(object):
         self.gridLayout_6.setSpacing(5)
         self.gridLayout_6.setObjectName("gridLayout_6")
         self.widget = QtWidgets.QWidget(self.tab_5_2)
-        self.widget.setStyleSheet("border-image: url(:/figure/figure.png);")
         self.widget.setObjectName("widget")
         self.gridLayout_6.addWidget(self.widget, 0, 0, 1, 1)
         self.tabWidget_5.addTab(self.tab_5_2, "")

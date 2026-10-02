@@ -1,6 +1,6 @@
-from PyQt5.QtWidgets import QApplication, QFileDialog, QMainWindow, QMessageBox
+from PyQt5.QtWidgets import QFileDialog, QMainWindow, QMessageBox
 from bforms.library_py import Ui_MainWindow
-from bforms.onay import onay
+from acodes.onay import onay
 from acodes.user import User
 from acodes.kullanici_yonetimi import KullaniciYonetimi
 from acodes.ayarlar import Ayarlar, klasoru_ac
@@ -16,13 +16,11 @@ from acodes import arka_plan, bildirim, ikonlar
 from acodes.yan_menu import YanMenu, menuyu_yerlestir, segmente_cevir
 from acodes.ortak import OrtakSekmeler
 from acodes.tablo import satir_verisi
-from database.dbframe import df_book_find_by_id
+from database.dbframe import df_book_find_by_id, genel_ozet, son_eklenenler
 from database.yedek import geri_yukle, otomatik_yedekler, son_otomatik_yedek, yedek_al, yedek_hatasi, yedek_klasoru
 from database.dbbase import DB_YOLU
-from database.dbframe import genel_ozet
 from database.odunc import (ODUNC_SURESI_GUN, gecikme_gunu, geciken_sayisi, kalan_gun_yazi, tarih_yazi,
                             teslim_tarihi, yaklasan_teslimler)
-from database.dbframe import son_eklenenler
 from PyQt5.QtCore import pyqtSignal
 import os
 import datetime
@@ -275,10 +273,3 @@ class Library(OrtakSekmeler, QMainWindow):
         onceki=geri_yukle(yol)
         self.yenile()
         QMessageBox.information(self,"Bilgi",f"Yedek geri yüklendi.\n\nÖnceki hal şuraya yedeklendi:\n{onceki}")
-
-# Uygulamanın sürekli çalışması
-if __name__=="__main__":
-    app=QApplication([])
-    pencere = Library()
-    pencere.show()
-    app.exec_()

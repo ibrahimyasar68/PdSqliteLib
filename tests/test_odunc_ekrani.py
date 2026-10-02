@@ -225,3 +225,13 @@ def test_ana_sayfadan_iade_ekrani(lib, o, db):
 
 def test_dis_aktar_butonu_ve_menu(o):
     assert o.btn_aktar.text() == "Dışa Aktar" and o.tablo.contextMenuPolicy() == Qt.CustomContextMenu
+
+
+def test_listede_kalan_silinmis_kitap_ve_uye_verilemez(o, db):
+    sec(o.kitap, "Satranç")
+    uye_sec(o, 3)
+    db.execute("DELETE FROM kayitlistesi WHERE Id=6")
+    db.execute("DELETE FROM users WHERE id=3")
+    db.commit()
+    o.ver_durumu()                                       # liste henüz yenilenmedi: çökmeden engellenir
+    assert o.kitap_bilgi.text() == "Bu kitap silinmiş." and not o.btn_ver.isEnabled()

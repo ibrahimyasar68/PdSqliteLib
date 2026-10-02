@@ -6,7 +6,7 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import (QCompleter, QGridLayout, QGroupBox, QHBoxLayout, QHeaderView, QLabel, QLineEdit,
                              QMessageBox, QPushButton, QTableWidget, QVBoxLayout, QWidget)
 
-from bforms.onay import onay
+from acodes.onay import onay
 from acodes import tema
 from acodes.ek_bilgi import EkBilgiler
 from acodes.tablo import KolonSecici, satir_verisi, tablo_ayarla, tabloya_yaz

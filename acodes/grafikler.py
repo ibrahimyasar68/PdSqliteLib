@@ -110,8 +110,7 @@ class DikeyCubukGrafik(Grafik):
 
 
 def tur_dagilimi():
-    turler = rapor('Turu', 1000)
-    veri = list(zip(turler.index, turler.values))
+    veri = list(rapor('Turu', 1000).items())
     if len(veri) > PASTA_DILIM + 1:
         veri = veri[:PASTA_DILIM] + [("Diğer", sum(d for _, d in veri[PASTA_DILIM:]))]
     return veri
@@ -134,6 +133,5 @@ class GrafikPaneli(QWidget):
     def yenile(self):
         self.turler.veri_ver(tur_dagilimi())
         for grafik, kolon in ((self.yazarlar, 'Yazari'), (self.yayinevleri, 'Yayinevi')):
-            r = rapor(kolon, CUBUK_SAYISI, bos_dahil=False)
-            grafik.veri_ver(zip(r.index, r.values))
+            grafik.veri_ver(rapor(kolon, CUBUK_SAYISI, bos_dahil=False).items())
         self.yillar.veri_ver(yil_dagilimi())

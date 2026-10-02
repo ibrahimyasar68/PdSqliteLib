@@ -1,4 +1,5 @@
-import pandas as pd
+from collections import Counter
+
 from database.dbbase import baglantı, sifre_dogrula, sifre_guncelle
 
 # Sorguya adı yazılabilecek kolonlar (değerler her zaman ? ile verilir)
@@ -18,9 +19,6 @@ def kolon(ad, izinli):
 LISTE_SQL = "SELECT Id, Adi, Yazari, Ceviren, Turu, Yayinevi, Yili, Sayfa, ISBN, Kopya, Raf FROM kayitlistesi"
 TEMEL_KOLONLAR = "Id, Adi, Yazari, Ceviren, Turu, Yayinevi, Yili, Sayfa"
 TUM_KOLONLAR = TEMEL_KOLONLAR + ", ISBN, Kopya, Raf, Notlar"
-
-def df_all_list():
-    return baglantı.execute(LISTE_SQL).fetchall()
 
 ## Arama: büyük/küçük harf ve Türkçe karakter farkı gözetilmez ("sahin" -> "Şahin")
 _KATLAMA = str.maketrans("ÇĞIİÖŞÜÂÎÛçğıöşüâîû", "cgiiosuaiucgiosuaiu")
@@ -109,15 +107,15 @@ def filtre_secenekleri(kosullar, kolonlar):
 ## Boş değerli kitaplar "(belirtilmemiş)" olarak sayılır (eskiden adsız bir satır olarak görünüyordu)
 BELIRTILMEMIS="(belirtilmemiş)"
 
-## En çok kitabı olan cnt değer; eşit sayıda olanlar Türk alfabesine göre. bos_dahil=False ise boşlar atlanır.
+## En çok kitabı olan cnt değer: {değer: adet}, çoktan aza; eşit sayıda olanlar Türk alfabesine göre.
+## bos_dahil=False ise boşlar atlanır.
 def rapor(sor,cnt,bos_dahil=True):
-    dfbook=pd.read_sql_query(f"SELECT {kolon(sor,KITAP_KOLON)} FROM kayitlistesi",baglantı)
-    degerler=dfbook[sor].fillna("").astype(str).str.strip()
-    degerler=degerler.replace("",BELIRTILMEMIS) if bos_dahil else degerler[degerler!=""]
+    degerler=(str(d if d is not None else "").strip()
+              for (d,) in baglantı.execute(f"SELECT {kolon(sor,KITAP_KOLON)} FROM kayitlistesi"))
     # Her kitap sayılır (eskiden Yılı boş olan kitaplar türe/yazara göre sayımda atlanıyordu)
-    sayim=degerler.value_counts()
-    sira=sorted(sayim.index,key=lambda d:(-sayim[d],tr_sirala(d)))[:cnt]
-    return sayim[sira]
+    sayim=Counter(d or BELIRTILMEMIS for d in degerler if d or bos_dahil)
+    sira=sorted(sayim,key=lambda d:(-sayim[d],tr_sirala(d)))[:cnt]
+    return {d: sayim[d] for d in sira}
 
 ## Basım yıllarına göre on yıllık dağılım: [("1980'ler", 45), ("1990'lar", 120), ...]
 _ONLUK_EK = {0:"ler", 1:"lar", 2:"ler", 3:"lar", 4:"lar", 5:"ler", 6:"lar", 7:"ler", 8:"ler", 9:"lar"}
@@ -158,8 +156,10 @@ def kullanici_bilgisi(kullanici):
 def df_user_id_list():
     return baglantı.execute("SELECT id, adi_soyadi, kullanici FROM users ORDER BY adi_soyadi").fetchall()
 
+## Kullanıcının tüm bilgileri (yoksa None)
 def df_user_find_by_id(id):
-    return list(baglantı.execute("SELECT * FROM users WHERE id=?",(id,)).fetchone())
+    kayit=baglantı.execute("SELECT * FROM users WHERE id=?",(id,)).fetchone()
+    return list(kayit) if kayit else None
 
 ## Bu kolonda bu değere sahip kullanıcı var mı?
 def df_user_query(a,b):
@@ -193,9 +193,10 @@ def giris_kontrol(name,paw):
 def kitap_oduncte(book_id):
     return baglantı.execute("SELECT COUNT(*) FROM follow WHERE bookId=? AND status='out'",(str(book_id),)).fetchone()[0]>0
 
-## Kitabın tüm bilgileri: Id, Adi, Yazari, Ceviren, Turu, Yayinevi, Yili, Sayfa, ISBN, Kopya, Raf, Notlar
+## Kitabın tüm bilgileri: Id, Adi, Yazari, Ceviren, Turu, Yayinevi, Yili, Sayfa, ISBN, Kopya, Raf, Notlar (yoksa None)
 def df_book_find_by_id(id):
-    return list(baglantı.execute(f"SELECT {TUM_KOLONLAR} FROM kayitlistesi WHERE Id=?",(id,)).fetchone())
+    kayit=baglantı.execute(f"SELECT {TUM_KOLONLAR} FROM kayitlistesi WHERE Id=?",(id,)).fetchone()
+    return list(kayit) if kayit else None
 
 ## Kitabın kaç kopyası var, kaçı dışarıda
 def kopya_durumu(book_id):

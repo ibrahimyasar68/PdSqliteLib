@@ -7,7 +7,7 @@ from PyQt5.QtWidgets import (QAbstractItemView, QComboBox, QDialog, QDialogButto
                              QHBoxLayout, QHeaderView, QLineEdit, QMessageBox, QPushButton,
                              QTableWidget, QVBoxLayout)
 from acodes.tablo import satir_verisi, tablo_ayarla, tabloya_yaz
-from bforms.onay import onay
+from acodes.onay import onay
 from acodes import ikonlar, tema
 from acodes.user import mail_gecerli, sifre_hatasi, telefon_gecerli
 from database.dbbase import kullanici_guncelle, kullanici_sil, sifre_guncelle

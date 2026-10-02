@@ -2958,11 +2958,7 @@ border-radius:10px;}
              <number>5</number>
             </property>
             <item row="0" column="0">
-             <widget class="QWidget" name="widget" native="true">
-              <property name="styleSheet">
-               <string notr="true">border-image: url(:/figure/figure.png);</string>
-              </property>
-             </widget>
+             <widget class="QWidget" name="widget" native="true"/>
             </item>
            </layout>
           </widget>

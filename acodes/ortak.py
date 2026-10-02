@@ -9,7 +9,7 @@ from acodes.grafikler import GrafikPaneli
 from acodes.filtre_paneli import FiltrePaneli
 from acodes import tema
 from acodes.yerlesim import liste_sayfasi
-from acodes.tablo import KolonSecici, tablo_ayarla, tablo_basliklari, tabloya_yaz  # noqa: F401  (library.py de buradan alır)
+from acodes.tablo import KolonSecici, tablo_ayarla, tablo_basliklari, tabloya_yaz
 from acodes.disa_aktar import disa_aktar, sag_tik_menusu
 from acodes.kullanici_yonetimi import SifreDegistir, panel_butonu
 
@@ -111,7 +111,6 @@ class OrtakSekmeler:
         if hasattr(self,"yan_menu"):
             self.yan_menu.kullanici(name,self.ROL)
         self.setWindowTitle(f"{self.PENCERE_BASLIGI} - {name}")
-        self.QtLibrary.label_log_on.setText(name)
 
     ##################################
     #####   Tab_2 Fonksiyonlar   #####
@@ -199,9 +198,9 @@ class OrtakSekmeler:
             baslik_cubugu.setStretchLastSection(False)
             baslik_cubugu.setSectionResizeMode(0,QHeaderView.Stretch)
             baslik_cubugu.setSectionResizeMode(1,QHeaderView.ResizeToContents)
-            kayit=rapor(kolon,adet)
+            kayit=list(rapor(kolon,adet).items())
             if kolon=='Yili':
-                kayit=kayit.sort_index()
-            tabloya_yaz(tablo, list(zip(kayit.index,kayit.values)))
+                kayit.sort()
+            tabloya_yaz(tablo, kayit)
         if hasattr(self,"grafikler"):
             self.grafikler.yenile()

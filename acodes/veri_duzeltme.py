@@ -5,7 +5,7 @@
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import (QComboBox, QGroupBox, QHBoxLayout, QHeaderView, QLabel, QLineEdit, QMessageBox,
                              QPushButton, QTableWidget, QTreeWidget, QTreeWidgetItem, QVBoxLayout, QWidget)
-from bforms.onay import onay
+from acodes.onay import onay
 from acodes import tema
 from acodes.tablo import tablo_ayarla, tabloya_yaz
 from database.duzeltme import benzer_gruplar, birlestir, eksik_kitaplar, yoksay

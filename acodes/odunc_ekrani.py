@@ -8,7 +8,7 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import (QComboBox, QGridLayout, QGroupBox, QHBoxLayout, QHeaderView, QLabel, QLineEdit,
                              QMessageBox, QPushButton, QTableWidget, QVBoxLayout, QWidget)
 
-from bforms.onay import onay
+from acodes.onay import onay
 from acodes import tema
 from acodes.aranabilir import aranabilir_yap, secili_veri
 from acodes.tablo import satir_verisi, tablo_ayarla, tabloya_yaz
@@ -188,8 +188,11 @@ class OduncEkrani(QWidget):
         else:
             k = df_book_find_by_id(kitap_id)
             kopya, disarida = kopya_durumu(kitap_id)
-            tanim = " · ".join(str(x) for x in (k[2], k[5], k[6]) if x)
-            if disarida >= kopya:
+            tanim = " · ".join(str(x) for x in (k[2], k[5], k[6]) if x) if k else ""
+            if k is None:
+                engel = "Bu kitap silinmiş."
+                renkli(self.kitap_bilgi, engel, KOTU)
+            elif disarida >= kopya:
                 engel = "Bu kitap başka bir üyede." if kopya == 1 else f"Bu kitabın {kopya} kopyasının hepsi üyelerde."
                 renkli(self.kitap_bilgi, f"{tanim}\nMüsait kopya yok", KOTU)
             else:
@@ -199,7 +202,9 @@ class OduncEkrani(QWidget):
         else:
             u = df_user_find_by_id(uye_id)
             elinde, geciken = uye_durumu(uye_id)
-            iletisim = " · ".join(x for x in (u[4], u[5]) if x)
+            iletisim = " · ".join(x for x in (u[4], u[5]) if x) if u else ""
+            if u is None and engel is None:
+                engel = "Bu üye silinmiş."
             durum = f"Elinde {elinde} kitap var" if elinde else "Elinde kitap yok"
             if geciken:
                 durum += f", {geciken} tanesinin teslim süresi geçmiş"

@@ -1,4 +1,6 @@
-from PyQt5.QtWidgets import *
+## Evet / Hayır onay kutusu ##
+from PyQt5.QtWidgets import QApplication, QMessageBox
+
 
 def onay(msj, parent=None):
     # Açık pencereye bağlı açılır: Mac'te ayrı bir masaüstü alanına geçip panelin kaybolmasını önler
@@ -10,9 +12,4 @@ def onay(msj, parent=None):
     mesaj.setEscapeButton(QMessageBox.No)
     mesaj.button(QMessageBox.Yes).setText("Evet")
     mesaj.button(QMessageBox.No).setText("Hayır")
-    cvb=mesaj.exec_()
-    return cvb
-
-if __name__=='__main__':
-    pass
-
+    return mesaj.exec_()

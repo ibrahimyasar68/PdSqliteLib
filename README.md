@@ -1,6 +1,6 @@
 # PdSqliteLib
 
-PyQt5, SQLite ve pandas ile yazılmış masaüstü kütüphane yönetim uygulaması.
+PyQt5 ve SQLite ile yazılmış masaüstü kütüphane yönetim uygulaması.
 Kitap kaydı, üye yönetimi, ödünç verme / iade takibi ve istatistikler içerir.
 Windows ve macOS üzerinde çalışır.
 
@@ -263,6 +263,7 @@ acodes/tablo.py               Tablo doldurma, Türkçe sıralama, satır vurgula
 acodes/aranabilir.py          Yazdıkça süzülen açılır listeler
 acodes/ikonlar.py             Buton ve sekme ikonları (Qt ile çizilir, dosya gerektirmez)
 acodes/bildirim.py            Kısa süre görünen bildirimler (başarı yeşil, uyarı kırmızı)
+acodes/onay.py                Evet / Hayır onay kutusu
 acodes/yerlesim.py            Esnek yerleşim kalıpları (.ui sayfalarını pencereyle büyüyen düzene alır)
 acodes/disa_aktar.py          Tabloları Excel / CSV olarak kaydetme
 acodes/kitap_ekrani.py        Kitap Kayıt > Kitaplar (liste ve form tek ekranda)

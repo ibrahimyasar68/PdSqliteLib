@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import (QAction, QApplication, QGraphicsDropShadowEffect, QLabel, QLineEdit, QMainWindow, QSizePolicy, QVBoxLayout,
+from PyQt5.QtWidgets import (QAction, QGraphicsDropShadowEffect, QLabel, QLineEdit, QMainWindow, QSizePolicy, QVBoxLayout,
                              QWidget)
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QColor
@@ -187,11 +187,3 @@ class Login(QMainWindow):
         self.activateWindow()
         self.QtLogin.lineEdit_kullanci_adi.setFocus()
         self.mesaj_goster("Oturum kapatıldı.","bilgi")
-
-
-# Uygulamanın sürekli çalışması
-if __name__=="__main__":
-    app=QApplication([])
-    pencere = Login()
-    pencere.show()
-    app.exec_()

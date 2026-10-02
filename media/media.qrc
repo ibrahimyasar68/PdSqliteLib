@@ -1,11 +1,7 @@
 <RCC>
   <qresource prefix="pic">
     <file>autumn.jpg</file>
-    <file>colorful.jpg</file>
     <file>login.jpeg</file>
     <file>guc.png</file>
-  </qresource>
-  <qresource prefix="figure">
-    <file>figure.png</file>
   </qresource>
 </RCC>

@@ -1,10 +1,10 @@
-from PyQt5.QtWidgets import QApplication, QHBoxLayout, QLabel, QListView, QMainWindow, QMessageBox, QVBoxLayout, QWidget
+from PyQt5.QtWidgets import QHBoxLayout, QLabel, QListView, QMainWindow, QMessageBox, QVBoxLayout, QWidget
 from PyQt5.QtCore import Qt, pyqtSignal
 from acodes import ikonlar, tema
 from bforms.user_py import Ui_MainWindow
 from database.dbframe import df_user_query
 from database.dbbase import user_ekle
-from bforms.onay import onay
+from acodes.onay import onay
 import re
 
 SIFRE_EN_AZ = 6
@@ -150,6 +150,9 @@ QLineEdit, QComboBox {{ font-size: 16px; padding: 4px 10px; border-radius: 8px; 
         if  not (self.QtUser.lineEdit_kullanici_adi.text()):
             QMessageBox.information(self,"Uyarı!","Önce kullanıcı adı girilmelidir!")
             self.QtUser.lineEdit_sifre.clear()
+        elif self.QtUser.lineEdit_sifre.text():
+            # Kısa şifre Kaydet'e basmadan, formun içinde bildirilir
+            self.QtUser.statusbar.showMessage(sifre_hatasi(self.QtUser.lineEdit_sifre.text()) or "",self.dur_msj*2)
 
     def chk_adi_soyadi(self):
         if not self.QtUser.lineEdit_sifre.text():
@@ -162,13 +165,16 @@ QLineEdit, QComboBox {{ font-size: 16px; padding: 4px 10px; border-radius: 8px; 
                     self.QtUser.statusbar.showMessage("Lütfen yeni bir isim giriniz",self.dur_msj)
                     self.QtUser.lineEdit_adi_soyadi.clear()
 
+    # Telefon ve e-posta isteğe bağlı: boş bırakılırsa uyarı verilmez
     def chk_telefon(self):
-        if not telefon_gecerli(self.QtUser.lineEdit_telefon.text()):
+        telefon=self.QtUser.lineEdit_telefon.text().strip()
+        if telefon and not telefon_gecerli(telefon):
             QMessageBox.information(self,"Uyarı!","Uygun telefon numarası girilmedi. Kontrol edin!")
             self.QtUser.lineEdit_telefon.clear()
 
     def chk_mail(self):
-        if not mail_gecerli(self.QtUser.lineEdit_mail.text()):
+        mail=self.QtUser.lineEdit_mail.text().strip()
+        if mail and not mail_gecerli(mail):
             QMessageBox.information(self,"Uyarı!","Uygun mail adresi girilmedi. Kontrol edin!")
             self.QtUser.lineEdit_mail.clear()
 
@@ -181,13 +187,17 @@ QLineEdit, QComboBox {{ font-size: 16px; padding: 4px 10px; border-radius: 8px; 
                 QMessageBox.information(self,"Uyarı!","Kullanıcı Adı, Şifre ve Adı Soyadı boş olamaz!")
             elif sifre_hatasi(self.QtUser.lineEdit_sifre.text()):
                 QMessageBox.information(self,"Uyarı!",sifre_hatasi(self.QtUser.lineEdit_sifre.text()))
+            elif self.QtUser.lineEdit_telefon.text().strip() and not telefon_gecerli(self.QtUser.lineEdit_telefon.text().strip()):
+                QMessageBox.information(self,"Uyarı!","Uygun telefon numarası girilmedi. Kontrol edin!")
+            elif self.QtUser.lineEdit_mail.text().strip() and not mail_gecerli(self.QtUser.lineEdit_mail.text().strip()):
+                QMessageBox.information(self,"Uyarı!","Uygun mail adresi girilmedi. Kontrol edin!")
             else:
                 kayit=[]
                 kayit.append(self.QtUser.lineEdit_kullanici_adi.text())
                 kayit.append(self.QtUser.lineEdit_sifre.text())
                 kayit.append(self.QtUser.lineEdit_adi_soyadi.text())
-                kayit.append(self.QtUser.lineEdit_telefon.text())
-                kayit.append(self.QtUser.lineEdit_mail.text())
+                kayit.append(self.QtUser.lineEdit_telefon.text().strip())
+                kayit.append(self.QtUser.lineEdit_mail.text().strip())
                 kayit.append(self.QtUser.comboBox_yetki.currentText())
                 cvb=onay(f"{kayit[0]} kaydı yapılsın mı?",self)
                 if cvb==QMessageBox.Yes:
@@ -207,10 +217,3 @@ QLineEdit, QComboBox {{ font-size: 16px; padding: 4px 10px; border-radius: 8px; 
         self.QtUser.lineEdit_telefon.clear()
         self.QtUser.lineEdit_mail.clear()
         self.QtUser.comboBox_yetki.setCurrentIndex(0)
-
-# Uygulamanın sürekli çalışması
-if __name__=="__main__":
-    app=QApplication([])
-    pencere = User()
-    pencere.show()
-    app.exec_()

@@ -41,7 +41,6 @@ QTabBar::tab:hover:!selected {{ background-color: #EDF2FB; color: {METIN}; }}
 QStackedWidget > QWidget {{ background-color: {SAYFA}; }}
 
 QLabel {{ color: {METIN}; background: transparent; }}
-#label_32, #label_log_on {{ color: white; font-size: 18px; font-weight: bold; }}
 
 QPushButton {{ background-color: {VURGU}; color: white; border: none; border-radius: 6px; padding: 4px 8px; }}
 QPushButton:hover {{ background-color: {VURGU_KOYU}; }}

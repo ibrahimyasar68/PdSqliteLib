@@ -26,6 +26,8 @@ if not exist ".venv\Scripts\python.exe" (
     --exclude-module matplotlib ^
     --exclude-module PIL ^
     --exclude-module tkinter ^
+    --exclude-module pandas ^
+    --exclude-module numpy ^
     --add-data "%CD%\data\DBL_Kayit.db;data" ^
     --add-data "%CD%\media\fonts;media\fonts" ^
     --workpath build\pyinstaller ^
