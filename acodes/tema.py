@@ -171,6 +171,14 @@ QGroupBox {{ background-color: {KART}; border: 1px solid {KENAR}; border-radius:
 QGroupBox::title {{ subcontrol-origin: padding; subcontrol-position: top left; left: 14px; top: 12px; }}
 
 QStatusBar {{ background-color: {SEKME}; color: {ETIKET}; }}
+
+QScrollBar:vertical {{ background: transparent; width: 12px; margin: 0; }}
+QScrollBar:horizontal {{ background: transparent; height: 12px; margin: 0; }}
+QScrollBar::handle:vertical {{ background: {KENAR_IKINCIL}; border-radius: 4px; min-height: 32px; margin: 2px; }}
+QScrollBar::handle:horizontal {{ background: {KENAR_IKINCIL}; border-radius: 4px; min-width: 32px; margin: 2px; }}
+QScrollBar::handle:hover {{ background: {SOLUK}; }}
+QScrollBar::add-line, QScrollBar::sub-line {{ width: 0; height: 0; border: none; background: none; }}
+QScrollBar::add-page, QScrollBar::sub-page {{ background: none; }}
 QToolTip {{ background-color: {IPUCU_ARKA}; color: {IPUCU_YAZI}; border: none; padding: 4px 6px; }}
 """
 
@@ -259,6 +267,59 @@ QCheckBox, QRadioButton {{ color: {METIN}; }}
 _ILK_STIL = None
 
 
+def _sabit_aralikli(stil):
+    """Düzen boşlukları ve form yerleşimi her temada aynı olsun diye çizim stilini sarar. macOS stili Fusion'dan
+    (koyu tema) daha geniş boşluk ve kenar payı verdiği için tema değişince sayfa kayıyordu; Mac'te formlar da
+    değerleri dar tutuyordu (Ayarlar'daki bilgiler görünmüyordu). Değerler Fusion'ınkilerdir."""
+    from PyQt5.QtCore import Qt
+    from PyQt5.QtWidgets import QFormLayout, QProxyStyle, QStyle
+
+    olculer = {QStyle.PM_LayoutLeftMargin: 9, QStyle.PM_LayoutTopMargin: 9, QStyle.PM_LayoutRightMargin: 9,
+               QStyle.PM_LayoutBottomMargin: 9, QStyle.PM_LayoutHorizontalSpacing: 6,
+               QStyle.PM_LayoutVerticalSpacing: 6}
+    ipuclari = {QStyle.SH_FormLayoutFieldGrowthPolicy: QFormLayout.AllNonFixedFieldsGrow,
+                QStyle.SH_FormLayoutFormAlignment: int(Qt.AlignLeft | Qt.AlignTop),
+                QStyle.SH_FormLayoutLabelAlignment: int(Qt.AlignRight | Qt.AlignVCenter),
+                QStyle.SH_FormLayoutWrapPolicy: QFormLayout.DontWrapRows}
+
+    yerlesim_ogeleri = {getattr(QStyle, ad) for ad in dir(QStyle) if ad.startswith("SE_") and ad.endswith("LayoutItem")}
+
+    from PyQt5.QtWidgets import QStyleFactory
+    olcu_stili = QStyleFactory.create("Fusion")       # tablo başlıklarının boyu iki temada da buna göre
+
+    # Kodun stille çizdirdiği (QSS ile biçimlenen) parçaların ölçüleri de Fusion'dan: tablo başlığı, kaydırma alanı,
+    # sayı kutusu, odak çerçevesi. macOS'un kendi çizdiği onay kutusu gibi parçaların ölçülerine dokunulmaz.
+    for ad in ("PM_HeaderMargin", "PM_ScrollView_ScrollBarOverlap", "PM_ScrollView_ScrollBarSpacing",
+               "PM_SpinBoxFrameWidth", "PM_FocusFrameHMargin", "PM_FocusFrameVMargin"):
+        olculer[getattr(QStyle, ad)] = olcu_stili.pixelMetric(getattr(QStyle, ad))
+
+    class SabitAralik(QProxyStyle):
+        def sizeFromContents(self, tur, secenek, boyut, bilesen=None):
+            if tur == QStyle.CT_HeaderSection:
+                return olcu_stili.sizeFromContents(tur, secenek, boyut, bilesen)
+            return super().sizeFromContents(tur, secenek, boyut, bilesen)
+
+        def pixelMetric(self, olcu, secenek=None, bilesen=None):
+            return olculer[olcu] if olcu in olculer else super().pixelMetric(olcu, secenek, bilesen)
+
+        def layoutSpacing(self, *args):
+            return 6
+
+        def subElementRect(self, oge, secenek, bilesen=None):
+            # macOS stili düğme, liste, sekme kabı gibi bileşenlerin yerleşim alanını görünmez paylarla genişletir
+            if oge in yerlesim_ogeleri and secenek is not None:
+                return secenek.rect
+            return super().subElementRect(oge, secenek, bilesen)
+
+        def styleHint(self, ipucu, secenek=None, bilesen=None, donus=None):
+            return ipuclari[ipucu] if ipucu in ipuclari else super().styleHint(ipucu, secenek, bilesen, donus)
+
+    sarilmis = SabitAralik(stil)
+    sarilmis.olcu_stili = olcu_stili          # Python tarafında yaşasın (silinirse çizimde çöker)
+    sarilmis.setObjectName(stil.objectName())
+    return sarilmis
+
+
 def uygulamaya_uygula(uygulama):
     """Uygulama genelindeki çizim stili ve renk paleti. Koyu temada Fusion stili ve koyu palet kullanılır
     (sistem açık görünümdeyken de onay kutuları, kaydırma çubukları, diyaloglar koyu çizilsin diye);
@@ -269,10 +330,10 @@ def uygulamaya_uygula(uygulama):
     if _ILK_STIL is None:
         _ILK_STIL = uygulama.style().objectName()
     if not KOYU_MU:
-        uygulama.setStyle(QStyleFactory.create(_ILK_STIL))
+        uygulama.setStyle(_sabit_aralikli(QStyleFactory.create(_ILK_STIL)))
         uygulama.setPalette(uygulama.style().standardPalette())
         return
-    uygulama.setStyle(QStyleFactory.create("Fusion"))
+    uygulama.setStyle(_sabit_aralikli(QStyleFactory.create("Fusion")))
     p = QPalette()
     for rol, renk in ((QPalette.Window, ZEMIN), (QPalette.WindowText, METIN), (QPalette.Base, KART),
                       (QPalette.AlternateBase, KART_2), (QPalette.Text, METIN), (QPalette.Button, KART),

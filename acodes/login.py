@@ -170,7 +170,7 @@ class Login(QMainWindow):
             else:
                 self.mesaj_goster("Yetkiniz yok!")
 
-    def panel_ac(self,yetki,ad):
+    def panel_ac(self,yetki,ad,goster=True):
         panel=Library() if yetki=='admin' else Guest()
         if yetki=='admin':
             self.library=panel
@@ -179,11 +179,13 @@ class Login(QMainWindow):
         panel.user_name(ad)
         panel.oturum_kapandi.connect(self.giris_ekranina_don)
         panel.ayarlar.gorunum.degisti.connect(self.gorunumu_degistir)
-        panel_goster(panel)
+        if goster:
+            panel_goster(panel)
         return panel
 
     def gorunumu_degistir(self,gorunum):
-        ###  Ayarlar > Görünüm: tema değişir, panel aynı kullanıcı ve aynı sayfayla yeniden kurulur  ###
+        ###  Ayarlar > Görünüm: tema değişir, panel aynı kullanıcı, sayfa, kaydırma ve pencere boyutuyla yeniden kurulur  ###
+        # Yeni panel gösterilmeden önce eskisinin yerine oturtulur: sayfa en üste zıplamaz, pencere yeniden büyümez
         tema.ayarla(gorunum)
         tema.uygulamaya_uygula(QApplication.instance())
         self.stil_uygula()
@@ -191,8 +193,21 @@ class Login(QMainWindow):
         if eski is None:
             return
         sekme=eski.QtLibrary.tabWidget.currentIndex()
-        yeni=self.panel_ac('admin' if eski is self.library else 'guest',eski.aktif_kullanici)
+        kaydirma=eski.ayarlar.verticalScrollBar().value()
+        yeni=self.panel_ac('admin' if eski is self.library else 'guest',eski.aktif_kullanici,goster=False)
         yeni.QtLibrary.tabWidget.setCurrentIndex(sekme)
+        yeni.bildirim.kutu.hide()               # açılıştaki gecikme uyarısı tema değişiminde tekrar çıkmasın
+        yeni.QtLibrary.statusbar.clearMessage()
+        yeni.setGeometry(eski.geometry())
+        if eski.isFullScreen():
+            yeni.showFullScreen()
+        elif eski.isMaximized():
+            yeni.showMaximized()
+        else:
+            yeni.show()
+        yeni.ayarlar.widget().adjustSize()
+        QApplication.processEvents()            # sayfa yerleşsin, kaydırma sınırı belli olsun
+        yeni.ayarlar.verticalScrollBar().setValue(kaydirma)
         eski.hide()
         eski.deleteLater()
 

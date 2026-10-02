@@ -28,25 +28,20 @@ IPUCU_YONETICI = ("İpucu: Ctrl+K (Mac'te ⌘K) her yerden hızlı arama açar: 
                   "alabilir veya ödünç geçmişini görebilirsiniz.")
 
 
-class KisaltilanDeger(QLabel):
-    """Bilgi değeri: sığmazsa ortasından "..." ile kısalır (ör. uzun klasör yolları); tam metin ipucunda görünür,
-    tıklanınca panoya kopyalanır."""
+class TamDeger(QLabel):
+    """Bilgi değeri ekranda tam yazılır; uzun klasör yolları sığmazsa "/" işaretlerinden alt satıra geçer.
+    Tıklanınca değer panoya kopyalanır (ör. yolu Finder'daki "Klasöre Git" kutusuna yapıştırmak için)."""
 
     def __init__(self, metin, parent=None):
         super().__init__(parent)
         self.tam = metin
         self.setProperty("rol", "deger")
-        self.setSizePolicy(QSizePolicy.Ignored, QSizePolicy.Preferred)
-        self.setMinimumWidth(40)
+        self.setWordWrap(True)
+        self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Preferred)
         self.setCursor(Qt.PointingHandCursor)
-        self.setToolTip(f"{metin}\n(Kopyalamak için tıklayın)")
-        self.setText(metin)
-
-    def resizeEvent(self, olay):
-        super().resizeEvent(olay)
-        kisa = self.fontMetrics().elidedText(self.tam, Qt.ElideMiddle, self.width())
-        if kisa != self.text():
-            self.setText(kisa)
+        self.setToolTip("Kopyalamak için tıklayın")
+        # Görünmez kırılma noktası: kelime aralığı olmayan uzun yollar da satıra sığar (kopyalanan metinde yoktur)
+        self.setText(metin.replace("/", "/\u200b").replace("\\", "\\\u200b"))
 
     def mousePressEvent(self, olay):
         QApplication.clipboard().setText(self.tam)
@@ -75,6 +70,10 @@ class Bolum(QGroupBox):
             satir.addStretch()
             duzen.addLayout(satir)
         self.form = QFormLayout()
+        # macOS'un varsayılanı (alanlar önerilen boyutta, form ortalı) değerleri sıfır genişlikte bırakıyordu:
+        # her sistemde değerler kalan genişliği alır, form sola yaslanır
+        self.form.setFieldGrowthPolicy(QFormLayout.AllNonFixedFieldsGrow)
+        self.form.setFormAlignment(Qt.AlignLeft | Qt.AlignTop)
         self.form.setLabelAlignment(Qt.AlignRight)
         self.form.setHorizontalSpacing(16)
         duzen.addLayout(self.form)
@@ -86,7 +85,7 @@ class Bolum(QGroupBox):
         while self.form.rowCount():
             self.form.removeRow(0)
         for etiket, deger in self.bilgi_kaynagi():
-            self.form.addRow(f"{etiket}:", KisaltilanDeger(kisa_yol(str(deger))))
+            self.form.addRow(f"{etiket}:", TamDeger(kisa_yol(str(deger))))
 
 
 class GorunumBolumu(QGroupBox):

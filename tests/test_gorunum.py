@@ -68,3 +68,53 @@ def test_modullerde_sabit_renk_yok():
             if renkler:
                 bulunan[ad] = renkler
     assert bulunan == {}
+
+
+def _yerlesim(app, gorunum):
+    from PyQt5.QtCore import QPoint
+    from PyQt5.QtWidgets import QWidget
+    from acodes.library import Library
+    tema.ayarla(gorunum)
+    tema.uygulamaya_uygula(app)
+    w = Library()
+    w.resize(1300, 800)
+    w.show()
+    olculer = {}
+    t = w.QtLibrary.tabWidget
+    for i in range(t.count()):
+        t.setCurrentIndex(i)
+        QApplication.processEvents()
+        for j, x in enumerate(t.currentWidget().findChildren(QWidget)):
+            if x.isVisible():
+                p = x.mapTo(w, QPoint())
+                olculer[(i, j, type(x).__name__)] = (p.x(), p.y(), x.width(), x.height())
+    w.close()
+    return olculer
+
+
+def test_acik_ve_koyu_temada_yerlesim_ayni(app, uyarilar, monkeypatch):
+    """Tema değişince sayfa kaymasın: boşluklar, kaydırma çubukları ve tablo başlıkları iki temada aynı ölçüde.
+    Açık temada Mac'teki gibi macOS stili kullanılır (koyu tema Fusion); farkı ancak böyle yakalar."""
+    from PyQt5.QtWidgets import QStyleFactory
+    if "macintosh" in QStyleFactory.keys():
+        tema.uygulamaya_uygula(app)                          # ilk stil kaydedilsin, sonra Mac'inkiyle değiştirilir
+        monkeypatch.setattr(tema, "_ILK_STIL", "macintosh")
+    acik, koyu = _yerlesim(app, "acik"), _yerlesim(app, "koyu")
+    assert acik.keys() == koyu.keys()
+    assert [k for k in acik if acik[k] != koyu[k]] == []
+
+
+def test_tema_degisince_kaydirma_ve_pencere_korunur(app, uyarilar):
+    w = Login()
+    w.panel_ac("admin", "admin")
+    eski = w.library
+    eski.QtLibrary.tabWidget.setCurrentWidget(eski.ayarlar)
+    QApplication.processEvents()
+    kaydirma = eski.ayarlar.verticalScrollBar()
+    kaydirma.setValue(kaydirma.maximum())
+    deger, geometri = kaydirma.value(), eski.geometry()
+    eski.ayarlar.gorunum.butonlar["koyu"].click()
+    yeni = w.library
+    assert yeni.ayarlar.verticalScrollBar().value() == deger and yeni.geometry() == geometri
+    assert yeni.bildirim.kutu.isHidden()                     # gecikme uyarısı her geçişte tekrar çıkmaz
+    yeni.close()

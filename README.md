@@ -48,7 +48,7 @@ okunaklı kalsın diye beyazdır (saydamlık `acodes/arka_plan.py` içindeki `SA
 **Ayarlar → Yardım → Kullanma Kılavuzu** ayrı bir pencerede açılır: program hakkında kısa bilgi ve her
 sekmenin nasıl kullanıldığını anlatan, tıklanınca açılan başlıklar (yönetici ve üye panellerinde kendi
 sekmelerine göre). Ayarlar'daki her bölümde ilk buton asıl işlemdir (mavi), diğerleri çerçevelidir; uzun
-klasör yolları ortasından kısalır, tıklanınca tamamı panoya kopyalanır.
+klasör yolları tam yazılır (sığmazsa alt satıra geçer), tıklanınca panoya kopyalanır.
 
 Yeni kullanıcı ve üye kayıtlarını (`admin` veya `guest`) sadece giriş yapmış bir admin,
 **Ayarlar → Yeni Kullanıcı Ekle** ile oluşturabilir.

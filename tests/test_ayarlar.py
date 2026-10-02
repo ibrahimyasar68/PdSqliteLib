@@ -1,5 +1,6 @@
 ## Ayarlar sekmesi ve sadeleştirilmiş ana sayfa testleri ##
 import pytest
+from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QDesktopServices
 
 from acodes import ayarlar as ayarlar_modulu
@@ -122,16 +123,33 @@ def test_bolumde_ilk_buton_asil_digerleri_ikincil(lib):
     assert all(not b.icon().isNull() for b in yedek_bolumu.butonlar.values())
 
 
-def test_uzun_yol_kisalir_tiklaninca_kopyalanir(app):
+def test_uzun_yol_tam_gorunur_tiklaninca_kopyalanir(app):
+    from PyQt5.QtCore import QPoint, Qt
+    from PyQt5.QtTest import QTest
     from PyQt5.QtWidgets import QApplication
     yol = "/Users/biri/Library/Application Support/PdSqliteLib/yedekler/cok/uzun/bir/klasor/adi"
-    etiket = ayarlar_modulu.KisaltilanDeger(yol)
+    etiket = ayarlar_modulu.TamDeger(yol)
     etiket.resize(160, 24)
     etiket.show()
     QApplication.processEvents()
-    assert "…" in etiket.text() and etiket.text().endswith("adi") and yol in etiket.toolTip()
-    from PyQt5.QtCore import QPoint, Qt
-    from PyQt5.QtTest import QTest
+    assert "…" not in etiket.text() and etiket.text().replace("\u200b", "") == yol   # kısaltılmaz, tamamı yazılır
+    assert etiket.wordWrap() and etiket.heightForWidth(160) > etiket.fontMetrics().height() * 2   # alt satıra geçer
     QTest.mouseClick(etiket, Qt.LeftButton, pos=QPoint(5, 5))
-    assert QApplication.clipboard().text() == yol
+    assert QApplication.clipboard().text() == yol                         # kopyada görünmez işaret yok
     etiket.close()
+
+
+def test_bilgi_degerleri_mac_duzeninde_de_gorunur(app):
+    from PyQt5.QtWidgets import QApplication, QFormLayout
+    yol = "/Users/biri/Library/Application Support/PdSqliteLib/DBL_Kayit.db"
+    bolum = ayarlar_modulu.Bolum("Deneme", bilgiler=lambda: [("Kitap", "737 kayıt"), ("Veritabanı", yol)])
+    f = bolum.form
+    assert f.fieldGrowthPolicy() == QFormLayout.AllNonFixedFieldsGrow    # macOS varsayılanı alanları daraltıyordu
+    assert f.formAlignment() & Qt.AlignLeft
+    bolum.resize(700, 200)
+    bolum.show()
+    QApplication.processEvents()
+    for i in range(f.rowCount()):
+        deger = f.itemAt(i, QFormLayout.FieldRole).widget()
+        assert deger.width() > 300 and deger.height() >= deger.fontMetrics().height()
+    bolum.close()
