@@ -145,8 +145,9 @@ QPushButton[rol="ikincil"]:disabled {{ background-color: {KART}; color: {SOLUK};
 QPushButton#filtre_etiketi {{ background-color: {VURGU_ACIK}; color: {VURGU_YAZI}; border-radius: 12px;
                padding: 4px 10px; }}
 QPushButton#filtre_etiketi:hover {{ background-color: {TEHLIKE_ACIK}; color: {TEHLIKE}; }}
-#filtre_aciklama {{ color: {IKINCIL_METIN}; }}
-#filtre_sonuc {{ font-size: 16px; font-weight: bold; color: {VURGU_YAZI}; }}
+#sayfa_baslik {{ font-size: 22px; font-weight: bold; color: {METIN}; }}
+QLabel[rol="sayac"] {{ font-size: 15px; font-weight: bold; color: {VURGU_YAZI}; }}
+QLabel[rol="bilgi_simgesi"] {{ color: {SOLUK}; font-size: 17px; }}
 
 QLineEdit, QComboBox, QSpinBox, QPlainTextEdit {{ background-color: {KART}; color: {METIN};
                border: 1px solid {KENAR_GIRDI}; border-radius: 5px; padding: 3px 6px; }}

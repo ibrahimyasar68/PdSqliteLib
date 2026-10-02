@@ -117,12 +117,25 @@ def disa_aktar(parent, tablo, ad):
 
 
 def sag_tik_menusu(parent, tablo, ad):
-    """Tabloya sağ tıklanınca 'Dışa aktar...' seçeneği çıkar."""
+    """Tabloya sağ tıklanınca 'Dışa aktar...' seçeneği çıkar. Paneller tablo.sag_tik_eylemleri listesine
+    satıra özel işlemler ekleyebilir: her biri satır sırası alıp [(metin, işlev, açık mı)] döndüren fonksiyon
+    (ör. kitap satırında Düzenle / Ödünç ver / İade al). Sağ tıklanan satır seçilir."""
     tablo.setContextMenuPolicy(Qt.CustomContextMenu)
+    tablo.sag_tik_eylemleri = []
+    tablo.sag_tik_menu = lambda konum: menu_kur(parent, tablo, ad, konum)
+    tablo.customContextMenuRequested.connect(lambda konum: tablo.sag_tik_menu(konum).exec_(
+        tablo.viewport().mapToGlobal(konum)))
 
-    def goster(konum):
-        menu = QMenu(tablo)
-        menu.addAction("Excel / CSV olarak dışa aktar...", lambda: disa_aktar(parent, tablo, ad))
-        menu.exec_(tablo.viewport().mapToGlobal(konum))
 
-    tablo.customContextMenuRequested.connect(goster)
+def menu_kur(parent, tablo, ad, konum):
+    menu = QMenu(tablo)
+    indeks = tablo.indexAt(konum)
+    if indeks.isValid() and tablo.sag_tik_eylemleri:
+        tablo.selectRow(indeks.row())
+        for kaynak in tablo.sag_tik_eylemleri:
+            for metin, islev, acik in kaynak(indeks.row()):
+                menu.addAction(metin, islev).setEnabled(acik)
+        if not menu.isEmpty():
+            menu.addSeparator()
+    menu.addAction("Excel / CSV olarak dışa aktar...", lambda: disa_aktar(parent, tablo, ad))
+    return menu

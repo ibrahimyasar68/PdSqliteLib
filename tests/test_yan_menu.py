@@ -91,10 +91,22 @@ def test_kolon_gizle_hatirla_zorunlular_gizlenmez(app, uyarilar):
     s.goster(1, False)                                          # Adı: zorunlu, gizlenmez
     assert t.isColumnHidden(3) and not t.isColumnHidden(1)
     eylemler = s.menu().actions()
-    assert not eylemler[0].isEnabled() and not eylemler[3].isChecked()
+    assert not eylemler[1].isEnabled() and eylemler[0].isEnabled() and not eylemler[3].isChecked()
     assert Library().QtLibrary.tableWidget_2.isColumnHidden(3)  # hatırlanır
     s.hepsini_goster()
     assert not Library().QtLibrary.tableWidget_2.isColumnHidden(3)
+
+
+def test_kayit_no_ve_isbn_varsayilan_gizli_secim_yapilinca_hatirlanir(app, uyarilar):
+    from acodes import tercihler
+    tercihler._dosya().remove("kolonlar/kitap_listesi")            # henüz seçim yapılmamış
+    t = Library().QtLibrary.tableWidget_2
+    assert t.isColumnHidden(0) and t.isColumnHidden(8) and not t.isColumnHidden(1)   # Kayıt No, ISBN
+    l = Library()
+    l.liste_kolonlari.goster(0, True)
+    t = Library().QtLibrary.tableWidget_2
+    assert not t.isColumnHidden(0) and t.isColumnHidden(8)
+    l.liste_kolonlari.hepsini_goster()
 
 
 def test_sigmayan_listede_soru_cikar_ve_bir_daha_sorulmaz(app, uyarilar):

@@ -11,8 +11,9 @@ from acodes.onay import onay
 from acodes import tema
 from acodes.ek_bilgi import EkBilgiler
 from acodes.kisayollar import arama_kutusu_yap, kisayol, metin
-from acodes.tablo import KolonSecici, durum_ekle, satir_verisi, tablo_ayarla, tabloya_yaz
-from database.dbbase import baglantı, degistir_kayit, ekle_kayit, sil_kayit
+from acodes.tablo import KolonSecici, durum_ekle, durum_rozeti_kur, satir_verisi, tablo_ayarla, tabloya_yaz
+from acodes.yerlesim import baslik_satiri
+from database.dbbase import baglantı, degistir_kayit, ekle_kayit, geri_ekle_kayit, sil_kayit
 from database.dbframe import df_book_find_by_id, df_sort_list, kitap_ara, kitap_oduncte, kopya_durumu
 
 # (veritabanı kolonu, etiket, önerilecek mevcut değerler var mı)
@@ -36,10 +37,12 @@ def buyuk_harf(metin):
 
 
 class KitapEkrani(QWidget):
-    def __init__(self, mesaj=None, degisti=None, parent=None):
-        """mesaj(metin): panelin bildirimine yazar. degisti(): kitap eklenince/değişince/silinince çağrılır."""
+    def __init__(self, mesaj=None, degisti=None, bildir=None, parent=None):
+        """mesaj(metin): panelin bildirimine yazar. degisti(): kitap eklenince/değişince/silinince çağrılır.
+        bildir(metin, eylem adı, işlev): eylem butonlu bildirim (silmeden sonra "Geri Al")."""
         super().__init__(parent)
         self.mesaj = mesaj or (lambda metin: None)
+        self.bildir = bildir or (lambda metin, *_: self.mesaj(metin))
         self.degisti = degisti
         self.kitap_id = None
         self.setObjectName("kitap_ekrani")
@@ -54,13 +57,13 @@ class KitapEkrani(QWidget):
         self.arama = arama_kutusu_yap(QLineEdit(objectName="kitap_arama"))
         self.arama.setPlaceholderText("Ara: kitap adı, yazar, yayınevi, ISBN, raf, not...")
         self.arama.setClearButtonEnabled(True)
-        self.arama.setMinimumHeight(36)
         self.btn_yeni = QPushButton("Yeni Kitap")
-        self.btn_yeni.setMinimumHeight(36)
         self.sonuc = QLabel()
         self.tablo = QTableWidget(0, len(LISTE_KOLONLARI))
         self.tablo.setHorizontalHeaderLabels(LISTE_KOLONLARI)
-        tablo_ayarla(self.tablo, bos_metin="Aramanıza uyan kitap yok.")
+        tablo_ayarla(self.tablo, bos_metin="Aramanıza uyan kitap yok.", bos_simge="ara",
+                     bos_eylem=("Aramayı Temizle", self.arama.clear))
+        durum_rozeti_kur(self.tablo)
         # Kitap adı, yazar ve yayınevi kalan yeri paylaşır; kısa kolonlar içeriğe göre
         baslik = self.tablo.horizontalHeader()
         baslik.setStretchLastSection(False)
@@ -72,12 +75,9 @@ class KitapEkrani(QWidget):
         for kolon in (2, 3):
             baslik.setSectionResizeMode(kolon, QHeaderView.Stretch)
         self.tablo.setSelectionMode(QTableWidget.SingleSelection)
-        ust = QHBoxLayout()
-        ust.addWidget(self.arama, 1)
-        ust.addWidget(self.btn_yeni)
-        self.kolonlar = KolonSecici(self.tablo, "kitaplar")
-        self.kolonlar.buton.setMinimumHeight(36)
-        ust.addWidget(self.kolonlar.buton)
+        self.kolonlar = KolonSecici(self.tablo, "kitaplar", varsayilan_gizli=(0,))
+        ust = baslik_satiri(sayac=self.sonuc, butonlar=[self.btn_yeni, self.kolonlar.buton])
+        self.arama.setMinimumHeight(38)
 
         # --- Alt: form (Kitap bilgileri ve Ek Bilgiler yan yana, alanlar iki sütunda)
         self.form_baslik = QLabel(objectName="form_baslik")
@@ -127,7 +127,7 @@ class KitapEkrani(QWidget):
         duzen.setContentsMargins(14, 12, 14, 12)
         duzen.setSpacing(10)
         duzen.addLayout(ust)
-        duzen.addWidget(self.sonuc)
+        duzen.addWidget(self.arama)
         duzen.addWidget(self.kolonlar.soru)
         duzen.addWidget(self.tablo, 1)
         duzen.addLayout(islem)
@@ -265,13 +265,23 @@ class KitapEkrani(QWidget):
             QMessageBox.information(self, "Uyarı!", "Bu kitap ödünçte. İade alınmadan silinemez!")
             return
         adi = self.alan["Adi"].text()
-        if onay(f"'{adi}' silinsin mi?\nBu işlem geri alınamaz.") != QMessageBox.Yes:
+        if onay(f"'{adi}' silinsin mi?\nSildikten sonra kısa bir süre \"Geri Al\" ile geri getirebilirsiniz.") != QMessageBox.Yes:
             return
+        kayit = df_book_find_by_id(self.kitap_id)
         sil_kayit(self.kitap_id)
-        self.mesaj(f"{adi} silindi")
         self.kitap_id = None
         self._degisiklik_sonrasi()
         self.yeni()
+        self.bildir(f"{adi} silindi", "Geri Al", lambda: self.silmeyi_geri_al(kayit))
+
+    def silmeyi_geri_al(self, kayit):
+        """Silinen kitabı aynı numara ve bilgilerle geri getirir, formda açar."""
+        if kayit is None or df_book_find_by_id(kayit[0]) is not None:
+            return
+        geri_ekle_kayit(kayit)
+        self.kitap_id = kayit[0]
+        self._degisiklik_sonrasi()
+        self.mesaj(f"'{kayit[1]}' geri getirildi.")
 
     def _degisiklik_sonrasi(self):
         if self.degisti:

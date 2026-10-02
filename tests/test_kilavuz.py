@@ -19,12 +19,22 @@ def sekme_adlari(panel):
     return [re.sub(r" \(.*\)$", "", t.tabText(i)) for i in range(t.count())]   # "Kitap Verme (2 gecikmiş)"
 
 
-def test_kilavuz_ayarlarin_en_altinda(panel):
+def test_kilavuz_yardim_bolumunden_ayri_pencerede_acilir(panel):
     k = panel.ayarlar.kilavuz
     assert k.title() == "Kullanma Kılavuzu"
-    duzen = k.parentWidget().layout()
-    assert duzen.indexOf(k) == duzen.count() - 2              # son bölüm (ardından boşluk)
+    assert k.window() is panel.ayarlar.kilavuz_penceresi and not k.isVisible()   # Ayarlar sayfası kısa kalır
+    duzen = panel.ayarlar.yardim.parentWidget().layout()
+    assert duzen.indexOf(panel.ayarlar.yardim) == duzen.count() - 2              # son bölüm (ardından boşluk)
+    panel.ayarlar.yardim.butonlar["Kullanma Kılavuzu"].click()
+    assert panel.ayarlar.kilavuz_penceresi.isVisible()
+    panel.ayarlar.kilavuz_penceresi.close()
     assert "Yaşar Kütüphanesi" in k.findChild(type(k.konular[0][2]), "kilavuz_hakkinda").text()
+
+
+def test_kilavuzda_yeni_ozellikler_anlatilir():
+    metin = " ".join(m for _, m in kilavuz.YONETICI)
+    assert "Ctrl+K" in metin and "Geri Al" in metin and "Hatırlatma Metni" in metin and "sağ" in metin
+    assert "Ctrl+K" in " ".join(m for _, m in kilavuz.UYE)
 
 
 def test_her_sekme_icin_konu_var(panel):

@@ -89,7 +89,7 @@ def test_kitap_listesi_arama_sonucunu_aktarir(app, uyarilar, monkeypatch, tmp_pa
     dosya_sec(monkeypatch, tmp_path / "kitaplar.xlsx")
     da.disa_aktar(lib, lib.QtLibrary.tableWidget_2, "Kitap Listesi")
     sayfa = load_workbook(tmp_path / "kitaplar.xlsx").active
-    assert sayfa.max_row == 3 and sayfa["B1"].value == "Adı" and sayfa.title == "Kitap Listesi"
+    assert sayfa.max_row == 3 and sayfa["A1"].value == "Adı" and sayfa.title == "Kitap Listesi"   # gizli Kayıt No yazılmaz
 
 
 def test_panellerde_aktar_butonlari(app, uyarilar):

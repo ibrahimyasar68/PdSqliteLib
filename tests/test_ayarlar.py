@@ -113,3 +113,25 @@ def test_klasoru_ac_yoksa_olusturur(tmp_path, monkeypatch):
     hedef = tmp_path / "yeni" / "klasor"
     ayarlar_modulu.klasoru_ac(str(hedef))
     assert hedef.is_dir()
+
+
+def test_bolumde_ilk_buton_asil_digerleri_ikincil(lib):
+    yedek_bolumu = lib.ayarlar.bolumler[1]
+    roller = [b.property("rol") for b in yedek_bolumu.butonlar.values()]
+    assert roller == [None, "ikincil", "ikincil"]                       # Yedek Al mavi; Geri Yükle, Klasör çerçeveli
+    assert all(not b.icon().isNull() for b in yedek_bolumu.butonlar.values())
+
+
+def test_uzun_yol_kisalir_tiklaninca_kopyalanir(app):
+    from PyQt5.QtWidgets import QApplication
+    yol = "/Users/biri/Library/Application Support/PdSqliteLib/yedekler/cok/uzun/bir/klasor/adi"
+    etiket = ayarlar_modulu.KisaltilanDeger(yol)
+    etiket.resize(160, 24)
+    etiket.show()
+    QApplication.processEvents()
+    assert "…" in etiket.text() and etiket.text().endswith("adi") and yol in etiket.toolTip()
+    from PyQt5.QtCore import QPoint, Qt
+    from PyQt5.QtTest import QTest
+    QTest.mouseClick(etiket, Qt.LeftButton, pos=QPoint(5, 5))
+    assert QApplication.clipboard().text() == yol
+    etiket.close()

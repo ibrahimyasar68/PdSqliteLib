@@ -122,6 +122,17 @@ def test_silme(k, db):
     assert k.kitap_id is None and k.form_baslik.text() == "Yeni kitap" and "Denemeler" not in liste(k)
 
 
+def test_silme_geri_alinir(lib, k, db):
+    k.sec(8)
+    k.sil()
+    b = lib.bildirim
+    assert b.kutu.text() == "Denemeler silindi" and b.eylem.isVisibleTo(b.kutu) and b.eylem.text() == "Geri Al"
+    b.eylem.click()
+    assert db.execute("SELECT Adi, Yazari, Yili FROM kayitlistesi WHERE Id=8").fetchone() == ("Denemeler", "MONTAIGNE", "1983")
+    assert k.kitap_id == 8 and "Denemeler" in liste(k) and lib.QtLibrary.statusbar.currentMessage() == "'Denemeler' geri getirildi."
+    assert not b.eylem.isVisibleTo(b.kutu)
+
+
 def test_oduncteki_kitap_silinemez(k, db, uyarilar):
     db.execute("INSERT INTO follow VALUES ('3','1','2026-01-01','10:00','out','','')")
     db.commit()

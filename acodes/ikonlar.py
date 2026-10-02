@@ -6,7 +6,7 @@ import math
 import os
 import tempfile
 
-from PyQt5.QtCore import QPointF, QRectF, Qt
+from PyQt5.QtCore import QPointF, QRectF, QSize, Qt
 from PyQt5.QtGui import QColor, QIcon, QPainter, QPainterPath, QPen, QPixmap, QPolygonF
 from PyQt5.QtWidgets import QPushButton
 
@@ -68,6 +68,8 @@ CIZIMLER = {
     "goz_kapali": lambda p: (_goz(p), _cizgi(p, (3, 3), (21, 21))),
     "menu": lambda p: [_cizgi(p, (4, y), (20, y)) for y in (6, 12, 18)],
     "daralt": lambda p: (_cizgi(p, (15, 6), (9, 12), (15, 18)), _cizgi(p, (4, 4), (4, 20))),
+    "arti": lambda p: (_cizgi(p, (12, 5), (12, 19)), _cizgi(p, (5, 12), (19, 12))),
+    "kopyala": lambda p: (p.drawRoundedRect(QRectF(8, 8, 13, 13), 2, 2), _cizgi(p, (16, 4), (16, 3), (4, 3), (3, 4), (3, 16), (4, 16))),
     "asagi": lambda p: _cizgi(p, (5, 8.5), (12, 15.5), (19, 8.5)),
     "yukari": lambda p: _cizgi(p, (5, 15.5), (12, 8.5), (19, 15.5)),
 }
@@ -80,8 +82,11 @@ def _goz(p):
     p.drawPath(yol)
 
 
-def _resim(ad, renk, boyut=64):
-    resim = QPixmap(boyut, boyut)
+BOSLUK_ORANI = 1.35     # yazılı butonlarda ikonun sağında yazıyla arasında kalan boşluk
+
+
+def _resim(ad, renk, boyut=64, bosluk=False):
+    resim = QPixmap(round(boyut * BOSLUK_ORANI) if bosluk else boyut, boyut)
     resim.fill(Qt.transparent)
     p = QPainter(resim)
     p.setRenderHint(QPainter.Antialiasing)
@@ -109,11 +114,19 @@ def ok_resimleri(renk):
     return yollar
 
 
-def ikon(ad, renk=BUTON_RENGI, pasif=None):
+def ikon(ad, renk=BUTON_RENGI, pasif=None, bosluk=False):
+    """bosluk: resmin sağına saydam pay eklenir; yazılı butonlarda ikon yazıya yapışmaz (Qt ikonla yazı arasına
+    boşluk koymuyor). Böyle bir ikon yazili_ikon() ile verilmelidir (ikon boyutu en/boy oranına göre ayarlanır)."""
     simge = QIcon()
-    simge.addPixmap(_resim(ad, renk), QIcon.Normal)
-    simge.addPixmap(_resim(ad, pasif or tema.PASIF), QIcon.Disabled)
+    simge.addPixmap(_resim(ad, renk, bosluk=bosluk), QIcon.Normal)
+    simge.addPixmap(_resim(ad, pasif or tema.PASIF, bosluk=bosluk), QIcon.Disabled)
     return simge
+
+
+def yazili_ikon(buton, ad, renk=BUTON_RENGI, pasif=None, boy=16):
+    """Yazılı butona ikon: ikonla yazı arasında boşluk kalır."""
+    buton.setIcon(ikon(ad, renk, pasif, bosluk=True))
+    buton.setIconSize(QSize(round(boy * BOSLUK_ORANI), boy))
 
 
 # Buton yazısına göre ikon (aynı işlev her yerde aynı ikonla görünür)
@@ -123,7 +136,8 @@ BUTON_IKONLARI = {
     "Oturumu Kapat": "guc", "Yeni Kullanıcı Ekle": "kullanici_ekle", "Kullanıcı Yönetimi": "kullanicilar",
     "Şifremi Değiştir": "kilit", "Şifre Değiştir": "kilit", "Yedek Al": "indir", "Yedekten Geri Yükle": "geri_yukle",
     "Yedek Klasörünü Aç": "klasor", "İşaretlileri Birleştir": "kontrol", "Bu Öneriyi Yoksay": "x",
-    "Düzenle": "kalem", "Kapat": "x", "Vazgeç": "x",
+    "Düzenle": "kalem", "Kapat": "x", "Vazgeç": "x", "Kullanma Kılavuzu": "kitap", "Yeni Kitap": "arti",
+    "Aramayı Temizle": "x", "Hatırlatma Metni": "kopyala",
 }
 
 # Sekme nesnesinin adına göre ikon
@@ -138,14 +152,14 @@ IKINCIL_BUTONLAR = {"Vazgeç", "Temizle", "Kapat", "Dışa Aktar", "Yeni Kitap",
 
 def butonlara_uygula(pencere):
     for buton in pencere.findChildren(QPushButton):
-        ikincil = buton.text() in IKINCIL_BUTONLAR
-        if ikincil and buton.property("rol") is None:
+        if buton.text() in IKINCIL_BUTONLAR and buton.property("rol") is None:
             buton.setProperty("rol", "ikincil")
             buton.style().unpolish(buton)
             buton.style().polish(buton)
+        ikincil = buton.property("rol") == "ikincil"
         ad = BUTON_IKONLARI.get(buton.text())
         if ad and buton.icon().isNull():
-            buton.setIcon(ikon(ad, tema.ETIKET) if ikincil else ikon(ad))
+            yazili_ikon(buton, ad, tema.ETIKET if ikincil else BUTON_RENGI)
 
 
 def sekmelere_uygula(sekmeler, sayfa_adlari):

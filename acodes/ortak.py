@@ -3,19 +3,23 @@
 # İki panelin .ui dosyasında bu sekmelerdeki nesne adları aynı olduğu için kod tek yerde tutulur.
 
 from PyQt5.QtCore import QEvent, Qt
-from PyQt5.QtWidgets import QGroupBox, QHBoxLayout, QHeaderView, QLabel, QLineEdit, QVBoxLayout
-from database.dbframe import kitap_ara, rapor
+from PyQt5.QtWidgets import QGroupBox, QHeaderView, QLabel, QLineEdit, QVBoxLayout
+from database.dbframe import katla, kitap_ara, kitap_durumlari, rapor
 from acodes.grafikler import GrafikPaneli
 from acodes.filtre_paneli import FiltrePaneli
-from acodes import tema
-from acodes.yerlesim import liste_sayfasi
-from acodes.tablo import KolonSecici, durum_ekle, tablo_ayarla, tablo_basliklari, tabloya_yaz
+from acodes.yerlesim import baslik_satiri, liste_sayfasi
+from acodes.tablo import (KolonSecici, OranCubugu, OrantiliKolonlar, durum_ekle, durum_rozeti_kur, tablo_ayarla, tablo_basliklari,
+                          tabloya_yaz)
 from acodes.disa_aktar import disa_aktar, sag_tik_menusu
-from acodes.kisayollar import arama_kutusu_yap
+from acodes.kisayollar import arama_kutusu_yap, kisayol, metin as kisayol_metni
+from acodes.komut_paleti import KomutPaleti, eslesir
+from acodes import ikonlar
 from acodes.kullanici_yonetimi import SifreDegistir, panel_butonu
 
 LISTE_KOLONLARI = [(70,"Kayıt No"),(200,"Adı"),(160,"Yazarı"),(120,"Çeviren"),(90,"Türü"),
                    (160,"Yayınevi"),(50,"Yılı"),(55,"Sayfa"),(120,"ISBN"),(55,"Kopya"),(60,"Raf"),(150,"Durum")]
+GENIS_KOLONLAR = {1:3,2:2,3:1.5,5:2}  # Adı, Yazarı, Çeviren, Yayınevi kalan yeri bu oranlarla paylaşır
+VARSAYILAN_GIZLI = (0,8)            # Kayıt No (sıra numarası var) ve ISBN; Kolonlar'dan açılabilir
 
 # Tab 5 istatistikleri: (tablo no, veritabanı kolonu, başlık, gösterilecek en fazla satır)
 ISTATISTIKLER = [(1,'Turu','Yayın Türü',35), (2,'Yazari','Yazar',40),
@@ -52,7 +56,10 @@ class OrtakSekmeler:
         self.create_tab_5()
 
         ###  Tablolar: başlığa tıklayınca sıralama, hücreler salt okunur, boşken yönlendirici mesaj  ###
-        tablo_ayarla(ui.tableWidget_2, bos_metin="Aramanıza uyan kitap yok.")
+        tablo_ayarla(ui.tableWidget_2, bos_metin="Aramanıza uyan kitap yok.", bos_simge="ara",
+                     bos_eylem=("Aramayı Temizle", self.temizle))
+        durum_rozeti_kur(ui.tableWidget_2)
+        ui.tableWidget_2.orantili=OrantiliKolonlar(ui.tableWidget_2, GENIS_KOLONLAR)
         self.cizelgeleri_kartla()
 
         ###  Dışa aktarma: ana tablolarda buton, tüm tablolarda sağ tık menüsü  ###
@@ -62,18 +69,65 @@ class OrtakSekmeler:
         for no,_,baslik,_ in ISTATISTIKLER:
             sag_tik_menusu(self,getattr(ui,f"tableWidget_5_1_{no}"),f"İstatistik - {baslik}")
 
-        ###  Kitap Listesi esnek yerleşim: solda butonlar, üstte arama, tablo pencereyle büyür  ###
-        ust=QHBoxLayout()
-        self.arama.setMinimumSize(320,36)
-        self.arama.setMaximumWidth(620)
-        ust.addWidget(self.arama,1)
-        ust.addWidget(self.arama_sonuc)
-        ust.addStretch()
-        self.liste_kolonlari=KolonSecici(ui.tableWidget_2,"kitap_listesi")
-        self.liste_kolonlari.buton.setMinimumHeight(36)
-        ust.addWidget(self.liste_kolonlari.buton)
-        liste_sayfasi(ui.tab_2,[ui.pushButton_2_temizle,self.aktar_liste],ui.tableWidget_2,ust,
-                      uyari=self.liste_kolonlari.soru)
+        ###  Kitap Listesi: üstte başlık, sonuç sayısı ve butonlar; altında arama; tablo pencereyle büyür  ###
+        self.liste_kolonlari=KolonSecici(ui.tableWidget_2,"kitap_listesi",varsayilan_gizli=VARSAYILAN_GIZLI)
+        ust=baslik_satiri("Kitap Listesi",self.arama_sonuc,
+                          [ui.pushButton_2_temizle,self.aktar_liste,self.liste_kolonlari.buton])
+        liste_sayfasi(ui.tab_2,ust,self.arama,ui.tableWidget_2,uyari=self.liste_kolonlari.soru)
+
+    ##################################
+    #####   Hızlı arama (Ctrl+K)   #####
+    ##################################
+
+    def hizli_arama_kur(self,sayfa_ikonlari):
+        ###  Ctrl+K ve menüdeki "Hızlı ara" aynı paleti açar (yan menü ve sayfa ikonları kurulduktan sonra)  ###
+        self.sayfa_ikonlari=sayfa_ikonlari
+        self.palet=KomutPaleti(self.komut_kaynagi,self)
+        kisayol("Ctrl+K",self,self.palet.ac)
+        self.yan_menu.btn_ara.clicked.connect(self.palet.ac)
+        self.yan_menu.btn_ara.setToolTip(f"Kitap, üye veya bölüm arayın ({kisayol_metni('Ctrl+K')})")
+
+    def komut_kaynagi(self,metin):
+        gruplar=[("Bölümler",[k for k in self.bolum_komutlari() if eslesir(metin,k[0])]),
+                 ("İşlemler",[k[:4] for k in self.islem_komutlari() if eslesir(metin,k[0],k[1],k[4])])]
+        if len(katla(metin).strip())>=2:      # tek harfle yüzlerce kitap listelenmesin
+            gruplar.append(("Kitaplar",self.kitap_komutlari(metin)))
+            gruplar+=self.ek_arama_gruplari(metin)
+        return gruplar
+
+    def bolum_komutlari(self):
+        sekmeler=self.QtLibrary.tabWidget
+        komutlar=[]
+        for i in range(sekmeler.count()):
+            sayfa=sekmeler.widget(i)
+            ad=self.yan_menu.ogeler[i][0].ad
+            kisa=kisayol_metni(f"Ctrl+{i+1}") if i<9 else ""
+            ikon=ikonlar.SEKME_IKONLARI.get(self.sayfa_ikonlari.get(sayfa))
+            komutlar.append((ad,kisa,ikon,lambda s=sayfa: sekmeler.setCurrentWidget(s)))
+        return komutlar
+
+    def islem_komutlari(self):
+        """[(ad, açıklama, ikon, işlev, aramada eşleşecek ek kelimeler)] — panele göre (Library / Guest) genişler."""
+        q=self.QtLibrary
+        return [("Grafikler","İstatistik","grafik",lambda: (q.tabWidget.setCurrentWidget(q.tab_5),q.tabWidget_5.setCurrentWidget(q.tab_5_2)),"grafik çizelge"),
+                ("Şifremi değiştir","Hesap","kilit",self.sifremi_degistir,"parola"),
+                ("Kullanma kılavuzu","Yardım","kitap",self.ayarlar.kilavuzu_ac,"yardım nasıl"),
+                ("Oturumu kapat","Giriş ekranına dön","guc",self.oturumu_kapat,"çıkış")]
+
+    def kitap_komutlari(self,metin,adet=8):
+        kitaplar=kitap_ara(metin)[:adet]
+        durumlar=kitap_durumlari([k[0] for k in kitaplar])
+        return [(k[1]," · ".join(str(x) for x in (k[2],k[5],k[6],durum) if x),"kitap",
+                 lambda kitap_id=k[0],adi=k[1]: self.kitabi_ac(kitap_id,adi))
+                for k,(durum,_) in zip(kitaplar,durumlar)]
+
+    def ek_arama_gruplari(self,metin):
+        return []
+
+    def kitabi_ac(self,kitap_id,adi):
+        ###  Hızlı aramada seçilen kitap: Kitap Listesi bu kitapla süzülmüş açılır (yönetici panelinde düzenleme)  ###
+        self.QtLibrary.tabWidget.setCurrentWidget(self.QtLibrary.tab_2)
+        self.arama.setText(adi)
 
     def aktar_butonu(self,tablo,ad,ornek):
         ###  Örnek butonla aynı stilde "Dışa Aktar" butonu ve tabloya sağ tık menüsü  ###
@@ -112,9 +166,11 @@ class OrtakSekmeler:
     ##################################
 
     def create_form_tab2(self):
-        self.QtLibrary.tableWidget_2.setColumnCount(len(LISTE_KOLONLARI))
-        self.QtLibrary.tableWidget_2.setRowCount(0)
-        tablo_basliklari(self.QtLibrary.tableWidget_2, LISTE_KOLONLARI)
+        tablo=self.QtLibrary.tableWidget_2
+        tablo.setColumnCount(len(LISTE_KOLONLARI))
+        tablo.setRowCount(0)
+        tablo_basliklari(tablo, LISTE_KOLONLARI)
+        tablo.horizontalHeader().setMinimumSectionSize(48)
 
     def arama_kutusu_kur(self):
         ###  Tablonun üstüne arama kutusu ve sonuç sayısı (yerleşimi liste_sayfasi kurar)  ###
@@ -122,9 +178,8 @@ class OrtakSekmeler:
         self.arama=arama_kutusu_yap(QLineEdit(ui.tab_2))
         self.arama.setPlaceholderText("Ara: kitap adı, yazar, çevirmen, tür, yayınevi, yıl, ISBN, raf, not...")
         self.arama.setClearButtonEnabled(True)
-        self.arama.setStyleSheet('font-size: 17px; border-radius: 6px; padding: 2px 8px;')
+        self.arama.setStyleSheet('font-size: 17px; padding: 2px 8px;')
         self.arama_sonuc=QLabel(ui.tab_2)
-        self.arama_sonuc.setStyleSheet(f'font-size: 16px; font-weight: bold; color: {tema.VURGU_YAZI};')
         self.arama.textChanged.connect(self.listele)
 
     def listele(self):
@@ -188,10 +243,15 @@ class OrtakSekmeler:
             baslik_cubugu=tablo.horizontalHeader()
             baslik_cubugu.setStretchLastSection(False)
             baslik_cubugu.setSectionResizeMode(0,QHeaderView.Stretch)
-            baslik_cubugu.setSectionResizeMode(1,QHeaderView.ResizeToContents)
+            baslik_cubugu.setSectionResizeMode(1,QHeaderView.Fixed)
+            tablo.setColumnWidth(1,170)                          # Adet: oran çubuğu ve sayı
+            if not isinstance(tablo.itemDelegateForColumn(1),OranCubugu):
+                tablo.setItemDelegateForColumn(1,OranCubugu(tablo))
             kayit=list(rapor(kolon,adet).items())
             if kolon=='Yili':
-                kayit.sort()
+                kayit.sort(key=lambda k: (not str(k[0]).isdigit(), str(k[0])))   # yıllar sırayla, belirtilmemiş en sonda
             tabloya_yaz(tablo, kayit)
+            for r in range(tablo.rowCount()):
+                tablo.item(r,0).setTextAlignment(Qt.AlignLeft | Qt.AlignVCenter)   # yıllar da adlar gibi sola yaslı
         if hasattr(self,"grafikler"):
             self.grafikler.yenile()

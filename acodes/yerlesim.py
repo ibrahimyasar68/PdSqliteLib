@@ -3,38 +3,49 @@
 # Buradaki kalıplar mevcut bileşenleri yerleşim düzenlerine (layout) alır: tablolar ve alanlar pencereyle büyür.
 
 from PyQt5.QtCore import QPoint, QRect, QSize, Qt
-from PyQt5.QtWidgets import QHBoxLayout, QLayout, QVBoxLayout
+from PyQt5.QtWidgets import QHBoxLayout, QLabel, QLayout, QVBoxLayout
 
 SINIRSIZ = 16777215
 
 
-def buton_boyutu(buton, en=(110, 170), boy=40):
-    buton.setMinimumSize(en[0], boy)
-    buton.setMaximumSize(en[1], boy)
-
-
-def liste_sayfasi(sayfa, butonlar, tablo, ust=None, uyari=None):
-    """Solda alt alta butonlar, sağda (isteğe bağlı üst satır ve) pencereyle büyüyen tablo."""
-    duzen = QHBoxLayout(sayfa)
-    duzen.setContentsMargins(14, 12, 14, 12)
-    duzen.setSpacing(14)
-    sol = QVBoxLayout()
-    sol.setSpacing(10)
-    if ust is not None:
-        sol.addSpacing(52)            # butonlar tablonun hizasından başlasın
+def baslik_satiri(baslik=None, sayac=None, butonlar=(), bilgi=None):
+    """Sayfaların ortak üst satırı: solda başlık ve sonuç sayısı (ör. "Toplam 737 kitap"), sağda butonlar.
+    bilgi: başlığın yanındaki ⓘ simgesinin ipucu (uzun açıklama metni yerine)."""
+    satir = QHBoxLayout()
+    satir.setSpacing(8)
+    if baslik:
+        satir.addWidget(QLabel(baslik, objectName="sayfa_baslik"))
+    if bilgi:
+        simge = QLabel("ⓘ")
+        simge.setProperty("rol", "bilgi_simgesi")
+        simge.setToolTip(bilgi)
+        simge.setCursor(Qt.WhatsThisCursor)
+        satir.addWidget(simge)
+    if baslik or bilgi:
+        satir.addSpacing(8)
+    if sayac is not None:
+        sayac.setProperty("rol", "sayac")
+        satir.addWidget(sayac)
+    satir.addStretch()
     for buton in butonlar:
-        buton_boyutu(buton, (120, 160))
-        sol.addWidget(buton)
-    sol.addStretch()
-    sag = QVBoxLayout()
-    sag.setSpacing(10)
-    if ust is not None:
-        sag.addLayout(ust)
+        buton.setMinimumSize(0, 36)
+        buton.setMaximumSize(SINIRSIZ, 36)
+        satir.addWidget(buton)
+    return satir
+
+
+def liste_sayfasi(sayfa, ust, arama, tablo, uyari=None):
+    """Üstte başlık satırı, altında tam genişlikte arama kutusu, (varsa) uyarı şeridi ve pencereyle büyüyen tablo."""
+    duzen = QVBoxLayout(sayfa)
+    duzen.setContentsMargins(14, 12, 14, 12)
+    duzen.setSpacing(10)
+    duzen.addLayout(ust)
+    arama.setMinimumHeight(38)
+    arama.setMaximumWidth(SINIRSIZ)
+    duzen.addWidget(arama)
     if uyari is not None:
-        sag.addWidget(uyari)          # ör. "liste sığmıyor, kolon gizlensin mi?" sorusu
-    sag.addWidget(tablo, 1)
-    duzen.addLayout(sol)
-    duzen.addLayout(sag, 1)
+        duzen.addWidget(uyari)          # ör. "liste sığmıyor, kolon gizlensin mi?" sorusu
+    duzen.addWidget(tablo, 1)
     return duzen
 
 

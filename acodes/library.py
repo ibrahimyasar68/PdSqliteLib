@@ -3,7 +3,7 @@ from bforms.library_py import Ui_MainWindow
 from acodes.onay import onay
 from acodes.user import User
 from acodes.kullanici_yonetimi import KullaniciYonetimi
-from acodes.ayarlar import Ayarlar, klasoru_ac
+from acodes.ayarlar import IPUCU_YONETICI, Ayarlar, klasoru_ac
 from acodes import kilavuz
 from acodes import tema
 from acodes.odunc_gecmisi import OduncGecmisi
@@ -16,12 +16,14 @@ from acodes import arka_plan, bildirim, ikonlar, kisayollar
 from acodes.yan_menu import YanMenu, menuyu_yerlestir, segmente_cevir
 from acodes.ortak import OrtakSekmeler
 from acodes.tablo import satir_verisi
-from database.dbframe import df_book_find_by_id, genel_ozet, son_eklenenler
+from database.dbframe import (df_book_find_by_id, df_user_id_list, df_work_table_book, genel_ozet, kopya_durumu,
+                              son_eklenenler)
 from database.yedek import geri_yukle, otomatik_yedekler, son_otomatik_yedek, yedek_al, yedek_hatasi, yedek_klasoru
 from database.dbbase import DB_YOLU
-from database.odunc import (ODUNC_SURESI_GUN, gecikme_gunu, geciken_sayisi, kalan_gun_yazi, tarih_yazi,
-                            teslim_tarihi, yaklasan_teslimler)
-from PyQt5.QtCore import pyqtSignal
+from database.odunc import (ODUNC_SURESI_GUN, gecikme_gunu, geciken_sayisi, kalan_gun_yazi, odunc_gecmisi,
+                            tarih_yazi, teslim_tarihi, yaklasan_teslimler)
+from acodes.komut_paleti import eslesir
+from PyQt5.QtCore import Qt, pyqtSignal
 import os
 import datetime
 
@@ -53,10 +55,12 @@ class Library(OrtakSekmeler, QMainWindow):
         ###  Kitap Verme: ödünç verme, iade alma ve dışarıdaki kitaplar tek ekranda  ###
         ui=self.QtLibrary
         self.odunc=OduncEkrani(mesaj=lambda metin: self.QtLibrary.statusbar.showMessage(metin,8000),
-                               degisti=self.yenile)
+                               degisti=self.yenile,bildir=self.bildirim.eylemli)
         ui.tabWidget_6.addTab(self.odunc,"Ödünç ve İade")
         self.odunc.btn_aktar.clicked.connect(lambda: disa_aktar(self,self.odunc.tablo,"Dışarıdaki Kitaplar"))
         sag_tik_menusu(self,self.odunc.tablo,"Dışarıdaki Kitaplar")
+        self.odunc.tablo.sag_tik_eylemleri.append(lambda satir: [
+            ("İade al",self.odunc.iade_al,True),("Hatırlatma metnini kopyala",self.odunc.hatirlatma_kopyala,True)])
         self.gecmis=OduncGecmisi()
         self.QtLibrary.tabWidget_6.addTab(self.gecmis,"Ödünç Geçmişi")
         self.QtLibrary.tabWidget_6.currentChanged.connect(self.odunc_sekmesi_degisti)
@@ -74,7 +78,7 @@ class Library(OrtakSekmeler, QMainWindow):
                 ("Yedek Klasörünü Aç", lambda: klasoru_ac(yedek_klasoru()), "Otomatik yedeklerin bulunduğu klasör")],
                 self.yedek_bilgisi),
             ("Kütüphane Bilgileri", [], self.kutuphane_bilgisi),
-        ], kilavuz=kilavuz.YONETICI)
+        ], kilavuz=kilavuz.YONETICI, ipucu=IPUCU_YONETICI)
         self.QtLibrary.tabWidget.addTab(self.ayarlar,"Ayarlar")
 
         ###  Ana sayfa özet panosu  ###
@@ -102,17 +106,21 @@ class Library(OrtakSekmeler, QMainWindow):
         ###  Kitap Kayıt: ekleme / düzenleme / silme tek ekranda; Veri Düzeltme sadece açıkken yenilenir  ###
         ui=self.QtLibrary
         self.kitaplar=KitapEkrani(mesaj=lambda metin: self.QtLibrary.statusbar.showMessage(metin,self.dur_msj),
-                                  degisti=self.yenile)
+                                  degisti=self.yenile,bildir=self.bildirim.eylemli)
+        sag_tik_menusu(self,self.kitaplar.tablo,"Kitaplar")
         ui.tabWidget_3.addTab(self.kitaplar,"Kitaplar")
         self.duzeltme=VeriDuzeltme(kitap_duzenle=self.kitap_duzenle, degisti=self.yenile)
         self.QtLibrary.tabWidget_3.addTab(self.duzeltme,"Veri Düzeltme")
         self.QtLibrary.tabWidget_3.currentChanged.connect(self.kayit_sekmesi_degisti)
 
-        ###  Çift tıklama: kitap satırı Kitap Kayıt ekranında açılır  ###
+        ###  Çift tıklama: kitap satırı Kitap Kayıt ekranında açılır; sağ tık: düzenle, ödünç ver, iade al, geçmiş  ###
         ui=self.QtLibrary
         for tablo in (ui.tableWidget_2,self.filtre.tablo):
-            tablo.setToolTip("Kitabı düzenlemek için satıra çift tıklayın")
+            tablo.setToolTip("Düzenlemek için çift tıklayın; diğer işlemler için sağ tıklayın")
             tablo.cellDoubleClicked.connect(lambda satir,_,t=tablo: self.tablodan_kitap_duzenle(t,satir))
+            tablo.sag_tik_eylemleri.append(lambda satir,t=tablo: self.kitap_eylemleri(t,satir))
+        self.kitaplar.tablo.sag_tik_eylemleri.append(
+            lambda satir: self.kitap_eylemleri(self.kitaplar.tablo,satir,duzenle=False))
 
         # Sekme değişince listeler güncellensin (ör. Tab 1'den eklenen yeni üye)
         self.QtLibrary.tabWidget.currentChanged.connect(self.yenile)
@@ -127,6 +135,7 @@ class Library(OrtakSekmeler, QMainWindow):
         self.yan_menu=YanMenu(ui.tabWidget,sayfalar,ui.pushButton_1_cikis)
         menuyu_yerlestir(self,self.yan_menu)
         kisayollar.panele_kur(self,ui.tabWidget,ui.tab_2,self.arama)   # Ctrl+1..9 menü, Ctrl+F arama
+        self.hizli_arama_kur(sayfalar)                                 # Ctrl+K
         for alt_sekmeler in (ui.tabWidget_3,ui.tabWidget_5,ui.tabWidget_6):
             segmente_cevir(alt_sekmeler)
 
@@ -193,6 +202,80 @@ class Library(OrtakSekmeler, QMainWindow):
         hucre=tablo.item(satir,0)   # ilk kolon: kitap numarası (Id)
         if hucre and hucre.text().isdigit():
             self.kitap_duzenle(int(hucre.text()))
+
+    ##################################
+    #####   Sağ tık ve hızlı arama   #####
+    ##################################
+
+    def kitap_eylemleri(self,tablo,satir,duzenle=True):
+        ###  Kitap satırına sağ tık: [(metin, işlev, açık mı)]  ###
+        hucre=tablo.item(satir,0)   # ilk kolon: kitap numarası (gizli olsa da hücre durur)
+        if not (hucre and hucre.text().isdigit()):
+            return []
+        kitap_id=int(hucre.text())
+        kopya,disarida=kopya_durumu(kitap_id)
+        eylemler=[("Düzenle",lambda: self.kitap_duzenle(kitap_id),True)] if duzenle else []
+        return eylemler+[
+            ("Ödünç ver..." if disarida<kopya else "Ödünç ver (müsait kopya yok)",
+             lambda: self.odunc_ver_ekrani(kitap_id),disarida<kopya),
+            ("İade al...",lambda: self.kitap_iade_ekrani(kitap_id),disarida>0),
+            ("Ödünç geçmişi",lambda: self.kitap_gecmisi(kitap_id),bool(odunc_gecmisi(book_id=kitap_id)))]
+
+    def odunc_ver_ekrani(self,kitap_id=None):
+        ###  Kitap Verme > Ödünç ve İade: kitap seçili gelir, sıra üyeye gelir  ###
+        self.disaridakileri_goster()
+        if kitap_id is None:
+            self.odunc.kitap.setFocus(Qt.OtherFocusReason)
+        else:
+            self.odunc.kitap_sec(kitap_id)
+
+    def uye_ile_odunc(self,uye_id):
+        self.disaridakileri_goster()
+        self.odunc.uye_sec(uye_id)
+
+    def kitap_iade_ekrani(self,kitap_id):
+        ###  Dışarıdaki tek kopya ise o ödünç seçili açılır; birden fazlaysa liste kitap adıyla süzülür  ###
+        odunclar=[(u,b,adi) for adi,_,_,_,_,_,_,u,b in df_work_table_book() if str(b)==str(kitap_id)]
+        if len(odunclar)==1:
+            self.iade_ekrani(odunclar[0][0],odunclar[0][1])
+        elif odunclar:
+            self.disaridakileri_goster()
+            self.odunc.arama.setText(odunclar[0][2])
+            self.QtLibrary.statusbar.showMessage(f"Bu kitabın {len(odunclar)} kopyası dışarıda; iade alınacak olanı seçin.",self.dur_msj*3)
+
+    def kitap_gecmisi(self,kitap_id):
+        q=self.QtLibrary
+        q.tabWidget.setCurrentWidget(q.tab_6)
+        q.tabWidget_6.setCurrentWidget(self.gecmis)
+        self.gecmis.yenile()
+        i=self.gecmis.kitap.findData(kitap_id)
+        if i>=0:
+            self.gecmis.kitap.setCurrentIndex(i)
+
+    def yeni_kitap_ekrani(self):
+        q=self.QtLibrary
+        q.tabWidget.setCurrentWidget(q.tab_3)
+        q.tabWidget_3.setCurrentWidget(self.kitaplar)
+        self.kitaplar.yeni()
+
+    def kitabi_ac(self,kitap_id,adi):
+        self.kitap_duzenle(kitap_id)
+
+    def islem_komutlari(self):
+        q=self.QtLibrary
+        return [("Yeni kitap","Kitap Kayıt","arti",self.yeni_kitap_ekrani,"ekle kayıt"),
+                ("Ödünç ver","Kitap Verme","ok_sag",self.odunc_ver_ekrani,"kitap verme"),
+                ("İade al","Dışarıdaki kitaplar","ok_sol",self.disaridakileri_goster,"teslim geciken"),
+                ("Ödünç geçmişi","Kitap Verme","liste",lambda: (q.tabWidget.setCurrentWidget(q.tab_6),q.tabWidget_6.setCurrentWidget(self.gecmis)),""),
+                ("Veri düzeltme","Kitap Kayıt","kalem",lambda: (q.tabWidget.setCurrentWidget(q.tab_3),q.tabWidget_3.setCurrentWidget(self.duzeltme)),"benzer yazım eksik"),
+                ("Yeni kullanıcı ekle","Üye veya yönetici","kullanici_ekle",self.user.ac,"üye kayıt"),
+                ("Kullanıcı yönetimi","Ayarlar","kullanicilar",self.kullanici_yonetimi,"üye şifre sıfırla"),
+                ("Yedek al","Ayarlar","indir",self.yedek_al_ekrani,"yedekle")]+super().islem_komutlari()
+
+    def ek_arama_gruplari(self,metin):
+        uyeler=[(adi,f"{kullanici} · ödünç ver","kullanicilar",lambda uye_id=id: self.uye_ile_odunc(uye_id))
+                for id,adi,kullanici in df_user_id_list() if eslesir(metin,adi,kullanici)][:6]
+        return [("Üyeler",uyeler)]
 
     def kitap_duzenle(self,kitap_id):
         ###  Kitap Kayıt > Kitaplar ekranını bu kitapla aç  ###

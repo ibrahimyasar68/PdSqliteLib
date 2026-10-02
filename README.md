@@ -30,9 +30,14 @@ düğme menüyü daraltır (yalnızca simgeler kalır) ve yeniden açar; tercih 
 kitap sayısı menüde kırmızı rozetle görünür. Alt bölümler (Kitaplar / Veri Düzeltme, Çizelgeler / Grafikler,
 Ödünç ve İade / Ödünç Geçmişi) sayfanın üstündeki anahtarla seçilir.
 
+Sayfaların üstünde aynı düzen vardır: solda sayfa adı ve sonuç sayısı, sağda butonlar, altında tam
+genişlikte arama kutusu.
+
 Kitap listelerinde **Kolonlar** butonu (veya kolon başlığına sağ tık) gösterilecek kolonları seçtirir;
-liste pencereye sığmazsa tablonun üstünde hangi kolonların gizleneceği sorulur. Menü ve kolon tercihleri
-veritabanının yanındaki `tercihler.ini` dosyasında tutulur.
+başlangıçta *Kayıt No* (soldaki sıra numarası aynı işi görür) ve Kitap Listesi'nde *ISBN* gizlidir.
+Adı, yazar, çevirmen ve yayınevi kolonları kalan genişliği oranla paylaşır (kitap adı en geniş); sığmayan
+metin "…" ile kısalır. Liste yine de sığmazsa tablonun üstünde hangi kolonların gizleneceği sorulur. Menü ve
+kolon tercihleri veritabanının yanındaki `tercihler.ini` dosyasında tutulur.
 
 Programdan çıkmak için giriş ekranındaki kırmızı çıkış butonu kullanılır. Paneller macOS'ta büyütülmüş
 pencerede (küçültülebilir, diğer programlara geçilebilir), Windows'ta tam ekran açılır.
@@ -40,8 +45,10 @@ Panellerin arka planı yaprak fotoğrafıdır (`media/autumn.jpg`). Giriş sekme
 görünür; diğer sayfalar yarı saydam olduğu için içeriğin arkasından hafifçe görünür, tablolar ve formlar
 okunaklı kalsın diye beyazdır (saydamlık `acodes/arka_plan.py` içindeki `SAYFA_SAYDAMLIK` ile ayarlanır).
 
-**Ayarlar**'ın en altında **Kullanma Kılavuzu** vardır: program hakkında kısa bilgi ve her sekmenin nasıl
-kullanıldığını anlatan, tıklanınca açılan başlıklar (yönetici ve üye panellerinde kendi sekmelerine göre).
+**Ayarlar → Yardım → Kullanma Kılavuzu** ayrı bir pencerede açılır: program hakkında kısa bilgi ve her
+sekmenin nasıl kullanıldığını anlatan, tıklanınca açılan başlıklar (yönetici ve üye panellerinde kendi
+sekmelerine göre). Ayarlar'daki her bölümde ilk buton asıl işlemdir (mavi), diğerleri çerçevelidir; uzun
+klasör yolları ortasından kısalır, tıklanınca tamamı panoya kopyalanır.
 
 Yeni kullanıcı ve üye kayıtlarını (`admin` veya `guest`) sadece giriş yapmış bir admin,
 **Ayarlar → Yeni Kullanıcı Ekle** ile oluşturabilir.
@@ -52,6 +59,13 @@ Yeni kullanıcı ve üye kayıtlarını (`admin` veya `guest`) sadece giriş yap
   olduğunu gösterir: *Rafta* (yeşil), *Ödünçte* (kırmızı), çok kopyalı kitaplarda *1/2 kopya rafta* (turuncu).
 - Klavye kısayolları (Mac'te Ctrl yerine ⌘): **Ctrl+1 … Ctrl+9** menü bölümleri, **Ctrl+F** açık sayfanın
   arama kutusu; Kitap Kayıt'ta **Ctrl+N** yeni kitap, **Ctrl+S** kaydet, **Esc** vazgeç (`acodes/kisayollar.py`).
+- **Hızlı arama (Ctrl+K)** veya menüdeki **Hızlı ara**: tek kutudan bölümler, işlemler (*Yeni kitap*,
+  *Ödünç ver*, *İade al*, *Yedek al* …), kitaplar ve (yöneticide) üyeler aranır; ok tuşlarıyla seçilip
+  Enter ile açılır. Kitap seçilince yöneticide düzenleme ekranı, üyede süzülmüş Kitap Listesi açılır; üye
+  seçilince ödünç verme ekranı o üyeyle açılır (`acodes/komut_paleti.py`).
+- **Geri Al:** Kitap silme ve iade alma sonrasında alttaki bildirimde birkaç saniye **Geri Al** butonu
+  durur. Silinen kitap aynı numara ve bilgilerle geri gelir; iade alma onay sormaz, yanlış iade geri alınır
+  (bu arada kitap başka üyeye verildiyse geri alınmaz).
 - **Ayarlar → Görünüm:** *Sistemle aynı*, *Açık* veya *Koyu*. Seçim hemen uygulanır (panel aynı sayfada
   yeniden açılır) ve `tercihler.ini`'de hatırlanır. Renkler `acodes/tema.py`'deki iki palettedir; modüllerde
   sabit renk yazılmaz (`tests/test_gorunum.py` denetler).
@@ -74,7 +88,8 @@ tür ve yayınevi alanlarında yazdıkça mevcut değerler önerilir (yazım far
 
 ### Filtre
 
-**Filtre** sekmesinde tür, yazar, yayınevi ve yıl ölçütleri tek panelde yan yana durur.
+**Filtre** sekmesinde tür, yazar, yayınevi ve yıl ölçütleri sayfanın üstünde tek satırda yan yana durur,
+sonuçlar altlarında tam genişlikte listelenir. Kısa açıklama başlığın yanındaki ⓘ simgesinin ipucundadır.
 
 - Ölçüt kutusuna yazmak Kitap Listesi'ndeki arama gibi süzer; büyük/küçük harf ve Türkçe karakter
   farkı gözetilmez ("şiir" yazınca türü "Şiir" veya "şiir" olan kitaplar gelir).
@@ -99,7 +114,14 @@ karakter farkı gözetilmez.
   Sayılar sayı olarak, tarihler tarih olarak, metinler Türk alfabesine göre sıralanır; boşlar en sona gider.
 - Hücreler salt okunurdur; değişiklikler ilgili düzenleme ekranlarından yapılır.
 - Admin panelinde **Kitap Listesi** veya **Filtre** sonuçlarında bir satıra çift tıklamak kitabı
-  **Kitap Kayıt → Kitaplar** ekranında açar.
+  **Kitap Kayıt → Kitaplar** ekranında açar. Satıra sağ tıklayınca **Düzenle**, **Ödünç ver** (kitap seçili
+  gelir, yalnızca üye seçilir), **İade al** ve **Ödünç geçmişi** seçenekleri çıkar (Kitap Kayıt listesinde
+  de düzenle dışındakiler); dışarıdaki kitaplar listesinde sağ tık **İade al** ve **Hatırlatma metnini
+  kopyala** seçeneklerini verir.
+- **Durum** kolonu renkli rozet olarak çizilir. Boş tablolarda simge, yönlendirici mesaj ve gerekiyorsa
+  bir buton (ör. **Aramayı Temizle**) görünür.
+- İstatistik çizelgelerinde her sayının yanında, o değerin en büyüğe oranını gösteren bir çubuk vardır;
+  basım yıllarında yıllar sırayla, *(belirtilmemiş)* en sonda listelenir.
 - Ana sayfadaki teslimi yaklaşan bir kitaba çift tıklamak **Kitap Verme → Ödünç ve İade** ekranını
   o ödünç seçili olarak açar; sadece **İade Al**'a basmak kalır.
 
@@ -146,8 +168,9 @@ görünüyorsa (arama, filtre, sıralama) öyle kaydedilir.
   - Altta yan yana iki kart. **Ödünç ver**: kitap ve üye seçilince bilgileri kendiliğinden gelir. Müsait kopya sayısı,
     üyenin elindeki ve geciken kitapları ile teslim tarihi gösterilir. Kitabın müsait kopyası yoksa
     veya üyede zaten varsa **Ödünç Ver** kapalı kalır ve nedeni yazılır.
-  - **İade al**: listeden seçilen ödüncün bilgileri ve gecikmesi; **İade Al** ile kapatılır.
-    Silinmiş bir üyenin ödüncü de iade alınabilir.
+  - **İade al**: listeden seçilen ödüncün bilgileri ve gecikmesi; **İade Al** ile kapatılır (onay sorulmaz,
+    bildirimdeki **Geri Al** ile kısa süre içinde geri alınabilir). Silinmiş bir üyenin ödüncü de iade alınabilir.
+    **Hatırlatma Metni** üyeye gönderilecek nazik bir mesajı (kitap, teslim tarihi, gecikme) panoya kopyalar.
 - Süresi geçmiş kitap varsa sekme adı **Kitap Verme (N gecikmiş)** olur ve panel açılırken uyarı verilir.
 - **Ödünç Geçmişi**: tüm ödünç kayıtları; üye, kitap ve duruma (dışarıda / gecikmiş / iade edildi) göre süzülür.
 - Üyeler kendi panellerindeki **Kitaplarım** sekmesinde elindeki kitapları, teslim tarihini ve kalan
@@ -269,24 +292,26 @@ acodes/kullanici_yonetimi.py  Kullanıcı yönetimi ve şifre değiştirme pence
 acodes/odunc_ekrani.py        Kitap Verme > Ödünç ve İade (ödünç verme, iade, dışarıdakiler tek ekranda)
 acodes/odunc_gecmisi.py       Kitap Verme > Ödünç Geçmişi sekmesi
 acodes/grafikler.py           İstatistik > Grafikler (veritabanından her seferinde çizilir)
-acodes/tablo.py               Tablo doldurma, Türkçe sıralama, satır vurgulama, boş tablo mesajı
+acodes/tablo.py               Tablo doldurma, Türkçe sıralama, satır vurgulama, boş tablo mesajı, Durum rozeti,
+                              oran çubukları, oranlı kolon genişlikleri
 acodes/aranabilir.py          Yazdıkça süzülen açılır listeler
 acodes/ikonlar.py             Buton ve sekme ikonları (Qt ile çizilir, dosya gerektirmez)
-acodes/bildirim.py            Kısa süre görünen bildirimler (başarı yeşil, uyarı kırmızı)
+acodes/bildirim.py            Kısa süre görünen bildirimler (başarı yeşil, uyarı kırmızı; "Geri Al" butonlu)
 acodes/onay.py                Evet / Hayır onay kutusu
 acodes/kisayollar.py          Klavye kısayolları (menü, arama, Kitap Kayıt)
 acodes/yerlesim.py            Esnek yerleşim kalıpları (sayfaları pencereyle büyüyen düzene alır)
 acodes/disa_aktar.py          Tabloları Excel / CSV olarak kaydetme
 acodes/kitap_ekrani.py        Kitap Kayıt > Kitaplar (liste ve form tek ekranda)
 acodes/veri_duzeltme.py       Kitap Kayıt > Veri Düzeltme sekmesi
-acodes/filtre_paneli.py       Filtre sekmesi (dört ölçüt tek panelde)
+acodes/filtre_paneli.py       Filtre sekmesi (dört ölçüt üstte tek satırda)
 acodes/ek_bilgi.py            Kitap formundaki Ek Bilgiler kutusu, ISBN doğrulama
 acodes/kitaplarim.py          Guest paneli > Kitaplarım sekmesi
 acodes/ana_sayfa.py           Ana sayfa özet panosu (kartlar ve listeler)
 acodes/arka_plan.py           Panellerin arka plan fotoğrafı
 acodes/yan_menu.py            Sol kenar menüsü (daraltılabilir) ve alt bölümler için üst anahtar
 acodes/tercihler.py           Menü ve kolon tercihleri (tercihler.ini)
-acodes/kilavuz.py             Ayarlar > Kullanma Kılavuzu metinleri (yönetici ve üye)
+acodes/kilavuz.py             Ayarlar > Yardım > Kullanma Kılavuzu metinleri (yönetici ve üye)
+acodes/komut_paleti.py        Hızlı arama (Ctrl+K): bölümler, işlemler, kitaplar, üyeler
 acodes/ayarlar.py             Ayarlar sekmesi (kullanıcılar, yedekleme, bilgiler / hesabım)
 bforms/              .ui dosyalarından üretilen formlar (elle düzenlenmez)
 cuis/                Qt Designer .ui kaynakları (panel iskeleti ve giriş ekranı)

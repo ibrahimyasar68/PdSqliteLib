@@ -10,6 +10,7 @@ from PyQt5.QtWidgets import QButtonGroup, QFrame, QHBoxLayout, QLabel, QPushButt
 
 from acodes import ikonlar, tema, tercihler
 from acodes.kilavuz import IMZA
+from acodes.kisayollar import metin as kisayol_metni
 
 ACIK_EN, KAPALI_EN = 260, 76
 YAZI_RENGI = "#E2E8F0"
@@ -23,6 +24,10 @@ QPushButton#menu_ogesi {{ background: transparent; color: #CBD5E1; border: none;
                padding: 11px 13px; font-size: 16px; font-weight: bold; }}
 QPushButton#menu_ogesi:hover {{ background-color: rgba(255,255,255,0.08); color: white; }}
 QPushButton#menu_ogesi:checked {{ background-color: rgba(96,165,250,0.24); color: white; }}
+QPushButton#menu_ara {{ background-color: rgba(255,255,255,0.07); color: #94A3B8; border: 1px solid rgba(255,255,255,0.10);
+               border-radius: 8px; text-align: left; padding: 8px 12px; font-size: 15px; }}
+QPushButton#menu_ara:hover {{ background-color: rgba(255,255,255,0.12); color: white; }}
+#menu_ara_kisayol {{ color: #64748B; font-size: 13px; }}
 QPushButton#daralt {{ background: transparent; border: none; border-radius: 8px; padding: 6px; }}
 QPushButton#daralt:hover {{ background-color: rgba(255,255,255,0.10); }}
 #rozet {{ background-color: {tema.TEHLIKE}; color: white; border-radius: 9px; font-size: 12px; font-weight: bold;
@@ -65,7 +70,21 @@ class YanMenu(QFrame):
         ust.addWidget(self.baslik, 1)
         ust.addWidget(self.btn_daralt, 0, Qt.AlignTop)
         dikey.addLayout(ust)
-        dikey.addSpacing(10)
+        dikey.addSpacing(8)
+        # Hızlı arama (Ctrl+K): paneli panel bağlar
+        self.btn_ara = QPushButton(objectName="menu_ara")
+        self.btn_ara.setCursor(Qt.PointingHandCursor)
+        self.btn_ara.setIcon(ikonlar.ikon("ara", "#94A3B8", "#94A3B8"))
+        self.btn_ara.setIconSize(QSize(17, 17))
+        self.btn_ara.setMinimumHeight(38)
+        self.ara_kisayol = QLabel(objectName="menu_ara_kisayol")
+        self.ara_kisayol.setText(kisayol_metni("Ctrl+K"))
+        ara_ic = QHBoxLayout(self.btn_ara)
+        ara_ic.setContentsMargins(0, 0, 10, 0)
+        ara_ic.addStretch()
+        ara_ic.addWidget(self.ara_kisayol)
+        dikey.addWidget(self.btn_ara)
+        dikey.addSpacing(8)
 
         self.grup = QButtonGroup(self)
         self.ogeler = []
@@ -114,7 +133,6 @@ class YanMenu(QFrame):
         cikis_butonu.setMinimumSize(0, 38)
         cikis_butonu.setMaximumSize(16777215, 38)
         cikis_butonu.setCursor(Qt.PointingHandCursor)
-        cikis_butonu.setIcon(ikonlar.ikon("guc", "#FCA5A5"))
         cikis_butonu.show()
         kd.addWidget(cikis_butonu)
         dikey.addWidget(self.kart)
@@ -157,9 +175,15 @@ class YanMenu(QFrame):
         ###  Kapalıyken sadece simgeler (adlar ipucu olarak görünür), açıkken taslaktaki tam menü  ###
         self.kapali = kapali
         self.setFixedWidth(KAPALI_EN if kapali else ACIK_EN)
-        for gizlenecek in (self.baslik, self.kul_ad, self.kul_rol, self.imza):
+        for gizlenecek in (self.baslik, self.kul_ad, self.kul_rol, self.imza, self.ara_kisayol):
             gizlenecek.setVisible(not kapali)
+        self.btn_ara.setText("" if kapali else " Hızlı ara")
         self.cikis.setText("" if kapali else "Oturumu Kapat")
+        if kapali:          # yalnızca simge: ortalı dursun diye yanında boşluk payı olmayan ikon
+            self.cikis.setIcon(ikonlar.ikon("guc", "#FCA5A5"))
+            self.cikis.setIconSize(QSize(16, 16))
+        else:
+            ikonlar.yazili_ikon(self.cikis, "guc", "#FCA5A5")
         self.cikis.setToolTip("Oturumu kapatıp giriş ekranına dön")
         self.btn_daralt.setIcon(ikonlar.ikon("menu" if kapali else "daralt", YAZI_RENGI, YAZI_RENGI))
         self.btn_daralt.setToolTip("Menüyü aç" if kapali else "Menüyü daralt")

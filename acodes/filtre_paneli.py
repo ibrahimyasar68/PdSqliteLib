@@ -6,19 +6,22 @@
 # Sonuçlar her değişiklikte kendiliğinden güncellenir.
 
 from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import (QComboBox, QFrame, QGroupBox, QHBoxLayout, QHeaderView, QLabel, QPushButton,
-                             QScrollArea, QTableWidget, QVBoxLayout, QWidget)
+from PyQt5.QtWidgets import (QComboBox, QGroupBox, QHBoxLayout, QLabel, QPushButton, QTableWidget,
+                             QVBoxLayout, QWidget)
 
 from acodes.aranabilir import aranabilir_yap
 from acodes.kisayollar import arama_kutusu_yap
-from acodes.tablo import KolonSecici, durum_ekle, tablo_ayarla, tabloya_yaz
-from acodes.yerlesim import AkisDuzeni
+from acodes.tablo import KolonSecici, OrantiliKolonlar, durum_ekle, durum_rozeti_kur, tablo_ayarla, tabloya_yaz
+from acodes.yerlesim import AkisDuzeni, baslik_satiri
 from database.dbframe import filtre_secenekleri, kitap_filtrele, tr_sirala
 
 # (veritabanı kolonu, ölçüt adı)
 OLCUTLER = [("Turu", "Tür"), ("Yazari", "Yazar"), ("Yayinevi", "Yayınevi"), ("Yili", "Yıl")]
 SONUC_KOLONLARI = ["Kayıt No", "Adı", "Yazarı", "Çeviren", "Türü", "Yayınevi", "Yılı", "Sayfa", "Durum"]
-SECIM_YOK = "Soldaki ölçütlere yazın veya listeden seçin;\nuyan kitaplar burada listelenir."
+SECIM_YOK = "Üstteki ölçütlere yazın veya listeden seçin;\nuyan kitaplar burada listelenir."
+ACIKLAMA = ("Ölçüt kutusuna yazdıkça liste süzülür; diğer ölçütlerde yalnızca uyan seçenekler kalır.\n"
+            "Listeden seçilen değerler etikete dönüşür (etikete tıklamak kaldırır).\n"
+            "Aynı ölçütteki seçimlerden biri, farklı ölçütlerin hepsi tutmalıdır.")
 SONUC_YOK = "Ölçütlerin hepsine uyan kitap yok.\nBir seçimi kaldırmayı veya aramayı değiştirmeyi deneyin."
 
 
@@ -30,23 +33,28 @@ class FiltrePaneli(QWidget):
         self.combo, self.kutu, self.etiketler = {}, {}, {}
         self.secenekler = {}
 
-        # --- Sol: ölçütler (pencere küçükse kaydırılır), altında butonlar
-        olcutler = QVBoxLayout()
-        olcutler.setContentsMargins(0, 0, 6, 0)
-        olcutler.setSpacing(10)
-        aciklama = QLabel("Yazdıkça süzülür; diğer ölçütlerde yalnızca uyan seçenekler kalır. Listeden seçilenler "
-                          "etikete dönüşür: aynı ölçütte <b>biri</b>, farklı ölçütlerde <b>hepsi</b> tutmalı.")
-        aciklama.setWordWrap(True)
-        aciklama.setObjectName("filtre_aciklama")
-        olcutler.addWidget(aciklama)
+        # --- Üst: başlık, sonuç sayısı ve butonlar
+        self.sonuc = QLabel()
+        self.btn_temizle = QPushButton("Temizle")
+        self.btn_temizle.setToolTip("Tüm seçimleri kaldır")
+        self.btn_temizle.clicked.connect(self.temizle)
+        self.btn_aktar = QPushButton("Dışa Aktar")
+        self.btn_aktar.setToolTip("Sonuçları Excel veya CSV olarak kaydet")
+        self.tablo = QTableWidget(0, len(SONUC_KOLONLARI))
+        self.kolonlar = KolonSecici(self.tablo, "filtre", varsayilan_gizli=(0,))
+        ust = baslik_satiri("Filtre", self.sonuc, [self.btn_temizle, self.btn_aktar, self.kolonlar.buton], bilgi=ACIKLAMA)
+
+        # --- Ölçütler tek satırda yan yana; seçilen değerler kutunun altında etiket olur
+        olcutler = QHBoxLayout()
+        olcutler.setSpacing(12)
         for kolon, ad in OLCUTLER:
-            kutu = QGroupBox(ad)
+            kutu = QGroupBox(ad, objectName="olcut")
             dikey = QVBoxLayout(kutu)
             dikey.setSpacing(8)
             cmb = QComboBox()
             cmb.setMinimumHeight(32)
             cmb.setSizeAdjustPolicy(QComboBox.AdjustToMinimumContentsLengthWithIcon)   # uzun adlar genişletmesin
-            cmb.setMinimumContentsLength(12)
+            cmb.setMinimumContentsLength(10)
             aranabilir_yap(cmb, f"{ad} yazın veya seçin...")
             # Yazılan metin hemen süzer; listeden bir seçenek seçilince etikete dönüşür
             cmb.editTextChanged.connect(self.listele)
@@ -55,60 +63,26 @@ class FiltrePaneli(QWidget):
             etiketler = QWidget()
             etiketler.setLayout(AkisDuzeni())
             dikey.addWidget(etiketler)
+            dikey.addStretch()
             self.combo[kolon], self.kutu[kolon], self.etiketler[kolon] = cmb, kutu, etiketler
-            olcutler.addWidget(kutu)
-        olcutler.addStretch()
+            olcutler.addWidget(kutu, 1)
         arama_kutusu_yap(self.combo["Turu"].lineEdit())       # Ctrl+F ilk ölçüte gider
-        icerik = QWidget(objectName="filtre_olcutleri")
-        icerik.setLayout(olcutler)
-        kaydirma = QScrollArea()
-        kaydirma.setWidgetResizable(True)
-        kaydirma.setFrameShape(QFrame.NoFrame)
-        kaydirma.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-        kaydirma.setWidget(icerik)
-        kaydirma.setStyleSheet("QScrollArea, #filtre_olcutleri { background: transparent; }")
-        sol = QVBoxLayout()
-        sol.setSpacing(10)
-        sol.addWidget(kaydirma, 1)
-        butonlar = QHBoxLayout()
-        self.btn_temizle = QPushButton("Temizle")
-        self.btn_temizle.setToolTip("Tüm seçimleri kaldır")
-        self.btn_temizle.clicked.connect(self.temizle)
-        self.btn_aktar = QPushButton("Dışa Aktar")
-        self.btn_aktar.setToolTip("Sonuçları Excel veya CSV olarak kaydet")
-        for b in (self.btn_temizle, self.btn_aktar):
-            b.setMinimumSize(120, 38)
-            butonlar.addWidget(b)
-        butonlar.addStretch()
-        sol.addLayout(butonlar)
 
-        # --- Sağ: sonuçlar
-        self.sonuc = QLabel(objectName="filtre_sonuc")
-        self.tablo = QTableWidget(0, len(SONUC_KOLONLARI))
+        # --- Sonuçlar tam genişlikte
         self.tablo.setHorizontalHeaderLabels(SONUC_KOLONLARI)
-        tablo_ayarla(self.tablo, bos_metin=SECIM_YOK)
-        baslik = self.tablo.horizontalHeader()
-        baslik.setStretchLastSection(False)
-        for kolon in range(len(SONUC_KOLONLARI)):
-            baslik.setSectionResizeMode(kolon, QHeaderView.ResizeToContents)
-        baslik.setSectionResizeMode(1, QHeaderView.Stretch)
-        sag = QVBoxLayout()
-        self.kolonlar = KolonSecici(self.tablo, "filtre")
-        ust_satir = QHBoxLayout()
-        ust_satir.addWidget(self.sonuc, 1)
-        ust_satir.addWidget(self.kolonlar.buton)
-        sag.addLayout(ust_satir)
-        sag.addWidget(self.kolonlar.soru)
-        sag.addWidget(self.tablo, 1)
+        tablo_ayarla(self.tablo, bos_metin=SECIM_YOK, bos_simge="huni")
+        durum_rozeti_kur(self.tablo)
+        self.tablo.orantili = OrantiliKolonlar(self.tablo, {1: 3, 2: 2, 3: 1.5, 5: 2})   # Adı, Yazarı, Çeviren, Yayınevi
 
-        solda = QWidget()
-        solda.setLayout(sol)
-        solda.setFixedWidth(340)
-        duzen = QHBoxLayout(self)
+        self.setStyleSheet("QGroupBox#olcut { padding: 34px 10px 10px 10px; }"
+                           " QGroupBox#olcut::title { top: 10px; left: 12px; }")
+        duzen = QVBoxLayout(self)
         duzen.setContentsMargins(14, 12, 14, 12)
-        duzen.setSpacing(16)
-        duzen.addWidget(solda)
-        duzen.addLayout(sag, 1)
+        duzen.setSpacing(10)
+        duzen.addLayout(ust)
+        duzen.addLayout(olcutler)
+        duzen.addWidget(self.kolonlar.soru)
+        duzen.addWidget(self.tablo, 1)
         self.yenile()
 
     def yenile(self):

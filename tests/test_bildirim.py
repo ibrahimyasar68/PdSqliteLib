@@ -75,3 +75,22 @@ def test_guest_panelinde_de_bildirim(app):
     assert g.QtLibrary.statusbar.isHidden()
     g.QtLibrary.statusbar.showMessage("Liste görüntülendi.")
     assert g.bildirim.kutu.text() == "Liste görüntülendi."
+
+
+def test_eylemli_bildirim_butonu_bir_kez_calisir(lib):
+    cagri = []
+    lib.bildirim.eylemli("'Deneme' silindi", "Geri Al", lambda: cagri.append(1))
+    b = lib.bildirim
+    assert b.kutu.text() == "'Deneme' silindi" and b.eylem.isVisibleTo(b.kutu) and b.eylem.text() == "Geri Al"
+    assert lib.QtLibrary.statusbar.currentMessage() == "'Deneme' silindi"
+    assert b.eylem.geometry().right() < b.kutu.width() and b.zamanlayici.remainingTime() > 6000
+    b.eylem.click()
+    assert cagri == [1] and not b.eylem.isVisibleTo(b.kutu)
+    b.eylem.click()                                                     # ikinci tıklama bir şey yapmaz
+    assert cagri == [1]
+
+
+def test_yeni_mesaj_eylem_butonunu_kaldirir(lib):
+    lib.bildirim.eylemli("'Deneme' silindi", "Geri Al", lambda: None)
+    lib.QtLibrary.statusbar.showMessage("Liste görüntülendi.")
+    assert not lib.bildirim.eylem.isVisibleTo(lib.bildirim.kutu) and lib.bildirim.eylem_islevi is None

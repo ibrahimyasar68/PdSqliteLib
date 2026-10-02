@@ -3,7 +3,7 @@
 import pytest
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QColor
-from PyQt5.QtWidgets import QAbstractItemView, QHeaderView, QTableWidget
+from PyQt5.QtWidgets import QAbstractItemView, QApplication, QHeaderView, QTableWidget
 
 from conftest import sec
 from acodes import tema
@@ -206,4 +206,36 @@ def test_istatistik_cizelgeleri_kartlarda_ve_sayilar_sigar(app, uyarilar):
     t = q.tableWidget_5_1_2
     assert isinstance(t.parentWidget(), QGroupBox) and t.parentWidget().title() == "Yazarlara Göre"
     assert not hasattr(q, "label_56") and t.horizontalScrollBarPolicy() == Qt.ScrollBarAlwaysOff
-    assert t.horizontalHeader().sectionResizeMode(1) == QHeaderView.ResizeToContents
+    assert t.horizontalHeader().sectionResizeMode(1) == QHeaderView.Fixed and t.columnWidth(1) == 170
+    from acodes.tablo import OranCubugu
+    assert isinstance(t.itemDelegateForColumn(1), OranCubugu)                 # adette oran çubuğu
+
+
+def test_durum_kolonu_rozet_ve_bos_tabloda_eylem(app, uyarilar):
+    from acodes.tablo import DurumRozeti
+    lib = Library()
+    q = lib.QtLibrary
+    t = q.tableWidget_2
+    assert isinstance(t.itemDelegateForColumn(t.columnCount() - 1), DurumRozeti)
+    assert isinstance(lib.filtre.tablo.itemDelegateForColumn(8), DurumRozeti)
+    assert isinstance(lib.kitaplar.tablo.itemDelegateForColumn(6), DurumRozeti)
+    lib.arama.setText("bulunmayan kitap")
+    bos = t.bos_durum
+    QApplication.processEvents()
+    assert not bos.etiket.isHidden() and bos.buton.text() == "Aramayı Temizle"
+    bos.buton.click()
+    assert lib.arama.text() == "" and t.rowCount() == 8
+
+
+def test_kitap_adi_kolonu_turden_genis(app, uyarilar):
+    lib = Library()
+    q = lib.QtLibrary
+    lib.resize(1300, 800)
+    lib.show()
+    q.tabWidget.setCurrentWidget(q.tab_2)
+    from PyQt5.QtTest import QTest
+    QTest.qWait(50)                                         # genişlikler liste dolduktan sonra dağıtılır
+    t = q.tableWidget_2
+    assert t.columnWidth(1) > t.columnWidth(4) and t.columnWidth(1) > t.columnWidth(2)   # Adı > Türü, Yazarı
+    assert t.horizontalScrollBar().maximum() == 0 and not t.wordWrap()
+    lib.close()

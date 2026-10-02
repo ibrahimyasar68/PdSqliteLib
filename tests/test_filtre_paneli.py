@@ -157,3 +157,19 @@ def test_guest_panelinde_de_var(app, uyarilar):
     g = Guest()
     sec(g.filtre.combo["Yayinevi"], "YKY")
     assert adlar(g.filtre.tablo) == ["Kuyucaklı Yusuf"]
+
+
+def test_olcutler_ustte_yan_yana_sonuclar_altta(app, uyarilar):
+    from PyQt5.QtWidgets import QApplication
+    from acodes.library import Library
+    lib = Library()
+    lib.resize(1300, 800)
+    lib.show()
+    lib.QtLibrary.tabWidget.setCurrentWidget(lib.QtLibrary.tab_4)
+    QApplication.processEvents()
+    f = lib.filtre
+    ustler = {f.kutu[k].mapTo(f, f.kutu[k].rect().topLeft()).y() for k in f.kutu}
+    assert len(ustler) == 1                                              # dört ölçüt aynı satırda
+    assert f.tablo.mapTo(f, f.tablo.rect().topLeft()).y() > max(ustler) + 40
+    assert f.tablo.width() > f.width() - 60 and f.tablo.isColumnHidden(0)  # tam genişlik, Kayıt No gizli
+    lib.close()

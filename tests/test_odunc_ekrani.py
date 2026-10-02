@@ -194,6 +194,60 @@ def test_iade_alma(lib, o, db):
     assert q.tabWidget.tabText(q.tabWidget.indexOf(q.tab_6)) == "Kitap Verme"            # gecikme kalmadı
 
 
+def test_iade_onaysiz_ve_geri_alinabilir(lib, o, db, monkeypatch):
+    import acodes.odunc_ekrani
+    monkeypatch.setattr(acodes.odunc_ekrani, "onay", lambda *a: pytest.fail("iade onay sormamalı"))
+    odunc_ekle(db, 3, 1, gun_once(20))
+    o.yenile()
+    satiri_sec(o, "Yol Ayrımı")
+    o.iade_al()
+    assert db.execute("SELECT status FROM follow WHERE bookId='1'").fetchone()[0] == "in"
+    lib.bildirim.eylem.click()                                        # Geri Al
+    assert db.execute("SELECT status, indate FROM follow WHERE bookId='1'").fetchone() == ("out", "")
+    assert kolon(o.tablo, 0) == ["Yol Ayrımı"] and o.secili_odunc() == (3, 1)
+    assert "geri alındı" in lib.QtLibrary.statusbar.currentMessage()
+
+
+def test_iade_geri_alinamaz_kitap_yeniden_verildiyse(lib, o, db):
+    odunc_ekle(db, 3, 1, gun_once(2))
+    o.yenile()
+    satiri_sec(o, "Yol Ayrımı")
+    o.iade_al()
+    odunc_ekle(db, 4, 1, gun_once(0))                                 # tek kopya başka üyeye verildi
+    lib.bildirim.eylem.click()
+    assert db.execute("SELECT COUNT(*) FROM follow WHERE bookId='1' AND status='out'").fetchone()[0] == 1
+    assert "geri alınamaz" in lib.QtLibrary.statusbar.currentMessage()
+
+
+@pytest.mark.parametrize("durum,beklenen", [
+    ("3 gün gecikti", "teslim tarihi 01.10.2026 idi (3 gün gecikti). Uygun olduğunuzda iade etmenizi rica ederiz."),
+    ("Bugün teslim", "teslim tarihi bugün (01.10.2026). Bugün iade etmenizi rica ederiz."),
+    ("5 gün kaldı", "teslim tarihi 01.10.2026 (5 gün kaldı). Teslim tarihini hatırlatmak istedik."),
+])
+def test_hatirlatma_metni(durum, beklenen):
+    from acodes.odunc_ekrani import hatirlatma_metni
+    metin = hatirlatma_metni("Yol Ayrımı", "Ayşe Yılmaz", "01.10.2026", durum)
+    assert metin.startswith("Merhaba Ayşe Yılmaz, Yaşar Kütüphanesi'nden ödünç aldığınız \"Yol Ayrımı\" kitabının ")
+    assert beklenen in metin
+
+
+def test_hatirlatma_panoya_kopyalanir(lib, o, db):
+    from PyQt5.QtWidgets import QApplication
+    odunc_ekle(db, 3, 1, gun_once(20))
+    o.yenile()
+    assert not o.btn_hatirlat.isEnabled()
+    satiri_sec(o, "Yol Ayrımı")
+    assert o.btn_hatirlat.isEnabled()
+    o.btn_hatirlat.click()
+    assert "Yol Ayrımı" in QApplication.clipboard().text() and "5 gün gecikti" in QApplication.clipboard().text()
+    assert lib.QtLibrary.statusbar.currentMessage().startswith("Hatırlatma metni panoya kopyalandı")
+
+
+def test_disaridan_kitap_ve_uye_secilir(o):
+    assert o.kitap_sec(6) and o.kitap.currentData() == 6
+    assert o.uye_sec(3) and o.uye.currentData() == 3 and o.btn_ver.isEnabled()
+
+
 def test_siralanmis_listede_dogru_odunc_iade_edilir(o, db):
     odunc_ekle(db, 4, 6, gun_once(1))
     odunc_ekle(db, 3, 1, gun_once(1))

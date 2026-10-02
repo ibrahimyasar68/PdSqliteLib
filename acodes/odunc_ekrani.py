@@ -5,15 +5,16 @@
 import datetime
 
 from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import (QComboBox, QGridLayout, QGroupBox, QHBoxLayout, QHeaderView, QLabel, QLineEdit,
-                             QMessageBox, QPushButton, QTableWidget, QVBoxLayout, QWidget)
+from PyQt5.QtWidgets import (QApplication, QComboBox, QGridLayout, QGroupBox, QHBoxLayout, QHeaderView, QLabel,
+                             QLineEdit, QMessageBox, QPushButton, QTableWidget, QVBoxLayout, QWidget)
 
 from acodes.kisayollar import arama_kutusu_yap
 from acodes.onay import onay
 from acodes import tema
 from acodes.aranabilir import aranabilir_yap, secili_veri
 from acodes.tablo import satir_verisi, tablo_ayarla, tabloya_yaz
-from database.dbbase import save_work_to_db, update_work_to_db
+from acodes.yerlesim import baslik_satiri
+from database.dbbase import iade_geri_al, save_work_to_db, update_work_to_db
 from database.dbframe import (df_book_find_by_id, df_book_id_list, df_user_find_by_id, df_user_id_list,
                               df_work_table_book, katla, kopya_durumu, uyede_mi)
 from database.odunc import (ODUNC_SURESI_GUN, gecikme_gunu, kalan_gun_yazi, tarih_yazi, teslim_tarihi,
@@ -44,30 +45,48 @@ def sayi(deger):
     return int(deger) if str(deger).isdigit() else deger
 
 
+def hatirlatma_metni(kitap, uye, teslim, durum, kutuphane="Yaşar Kütüphanesi"):
+    """Üyeye gönderilecek (telefon mesajı, e-posta) hazır hatırlatma metni.
+    teslim: "29.09.2026", durum: "3 gün gecikti" / "Bugün teslim" / "5 gün kaldı"."""
+    if durum.endswith("gecikti"):
+        zaman = f"teslim tarihi {teslim} idi ({durum})"
+        rica = "Uygun olduğunuzda iade etmenizi rica ederiz."
+    elif durum == "Bugün teslim":
+        zaman = f"teslim tarihi bugün ({teslim})"
+        rica = "Bugün iade etmenizi rica ederiz."
+    else:
+        zaman = f"teslim tarihi {teslim} ({durum})"
+        rica = "Teslim tarihini hatırlatmak istedik."
+    return (f"Merhaba {uye}, {kutuphane}'nden ödünç aldığınız \"{kitap}\" kitabının {zaman}. {rica} "
+            "İyi okumalar dileriz.")
+
+
 def renkli(etiket, metin, renk=None):
     etiket.setText(metin)
     etiket.setStyleSheet(f"color: {renk};" if renk else "")
 
 
 class OduncEkrani(QWidget):
-    def __init__(self, mesaj=None, degisti=None, parent=None):
+    def __init__(self, mesaj=None, degisti=None, bildir=None, parent=None):
+        """bildir(metin, eylem adı, işlev): eylem butonlu bildirim (iadeden sonra "Geri Al")."""
         super().__init__(parent)
         self.mesaj = mesaj or (lambda metin: None)
+        self.bildir = bildir or (lambda metin, *_: self.mesaj(metin))
         self.degisti = degisti
 
         # --- Sol: dışarıdaki kitaplar
         self.arama = arama_kutusu_yap(QLineEdit(objectName="odunc_arama"))
         self.arama.setPlaceholderText("Ara: kitap, yazar, üye...")
         self.arama.setClearButtonEnabled(True)
-        self.arama.setMinimumHeight(36)
+        self.arama.setMinimumHeight(38)
         self.arama.textChanged.connect(self.listele)
         self.btn_aktar = QPushButton("Dışa Aktar")
-        self.btn_aktar.setMinimumHeight(36)
         self.btn_aktar.setToolTip("Dışarıdaki kitapları Excel veya CSV olarak kaydet")
         self.ozet = QLabel(objectName="odunc_ozet")
         self.tablo = QTableWidget(0, len(LISTE_KOLONLARI))
         self.tablo.setHorizontalHeaderLabels(LISTE_KOLONLARI)
-        tablo_ayarla(self.tablo, bos_metin="Şu an dışarıda kitap yok.")
+        tablo_ayarla(self.tablo, bos_metin="Şu an dışarıda kitap yok.", bos_simge="takas",
+                     bos_eylem=("Ödünç Ver", lambda: self.kitap.setFocus(Qt.OtherFocusReason)))
         self.tablo.setSelectionMode(QTableWidget.SingleSelection)
         self.tablo.setToolTip("İade almak için satırı seçin")
         baslik = self.tablo.horizontalHeader()
@@ -77,9 +96,7 @@ class OduncEkrani(QWidget):
         for kolon in range(len(LISTE_KOLONLARI)):
             baslik.setSectionResizeMode(kolon, QHeaderView.Stretch if kolon in (0, 1, 2) else QHeaderView.ResizeToContents)
         self.tablo.itemSelectionChanged.connect(self.secim_degisti)
-        ust = QHBoxLayout()
-        ust.addWidget(self.arama, 1)
-        ust.addWidget(self.btn_aktar)
+        ust = baslik_satiri(sayac=self.ozet, butonlar=[self.btn_aktar])
 
         # --- Alt sol: ödünç ver (kitap ve üye yan yana, bilgileri altlarında, buton sağda)
         self.kitap = QComboBox()
@@ -116,11 +133,19 @@ class OduncEkrani(QWidget):
         self.iade_bilgi.setAlignment(Qt.AlignTop | Qt.AlignLeft)
         self.btn_iade = QPushButton("İade Al")
         self.btn_iade.clicked.connect(self.iade_al)
+        self.btn_hatirlat = QPushButton("Hatırlatma Metni")
+        self.btn_hatirlat.setProperty("rol", "ikincil")
+        self.btn_hatirlat.setToolTip("Üyeye gönderilecek hatırlatma mesajını panoya kopyala")
+        self.btn_hatirlat.clicked.connect(self.hatirlatma_kopyala)
         iade = QGroupBox("İade al")
         dikey = QVBoxLayout(iade)
         dikey.addWidget(self.iade_bilgi, 1)
-        dikey.addWidget(self.btn_iade, 0, Qt.AlignRight)
-        for b in (self.btn_ver, self.btn_iade):
+        iade_butonlari = QHBoxLayout()
+        iade_butonlari.addStretch()
+        iade_butonlari.addWidget(self.btn_hatirlat)
+        iade_butonlari.addWidget(self.btn_iade)
+        dikey.addLayout(iade_butonlari)
+        for b in (self.btn_ver, self.btn_iade, self.btn_hatirlat):
             b.setMinimumSize(140, 40)
 
         alt = QHBoxLayout()
@@ -133,7 +158,7 @@ class OduncEkrani(QWidget):
         duzen.setContentsMargins(14, 12, 14, 12)
         duzen.setSpacing(10)
         duzen.addLayout(ust)
-        duzen.addWidget(self.ozet)
+        duzen.addWidget(self.arama)
         duzen.addWidget(self.tablo, 1)
         duzen.addLayout(alt)
         self.yenile()
@@ -266,9 +291,29 @@ class OduncEkrani(QWidget):
             return False
         return True
 
+    def kitap_sec(self, kitap_id):
+        """Başka ekrandan "Ödünç ver" denince: kitap seçili gelir, sıra üye seçmeye gelir."""
+        i = self.kitap.findData(kitap_id)
+        if i < 0:
+            self.yenile()
+            i = self.kitap.findData(kitap_id)
+        self.kitap.setCurrentIndex(max(0, i))
+        self.uye.setFocus(Qt.OtherFocusReason)
+        self.uye.lineEdit().selectAll()
+        return i >= 0
+
+    def uye_sec(self, uye_id):
+        """Hızlı aramadan bir üye seçilince: üye seçili gelir, sıra kitap seçmeye gelir."""
+        i = self.uye.findData(uye_id)
+        self.uye.setCurrentIndex(max(0, i))
+        self.kitap.setFocus(Qt.OtherFocusReason)
+        self.kitap.lineEdit().selectAll()
+        return i >= 0
+
     def secim_degisti(self):
         secili = self.secili_odunc()
         self.btn_iade.setEnabled(secili is not None)
+        self.btn_hatirlat.setEnabled(secili is not None)
         if secili is None:
             renkli(self.iade_bilgi, "İade almak için üstteki listeden bir kitap seçin.", tema.IKINCIL_METIN)
             return
@@ -281,20 +326,40 @@ class OduncEkrani(QWidget):
                f"Veriliş: {hucre(4)} · Teslim: {hucre(5)}<br>{durum}")
 
     def iade_al(self):
+        # Onay sorulmaz: yanlışlıkla alınan iade bildirimdeki "Geri Al" ile kısa süre içinde geri alınabilir
         secili = self.secili_odunc()
         if secili is None:
             self.mesaj("İade için listeden seçim yapınız!")
             return
         r = self.tablo.selectionModel().selectedRows()[0].row()
-        kitap, kisi, durum = self.tablo.item(r, 0).text(), self.tablo.item(r, 2).text(), self.tablo.item(r, 6).text()
-        if onay(f"'{kitap}' kitabı {kisi} adlı üyeden iade alınsın mı?") != QMessageBox.Yes:
-            return
+        kitap, durum = self.tablo.item(r, 0).text(), self.tablo.item(r, 6).text()
         simdi = datetime.datetime.today()
         user_id, book_id = secili
-        update_work_to_db([str(user_id), str(book_id), "", "", "in", simdi.date(), simdi.strftime('%X ')])
+        kayit_no = update_work_to_db([str(user_id), str(book_id), "", "", "in", simdi.date(), simdi.strftime('%X ')])
         self.tablo.clearSelection()
         self._degisiklik_sonrasi()
-        self.mesaj(f"'{kitap}' iade alındı" + (f" ({durum})." if durum.endswith("gecikti") else "."))
+        self.bildir(f"'{kitap}' iade alındı" + (f" ({durum})." if durum.endswith("gecikti") else "."),
+                    "Geri Al", lambda: self.iadeyi_geri_al(kayit_no, user_id, book_id, kitap))
+
+    def iadeyi_geri_al(self, kayit_no, user_id, book_id, kitap):
+        """İade alınan ödünç yeniden dışarıda olur (bu arada kitap başka üyeye verildiyse geri alınamaz)."""
+        kopya, disarida = kopya_durumu(book_id)
+        if kayit_no is None or disarida >= kopya or uyede_mi(user_id, book_id):
+            self.mesaj("İade geri alınamaz: kitap bu arada yeniden ödünç verilmiş!")
+            return
+        iade_geri_al(kayit_no)
+        self._degisiklik_sonrasi()
+        self._satiri_sec(user_id, book_id)
+        self.mesaj(f"'{kitap}' iadesi geri alındı; kitap yeniden üyede görünüyor.")
+
+    def hatirlatma_kopyala(self):
+        if self.secili_odunc() is None:
+            self.mesaj("Hatırlatma için listeden seçim yapınız!")
+            return
+        r = self.tablo.selectionModel().selectedRows()[0].row()
+        hucre = lambda c: self.tablo.item(r, c).text()
+        QApplication.clipboard().setText(hatirlatma_metni(hucre(0), hucre(2), hucre(5), hucre(6)))
+        self.mesaj(f"Hatırlatma metni panoya kopyalandı: {hucre(2)}")
 
     def _degisiklik_sonrasi(self):
         if self.degisti:

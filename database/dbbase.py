@@ -68,6 +68,14 @@ def sil_kayit(id):
     baglantı.commit()
 
 
+# Silinen kitabı aynı numarayla geri getirme ("Geri Al"); kayit: df_book_find_by_id'nin döndürdüğü tam kayıt
+# (Id, adi, yazari, ceviren, turu, yayinevi, yili, sayfa, isbn, kopya, raf, notlar). Ödünç geçmişi numarayla bağlı kalır.
+def geri_ekle_kayit(kayit):
+    islem.execute("Insert Into kayitlistesi (Id, adi, yazari, ceviren, turu, yayinevi, yili, sayfa, isbn, kopya, raf, notlar)"
+                  " values (?,?,?,?,?,?,?,?,?,?,?,?)", list(kayit))
+    baglantı.commit()
+
+
 # Şifre hash'leme: "pbkdf2$tekrar$tuz$hash" biçiminde saklanır
 SIFRE_TEKRAR = 200_000
 
@@ -117,9 +125,17 @@ def save_work_to_db(kayit):
     islem.execute(ekle,(kayit[0],kayit[1],str(kayit[2]),kayit[3],kayit[4],kayit[5],kayit[6]))
     baglantı.commit()
 
-# İade alma (follow)
+# İade alma (follow); güncellenen ödünç kaydının numarası (rowid) döner: iade geri alınırken kullanılır
 def update_work_to_db(kayit):
     # Sadece dışarıdaki (status='out') kayıt güncellenir, geçmiş iadeler korunur
+    satir=islem.execute("Select rowid From follow where userId=? and bookId=? and status='out'",
+                        (str(kayit[0]),str(kayit[1]))).fetchone()
     dgsm="Update follow Set status=?, indate=?, intime=? where userId=? and bookId=? and status='out'"
     islem.execute(dgsm,(kayit[4],str(kayit[5]),kayit[6],str(kayit[0]),str(kayit[1])))
+    baglantı.commit()
+    return satir[0] if satir else None
+
+# İadeyi geri alma ("Geri Al"): ödünç kaydı yeniden dışarıda olur
+def iade_geri_al(rowid):
+    islem.execute("Update follow Set status='out', indate='', intime='' where rowid=? and status='in'",(rowid,))
     baglantı.commit()

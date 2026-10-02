@@ -65,6 +65,7 @@ class Guest(OrtakSekmeler, QMainWindow):
         self.yan_menu=YanMenu(ui.tabWidget,sayfalar,ui.pushButton_1_cikis)
         menuyu_yerlestir(self,self.yan_menu)
         kisayollar.panele_kur(self,ui.tabWidget,ui.tab_2,self.arama)   # Ctrl+1..9 menü, Ctrl+F arama
+        self.hizli_arama_kur(sayfalar)                                 # Ctrl+K
         segmente_cevir(ui.tabWidget_5)
 
     def user_name(self,name):

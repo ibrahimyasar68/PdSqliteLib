@@ -111,7 +111,7 @@ class Login(QMainWindow):
         self.goster.triggered.connect(self.parola_goster_gizle)
         ui.lineEdit_parola.addAction(self.goster,QLineEdit.TrailingPosition)
 
-        ui.pushButton_giris.setIcon(ikonlar.ikon("ok_sag"))
+        ikonlar.yazili_ikon(ui.pushButton_giris, "ok_sag")
         ui.pushButton_cikis.setGeometry(752,574,44,44)
         ui.pushButton_cikis.setIconSize(ui.pushButton_cikis.size()*0.45)
         ui.pushButton_cikis.setCursor(Qt.PointingHandCursor)

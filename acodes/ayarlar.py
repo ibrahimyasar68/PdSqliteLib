@@ -8,8 +8,8 @@ from PyQt5.QtCore import Qt, QUrl, pyqtSignal
 from PyQt5.QtGui import QDesktopServices
 from acodes import tema, tercihler
 from acodes.kilavuz import Kilavuz
-from PyQt5.QtWidgets import (QButtonGroup, QFormLayout, QGroupBox, QHBoxLayout, QLabel, QPushButton, QScrollArea,
-                             QVBoxLayout, QWidget)
+from PyQt5.QtWidgets import (QApplication, QButtonGroup, QDialog, QFormLayout, QGroupBox, QHBoxLayout, QLabel,
+                             QPushButton, QScrollArea, QSizePolicy, QToolTip, QVBoxLayout, QWidget)
 
 def stil():
     return f"""
@@ -21,17 +21,52 @@ QPushButton {{ padding: 9px 16px; min-width: 150px; }}
 """
 
 
+IPUCU_UYE = ("İpucu: Ctrl+K (Mac'te ⌘K) her yerden hızlı arama açar: kitap adı veya gitmek istediğiniz bölümü "
+             "yazıp Enter'a basın.")
+IPUCU_YONETICI = ("İpucu: Ctrl+K (Mac'te ⌘K) her yerden hızlı arama açar: kitap, üye veya yapılacak işi yazıp "
+                  "Enter'a basın. Listelerde bir kitaba sağ tıklayarak düzenleyebilir, ödünç verebilir, iade "
+                  "alabilir veya ödünç geçmişini görebilirsiniz.")
+
+
+class KisaltilanDeger(QLabel):
+    """Bilgi değeri: sığmazsa ortasından "..." ile kısalır (ör. uzun klasör yolları); tam metin ipucunda görünür,
+    tıklanınca panoya kopyalanır."""
+
+    def __init__(self, metin, parent=None):
+        super().__init__(parent)
+        self.tam = metin
+        self.setProperty("rol", "deger")
+        self.setSizePolicy(QSizePolicy.Ignored, QSizePolicy.Preferred)
+        self.setMinimumWidth(40)
+        self.setCursor(Qt.PointingHandCursor)
+        self.setToolTip(f"{metin}\n(Kopyalamak için tıklayın)")
+        self.setText(metin)
+
+    def resizeEvent(self, olay):
+        super().resizeEvent(olay)
+        kisa = self.fontMetrics().elidedText(self.tam, Qt.ElideMiddle, self.width())
+        if kisa != self.text():
+            self.setText(kisa)
+
+    def mousePressEvent(self, olay):
+        QApplication.clipboard().setText(self.tam)
+        QToolTip.showText(olay.globalPos(), "Panoya kopyalandı", self)
+
+
 class Bolum(QGroupBox):
     def __init__(self, baslik, butonlar=(), bilgiler=None, parent=None):
-        """butonlar: [(metin, işlev, ipucu)]; bilgiler: [(etiket, değer)] döndüren fonksiyon (yenilenebilir)."""
+        """butonlar: [(metin, işlev, ipucu)] — ilki bölümün asıl işlemidir (dolu mavi), diğerleri ikincil (çerçeveli).
+        bilgiler: [(etiket, değer)] döndüren fonksiyon (yenilenebilir)."""
         super().__init__(baslik, parent)
         self.bilgi_kaynagi = bilgiler
         self.butonlar = {}
         duzen = QVBoxLayout(self)
         if butonlar:
             satir = QHBoxLayout()
-            for metin, islev, ipucu in butonlar:
+            for i, (metin, islev, ipucu) in enumerate(butonlar):
                 b = QPushButton(metin)
+                if i > 0:
+                    b.setProperty("rol", "ikincil")
                 b.setCursor(Qt.PointingHandCursor)
                 b.setToolTip(ipucu)
                 b.clicked.connect(islev)
@@ -51,11 +86,7 @@ class Bolum(QGroupBox):
         while self.form.rowCount():
             self.form.removeRow(0)
         for etiket, deger in self.bilgi_kaynagi():
-            yazi = QLabel(kisa_yol(str(deger)))
-            yazi.setProperty("rol", "deger")
-            yazi.setToolTip(str(deger))
-            yazi.setTextInteractionFlags(Qt.TextSelectableByMouse)   # ör. veritabanı yolu kopyalanabilsin
-            self.form.addRow(f"{etiket}:", yazi)
+            self.form.addRow(f"{etiket}:", KisaltilanDeger(kisa_yol(str(deger))))
 
 
 class GorunumBolumu(QGroupBox):
@@ -89,12 +120,33 @@ class GorunumBolumu(QGroupBox):
             self.degisti.emit(gorunum)
 
 
+class KilavuzPenceresi(QDialog):
+    """Kullanma Kılavuzu ayrı pencerede: Ayarlar sayfası kısa kalır."""
+
+    def __init__(self, konular, parent=None):
+        super().__init__(parent)
+        self.setWindowTitle("Kullanma Kılavuzu")
+        self.resize(820, 680)
+        self.kilavuz = Kilavuz(konular)
+        kaydirma = QScrollArea()
+        kaydirma.setWidgetResizable(True)
+        kaydirma.setFrameShape(QScrollArea.NoFrame)
+        kaydirma.setWidget(self.kilavuz)
+        kapat = QPushButton("Kapat")
+        kapat.setProperty("rol", "ikincil")
+        kapat.setMinimumSize(110, 36)
+        kapat.clicked.connect(self.close)
+        duzen = QVBoxLayout(self)
+        duzen.addWidget(kaydirma, 1)
+        duzen.addWidget(kapat, 0, Qt.AlignRight)
+
+
 class Ayarlar(QScrollArea):
     """bolumler: [(başlık, butonlar, bilgiler)] — ortalanmış tek sütunda alt alta gösterilir.
-    kilavuz: en altta gösterilecek Kullanma Kılavuzu konuları [(başlık, metin)]."""
+    kilavuz: Yardım bölümündeki butonla açılan Kullanma Kılavuzu konuları [(başlık, metin)]."""
 
-    def __init__(self, bolumler, kilavuz=None, parent=None):
-        """Bölümlerin altında Görünüm seçimi, en altta (varsa) Kullanma Kılavuzu gösterilir."""
+    def __init__(self, bolumler, kilavuz=None, ipucu=IPUCU_UYE, parent=None):
+        """Bölümlerin altında Görünüm seçimi, en altta Yardım (kısayollar ve Kullanma Kılavuzu) gösterilir."""
         super().__init__(parent)
         self.setWidgetResizable(True)
         self.setFrameShape(QScrollArea.NoFrame)
@@ -115,15 +167,27 @@ class Ayarlar(QScrollArea):
             self.bolumler.append(bolum)
         self.gorunum = GorunumBolumu()
         dikey.addWidget(self.gorunum)
-        self.kilavuz = Kilavuz(kilavuz) if kilavuz else None
-        if self.kilavuz:
-            dikey.addWidget(self.kilavuz)
+        self.kilavuz_penceresi = KilavuzPenceresi(kilavuz, self) if kilavuz else None
+        self.kilavuz = self.kilavuz_penceresi.kilavuz if kilavuz else None
+        if kilavuz:
+            yardim = Bolum("Yardım", [("Kullanma Kılavuzu", self.kilavuzu_ac,
+                                       "Her bölümün nasıl kullanıldığını anlatan kılavuzu açın")])
+            ipucu_yazisi = QLabel(ipucu)
+            ipucu_yazisi.setWordWrap(True)
+            yardim.layout().addWidget(ipucu_yazisi)
+            dikey.addWidget(yardim)
+            self.yardim = yardim
         dikey.addStretch()
         yatay = QHBoxLayout(ic)
         yatay.setContentsMargins(30, 10, 30, 10)
         yatay.addStretch()
         yatay.addWidget(sutun, 3)
         yatay.addStretch()
+
+    def kilavuzu_ac(self):
+        self.kilavuz_penceresi.show()
+        self.kilavuz_penceresi.raise_()
+        self.kilavuz_penceresi.activateWindow()
 
     def yenile(self):
         for bolum in self.bolumler:

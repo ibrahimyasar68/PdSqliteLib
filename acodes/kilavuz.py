@@ -1,4 +1,4 @@
-## Ayarlar > Kullanma Kılavuzu ##
+## Ayarlar > Yardım > Kullanma Kılavuzu (ayrı pencerede) ##
 # En üstte program hakkında kısa bilgi, altında her sekme için tıklanınca açılan konu başlıkları.
 # Yönetici ve üye panelleri kendi sekmelerine göre farklı konular gösterir.
 
@@ -39,12 +39,15 @@ KITAP_LISTESI = (
     "Kolon başlığına tıklayınca liste o kolona göre sıralanır (tekrar tıklayınca ters sırada). "
     "<b>Kolonlar</b> butonu (veya kolon başlığına sağ tık) listede gösterilecek kolonları seçtirir; liste "
     "pencereye sığmazsa tablonun üstünde hangi kolonların gizleneceği sorulur. Seçim hatırlanır. "
+    "Başlangıçta <i>Kayıt No</i> (soldaki sıra numarası aynı işi görür) ve <i>ISBN</i> gizlidir; "
+    "<b>Kolonlar</b>'dan açılabilir. "
     "<b>Temizle</b> aramayı silip tüm listeye döner. <b>Dışa Aktar</b> listeyi ekranda göründüğü haliyle "
     "Excel veya CSV dosyası olarak kaydeder; tabloya sağ tıklayarak da aktarabilirsiniz."
 )
 
 FILTRE = (
-    "Tür, yazar, yayınevi ve yıl ölçütleri tek panelde durur.<ul>"
+    "Tür, yazar, yayınevi ve yıl ölçütleri sayfanın üstünde yan yana durur, sonuçlar altlarında listelenir. "
+    "Başlığın yanındaki <b>ⓘ</b> simgesinin üzerine gelince kısa bir açıklama görünür.<ul>"
     "<li>Ölçüt kutusuna yazmak arama gibi süzer: türe <i>şiir</i> yazınca türü şiir olan kitaplar listelenir.</li>"
     "<li>Diğer ölçütlerin listelerinde yalnızca bu kitaplarda geçen değerler kalır: yazar listesinde sadece "
     "şiir kitabı olan yazarlar görünür.</li>"
@@ -58,7 +61,8 @@ FILTRE = (
 
 ISTATISTIK = (
     "<b>Çizelgeler</b> alt sekmesi en çok kitabı olan türleri, yazarları, yayınevlerini ve basım yıllarını "
-    "sayılarıyla listeler. <b>Grafikler</b> alt sekmesi türlere göre dağılımı, en çok kitabı olan yazar ve "
+    "sayılarıyla listeler; her sayının yanındaki çubuk o değerin en büyüğe oranını gösterir, böylece dağılım "
+    "bir bakışta görülür. <b>Grafikler</b> alt sekmesi türlere göre dağılımı, en çok kitabı olan yazar ve "
     "yayınevlerini ve on yıllık dönemlere göre basım yıllarını grafikle gösterir. Bilgiler her açılışta "
     "veritabanından yeniden hesaplanır."
 )
@@ -100,7 +104,11 @@ DISA_AKTARMA = (
 def kisayollar_ve_gorunum(yonetici):
     kayit = ("<li>Kitap Kayıt ekranında <b>Ctrl+N</b> yeni kitap, <b>Ctrl+S</b> kaydet, <b>Esc</b> vazgeç "
              "(kaydedilmemiş değişiklikleri geri alır).</li>") if yonetici else ""
+    hizli = ("kitap, üye (seçince ödünç verme ekranı o üyeyle açılır), bölüm veya işlem (<i>yeni kitap</i>, "
+             "<i>yedek al</i>, <i>iade al</i> ...)") if yonetici else "kitap veya bölüm"
     return ("Mac'te <b>Ctrl</b> yerine <b>⌘ (Cmd)</b> tuşu kullanılır.<ul>"
+            f"<li><b>Ctrl+K</b> her yerden <b>hızlı aramayı</b> açar (menüdeki <i>Hızlı ara</i> da aynısını yapar): "
+            f"{hizli} adını yazın, ok tuşlarıyla seçip Enter'a basın. Esc kapatır.</li>"
             "<li><b>Ctrl+1</b>, <b>Ctrl+2</b> ... menüdeki bölümleri yukarıdan aşağıya sırayla açar.</li>"
             "<li><b>Ctrl+F</b> açık sayfadaki arama kutusuna gider; sayfada arama yoksa Kitap Listesi'ni açıp "
             "aramaya gider.</li>" + kayit + "</ul>"
@@ -122,14 +130,18 @@ YONETICI = [
      "ekranında açar. Programdan çıkmak için önce oturumu kapatıp giriş ekranındaki çıkış düğmesini "
      "kullanın."),
     ("Kitap Listesi",
-     KITAP_LISTESI + " Bir satıra çift tıklamak kitabı <b>Kitap Kayıt</b> ekranında açar."),
+     KITAP_LISTESI + " Bir satıra çift tıklamak kitabı <b>Kitap Kayıt</b> ekranında açar. Satıra sağ "
+     "tıklayınca <b>Düzenle</b>, <b>Ödünç ver</b> (kitap seçili gelir, yalnızca üyeyi seçersiniz), "
+     "<b>İade al</b> ve <b>Ödünç geçmişi</b> seçenekleri çıkar."),
     ("Kitap Kayıt: kitap ekleme, düzenleme, silme",
      "<b>Kitaplar</b> alt sekmesinde üstte tam genişlikte kitap listesi, altta seçili kitabın formu vardır; Kaydet, Vazgeç ve Sil formun üstündedir.<ul>"
      "<li><b>Yeni kitap:</b> <b>Yeni Kitap</b>'a basın, bilgileri yazıp <b>Kaydet</b>'e basın. "
      "Yalnızca kitap adı zorunludur.</li>"
      "<li><b>Düzenleme:</b> Listeden kitabı seçin, bilgileri değiştirip <b>Kaydet</b>'e basın. "
      "<b>Vazgeç</b> kaydedilmemiş değişiklikleri geri alır.</li>"
-     "<li><b>Silme:</b> Kitabı seçip <b>Sil</b>'e basın. Ödünçteki bir kitap iade alınmadan silinemez.</li>"
+     "<li><b>Silme:</b> Kitabı seçip <b>Sil</b>'e basın. Ödünçteki bir kitap iade alınmadan silinemez. "
+     "Yanlışlıkla sildiyseniz, alttaki bildirimdeki <b>Geri Al</b>'a birkaç saniye içinde basarak kitabı aynı "
+     "numara ve bilgilerle geri getirebilirsiniz.</li>"
      "<li>Yazar, çevirmen, tür ve yayınevi alanlarına yazarken var olan değerler önerilir; öneriden seçmek "
      "aynı adın farklı yazımlarını önler.</li>"
      "<li><b>Ek Bilgiler:</b> ISBN (yazılırsa doğruluğu kontrol edilir), kopya sayısı, raf yeri ve notlar. "
@@ -138,7 +150,8 @@ YONETICI = [
      "(<i>Adam Yayınları</i> / <i>Adam yayınları</i>) bulur. Doğru yazımı seçip "
      "<b>İşaretlileri Birleştir</b>'e basınca kayıtlar düzeltilir; öncesinde otomatik yedek alınır. "
      "Basım yılı, yazar gibi bilgisi eksik kitaplar da burada listelenir."),
-    ("Filtre", FILTRE + " Bir satıra çift tıklamak kitabı düzenleme ekranında açar."),
+    ("Filtre", FILTRE + " Bir satıra çift tıklamak kitabı düzenleme ekranında açar; sağ tıklayınca Kitap "
+     "Listesi'ndeki işlemler (ödünç ver, iade al ...) çıkar."),
     ("İstatistik", ISTATISTIK),
     ("Kitap Verme: ödünç verme ve iade alma",
      f"Ödünç süresi <b>{ODUNC_SURESI_GUN} gündür</b>. <b>Ödünç ve İade</b> alt sekmesinde üstte, tam genişlikte şu an "
@@ -149,7 +162,11 @@ YONETICI = [
      "<b>Ödünç Ver</b>'e basın. Kitabın müsait kopyası yoksa ya da üyede zaten varsa buton kapalı kalır "
      "ve nedeni yazılır.</li>"
      "<li><b>İade alma:</b> Üstteki listeden kitabı seçin; bilgileri <b>İade al</b> kartında görünür. "
-     "<b>İade Al</b>'a basın. Gecikme varsa kaç gün geciktiği bildirilir.</li></ul>"
+     "<b>İade Al</b>'a basın; onay sorulmaz. Gecikme varsa kaç gün geciktiği bildirilir. Yanlış kitabı iade "
+     "aldıysanız bildirimdeki <b>Geri Al</b> ile birkaç saniye içinde geri alabilirsiniz.</li>"
+     "<li><b>Hatırlatma:</b> Listeden bir ödünç seçip <b>Hatırlatma Metni</b>'ne basın: üyeye gönderilecek "
+     "kibar bir mesaj (kitap adı, teslim tarihi, gecikme) panoya kopyalanır; telefon mesajına veya e-postaya "
+     "yapıştırabilirsiniz.</li></ul>"
      "Teslim süresi geçmiş kitap varsa sekmenin adında sayısı yazar (<i>Kitap Verme (2 gecikmiş)</i>). "
      "<b>Ödünç Geçmişi</b> alt sekmesi tüm ödünç kayıtlarını gösterir; üye, kitap ve duruma göre süzülebilir."),
     ("Ayarlar: kullanıcılar ve yedekleme",
@@ -160,9 +177,11 @@ YONETICI = [
     ("Yedekleme ve dışa aktarma", YEDEKLEME + "<br><br>" + DISA_AKTARMA),
     ("Kısayollar ve görünüm", kisayollar_ve_gorunum(yonetici=True)),
     ("İpuçları",
-     "<ul><li>Uzun açılır listelerde (kitap, üye, filtre ölçütleri) kaydırmak yerine yazarak arayın.</li>"
+     "<ul><li>Aradığınız şeyin nerede olduğunu bilmiyorsanız <b>Ctrl+K</b> ile hızlı aramayı açıp yazın.</li>"
+     "<li>Uzun açılır listelerde (kitap, üye, filtre ölçütleri) kaydırmak yerine yazarak arayın.</li>"
      "<li>İşlemlerin sonucu pencerenin altında birkaç saniye görünen bildirimlerle haber verilir: "
-     "başarılı işlemler yeşil, uyarılar kırmızı.</li>"
+     "başarılı işlemler yeşil, uyarılar kırmızı. Kitap silme ve iade alma bildirimlerinde <b>Geri Al</b> "
+     "butonu vardır.</li>"
      "<li>Tüm tablolar kolon başlığına tıklanarak sıralanabilir; sağ tıklayarak Excel/CSV'ye aktarılabilir.</li>"
      "</ul>"),
 ]
