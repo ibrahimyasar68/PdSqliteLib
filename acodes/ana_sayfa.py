@@ -137,9 +137,7 @@ class AnaSayfa(QWidget):
 
 
 def ana_sayfayi_yerlestir(ui, ana_sayfa):
-    """.ui'daki eski ana sayfa içeriğini (resim, başlık, buton kutusu) gizleyip panoyu sekmeye yerleştirir."""
-    for eski in (ui.label, ui.label_32, ui.label_log_on, ui.verticalLayoutWidget):
-        eski.hide()
+    """Panoyu ana sayfa sekmesine yerleştirir."""
     duzen = QVBoxLayout(ui.tab_1)
     duzen.setContentsMargins(0, 0, 0, 0)
     duzen.addWidget(ana_sayfa)

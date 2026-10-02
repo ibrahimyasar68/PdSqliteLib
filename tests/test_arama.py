@@ -49,7 +49,7 @@ def test_arama_kutusu(app, uyarilar, panel):
 def test_sekmeye_gelince_kendiliginden_listelenir(app, uyarilar, db, panel):
     p = panel()
     q = p.QtLibrary
-    assert q.pushButton_2_listele.isHidden()
+    assert not hasattr(q, "pushButton_2_listele")
     q.tabWidget.setCurrentWidget(q.tab_2)
     assert q.tableWidget_2.rowCount() == 8 and p.arama_sonuc.text() == "Toplam 8 kitap"
     db.execute("INSERT INTO kayitlistesi (Adi) VALUES ('Yeni')")

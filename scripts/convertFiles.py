@@ -1,31 +1,26 @@
 ## .ui ve .qrc dosyalarını Python dosyalarına dönüştürme ##
-# Kullanım: sanal ortam etkinken proje klasöründen  python scripts/convertFiles.py
+# Kullanım: proje klasöründen  .venv/bin/python scripts/convertFiles.py
+# pyuic5 / pyrcc5 bu betiği çalıştıran Python'un yanında (sanal ortamda) aranır; ortamı etkinleştirmek gerekmez.
+import os
+import shutil
 import subprocess
+import sys
 
-## Resim Dönüştürme
-
-sfile="media/media.qrc"
-tfile="bforms/media_rc.py"
-# pyrcc5 dosya yollarını .qrc dosyasının bulunduğu klasöre göre çözer
-command2 = ["pyrcc5", "media.qrc", "-o", "../"+tfile]
-subprocess.run(command2, check=True, cwd="media")
-print(f"{sfile} başarıyla dönüştürüldü.")
+KOK = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
-#  ui dosyalarını py dosyalarına dönüştürme  ###
-ui_files = [
-    "cuis/library.ui",
-    "cuis/login.ui",
-    "cuis/user.ui",
-    "cuis/guest.ui",
-]
+def arac(ad):
+    yol = os.path.join(os.path.dirname(sys.executable), ad)
+    return yol if os.path.exists(yol) or os.path.exists(yol + ".exe") else (shutil.which(ad) or ad)
 
-for ui_file in ui_files:
-    py_file = "bforms/{}.py".format(ui_file.split("/")[-1].replace('.ui','_py'))
-    # --import-from: kaynak dosyası "from bforms import media_rc" olarak içe aktarılsın
-    command = ["pyuic5", "--import-from=bforms", ui_file, "-o", py_file]
-    try:
-        subprocess.run(command, check=True)
-        print(f"{ui_file} başarıyla dönüştürüldü.")
-    except subprocess.CalledProcessError:
-        print(f"{ui_file} dönüştürülürken bir hata oluştu.")
+
+## Resimler: pyrcc5 dosya yollarını .qrc dosyasının bulunduğu klasöre göre çözer
+subprocess.run([arac("pyrcc5"), "media.qrc", "-o", os.path.join("..", "bforms", "media_rc.py")],
+               check=True, cwd=os.path.join(KOK, "media"))
+print("media/media.qrc başarıyla dönüştürüldü.")
+
+## Arayüzler: --import-from ile kaynak dosyası "from bforms import media_rc" olarak içe aktarılır
+for ad in ("library", "login", "guest"):
+    subprocess.run([arac("pyuic5"), "--import-from=bforms", f"cuis/{ad}.ui", "-o", f"bforms/{ad}_py.py"],
+                   check=True, cwd=KOK)
+    print(f"cuis/{ad}.ui başarıyla dönüştürüldü.")

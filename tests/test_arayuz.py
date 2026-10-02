@@ -42,7 +42,7 @@ def test_admin_ve_guest_dogru_paneli_acar(app):
 
 
 def test_giris_ekraninda_yeni_kayit_butonu_yok(app):
-    assert Login().QtLogin.pushButton_yeni_kayit.isHidden()
+    assert not hasattr(Login().QtLogin, "pushButton_yeni_kayit")
 
 
 # --- Yardımcılar ---
@@ -114,10 +114,9 @@ def test_yeni_uye_sekme_degisince_odunc_listesinde(lib, form):
 
 def test_yeni_kullanici_penceresi_temada(form):
     ui = form.QtUser
-    assert ui.label.isHidden() and ui.label_2.isHidden() and ui.statusbar.isHidden()   # eski desenli arka plan yok
     assert ui.pushButton_kaydet.property("rol") is None and ui.pushButton_cikis.property("rol") == "ikincil"
     assert not ui.pushButton_kaydet.icon().isNull()
-    ui.statusbar.showMessage("Deneme mesajı")
+    form.mesaj_goster("Deneme mesajı", 3000)
     assert form.mesaj.text() == "Deneme mesajı"                                        # mesaj formun içinde
 
 
@@ -173,3 +172,15 @@ def test_silinmis_kitap_duzenlenmek_istenince_mesaj(lib, db):
     db.commit()
     lib.kitap_duzenle(6)
     assert lib.QtLibrary.statusbar.currentMessage() == "Kitap bulunamadı (silinmiş olabilir)."
+
+
+@pytest.mark.parametrize("panel", [Library, Guest])
+def test_ui_dosyalarinda_stil_yok(app, uyarilar, panel):
+    # Görünüm tamamen temadan gelir: .ui'dan gelen bileşenlerde ayrı stil bulunmamalı
+    from PyQt5.QtWidgets import QWidget
+    from bforms.library_py import Ui_MainWindow as AdminUi
+    from bforms.guest_py import Ui_MainWindow as UyeUi
+    from PyQt5.QtWidgets import QMainWindow
+    w = QMainWindow()
+    (AdminUi if panel is Library else UyeUi)().setupUi(w)
+    assert [b.objectName() for b in w.findChildren(QWidget) if b.styleSheet()] == []

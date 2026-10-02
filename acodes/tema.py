@@ -1,12 +1,11 @@
 ## Uygulama teması: tüm panellerde tek renk düzeni ##
-# .ui dosyalarından gelen sekme/buton renkleri silinir, yerine bu tema uygulanır.
+# .ui dosyalarında renk ve yazı tipi tanımlanmaz; tüm görünüm bu temadan gelir.
 # Kodla eklenen sekmeler (Ayarlar, Veri Düzeltme, ...) renk tanımlamaz; temayı panelden devralır.
 
 import os
 import sys
 
 from PyQt5.QtGui import QFont, QFontDatabase
-from PyQt5.QtWidgets import QWidget
 
 # Renkler
 ZEMIN = "#EEF1F6"          # pencere zemini
@@ -148,8 +147,5 @@ QSpinBox::down-arrow {{ image: url("{ok['asagi']}"); width: 12px; height: 12px; 
 
 
 def uygula(pencere):
-    """setupUi'den hemen sonra çağrılır: .ui'dan gelen stilleri siler, temayı uygular."""
-    for bilesen in pencere.findChildren(QWidget):
-        if bilesen.styleSheet():
-            bilesen.setStyleSheet("")
+    """Temayı pencereye uygular (.ui dosyalarında renk ve yazı tipi tanımlanmaz)."""
     pencere.setStyleSheet(qss())

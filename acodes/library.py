@@ -26,16 +26,6 @@ import os
 import datetime
 
 
-def eski_sekmeleri_degistir(sekmeler,eskiler,yeni,ad):
-    """.ui'daki eski alt sekmeleri siler, yerine kodla kurulan ekranı ilk sekme olarak koyar."""
-    for eski in eskiler:
-        sekmeler.removeTab(sekmeler.indexOf(eski))
-        eski.setParent(None)
-        eski.deleteLater()
-    sekmeler.insertTab(0,yeni,ad)
-    sekmeler.setCurrentIndex(0)
-
-
 ## Admin paneli: ortak sekmelere ek olarak Kitap Kayıt ve Kitap Verme sekmeleri
 class Library(OrtakSekmeler, QMainWindow):
     oturum_kapandi = pyqtSignal()
@@ -59,14 +49,12 @@ class Library(OrtakSekmeler, QMainWindow):
 
         ###  Tab_1, 2, 4, 5 (Guest ile ortak)  #########
         self.ortak_sekmeleri_kur()
-        # Ana sayfa sade: işlem butonları Ayarlar sekmesinde, burada sadece Oturumu Kapat kalır
-        self.QtLibrary.pushButton_1_yeni_kullanici.hide()
 
-        ###  Kitap Verme: ödünç verme, iade alma ve dışarıdaki kitaplar tek ekranda (eski üç ekranın yerine)  ###
+        ###  Kitap Verme: ödünç verme, iade alma ve dışarıdaki kitaplar tek ekranda  ###
         ui=self.QtLibrary
         self.odunc=OduncEkrani(mesaj=lambda metin: self.QtLibrary.statusbar.showMessage(metin,8000),
                                degisti=self.yenile)
-        eski_sekmeleri_degistir(ui.tabWidget_6,(ui.tab_6_1,ui.tab_6_2,ui.tab_6_3),self.odunc,"Ödünç ve İade")
+        ui.tabWidget_6.addTab(self.odunc,"Ödünç ve İade")
         self.odunc.btn_aktar.clicked.connect(lambda: disa_aktar(self,self.odunc.tablo,"Dışarıdaki Kitaplar"))
         sag_tik_menusu(self,self.odunc.tablo,"Dışarıdaki Kitaplar")
         self.gecmis=OduncGecmisi()
@@ -115,7 +103,7 @@ class Library(OrtakSekmeler, QMainWindow):
         ui=self.QtLibrary
         self.kitaplar=KitapEkrani(mesaj=lambda metin: self.QtLibrary.statusbar.showMessage(metin,self.dur_msj),
                                   degisti=self.yenile)
-        eski_sekmeleri_degistir(ui.tabWidget_3,(ui.tab_3_1,ui.tab_3_2,ui.tab_3_3),self.kitaplar,"Kitaplar")
+        ui.tabWidget_3.addTab(self.kitaplar,"Kitaplar")
         self.duzeltme=VeriDuzeltme(kitap_duzenle=self.kitap_duzenle, degisti=self.yenile)
         self.QtLibrary.tabWidget_3.addTab(self.duzeltme,"Veri Düzeltme")
         self.QtLibrary.tabWidget_3.currentChanged.connect(self.kayit_sekmesi_degisti)

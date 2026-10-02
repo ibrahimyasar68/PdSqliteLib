@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version='1.0' encoding='UTF-8'?>
 <ui version="4.0">
  <class>MainWindow</class>
  <widget class="QMainWindow" name="MainWindow">
@@ -38,146 +38,9 @@
        <height>121</height>
       </rect>
      </property>
-     <property name="font">
-      <font>
-       <family>Monotype Corsiva</family>
-       <pointsize>28</pointsize>
-       <weight>50</weight>
-       <italic>true</italic>
-       <bold>false</bold>
-      </font>
-     </property>
-     <property name="styleSheet">
-      <string notr="true">color: rgb(255, 255, 255);
-font: italic 28pt &quot;Monotype Corsiva&quot;;</string>
-     </property>
      <property name="text">
       <string>Yaşar Kütüphanesi</string>
      </property>
-    </widget>
-    <widget class="QFrame" name="formFrame">
-     <property name="geometry">
-      <rect>
-       <x>440</x>
-       <y>110</y>
-       <width>371</width>
-       <height>121</height>
-      </rect>
-     </property>
-     <property name="styleSheet">
-      <string notr="true">#formFrame{background-color: qlineargradient(spread:pad, x1:0.943182, y1:0.966, x2:0.074, y2:0.074, stop:0 rgba(165, 111, 0, 255), stop:1 rgba(255, 255, 255, 255));
-border-radius:10px;}</string>
-     </property>
-     <widget class="QLabel" name="label_3">
-      <property name="geometry">
-       <rect>
-        <x>9</x>
-        <y>10</y>
-        <width>121</width>
-        <height>51</height>
-       </rect>
-      </property>
-      <property name="font">
-       <font>
-        <family>Monotype Corsiva</family>
-        <pointsize>14</pointsize>
-        <weight>75</weight>
-        <bold>true</bold>
-       </font>
-      </property>
-      <property name="text">
-       <string>Kullanıcı Adı</string>
-      </property>
-     </widget>
-     <widget class="QLineEdit" name="lineEdit_kullanci_adi">
-      <property name="enabled">
-       <bool>true</bool>
-      </property>
-      <property name="geometry">
-       <rect>
-        <x>140</x>
-        <y>9</y>
-        <width>220</width>
-        <height>41</height>
-       </rect>
-      </property>
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="Maximum" vsizetype="Minimum">
-        <horstretch>0</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
-      </property>
-      <property name="font">
-       <font>
-        <pointsize>12</pointsize>
-        <weight>75</weight>
-        <bold>true</bold>
-       </font>
-      </property>
-      <property name="toolTip">
-       <string>Kullanıcı Adını Girin</string>
-      </property>
-      <property name="alignment">
-       <set>Qt::AlignCenter</set>
-      </property>
-     </widget>
-     <widget class="QLabel" name="label_4">
-      <property name="geometry">
-       <rect>
-        <x>9</x>
-        <y>70</y>
-        <width>91</width>
-        <height>31</height>
-       </rect>
-      </property>
-      <property name="font">
-       <font>
-        <family>Monotype Corsiva</family>
-        <pointsize>14</pointsize>
-        <weight>75</weight>
-        <italic>false</italic>
-        <bold>true</bold>
-       </font>
-      </property>
-      <property name="styleSheet">
-       <string notr="true">selection-color: qlineargradient(spread:pad, x1:0.949438, y1:0.938, x2:0.073, y2:0.505682, stop:0 rgba(245, 81, 1, 255), stop:1 rgba(255, 255, 255, 255));</string>
-      </property>
-      <property name="text">
-       <string>Parola</string>
-      </property>
-     </widget>
-     <widget class="QLineEdit" name="lineEdit_parola">
-      <property name="geometry">
-       <rect>
-        <x>140</x>
-        <y>60</y>
-        <width>220</width>
-        <height>41</height>
-       </rect>
-      </property>
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
-        <horstretch>0</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
-      </property>
-      <property name="font">
-       <font>
-        <pointsize>12</pointsize>
-        <weight>75</weight>
-        <bold>true</bold>
-       </font>
-      </property>
-      <property name="toolTip">
-       <string>Parolayı Girin</string>
-      </property>
-      <property name="echoMode">
-       <enum>QLineEdit::Password</enum>
-      </property>
-      <property name="alignment">
-       <set>Qt::AlignCenter</set>
-      </property>
-     </widget>
     </widget>
     <widget class="QPushButton" name="pushButton_giris">
      <property name="geometry">
@@ -193,28 +56,6 @@ border-radius:10px;}</string>
        <width>90</width>
        <height>60</height>
       </size>
-     </property>
-     <property name="font">
-      <font>
-       <family>Monotype Corsiva</family>
-       <pointsize>24</pointsize>
-       <weight>75</weight>
-       <bold>true</bold>
-      </font>
-     </property>
-     <property name="styleSheet">
-      <string notr="true">QPushButton#pushButton_giris{
-background-color: rgb(255, 181, 61);
-border-radius:10px;}
-QPushButton#pushButton_giris:hover{
-background-color: qlineargradient(spread:pad, x1:1, y1:0.880682, x2:0.955, y2:0.0284091, stop:0.5 rgba(212, 75, 45, 255), stop:1 rgba(255, 255, 255, 255));
-border-radius:10px;}
-QPushButton#pushButton_giris:pressed{
-background-color:qlineargradient(spread:repeat, x1:0, y1:1, x2:0, y2:0, stop:0.301136 rgba(135, 88, 255, 255), stop:1 rgba(255, 255, 255, 255));
-padding-left:5px;
-padding-top:6px;
-border-radius:10px;}
-</string>
      </property>
      <property name="text">
       <string>Giriş</string>
@@ -237,7 +78,7 @@ border-top-left-radius:20px;
 border-bottom-left-radius:20px;</string>
      </property>
      <property name="text">
-      <string/>
+      <string />
      </property>
     </widget>
     <widget class="QLabel" name="label_2">
@@ -249,49 +90,8 @@ border-bottom-left-radius:20px;</string>
        <height>640</height>
       </rect>
      </property>
-     <property name="styleSheet">
-      <string notr="true">background-color: qlineargradient(spread:pad, x1:0, y1:1, x2:0, y2:0, stop:0 rgba(0, 0, 0, 255), stop:0.05 rgba(14, 8, 73, 255), stop:0.36 rgba(28, 17, 145, 255), stop:0.6 rgba(126, 14, 81, 255), stop:0.75 rgba(234, 11, 11, 255), stop:0.79 rgba(244, 70, 5, 255), stop:0.86 rgba(255, 136, 0, 255), stop:0.935 rgba(239, 236, 55, 255));
-border-top-right-radius:20px;
-border-bottom-right-radius:20px
-</string>
-     </property>
      <property name="text">
-      <string/>
-     </property>
-    </widget>
-    <widget class="QPushButton" name="pushButton_yeni_kayit">
-     <property name="geometry">
-      <rect>
-       <x>560</x>
-       <y>490</y>
-       <width>111</width>
-       <height>41</height>
-      </rect>
-     </property>
-     <property name="font">
-      <font>
-       <family>Monotype Corsiva</family>
-       <pointsize>18</pointsize>
-       <italic>true</italic>
-      </font>
-     </property>
-     <property name="styleSheet">
-      <string notr="true">
-QPushButton#pushButton_yeni_kayit{
-background-color: rgba(254, 254, 254, 0);
-color: rgb(255, 255, 0);}
-
-QPushButton#pushButton_yeni_kayit:hover{
-padding-left:10px;
-padding-top:12px; }
-
-QPushButton#pushButton_yeni_kayit:pressed{
-padding-left:5px;
-padding-top:6px;}
-</string>
-     </property>
-     <property name="text">
-      <string>Yeni Kayıt</string>
+      <string />
      </property>
     </widget>
     <widget class="QPushButton" name="pushButton_cikis">
@@ -309,49 +109,8 @@ padding-top:6px;}
        <height>80</height>
       </size>
      </property>
-     <property name="font">
-      <font>
-       <family>Monotype Corsiva</family>
-       <pointsize>12</pointsize>
-       <weight>50</weight>
-       <italic>true</italic>
-       <bold>false</bold>
-      </font>
-     </property>
-     <property name="layoutDirection">
-      <enum>Qt::LeftToRight</enum>
-     </property>
-     <property name="autoFillBackground">
-      <bool>false</bool>
-     </property>
-     <property name="styleSheet">
-      <string notr="true">QPushButton#pushButton_cikis{
-background-color: rgb(255, 0, 0);
-border-radius:30px;}
-
-
-QPushButton#pushButton_cikis:hover{
-background-color: qlineargradient(spread:pad, x1:1, y1:0.880682, x2:0.955, y2:0.0284091, stop:0.5 rgba(212, 75, 45, 255), stop:1 rgba(255, 255, 255, 255));
-border-radius:30px;}
-QPushButton#pushButton_cikis:pressed{
-background-color:qlineargradient(spread:repeat, x1:0, y1:1, x2:0, y2:0, stop:0.301136 rgba(135, 88, 255, 255), stop:1 rgba(255, 255, 255, 255));
-padding-left:3px;
-padding-top:4px;
-border-radius:30px;}
-</string>
-     </property>
      <property name="text">
-      <string/>
-     </property>
-     <property name="icon">
-      <iconset resource="../media/media.qrc">
-       <normaloff>:/pic/guc.png</normaloff>:/pic/guc.png</iconset>
-     </property>
-     <property name="iconSize">
-      <size>
-       <width>30</width>
-       <height>30</height>
-      </size>
+      <string />
      </property>
     </widget>
     <zorder>label</zorder>
@@ -361,22 +120,63 @@ border-radius:30px;}
     <zorder>label_5</zorder>
     <zorder>pushButton_yeni_kayit</zorder>
     <zorder>pushButton_cikis</zorder>
+    <widget class="QLineEdit" name="lineEdit_kullanci_adi">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <property name="geometry">
+      <rect>
+       <x>140</x>
+       <y>9</y>
+       <width>220</width>
+       <height>41</height>
+      </rect>
+     </property>
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Maximum" vsizetype="Minimum">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="toolTip">
+      <string>Kullanıcı Adını Girin</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignCenter</set>
+     </property>
+    </widget>
+    <widget class="QLineEdit" name="lineEdit_parola">
+     <property name="geometry">
+      <rect>
+       <x>140</x>
+       <y>60</y>
+       <width>220</width>
+       <height>41</height>
+      </rect>
+     </property>
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="toolTip">
+      <string>Parolayı Girin</string>
+     </property>
+     <property name="echoMode">
+      <enum>QLineEdit::Password</enum>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignCenter</set>
+     </property>
+    </widget>
    </widget>
   </widget>
   <widget class="QStatusBar" name="statusbar">
-   <property name="font">
-    <font>
-     <family>Monotype Corsiva</family>
-     <pointsize>14</pointsize>
-     <weight>75</weight>
-     <italic>true</italic>
-     <bold>true</bold>
-    </font>
-   </property>
-  </widget>
+   </widget>
  </widget>
  <resources>
-  <include location="../media/media.qrc"/>
+  <include location="../media/media.qrc" />
  </resources>
- <connections/>
+ <connections />
 </ui>

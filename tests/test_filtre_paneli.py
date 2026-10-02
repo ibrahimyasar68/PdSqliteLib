@@ -64,7 +64,7 @@ def etiketler(f, kolon):
 
 def test_eski_alt_sekmeler_yok(lib):
     q = lib.QtLibrary
-    assert q.tab_4.findChild(type(q.tabWidget_3), "tabWidget_4") is None
+    assert not hasattr(q, "tabWidget_4")
     assert f"{lib.filtre.parentWidget().objectName()}" == "tab_4"
 
 

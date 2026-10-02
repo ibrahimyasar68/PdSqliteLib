@@ -254,7 +254,7 @@ Paket imzasız olduğu için Windows SmartScreen ilk açılışta uyarabilir: **
 main.py              Giriş noktası
 acodes/              Pencerelerin iş mantığı (login, library, guest, user)
 acodes/ortak.py      Admin ve Guest panellerinde ortak sekmeler (liste, filtre, istatistik)
-acodes/tema.py       Tek renk teması (renkler burada; .ui dosyalarındaki renkler açılışta silinir)
+acodes/tema.py       Tek renk teması (tüm renk ve yazı tipleri burada; .ui dosyalarında stil yoktur)
 acodes/kullanici_yonetimi.py  Kullanıcı yönetimi ve şifre değiştirme pencereleri
 acodes/odunc_ekrani.py        Kitap Verme > Ödünç ve İade (ödünç verme, iade, dışarıdakiler tek ekranda)
 acodes/odunc_gecmisi.py       Kitap Verme > Ödünç Geçmişi sekmesi
@@ -264,7 +264,7 @@ acodes/aranabilir.py          Yazdıkça süzülen açılır listeler
 acodes/ikonlar.py             Buton ve sekme ikonları (Qt ile çizilir, dosya gerektirmez)
 acodes/bildirim.py            Kısa süre görünen bildirimler (başarı yeşil, uyarı kırmızı)
 acodes/onay.py                Evet / Hayır onay kutusu
-acodes/yerlesim.py            Esnek yerleşim kalıpları (.ui sayfalarını pencereyle büyüyen düzene alır)
+acodes/yerlesim.py            Esnek yerleşim kalıpları (sayfaları pencereyle büyüyen düzene alır)
 acodes/disa_aktar.py          Tabloları Excel / CSV olarak kaydetme
 acodes/kitap_ekrani.py        Kitap Kayıt > Kitaplar (liste ve form tek ekranda)
 acodes/veri_duzeltme.py       Kitap Kayıt > Veri Düzeltme sekmesi
@@ -278,7 +278,7 @@ acodes/tercihler.py           Menü ve kolon tercihleri (tercihler.ini)
 acodes/kilavuz.py             Ayarlar > Kullanma Kılavuzu metinleri (yönetici ve üye)
 acodes/ayarlar.py             Ayarlar sekmesi (kullanıcılar, yedekleme, bilgiler / hesabım)
 bforms/              .ui dosyalarından üretilen formlar (elle düzenlenmez)
-cuis/                Qt Designer .ui kaynakları
+cuis/                Qt Designer .ui kaynakları (panel iskeleti ve giriş ekranı)
 database/dbbase.py   Yazma işlemleri, şifre hash'leme, veritabanı yolu
 database/dbframe.py  Okuma, filtreleme ve raporlar
 database/sema.py     Tablo şeması (eksik tablolar açılışta oluşturulur)
@@ -293,15 +293,17 @@ data/                Veritabanı ve yedekler (git dışında)
 
 ### Arayüzü düzenlemek
 
-`cuis/` altındaki `.ui` dosyalarını Qt Designer ile düzenleyin, sonra `bforms/` altındaki
-Python dosyalarını yeniden üretin:
+Ekranların çoğu kodla kurulur (`acodes/`). `cuis/` altındaki `.ui` dosyalarında yalnızca panellerin
+sekme iskeleti ile giriş ekranı kalmıştır; renk ve yazı tipi tanımlanmaz (görünüm `acodes/tema.py`'den gelir).
+Yeni kullanıcı formunun `.ui` dosyası yoktur. Bir `.ui` dosyasını Qt Designer ile değiştirdikten sonra
+`bforms/` altındaki Python dosyalarını yeniden üretin:
 
 ```bash
 .venv/bin/python scripts/convertFiles.py
 ```
 
-Betiği sanal ortam etkinken çalıştırın (`source .venv/bin/activate`); `pyuic5` ve
-`pyrcc5` komutları PyQt5 ile birlikte kurulur.
+Betik `pyuic5` ve `pyrcc5` komutlarını sanal ortamda bulur (PyQt5 ile birlikte kurulur); ortamı
+etkinleştirmek gerekmez.
 
 ## Veritabanı şeması
 

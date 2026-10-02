@@ -41,7 +41,7 @@ def test_grafikler_verisiz_ve_verili_cizilir(app):
 def test_panellerde_sabit_resim_yerine_grafik(app, uyarilar):
     for panel in (Library(), Guest()):
         q = panel.QtLibrary
-        assert q.widget.isHidden()
+        assert not hasattr(q, "widget")                 # eski sabit resim kutusu .ui'dan kaldırıldı
         assert panel.grafikler.parent() is q.tab_5_2
         assert panel.grafikler.yazarlar.veri[:2] == [("Andre MAUROIS", 2), ("Kemal TAHİR", 2)]   # eşitlikte alfabetik
         assert panel.grafikler.yillar.veri == yil_dagilimi()

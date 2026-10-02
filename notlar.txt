@@ -1,8 +1,8 @@
 ## Ui ve medya dosyalarını py dosyalarına çevirme ##
 =====================================================
-Sanal ortam etkinken proje klasöründen:
+Proje klasöründen (sanal ortamı etkinleştirmek gerekmez):
 
-    python scripts/convertFiles.py
+    .venv/bin/python scripts/convertFiles.py
 
 Bu betik cuis/*.ui dosyalarını bforms/*_py.py dosyalarına, media/media.qrc
 dosyasını bforms/media_rc.py dosyasına çevirir.
@@ -13,8 +13,9 @@ dosyasını bforms/media_rc.py dosyasına çevirir.
 Dönüştürmeden sonra elle bir şey eklemek gerekmez; her dönüştürmede bu dosyalar
 yeniden yazılır. Pencere ayarları acodes/ altındaki dosyalarda yapılır:
 
-- Çerçeveyi kaldırma ve pencere konumu: acodes/login.py, acodes/user.py
-  self.setWindowFlags(Qt.FramelessWindowHint)
-  self.setGeometry(...) / self.move(...)
+- Çerçeveyi kaldırma ve pencere konumu: acodes/login.py
+- Yeni kullanıcı formu .ui kullanmaz, tamamen acodes/user.py içinde kurulur.
+- .ui dosyalarına renk (styleSheet) veya yazı tipi (font) eklemeyin: görünüm acodes/tema.py'den
+  gelir (tests/test_arayuz.py bunu denetler).
 - Kaynak dosyası (media_rc) içe aktarma satırını betik otomatik üretir
   (pyuic5 --import-from=bforms).

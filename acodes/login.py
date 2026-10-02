@@ -51,17 +51,13 @@ class Login(QMainWindow):
         self.QtLogin.pushButton_giris.clicked.connect(self.giris)
         self.QtLogin.lineEdit_parola.returnPressed.connect(self.giris)
         self.QtLogin.lineEdit_kullanci_adi.returnPressed.connect(self.QtLogin.lineEdit_parola.setFocus)
-        # Üye kaydı sadece giriş yapıldıktan sonra admin panelinden yapılır
-        self.QtLogin.pushButton_yeni_kayit.hide()
         self.QtLogin.pushButton_cikis.setToolTip("Programdan çık")
         self.QtLogin.pushButton_cikis.clicked.connect(self.close)
+        self.QtLogin.lineEdit_kullanci_adi.setFocus()   # açılınca doğrudan kullanıcı adı yazılabilsin
 
     def tasarim(self):
         ###  Sağ tarafa beyaz giriş kartı: başlık, etiketli alanlar, kart içinde mesaj, tam genişlikte buton  ###
         ui=self.QtLogin
-        for eski in (ui.label_2, ui.label_5, ui.formFrame, ui.label_3, ui.label_4, ui.pushButton_giris, ui.pushButton_cikis):
-            eski.setStyleSheet("")
-        ui.formFrame.hide()
         # Başlık fotoğrafın genişliğinde ve ortada (gömülü el yazısı .ui'daki dar kutuya sığmıyordu)
         ui.label_5.setGeometry(18,70,400,150)
         ui.label_5.setAlignment(Qt.AlignCenter)

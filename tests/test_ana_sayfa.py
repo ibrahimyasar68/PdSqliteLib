@@ -47,9 +47,9 @@ def test_yaklasan_teslimler(veri):
     assert odunc.yaklasan_teslimler()[0][3:] == ("3", "1")
 
 
-def test_eski_ana_sayfa_icerigi_gizli(lib):
+def test_eski_ana_sayfa_icerigi_yok(lib):
     q = lib.QtLibrary
-    assert q.label.isHidden() and q.verticalLayoutWidget.isHidden()
+    assert not hasattr(q, "label") and not hasattr(q, "verticalLayoutWidget")
     assert q.pushButton_1_cikis.isVisibleTo(lib) and q.pushButton_1_cikis.text() == "Oturumu Kapat"
     assert q.pushButton_1_cikis.parentWidget() is lib.yan_menu.kart                    # Oturumu Kapat menüde
     a = lib.ana_sayfa

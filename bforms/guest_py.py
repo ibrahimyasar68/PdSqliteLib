@@ -17,145 +17,23 @@ class Ui_MainWindow(object):
         MainWindow.resize(1518, 744)
         MainWindow.setMinimumSize(QtCore.QSize(1300, 720))
         self.centralwidget = QtWidgets.QWidget(MainWindow)
-        self.centralwidget.setStyleSheet("#centralwidget{background-color: rgb(85, 255, 255);}")
         self.centralwidget.setObjectName("centralwidget")
         self.gridLayout_7 = QtWidgets.QGridLayout(self.centralwidget)
         self.gridLayout_7.setObjectName("gridLayout_7")
         self.tabWidget = QtWidgets.QTabWidget(self.centralwidget)
-        font = QtGui.QFont()
-        font.setFamily("Monotype Corsiva")
-        font.setPointSize(14)
-        font.setItalic(True)
-        self.tabWidget.setFont(font)
-        self.tabWidget.setStyleSheet("\n"
-"#tab_1{background-color: rgb(0, 255, 0);}\n"
-"#tab_1{border-image: url(:/pic/autumn.jpg);}\n"
-"\n"
-"\n"
-"\n"
-"#tab_2{background-color: rgb(85, 255, 0);}\n"
-"\n"
-"#tab_3{background-color: rgb(170, 255, 0);}\n"
-"\n"
-"#tab_3_1{background-color: rgb(150, 210, 0);}\n"
-"#tab_3_2{background-color: rgb(150, 205, 0);}\n"
-"#tab_3_3{background-color: rgb(150, 200, 0);}\n"
-"\n"
-"#tab_4{background-color: rgb(204, 255, 0);}\n"
-"\n"
-"#tab_4_1{background-color: rgb(204, 255, 20);}\n"
-"#tab_4_2{background-color: rgb(204, 255, 80);}\n"
-"#tab_4_3{background-color: rgb(204, 255, 150);}\n"
-"#tab_4_4{background-color: rgb(204, 255, 220);}\n"
-"\n"
-"#tab_5{background-color: rgb(255, 255, 0);}\n"
-"\n"
-"#tab_5_1{background-color: rgb(255, 255, 150);}\n"
-"#tab_5_2{background-color: rgb(255, 255,200);}\n"
-"\n"
-"#tab_6{background-color: rgb(255, 170, 255);}\n"
-"\n"
-"\n"
-"#tab_6_1{background-color: rgb(255, 190, 255);}\n"
-"#tab_6_2{background-color: rgb(255, 220,255);}\n"
-"#tab_6_3{background-color: rgb(255, 240,255);}")
         self.tabWidget.setObjectName("tabWidget")
         self.tab_1 = QtWidgets.QWidget()
-        self.tab_1.setStyleSheet("color: rgb(0, 255, 0);")
         self.tab_1.setObjectName("tab_1")
-        self.label = QtWidgets.QLabel(self.tab_1)
-        self.label.setGeometry(QtCore.QRect(410, 200, 511, 151))
-        font = QtGui.QFont()
-        font.setFamily("Monotype Corsiva")
-        font.setPointSize(50)
-        font.setBold(False)
-        font.setItalic(True)
-        font.setWeight(50)
-        self.label.setFont(font)
-        self.label.setStyleSheet("color: rgb(255, 255, 0);\n"
-"font: italic 50pt \"Monotype Corsiva\";")
-        self.label.setObjectName("label")
-        self.verticalLayoutWidget = QtWidgets.QWidget(self.tab_1)
-        self.verticalLayoutWidget.setGeometry(QtCore.QRect(570, 440, 221, 151))
-        self.verticalLayoutWidget.setObjectName("verticalLayoutWidget")
-        self.verticalLayout = QtWidgets.QVBoxLayout(self.verticalLayoutWidget)
-        self.verticalLayout.setContentsMargins(0, 0, 0, 0)
-        self.verticalLayout.setObjectName("verticalLayout")
-        self.pushButton_1_cikis = QtWidgets.QPushButton(self.verticalLayoutWidget)
+        self.pushButton_1_cikis = QtWidgets.QPushButton(self.tab_1)
         self.pushButton_1_cikis.setEnabled(True)
         self.pushButton_1_cikis.setMinimumSize(QtCore.QSize(200, 50))
         self.pushButton_1_cikis.setMaximumSize(QtCore.QSize(300, 50))
-        font = QtGui.QFont()
-        font.setFamily("Monotype Corsiva")
-        font.setPointSize(14)
-        font.setBold(True)
-        font.setItalic(True)
-        font.setWeight(75)
-        self.pushButton_1_cikis.setFont(font)
-        self.pushButton_1_cikis.setStyleSheet("\n"
-"QPushButton#pushButton_1_cikis{    \n"
-"color: rgb(171, 0, 0);\n"
-"border-color: rgb(255, 255, 255);\n"
-"background-color: rgb(255, 255, 127);\n"
-"border-radius:10px;}\n"
-"\n"
-"QPushButton#pushButton_1_cikis:hover{\n"
-"color: rgb(0,171, 0);\n"
-"border-color: rgb(255, 255, 255);\n"
-"background-color: rgb(255, 255, 127);\n"
-"border-radius:10px;}\n"
-"\n"
-"QPushButton#pushButton_1_cikis:pressed{\n"
-"color: rgb(0,0,171);\n"
-"border-color: rgb(255, 255, 255);\n"
-"background-color: rgb(255, 255, 127);\n"
-"border-radius:10px;\n"
-"padding-left:5px;\n"
-"padding-top:6px;}\n"
-"\n"
-"")
         self.pushButton_1_cikis.setObjectName("pushButton_1_cikis")
-        self.verticalLayout.addWidget(self.pushButton_1_cikis)
-        self.label_32 = QtWidgets.QLabel(self.tab_1)
-        self.label_32.setGeometry(QtCore.QRect(30, 60, 91, 31))
-        font = QtGui.QFont()
-        font.setFamily("Monotype Corsiva")
-        font.setPointSize(20)
-        font.setBold(False)
-        font.setItalic(True)
-        font.setWeight(50)
-        self.label_32.setFont(font)
-        self.label_32.setStyleSheet("\n"
-"color: rgb(255, 85, 255);\n"
-"font: italic 20pt \"Monotype Corsiva\";")
-        self.label_32.setObjectName("label_32")
-        self.label_log_on = QtWidgets.QLabel(self.tab_1)
-        self.label_log_on.setGeometry(QtCore.QRect(30, 20, 91, 31))
-        font = QtGui.QFont()
-        font.setFamily("Monotype Corsiva")
-        font.setPointSize(20)
-        font.setBold(False)
-        font.setItalic(True)
-        font.setWeight(50)
-        self.label_log_on.setFont(font)
-        self.label_log_on.setStyleSheet("\n"
-"color: rgb(255, 85, 255);\n"
-"font: italic 20pt \"Monotype Corsiva\";")
-        self.label_log_on.setText("")
-        self.label_log_on.setObjectName("label_log_on")
         self.tabWidget.addTab(self.tab_1, "")
         self.tab_2 = QtWidgets.QWidget()
         self.tab_2.setObjectName("tab_2")
         self.tableWidget_2 = QtWidgets.QTableWidget(self.tab_2)
         self.tableWidget_2.setGeometry(QtCore.QRect(160, 10, 1160, 590))
-        font = QtGui.QFont()
-        font.setFamily("Monotype Corsiva")
-        font.setPointSize(14)
-        font.setBold(False)
-        font.setItalic(True)
-        font.setWeight(50)
-        self.tableWidget_2.setFont(font)
-        self.tableWidget_2.setStyleSheet("font: italic 14pt \"Monotype Corsiva\";")
         self.tableWidget_2.setShowGrid(True)
         self.tableWidget_2.setColumnCount(8)
         self.tableWidget_2.setObjectName("tableWidget_2")
@@ -184,683 +62,25 @@ class Ui_MainWindow(object):
         sizePolicy.setHeightForWidth(self.pushButton_2_temizle.sizePolicy().hasHeightForWidth())
         self.pushButton_2_temizle.setSizePolicy(sizePolicy)
         self.pushButton_2_temizle.setMinimumSize(QtCore.QSize(100, 60))
-        font = QtGui.QFont()
-        font.setFamily("Monotype Corsiva")
-        font.setPointSize(12)
-        font.setBold(True)
-        font.setWeight(75)
-        self.pushButton_2_temizle.setFont(font)
-        self.pushButton_2_temizle.setStyleSheet("QPushButton#pushButton_2_temizle{    \n"
-"background-color: rgba(6, 211, 166, 150);\n"
-"border-radius:10px;}\n"
-"\n"
-"QPushButton#pushButton_2_temizle:hover{\n"
-"background-color: rgba(0, 248, 49, 150);\n"
-"border-radius:10px;}\n"
-"\n"
-"QPushButton#pushButton_2_temizle:pressed{\n"
-"background-color: rgba(6, 211, 166,150);\n"
-"padding-left:5px;\n"
-"padding-top:6px;\n"
-"border-radius:10px;}\n"
-"\n"
-"\n"
-"")
         self.pushButton_2_temizle.setObjectName("pushButton_2_temizle")
-        self.pushButton_2_listele = QtWidgets.QPushButton(self.tab_2)
-        self.pushButton_2_listele.setGeometry(QtCore.QRect(40, 220, 100, 60))
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Fixed)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.pushButton_2_listele.sizePolicy().hasHeightForWidth())
-        self.pushButton_2_listele.setSizePolicy(sizePolicy)
-        self.pushButton_2_listele.setMinimumSize(QtCore.QSize(100, 60))
-        font = QtGui.QFont()
-        font.setFamily("Monotype Corsiva")
-        font.setPointSize(12)
-        font.setBold(True)
-        font.setWeight(75)
-        self.pushButton_2_listele.setFont(font)
-        self.pushButton_2_listele.setStyleSheet("QPushButton#pushButton_2_listele{    \n"
-"background-color: rgba(6, 211, 166, 150);\n"
-"border-radius:10px;}\n"
-"\n"
-"QPushButton#pushButton_2_listele:hover{\n"
-"background-color: rgba(6, 211, 166,150);\n"
-"border-radius:10px;}\n"
-"\n"
-"QPushButton#pushButton_2_listele:pressed{\n"
-"\n"
-"background-color: rgba(0, 248, 49, 150);\n"
-"padding-left:5px;\n"
-"padding-top:6px;\n"
-"border-radius:10px;}\n"
-"\n"
-"\n"
-"")
-        self.pushButton_2_listele.setObjectName("pushButton_2_listele")
         self.tabWidget.addTab(self.tab_2, "")
         self.tab_4 = QtWidgets.QWidget()
         self.tab_4.setObjectName("tab_4")
         self.gridLayout_3 = QtWidgets.QGridLayout(self.tab_4)
         self.gridLayout_3.setObjectName("gridLayout_3")
-        self.tabWidget_4 = QtWidgets.QTabWidget(self.tab_4)
-        font = QtGui.QFont()
-        font.setFamily("Monotype Corsiva")
-        font.setPointSize(14)
-        font.setItalic(True)
-        self.tabWidget_4.setFont(font)
-        self.tabWidget_4.setTabPosition(QtWidgets.QTabWidget.South)
-        self.tabWidget_4.setObjectName("tabWidget_4")
-        self.tab_4_1 = QtWidgets.QWidget()
-        self.tab_4_1.setObjectName("tab_4_1")
-        self.label_26 = QtWidgets.QLabel(self.tab_4_1)
-        self.label_26.setGeometry(QtCore.QRect(46, 160, 181, 40))
-        font = QtGui.QFont()
-        font.setFamily("Monotype Corsiva")
-        font.setPointSize(12)
-        font.setItalic(True)
-        self.label_26.setFont(font)
-        self.label_26.setAlignment(QtCore.Qt.AlignCenter)
-        self.label_26.setObjectName("label_26")
-        self.tableWidget_4_1_1 = QtWidgets.QTableWidget(self.tab_4_1)
-        self.tableWidget_4_1_1.setGeometry(QtCore.QRect(40, 200, 200, 176))
-        self.tableWidget_4_1_1.setMinimumSize(QtCore.QSize(100, 100))
-        self.tableWidget_4_1_1.setMaximumSize(QtCore.QSize(200, 300))
-        font = QtGui.QFont()
-        font.setFamily("Monotype Corsiva")
-        font.setPointSize(12)
-        font.setBold(False)
-        font.setItalic(True)
-        font.setWeight(50)
-        self.tableWidget_4_1_1.setFont(font)
-        self.tableWidget_4_1_1.setStyleSheet("font: italic 12pt \"Monotype Corsiva\";\n"
-"")
-        self.tableWidget_4_1_1.setObjectName("tableWidget_4_1_1")
-        self.tableWidget_4_1_1.setColumnCount(1)
-        self.tableWidget_4_1_1.setRowCount(0)
-        item = QtWidgets.QTableWidgetItem()
-        self.tableWidget_4_1_1.setHorizontalHeaderItem(0, item)
-        self.tableWidget_4_1_2 = QtWidgets.QTableWidget(self.tab_4_1)
-        self.tableWidget_4_1_2.setGeometry(QtCore.QRect(294, 10, 990, 545))
-        font = QtGui.QFont()
-        font.setFamily("Monotype Corsiva")
-        font.setPointSize(12)
-        font.setBold(False)
-        font.setItalic(True)
-        font.setWeight(50)
-        self.tableWidget_4_1_2.setFont(font)
-        self.tableWidget_4_1_2.setStyleSheet("font: italic 12pt \"Monotype Corsiva\";")
-        self.tableWidget_4_1_2.setShowGrid(True)
-        self.tableWidget_4_1_2.setColumnCount(8)
-        self.tableWidget_4_1_2.setObjectName("tableWidget_4_1_2")
-        self.tableWidget_4_1_2.setRowCount(0)
-        item = QtWidgets.QTableWidgetItem()
-        self.tableWidget_4_1_2.setHorizontalHeaderItem(0, item)
-        item = QtWidgets.QTableWidgetItem()
-        self.tableWidget_4_1_2.setHorizontalHeaderItem(1, item)
-        item = QtWidgets.QTableWidgetItem()
-        self.tableWidget_4_1_2.setHorizontalHeaderItem(2, item)
-        item = QtWidgets.QTableWidgetItem()
-        self.tableWidget_4_1_2.setHorizontalHeaderItem(3, item)
-        item = QtWidgets.QTableWidgetItem()
-        self.tableWidget_4_1_2.setHorizontalHeaderItem(4, item)
-        item = QtWidgets.QTableWidgetItem()
-        self.tableWidget_4_1_2.setHorizontalHeaderItem(5, item)
-        item = QtWidgets.QTableWidgetItem()
-        self.tableWidget_4_1_2.setHorizontalHeaderItem(6, item)
-        item = QtWidgets.QTableWidgetItem()
-        self.tableWidget_4_1_2.setHorizontalHeaderItem(7, item)
-        self.pushButton_4_1_listele = QtWidgets.QPushButton(self.tab_4_1)
-        self.pushButton_4_1_listele.setGeometry(QtCore.QRect(80, 430, 111, 51))
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Fixed)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.pushButton_4_1_listele.sizePolicy().hasHeightForWidth())
-        self.pushButton_4_1_listele.setSizePolicy(sizePolicy)
-        self.pushButton_4_1_listele.setMinimumSize(QtCore.QSize(80, 50))
-        font = QtGui.QFont()
-        font.setFamily("Monotype Corsiva")
-        font.setPointSize(13)
-        font.setBold(False)
-        font.setItalic(True)
-        font.setWeight(50)
-        self.pushButton_4_1_listele.setFont(font)
-        self.pushButton_4_1_listele.setStyleSheet("QPushButton#pushButton_4_1_listele{    \n"
-"background-color: rgba(6, 211, 166, 150);\n"
-"border-radius:10px;}\n"
-"\n"
-"QPushButton#pushButton_4_1_listele:hover{\n"
-"background-color: rgba(0, 248, 49, 150);\n"
-"border-radius:10px;}\n"
-"\n"
-"QPushButton#pushButton_4_1_listele:pressed{\n"
-"background-color: rgba(6, 211, 166,150);\n"
-"padding-left:5px;\n"
-"padding-top:6px;\n"
-"border-radius:10px;}\n"
-"\n"
-"\n"
-"")
-        self.pushButton_4_1_listele.setObjectName("pushButton_4_1_listele")
-        self.formLayoutWidget_6 = QtWidgets.QWidget(self.tab_4_1)
-        self.formLayoutWidget_6.setGeometry(QtCore.QRect(10, 80, 281, 51))
-        self.formLayoutWidget_6.setObjectName("formLayoutWidget_6")
-        self.formLayout_6 = QtWidgets.QFormLayout(self.formLayoutWidget_6)
-        self.formLayout_6.setContentsMargins(0, 0, 0, 0)
-        self.formLayout_6.setObjectName("formLayout_6")
-        self.comboBox_4_1_turu = QtWidgets.QComboBox(self.formLayoutWidget_6)
-        font = QtGui.QFont()
-        font.setFamily("Monotype Corsiva")
-        font.setPointSize(13)
-        font.setItalic(True)
-        self.comboBox_4_1_turu.setFont(font)
-        self.comboBox_4_1_turu.setObjectName("comboBox_4_1_turu")
-        self.formLayout_6.setWidget(0, QtWidgets.QFormLayout.FieldRole, self.comboBox_4_1_turu)
-        self.pushButton_4_1_temizle = QtWidgets.QPushButton(self.tab_4_1)
-        self.pushButton_4_1_temizle.setEnabled(False)
-        self.pushButton_4_1_temizle.setGeometry(QtCore.QRect(80, 500, 111, 51))
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Fixed)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.pushButton_4_1_temizle.sizePolicy().hasHeightForWidth())
-        self.pushButton_4_1_temizle.setSizePolicy(sizePolicy)
-        self.pushButton_4_1_temizle.setMinimumSize(QtCore.QSize(80, 50))
-        font = QtGui.QFont()
-        font.setFamily("Monotype Corsiva")
-        font.setPointSize(13)
-        font.setBold(False)
-        font.setItalic(True)
-        font.setWeight(50)
-        self.pushButton_4_1_temizle.setFont(font)
-        self.pushButton_4_1_temizle.setStyleSheet("QPushButton#pushButton_4_1_temizle{    \n"
-"background-color: rgba(6, 211, 166, 150);\n"
-"border-radius:10px;}\n"
-"\n"
-"QPushButton#pushButton_4_1_temizle:hover{\n"
-"background-color: rgba(0, 248, 49, 150);\n"
-"border-radius:10px;}\n"
-"\n"
-"QPushButton#pushButton_4_1_temizle:pressed{\n"
-"background-color: rgba(6, 211, 166,150);\n"
-"padding-left:5px;\n"
-"padding-top:6px;\n"
-"border-radius:10px;}\n"
-"\n"
-"\n"
-"")
-        self.pushButton_4_1_temizle.setObjectName("pushButton_4_1_temizle")
-        self.tabWidget_4.addTab(self.tab_4_1, "")
-        self.tab_4_2 = QtWidgets.QWidget()
-        self.tab_4_2.setObjectName("tab_4_2")
-        self.label_27 = QtWidgets.QLabel(self.tab_4_2)
-        self.label_27.setGeometry(QtCore.QRect(46, 160, 181, 40))
-        font = QtGui.QFont()
-        font.setFamily("Monotype Corsiva")
-        font.setPointSize(12)
-        font.setItalic(True)
-        self.label_27.setFont(font)
-        self.label_27.setAlignment(QtCore.Qt.AlignCenter)
-        self.label_27.setObjectName("label_27")
-        self.tableWidget_4_2_1 = QtWidgets.QTableWidget(self.tab_4_2)
-        self.tableWidget_4_2_1.setGeometry(QtCore.QRect(40, 200, 200, 176))
-        self.tableWidget_4_2_1.setMinimumSize(QtCore.QSize(100, 100))
-        self.tableWidget_4_2_1.setMaximumSize(QtCore.QSize(200, 300))
-        font = QtGui.QFont()
-        font.setFamily("Monotype Corsiva")
-        font.setPointSize(12)
-        font.setBold(False)
-        font.setItalic(True)
-        font.setWeight(50)
-        self.tableWidget_4_2_1.setFont(font)
-        self.tableWidget_4_2_1.setStyleSheet("font: italic 12pt \"Monotype Corsiva\";\n"
-"")
-        self.tableWidget_4_2_1.setObjectName("tableWidget_4_2_1")
-        self.tableWidget_4_2_1.setColumnCount(1)
-        self.tableWidget_4_2_1.setRowCount(0)
-        item = QtWidgets.QTableWidgetItem()
-        self.tableWidget_4_2_1.setHorizontalHeaderItem(0, item)
-        self.tableWidget_4_2_2 = QtWidgets.QTableWidget(self.tab_4_2)
-        self.tableWidget_4_2_2.setGeometry(QtCore.QRect(294, 10, 990, 545))
-        font = QtGui.QFont()
-        font.setFamily("Monotype Corsiva")
-        font.setPointSize(12)
-        font.setBold(False)
-        font.setItalic(True)
-        font.setWeight(50)
-        self.tableWidget_4_2_2.setFont(font)
-        self.tableWidget_4_2_2.setStyleSheet("font: italic 12pt \"Monotype Corsiva\";")
-        self.tableWidget_4_2_2.setShowGrid(True)
-        self.tableWidget_4_2_2.setColumnCount(8)
-        self.tableWidget_4_2_2.setObjectName("tableWidget_4_2_2")
-        self.tableWidget_4_2_2.setRowCount(0)
-        item = QtWidgets.QTableWidgetItem()
-        self.tableWidget_4_2_2.setHorizontalHeaderItem(0, item)
-        item = QtWidgets.QTableWidgetItem()
-        self.tableWidget_4_2_2.setHorizontalHeaderItem(1, item)
-        item = QtWidgets.QTableWidgetItem()
-        self.tableWidget_4_2_2.setHorizontalHeaderItem(2, item)
-        item = QtWidgets.QTableWidgetItem()
-        self.tableWidget_4_2_2.setHorizontalHeaderItem(3, item)
-        item = QtWidgets.QTableWidgetItem()
-        self.tableWidget_4_2_2.setHorizontalHeaderItem(4, item)
-        item = QtWidgets.QTableWidgetItem()
-        self.tableWidget_4_2_2.setHorizontalHeaderItem(5, item)
-        item = QtWidgets.QTableWidgetItem()
-        self.tableWidget_4_2_2.setHorizontalHeaderItem(6, item)
-        item = QtWidgets.QTableWidgetItem()
-        self.tableWidget_4_2_2.setHorizontalHeaderItem(7, item)
-        self.pushButton_4_2_listele = QtWidgets.QPushButton(self.tab_4_2)
-        self.pushButton_4_2_listele.setGeometry(QtCore.QRect(80, 430, 111, 51))
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Fixed)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.pushButton_4_2_listele.sizePolicy().hasHeightForWidth())
-        self.pushButton_4_2_listele.setSizePolicy(sizePolicy)
-        self.pushButton_4_2_listele.setMinimumSize(QtCore.QSize(80, 50))
-        font = QtGui.QFont()
-        font.setFamily("Monotype Corsiva")
-        font.setPointSize(13)
-        font.setBold(False)
-        font.setItalic(True)
-        font.setWeight(50)
-        self.pushButton_4_2_listele.setFont(font)
-        self.pushButton_4_2_listele.setStyleSheet("QPushButton#pushButton_4_2_listele{    \n"
-"background-color: rgba(6, 211, 166, 150);\n"
-"border-radius:10px;}\n"
-"\n"
-"QPushButton#pushButton_4_2_listele:hover{\n"
-"background-color: rgba(0, 248, 49, 150);\n"
-"border-radius:10px;}\n"
-"\n"
-"QPushButton#pushButton_4_2_listele:pressed{\n"
-"background-color: rgba(6, 211, 166,150);\n"
-"padding-left:5px;\n"
-"padding-top:6px;\n"
-"border-radius:10px;}\n"
-"\n"
-"\n"
-"")
-        self.pushButton_4_2_listele.setObjectName("pushButton_4_2_listele")
-        self.formLayoutWidget_7 = QtWidgets.QWidget(self.tab_4_2)
-        self.formLayoutWidget_7.setGeometry(QtCore.QRect(10, 80, 281, 51))
-        self.formLayoutWidget_7.setObjectName("formLayoutWidget_7")
-        self.formLayout_7 = QtWidgets.QFormLayout(self.formLayoutWidget_7)
-        self.formLayout_7.setContentsMargins(0, 0, 0, 0)
-        self.formLayout_7.setObjectName("formLayout_7")
-        self.comboBox_4_2_turu = QtWidgets.QComboBox(self.formLayoutWidget_7)
-        font = QtGui.QFont()
-        font.setFamily("Monotype Corsiva")
-        font.setPointSize(13)
-        font.setItalic(True)
-        self.comboBox_4_2_turu.setFont(font)
-        self.comboBox_4_2_turu.setObjectName("comboBox_4_2_turu")
-        self.formLayout_7.setWidget(0, QtWidgets.QFormLayout.FieldRole, self.comboBox_4_2_turu)
-        self.pushButton_4_2_temizle = QtWidgets.QPushButton(self.tab_4_2)
-        self.pushButton_4_2_temizle.setEnabled(False)
-        self.pushButton_4_2_temizle.setGeometry(QtCore.QRect(80, 500, 111, 51))
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Fixed)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.pushButton_4_2_temizle.sizePolicy().hasHeightForWidth())
-        self.pushButton_4_2_temizle.setSizePolicy(sizePolicy)
-        self.pushButton_4_2_temizle.setMinimumSize(QtCore.QSize(80, 50))
-        font = QtGui.QFont()
-        font.setFamily("Monotype Corsiva")
-        font.setPointSize(13)
-        font.setBold(False)
-        font.setItalic(True)
-        font.setWeight(50)
-        self.pushButton_4_2_temizle.setFont(font)
-        self.pushButton_4_2_temizle.setStyleSheet("QPushButton#pushButton_4_2_temizle{    \n"
-"background-color: rgba(6, 211, 166, 150);\n"
-"border-radius:10px;}\n"
-"\n"
-"QPushButton#pushButton_4_2_temizle:hover{\n"
-"background-color: rgba(0, 248, 49, 150);\n"
-"border-radius:10px;}\n"
-"\n"
-"QPushButton#pushButton_4_2_temizle:pressed{\n"
-"background-color: rgba(6, 211, 166,150);\n"
-"padding-left:5px;\n"
-"padding-top:6px;\n"
-"border-radius:10px;}\n"
-"\n"
-"\n"
-"")
-        self.pushButton_4_2_temizle.setObjectName("pushButton_4_2_temizle")
-        self.tabWidget_4.addTab(self.tab_4_2, "")
-        self.tab_4_3 = QtWidgets.QWidget()
-        self.tab_4_3.setObjectName("tab_4_3")
-        self.label_28 = QtWidgets.QLabel(self.tab_4_3)
-        self.label_28.setGeometry(QtCore.QRect(46, 160, 181, 40))
-        font = QtGui.QFont()
-        font.setFamily("Monotype Corsiva")
-        font.setPointSize(12)
-        font.setItalic(True)
-        self.label_28.setFont(font)
-        self.label_28.setAlignment(QtCore.Qt.AlignCenter)
-        self.label_28.setObjectName("label_28")
-        self.tableWidget_4_3_1 = QtWidgets.QTableWidget(self.tab_4_3)
-        self.tableWidget_4_3_1.setGeometry(QtCore.QRect(40, 200, 200, 176))
-        self.tableWidget_4_3_1.setMinimumSize(QtCore.QSize(100, 100))
-        self.tableWidget_4_3_1.setMaximumSize(QtCore.QSize(200, 300))
-        font = QtGui.QFont()
-        font.setFamily("Monotype Corsiva")
-        font.setPointSize(12)
-        font.setBold(False)
-        font.setItalic(True)
-        font.setWeight(50)
-        self.tableWidget_4_3_1.setFont(font)
-        self.tableWidget_4_3_1.setStyleSheet("font: italic 12pt \"Monotype Corsiva\";\n"
-"")
-        self.tableWidget_4_3_1.setObjectName("tableWidget_4_3_1")
-        self.tableWidget_4_3_1.setColumnCount(1)
-        self.tableWidget_4_3_1.setRowCount(0)
-        item = QtWidgets.QTableWidgetItem()
-        self.tableWidget_4_3_1.setHorizontalHeaderItem(0, item)
-        self.tableWidget_4_3_2 = QtWidgets.QTableWidget(self.tab_4_3)
-        self.tableWidget_4_3_2.setGeometry(QtCore.QRect(294, 10, 990, 545))
-        font = QtGui.QFont()
-        font.setFamily("Monotype Corsiva")
-        font.setPointSize(12)
-        font.setBold(False)
-        font.setItalic(True)
-        font.setWeight(50)
-        self.tableWidget_4_3_2.setFont(font)
-        self.tableWidget_4_3_2.setStyleSheet("font: italic 12pt \"Monotype Corsiva\";")
-        self.tableWidget_4_3_2.setShowGrid(True)
-        self.tableWidget_4_3_2.setColumnCount(8)
-        self.tableWidget_4_3_2.setObjectName("tableWidget_4_3_2")
-        self.tableWidget_4_3_2.setRowCount(0)
-        item = QtWidgets.QTableWidgetItem()
-        self.tableWidget_4_3_2.setHorizontalHeaderItem(0, item)
-        item = QtWidgets.QTableWidgetItem()
-        self.tableWidget_4_3_2.setHorizontalHeaderItem(1, item)
-        item = QtWidgets.QTableWidgetItem()
-        self.tableWidget_4_3_2.setHorizontalHeaderItem(2, item)
-        item = QtWidgets.QTableWidgetItem()
-        self.tableWidget_4_3_2.setHorizontalHeaderItem(3, item)
-        item = QtWidgets.QTableWidgetItem()
-        self.tableWidget_4_3_2.setHorizontalHeaderItem(4, item)
-        item = QtWidgets.QTableWidgetItem()
-        self.tableWidget_4_3_2.setHorizontalHeaderItem(5, item)
-        item = QtWidgets.QTableWidgetItem()
-        self.tableWidget_4_3_2.setHorizontalHeaderItem(6, item)
-        item = QtWidgets.QTableWidgetItem()
-        self.tableWidget_4_3_2.setHorizontalHeaderItem(7, item)
-        self.pushButton_4_3_listele = QtWidgets.QPushButton(self.tab_4_3)
-        self.pushButton_4_3_listele.setGeometry(QtCore.QRect(80, 430, 111, 51))
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Fixed)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.pushButton_4_3_listele.sizePolicy().hasHeightForWidth())
-        self.pushButton_4_3_listele.setSizePolicy(sizePolicy)
-        self.pushButton_4_3_listele.setMinimumSize(QtCore.QSize(80, 50))
-        font = QtGui.QFont()
-        font.setFamily("Monotype Corsiva")
-        font.setPointSize(13)
-        font.setBold(False)
-        font.setItalic(True)
-        font.setWeight(50)
-        self.pushButton_4_3_listele.setFont(font)
-        self.pushButton_4_3_listele.setStyleSheet("QPushButton#pushButton_4_3_listele{    \n"
-"background-color: rgba(6, 211, 166, 150);\n"
-"border-radius:10px;}\n"
-"\n"
-"QPushButton#pushButton_4_3_listele:hover{\n"
-"background-color: rgba(0, 248, 49, 150);\n"
-"border-radius:10px;}\n"
-"\n"
-"QPushButton#pushButton_4_3_listele:pressed{\n"
-"background-color: rgba(6, 211, 166,150);\n"
-"padding-left:5px;\n"
-"padding-top:6px;\n"
-"border-radius:10px;}\n"
-"\n"
-"\n"
-"")
-        self.pushButton_4_3_listele.setObjectName("pushButton_4_3_listele")
-        self.formLayoutWidget_8 = QtWidgets.QWidget(self.tab_4_3)
-        self.formLayoutWidget_8.setGeometry(QtCore.QRect(10, 80, 281, 51))
-        self.formLayoutWidget_8.setObjectName("formLayoutWidget_8")
-        self.formLayout_8 = QtWidgets.QFormLayout(self.formLayoutWidget_8)
-        self.formLayout_8.setContentsMargins(0, 0, 0, 0)
-        self.formLayout_8.setObjectName("formLayout_8")
-        self.comboBox_4_3_turu = QtWidgets.QComboBox(self.formLayoutWidget_8)
-        font = QtGui.QFont()
-        font.setFamily("Monotype Corsiva")
-        font.setPointSize(13)
-        font.setItalic(True)
-        self.comboBox_4_3_turu.setFont(font)
-        self.comboBox_4_3_turu.setObjectName("comboBox_4_3_turu")
-        self.formLayout_8.setWidget(0, QtWidgets.QFormLayout.FieldRole, self.comboBox_4_3_turu)
-        self.pushButton_4_3_temizle = QtWidgets.QPushButton(self.tab_4_3)
-        self.pushButton_4_3_temizle.setEnabled(False)
-        self.pushButton_4_3_temizle.setGeometry(QtCore.QRect(80, 500, 111, 51))
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Fixed)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.pushButton_4_3_temizle.sizePolicy().hasHeightForWidth())
-        self.pushButton_4_3_temizle.setSizePolicy(sizePolicy)
-        self.pushButton_4_3_temizle.setMinimumSize(QtCore.QSize(80, 50))
-        font = QtGui.QFont()
-        font.setFamily("Monotype Corsiva")
-        font.setPointSize(13)
-        font.setBold(False)
-        font.setItalic(True)
-        font.setWeight(50)
-        self.pushButton_4_3_temizle.setFont(font)
-        self.pushButton_4_3_temizle.setStyleSheet("QPushButton#pushButton_4_3_temizle{    \n"
-"background-color: rgba(6, 211, 166, 150);\n"
-"border-radius:10px;}\n"
-"\n"
-"QPushButton#pushButton_4_3_temizle:hover{\n"
-"background-color: rgba(0, 248, 49, 150);\n"
-"border-radius:10px;}\n"
-"\n"
-"QPushButton#pushButton_4_3_temizle:pressed{\n"
-"background-color: rgba(6, 211, 166,150);\n"
-"padding-left:5px;\n"
-"padding-top:6px;\n"
-"border-radius:10px;}\n"
-"\n"
-"\n"
-"")
-        self.pushButton_4_3_temizle.setObjectName("pushButton_4_3_temizle")
-        self.tabWidget_4.addTab(self.tab_4_3, "")
-        self.tab_4_4 = QtWidgets.QWidget()
-        self.tab_4_4.setObjectName("tab_4_4")
-        self.label_29 = QtWidgets.QLabel(self.tab_4_4)
-        self.label_29.setGeometry(QtCore.QRect(46, 160, 181, 40))
-        font = QtGui.QFont()
-        font.setFamily("Monotype Corsiva")
-        font.setPointSize(12)
-        font.setItalic(True)
-        self.label_29.setFont(font)
-        self.label_29.setAlignment(QtCore.Qt.AlignCenter)
-        self.label_29.setObjectName("label_29")
-        self.tableWidget_4_4_1 = QtWidgets.QTableWidget(self.tab_4_4)
-        self.tableWidget_4_4_1.setGeometry(QtCore.QRect(40, 200, 200, 176))
-        self.tableWidget_4_4_1.setMinimumSize(QtCore.QSize(100, 100))
-        self.tableWidget_4_4_1.setMaximumSize(QtCore.QSize(200, 300))
-        font = QtGui.QFont()
-        font.setFamily("Monotype Corsiva")
-        font.setPointSize(12)
-        font.setBold(False)
-        font.setItalic(True)
-        font.setWeight(50)
-        self.tableWidget_4_4_1.setFont(font)
-        self.tableWidget_4_4_1.setStyleSheet("font: italic 12pt \"Monotype Corsiva\";\n"
-"")
-        self.tableWidget_4_4_1.setObjectName("tableWidget_4_4_1")
-        self.tableWidget_4_4_1.setColumnCount(1)
-        self.tableWidget_4_4_1.setRowCount(0)
-        item = QtWidgets.QTableWidgetItem()
-        self.tableWidget_4_4_1.setHorizontalHeaderItem(0, item)
-        self.tableWidget_4_4_2 = QtWidgets.QTableWidget(self.tab_4_4)
-        self.tableWidget_4_4_2.setGeometry(QtCore.QRect(294, 10, 990, 545))
-        font = QtGui.QFont()
-        font.setFamily("Monotype Corsiva")
-        font.setPointSize(12)
-        font.setBold(False)
-        font.setItalic(True)
-        font.setWeight(50)
-        self.tableWidget_4_4_2.setFont(font)
-        self.tableWidget_4_4_2.setStyleSheet("font: italic 12pt \"Monotype Corsiva\";")
-        self.tableWidget_4_4_2.setShowGrid(True)
-        self.tableWidget_4_4_2.setColumnCount(8)
-        self.tableWidget_4_4_2.setObjectName("tableWidget_4_4_2")
-        self.tableWidget_4_4_2.setRowCount(0)
-        item = QtWidgets.QTableWidgetItem()
-        self.tableWidget_4_4_2.setHorizontalHeaderItem(0, item)
-        item = QtWidgets.QTableWidgetItem()
-        self.tableWidget_4_4_2.setHorizontalHeaderItem(1, item)
-        item = QtWidgets.QTableWidgetItem()
-        self.tableWidget_4_4_2.setHorizontalHeaderItem(2, item)
-        item = QtWidgets.QTableWidgetItem()
-        self.tableWidget_4_4_2.setHorizontalHeaderItem(3, item)
-        item = QtWidgets.QTableWidgetItem()
-        self.tableWidget_4_4_2.setHorizontalHeaderItem(4, item)
-        item = QtWidgets.QTableWidgetItem()
-        self.tableWidget_4_4_2.setHorizontalHeaderItem(5, item)
-        item = QtWidgets.QTableWidgetItem()
-        self.tableWidget_4_4_2.setHorizontalHeaderItem(6, item)
-        item = QtWidgets.QTableWidgetItem()
-        self.tableWidget_4_4_2.setHorizontalHeaderItem(7, item)
-        self.pushButton_4_4_listele = QtWidgets.QPushButton(self.tab_4_4)
-        self.pushButton_4_4_listele.setGeometry(QtCore.QRect(80, 430, 111, 51))
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Fixed)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.pushButton_4_4_listele.sizePolicy().hasHeightForWidth())
-        self.pushButton_4_4_listele.setSizePolicy(sizePolicy)
-        self.pushButton_4_4_listele.setMinimumSize(QtCore.QSize(80, 50))
-        font = QtGui.QFont()
-        font.setFamily("Monotype Corsiva")
-        font.setPointSize(13)
-        font.setBold(False)
-        font.setItalic(True)
-        font.setWeight(50)
-        self.pushButton_4_4_listele.setFont(font)
-        self.pushButton_4_4_listele.setStyleSheet("QPushButton#pushButton_4_4_listele{    \n"
-"background-color: rgba(6, 211, 166, 150);\n"
-"border-radius:10px;}\n"
-"\n"
-"QPushButton#pushButton_4_4_listele:hover{\n"
-"background-color: rgba(0, 248, 49, 150);\n"
-"border-radius:10px;}\n"
-"\n"
-"QPushButton#pushButton_4_4_listele:pressed{\n"
-"background-color: rgba(6, 211, 166,150);\n"
-"padding-left:5px;\n"
-"padding-top:6px;\n"
-"border-radius:10px;}\n"
-"\n"
-"\n"
-"")
-        self.pushButton_4_4_listele.setObjectName("pushButton_4_4_listele")
-        self.formLayoutWidget_9 = QtWidgets.QWidget(self.tab_4_4)
-        self.formLayoutWidget_9.setGeometry(QtCore.QRect(10, 80, 281, 51))
-        self.formLayoutWidget_9.setObjectName("formLayoutWidget_9")
-        self.formLayout_9 = QtWidgets.QFormLayout(self.formLayoutWidget_9)
-        self.formLayout_9.setContentsMargins(0, 0, 0, 0)
-        self.formLayout_9.setObjectName("formLayout_9")
-        self.comboBox_4_4_turu = QtWidgets.QComboBox(self.formLayoutWidget_9)
-        font = QtGui.QFont()
-        font.setFamily("Monotype Corsiva")
-        font.setPointSize(13)
-        font.setItalic(True)
-        self.comboBox_4_4_turu.setFont(font)
-        self.comboBox_4_4_turu.setObjectName("comboBox_4_4_turu")
-        self.formLayout_9.setWidget(0, QtWidgets.QFormLayout.FieldRole, self.comboBox_4_4_turu)
-        self.pushButton_4_4_temizle = QtWidgets.QPushButton(self.tab_4_4)
-        self.pushButton_4_4_temizle.setEnabled(False)
-        self.pushButton_4_4_temizle.setGeometry(QtCore.QRect(80, 500, 111, 51))
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Fixed)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.pushButton_4_4_temizle.sizePolicy().hasHeightForWidth())
-        self.pushButton_4_4_temizle.setSizePolicy(sizePolicy)
-        self.pushButton_4_4_temizle.setMinimumSize(QtCore.QSize(80, 50))
-        font = QtGui.QFont()
-        font.setFamily("Monotype Corsiva")
-        font.setPointSize(13)
-        font.setBold(False)
-        font.setItalic(True)
-        font.setWeight(50)
-        self.pushButton_4_4_temizle.setFont(font)
-        self.pushButton_4_4_temizle.setStyleSheet("QPushButton#pushButton_4_4_temizle{    \n"
-"background-color: rgba(6, 211, 166, 150);\n"
-"border-radius:10px;}\n"
-"\n"
-"QPushButton#pushButton_4_4_temizle:hover{\n"
-"background-color: rgba(0, 248, 49, 150);\n"
-"border-radius:10px;}\n"
-"\n"
-"QPushButton#pushButton_4_4_temizle:pressed{\n"
-"background-color: rgba(6, 211, 166,150);\n"
-"padding-left:5px;\n"
-"padding-top:6px;\n"
-"border-radius:10px;}\n"
-"\n"
-"\n"
-"")
-        self.pushButton_4_4_temizle.setObjectName("pushButton_4_4_temizle")
-        self.tabWidget_4.addTab(self.tab_4_4, "")
-        self.gridLayout_3.addWidget(self.tabWidget_4, 0, 0, 1, 1)
         self.tabWidget.addTab(self.tab_4, "")
         self.tab_5 = QtWidgets.QWidget()
         self.tab_5.setObjectName("tab_5")
         self.gridLayout_4 = QtWidgets.QGridLayout(self.tab_5)
         self.gridLayout_4.setObjectName("gridLayout_4")
         self.tabWidget_5 = QtWidgets.QTabWidget(self.tab_5)
-        font = QtGui.QFont()
-        font.setFamily("Monotype Corsiva")
-        font.setPointSize(14)
-        font.setItalic(True)
-        self.tabWidget_5.setFont(font)
-        self.tabWidget_5.setStyleSheet("")
         self.tabWidget_5.setTabPosition(QtWidgets.QTabWidget.South)
         self.tabWidget_5.setObjectName("tabWidget_5")
         self.tab_5_1 = QtWidgets.QWidget()
         self.tab_5_1.setObjectName("tab_5_1")
         self.gridLayout_5 = QtWidgets.QGridLayout(self.tab_5_1)
         self.gridLayout_5.setObjectName("gridLayout_5")
-        self.label_25 = QtWidgets.QLabel(self.tab_5_1)
-        font = QtGui.QFont()
-        font.setFamily("Monotype Corsiva")
-        font.setPointSize(12)
-        font.setItalic(True)
-        self.label_25.setFont(font)
-        self.label_25.setObjectName("label_25")
-        self.gridLayout_5.addWidget(self.label_25, 0, 0, 1, 1)
-        self.label_56 = QtWidgets.QLabel(self.tab_5_1)
-        font = QtGui.QFont()
-        font.setFamily("Monotype Corsiva")
-        font.setPointSize(12)
-        font.setItalic(True)
-        self.label_56.setFont(font)
-        self.label_56.setObjectName("label_56")
-        self.gridLayout_5.addWidget(self.label_56, 0, 1, 1, 1)
-        self.label_58 = QtWidgets.QLabel(self.tab_5_1)
-        font = QtGui.QFont()
-        font.setFamily("Monotype Corsiva")
-        font.setPointSize(12)
-        font.setItalic(True)
-        self.label_58.setFont(font)
-        self.label_58.setObjectName("label_58")
-        self.gridLayout_5.addWidget(self.label_58, 0, 2, 1, 1)
-        self.label_59 = QtWidgets.QLabel(self.tab_5_1)
-        font = QtGui.QFont()
-        font.setFamily("Monotype Corsiva")
-        font.setPointSize(12)
-        font.setItalic(True)
-        self.label_59.setFont(font)
-        self.label_59.setObjectName("label_59")
-        self.gridLayout_5.addWidget(self.label_59, 0, 3, 1, 1)
         self.tableWidget_5_1_1 = QtWidgets.QTableWidget(self.tab_5_1)
-        self.tableWidget_5_1_1.setStyleSheet("font: italic 12pt \"Monotype Corsiva\";")
         self.tableWidget_5_1_1.setObjectName("tableWidget_5_1_1")
         self.tableWidget_5_1_1.setColumnCount(2)
         self.tableWidget_5_1_1.setRowCount(0)
@@ -871,7 +91,6 @@ class Ui_MainWindow(object):
         self.gridLayout_5.addWidget(self.tableWidget_5_1_1, 1, 0, 1, 1)
         self.tableWidget_5_1_2 = QtWidgets.QTableWidget(self.tab_5_1)
         self.tableWidget_5_1_2.setEnabled(True)
-        self.tableWidget_5_1_2.setStyleSheet("font: italic 12pt \"Monotype Corsiva\";")
         self.tableWidget_5_1_2.setObjectName("tableWidget_5_1_2")
         self.tableWidget_5_1_2.setColumnCount(2)
         self.tableWidget_5_1_2.setRowCount(0)
@@ -881,7 +100,6 @@ class Ui_MainWindow(object):
         self.tableWidget_5_1_2.setHorizontalHeaderItem(1, item)
         self.gridLayout_5.addWidget(self.tableWidget_5_1_2, 1, 1, 1, 1)
         self.tableWidget_5_1_3 = QtWidgets.QTableWidget(self.tab_5_1)
-        self.tableWidget_5_1_3.setStyleSheet("font: italic 12pt \"Monotype Corsiva\";")
         self.tableWidget_5_1_3.setObjectName("tableWidget_5_1_3")
         self.tableWidget_5_1_3.setColumnCount(2)
         self.tableWidget_5_1_3.setRowCount(0)
@@ -891,7 +109,6 @@ class Ui_MainWindow(object):
         self.tableWidget_5_1_3.setHorizontalHeaderItem(1, item)
         self.gridLayout_5.addWidget(self.tableWidget_5_1_3, 1, 2, 1, 1)
         self.tableWidget_5_1_4 = QtWidgets.QTableWidget(self.tab_5_1)
-        self.tableWidget_5_1_4.setStyleSheet("font: italic 12pt \"Monotype Corsiva\";")
         self.tableWidget_5_1_4.setObjectName("tableWidget_5_1_4")
         self.tableWidget_5_1_4.setColumnCount(2)
         self.tableWidget_5_1_4.setRowCount(0)
@@ -907,35 +124,22 @@ class Ui_MainWindow(object):
         self.gridLayout_6.setContentsMargins(5, 5, 5, 5)
         self.gridLayout_6.setSpacing(5)
         self.gridLayout_6.setObjectName("gridLayout_6")
-        self.widget = QtWidgets.QWidget(self.tab_5_2)
-        self.widget.setObjectName("widget")
-        self.gridLayout_6.addWidget(self.widget, 0, 0, 1, 1)
         self.tabWidget_5.addTab(self.tab_5_2, "")
         self.gridLayout_4.addWidget(self.tabWidget_5, 0, 0, 1, 1)
         self.tabWidget.addTab(self.tab_5, "")
         self.gridLayout_7.addWidget(self.tabWidget, 0, 0, 1, 1)
         MainWindow.setCentralWidget(self.centralwidget)
         self.statusbar = QtWidgets.QStatusBar(MainWindow)
-        font = QtGui.QFont()
-        font.setFamily("Monotype Corsiva")
-        font.setPointSize(14)
-        font.setItalic(True)
-        self.statusbar.setFont(font)
         self.statusbar.setObjectName("statusbar")
         MainWindow.setStatusBar(self.statusbar)
 
         self.retranslateUi(MainWindow)
-        self.tabWidget.setCurrentIndex(0)
-        self.tabWidget_4.setCurrentIndex(0)
-        self.tabWidget_5.setCurrentIndex(0)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
-        self.label.setText(_translate("MainWindow", "Yaşar Kütüphanesi"))
         self.pushButton_1_cikis.setText(_translate("MainWindow", "Çıkış"))
-        self.label_32.setText(_translate("MainWindow", "Misafir"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_1), _translate("MainWindow", "Giriş"))
         item = self.tableWidget_2.horizontalHeaderItem(0)
         item.setText(_translate("MainWindow", "New Column"))
@@ -954,101 +158,8 @@ class Ui_MainWindow(object):
         item = self.tableWidget_2.horizontalHeaderItem(7)
         item.setText(_translate("MainWindow", "New Column"))
         self.pushButton_2_temizle.setText(_translate("MainWindow", "Temizle"))
-        self.pushButton_2_listele.setText(_translate("MainWindow", "Listele"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_2), _translate("MainWindow", "Kitap Listesi"))
-        self.label_26.setText(_translate("MainWindow", "Seçilenler"))
-        item = self.tableWidget_4_1_1.horizontalHeaderItem(0)
-        item.setText(_translate("MainWindow", "New Column"))
-        item = self.tableWidget_4_1_2.horizontalHeaderItem(0)
-        item.setText(_translate("MainWindow", "New Column"))
-        item = self.tableWidget_4_1_2.horizontalHeaderItem(1)
-        item.setText(_translate("MainWindow", "New Column"))
-        item = self.tableWidget_4_1_2.horizontalHeaderItem(2)
-        item.setText(_translate("MainWindow", "New Column"))
-        item = self.tableWidget_4_1_2.horizontalHeaderItem(3)
-        item.setText(_translate("MainWindow", "New Column"))
-        item = self.tableWidget_4_1_2.horizontalHeaderItem(4)
-        item.setText(_translate("MainWindow", "New Column"))
-        item = self.tableWidget_4_1_2.horizontalHeaderItem(5)
-        item.setText(_translate("MainWindow", "New Column"))
-        item = self.tableWidget_4_1_2.horizontalHeaderItem(6)
-        item.setText(_translate("MainWindow", "New Column"))
-        item = self.tableWidget_4_1_2.horizontalHeaderItem(7)
-        item.setText(_translate("MainWindow", "New Column"))
-        self.pushButton_4_1_listele.setText(_translate("MainWindow", "Listele"))
-        self.pushButton_4_1_temizle.setText(_translate("MainWindow", "Temizle"))
-        self.tabWidget_4.setTabText(self.tabWidget_4.indexOf(self.tab_4_1), _translate("MainWindow", "Türe Göre"))
-        self.label_27.setText(_translate("MainWindow", "Seçilenler"))
-        item = self.tableWidget_4_2_1.horizontalHeaderItem(0)
-        item.setText(_translate("MainWindow", "New Column"))
-        item = self.tableWidget_4_2_2.horizontalHeaderItem(0)
-        item.setText(_translate("MainWindow", "New Column"))
-        item = self.tableWidget_4_2_2.horizontalHeaderItem(1)
-        item.setText(_translate("MainWindow", "New Column"))
-        item = self.tableWidget_4_2_2.horizontalHeaderItem(2)
-        item.setText(_translate("MainWindow", "New Column"))
-        item = self.tableWidget_4_2_2.horizontalHeaderItem(3)
-        item.setText(_translate("MainWindow", "New Column"))
-        item = self.tableWidget_4_2_2.horizontalHeaderItem(4)
-        item.setText(_translate("MainWindow", "New Column"))
-        item = self.tableWidget_4_2_2.horizontalHeaderItem(5)
-        item.setText(_translate("MainWindow", "New Column"))
-        item = self.tableWidget_4_2_2.horizontalHeaderItem(6)
-        item.setText(_translate("MainWindow", "New Column"))
-        item = self.tableWidget_4_2_2.horizontalHeaderItem(7)
-        item.setText(_translate("MainWindow", "New Column"))
-        self.pushButton_4_2_listele.setText(_translate("MainWindow", "Listele"))
-        self.pushButton_4_2_temizle.setText(_translate("MainWindow", "Temizle"))
-        self.tabWidget_4.setTabText(self.tabWidget_4.indexOf(self.tab_4_2), _translate("MainWindow", "Yazara Göre"))
-        self.label_28.setText(_translate("MainWindow", "Seçilenler"))
-        item = self.tableWidget_4_3_1.horizontalHeaderItem(0)
-        item.setText(_translate("MainWindow", "New Column"))
-        item = self.tableWidget_4_3_2.horizontalHeaderItem(0)
-        item.setText(_translate("MainWindow", "New Column"))
-        item = self.tableWidget_4_3_2.horizontalHeaderItem(1)
-        item.setText(_translate("MainWindow", "New Column"))
-        item = self.tableWidget_4_3_2.horizontalHeaderItem(2)
-        item.setText(_translate("MainWindow", "New Column"))
-        item = self.tableWidget_4_3_2.horizontalHeaderItem(3)
-        item.setText(_translate("MainWindow", "New Column"))
-        item = self.tableWidget_4_3_2.horizontalHeaderItem(4)
-        item.setText(_translate("MainWindow", "New Column"))
-        item = self.tableWidget_4_3_2.horizontalHeaderItem(5)
-        item.setText(_translate("MainWindow", "New Column"))
-        item = self.tableWidget_4_3_2.horizontalHeaderItem(6)
-        item.setText(_translate("MainWindow", "New Column"))
-        item = self.tableWidget_4_3_2.horizontalHeaderItem(7)
-        item.setText(_translate("MainWindow", "New Column"))
-        self.pushButton_4_3_listele.setText(_translate("MainWindow", "Listele"))
-        self.pushButton_4_3_temizle.setText(_translate("MainWindow", "Temizle"))
-        self.tabWidget_4.setTabText(self.tabWidget_4.indexOf(self.tab_4_3), _translate("MainWindow", "Yayınevine Göre"))
-        self.label_29.setText(_translate("MainWindow", "Seçilenler"))
-        item = self.tableWidget_4_4_1.horizontalHeaderItem(0)
-        item.setText(_translate("MainWindow", "New Column"))
-        item = self.tableWidget_4_4_2.horizontalHeaderItem(0)
-        item.setText(_translate("MainWindow", "New Column"))
-        item = self.tableWidget_4_4_2.horizontalHeaderItem(1)
-        item.setText(_translate("MainWindow", "New Column"))
-        item = self.tableWidget_4_4_2.horizontalHeaderItem(2)
-        item.setText(_translate("MainWindow", "New Column"))
-        item = self.tableWidget_4_4_2.horizontalHeaderItem(3)
-        item.setText(_translate("MainWindow", "New Column"))
-        item = self.tableWidget_4_4_2.horizontalHeaderItem(4)
-        item.setText(_translate("MainWindow", "New Column"))
-        item = self.tableWidget_4_4_2.horizontalHeaderItem(5)
-        item.setText(_translate("MainWindow", "New Column"))
-        item = self.tableWidget_4_4_2.horizontalHeaderItem(6)
-        item.setText(_translate("MainWindow", "New Column"))
-        item = self.tableWidget_4_4_2.horizontalHeaderItem(7)
-        item.setText(_translate("MainWindow", "New Column"))
-        self.pushButton_4_4_listele.setText(_translate("MainWindow", "Listele"))
-        self.pushButton_4_4_temizle.setText(_translate("MainWindow", "Temizle"))
-        self.tabWidget_4.setTabText(self.tabWidget_4.indexOf(self.tab_4_4), _translate("MainWindow", "Yıla Göre"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_4), _translate("MainWindow", "Filtre"))
-        self.label_25.setText(_translate("MainWindow", "Türlere Göre"))
-        self.label_56.setText(_translate("MainWindow", "Yazarlara Göre"))
-        self.label_58.setText(_translate("MainWindow", "Yayınevlerine Göre"))
-        self.label_59.setText(_translate("MainWindow", "Basım Yıllarına Göre"))
         item = self.tableWidget_5_1_1.horizontalHeaderItem(0)
         item.setText(_translate("MainWindow", "New Column"))
         item = self.tableWidget_5_1_1.horizontalHeaderItem(1)

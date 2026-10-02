@@ -89,9 +89,7 @@ def test_pencere_basliklari(w):
 
 
 def test_cikis_butonu_ikonu(w):
-    from PyQt5.QtCore import QFile
-    buton = w.QtLogin.pushButton_cikis
-    assert QFile(":/pic/guc.png").exists()          # ikon programın içinde, dışarıdaki dosyaya bağlı değil
+    buton = w.QtLogin.pushButton_cikis              # ikon Qt ile çizilir, dosyaya bağlı değil
     assert not buton.icon().isNull() and buton.icon().availableSizes()
     assert buton.toolTip() == "Programdan çık"
 
@@ -100,7 +98,7 @@ def test_cikis_butonu_ikonu(w):
 
 def test_giris_karti(w):
     ui = w.QtLogin
-    assert ui.formFrame.isHidden() and ui.statusbar.isHidden()
+    assert not hasattr(ui, "formFrame") and ui.statusbar.isHidden()
     kart = w.findChild(type(ui.widget), "giris_karti")
     assert ui.lineEdit_kullanci_adi.parent() is kart and ui.pushButton_giris.parent() is kart
     assert ui.lineEdit_kullanci_adi.placeholderText() == "Kullanıcı adınız"
@@ -125,3 +123,11 @@ def test_mesajlar_kartta(w):
     assert w.mesaj.text() == ""
     w.library.oturumu_kapat()
     assert w.mesaj.property("tur") == "bilgi"
+
+
+def test_acilista_kullanici_adi_odakta(app):
+    from acodes.login import Login
+    w = Login()
+    w.show()
+    app.processEvents()
+    assert w.focusWidget() is w.QtLogin.lineEdit_kullanci_adi

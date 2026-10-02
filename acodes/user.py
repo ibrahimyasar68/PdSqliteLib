@@ -1,7 +1,8 @@
-from PyQt5.QtWidgets import QHBoxLayout, QLabel, QListView, QMainWindow, QMessageBox, QVBoxLayout, QWidget
-from PyQt5.QtCore import Qt, pyqtSignal
+from types import SimpleNamespace
+from PyQt5.QtWidgets import (QComboBox, QHBoxLayout, QLabel, QLineEdit, QListView, QMainWindow, QMessageBox,
+                             QPushButton, QVBoxLayout, QWidget)
+from PyQt5.QtCore import Qt, QTimer, pyqtSignal
 from acodes import ikonlar, tema
-from bforms.user_py import Ui_MainWindow
 from database.dbframe import df_user_query
 from database.dbbase import user_ekle
 from acodes.onay import onay
@@ -37,8 +38,6 @@ class User(QMainWindow):
             # panelden ayrı bir masaüstü alanına geçip siyah ekranda kalmıyordu)
             self.setWindowFlags(Qt.Dialog)
             self.setWindowModality(Qt.WindowModal)
-        self.QtUser = Ui_MainWindow()
-        self.QtUser.setupUi(self)
         self.dur_msj=3000
         self.setWindowTitle("Yaşar Kütüphanesi - Yeni Kullanıcı")
         self.tasarim()
@@ -57,10 +56,14 @@ class User(QMainWindow):
 
     def tasarim(self):
         ###  Temadaki sade form: başlık, etiketli alanlar, kart içinde mesaj, sağ altta butonlar  ###
-        ui=self.QtUser
-        for eski in (ui.label, ui.label_2, ui.groupBox, ui.layoutWidget):
-            eski.hide()
-        ui.statusbar.hide()                       # mesajlar formun içinde gösterilir
+        # Alanlar self.QtUser altında toplanır (diğer pencerelerdeki ui nesnesi gibi)
+        ui=self.QtUser=SimpleNamespace(
+            lineEdit_kullanici_adi=QLineEdit(), lineEdit_sifre=QLineEdit(), lineEdit_adi_soyadi=QLineEdit(),
+            lineEdit_telefon=QLineEdit(), lineEdit_mail=QLineEdit(), comboBox_yetki=QComboBox(),
+            pushButton_cikis=QPushButton(objectName="pushButton_cikis"),
+            pushButton_temizle=QPushButton(objectName="pushButton_temizle"),
+            pushButton_kaydet=QPushButton(objectName="pushButton_kaydet"))
+        ui.lineEdit_sifre.setEchoMode(QLineEdit.PasswordEchoOnEdit)
         alanlar=[(ui.lineEdit_kullanici_adi,"Kullanıcı adı *","ör. ayse"),
                  (ui.lineEdit_sifre,"Şifre *",f"En az {SIFRE_EN_AZ} karakter"),
                  (ui.lineEdit_adi_soyadi,"Adı soyadı *","ör. Ayşe Yılmaz"),
@@ -78,10 +81,7 @@ class User(QMainWindow):
         duzen.addWidget(alt)
         duzen.addSpacing(14)
         for alan,etiket,ipucu in alanlar:
-            alan.setParent(kart)
-            alan.setStyleSheet("")
-            alan.setMinimumSize(0,38)
-            alan.setMaximumSize(16777215,38)
+            alan.setFixedHeight(38)
             if ipucu:
                 alan.setPlaceholderText(ipucu)
             duzen.addWidget(QLabel(etiket,objectName="form_etiket"))
@@ -90,15 +90,13 @@ class User(QMainWindow):
         ui.comboBox_yetki.setView(QListView())    # Mac'in yerel listesi seçenekleri kesiyordu
         self.mesaj=QLabel("",objectName="form_mesaj")
         self.mesaj.setWordWrap(True)
-        ui.statusbar.messageChanged.connect(self.mesaj.setText)
+        self._mesaj_sayaci=QTimer(self,singleShot=True,timeout=self.mesaj.clear)
         duzen.addWidget(self.mesaj)
         duzen.addStretch()
         butonlar=QHBoxLayout()
         butonlar.addStretch()
         for buton,metin,rol in ((ui.pushButton_cikis,"Kapat","ikincil"),(ui.pushButton_temizle,"Temizle","ikincil"),
                                 (ui.pushButton_kaydet,"Kaydet",None)):
-            buton.setParent(kart)
-            buton.setStyleSheet("")
             buton.setText(metin)
             buton.setMinimumSize(110,40)
             buton.setMaximumSize(160,40)
@@ -118,6 +116,11 @@ class User(QMainWindow):
 #form_mesaj {{ color: {tema.TEHLIKE}; }}
 QLineEdit, QComboBox {{ font-size: 16px; padding: 4px 10px; border-radius: 8px; }}
 """)
+
+    def mesaj_goster(self,metin,sure):
+        ###  Formun içinde kısa süre görünen mesaj  ###
+        self.mesaj.setText(metin)
+        self._mesaj_sayaci.start(sure)
 
     def ac(self):
         ###  Panelin ortasında, önde açılır  ###
@@ -144,7 +147,7 @@ QLineEdit, QComboBox {{ font-size: 16px; padding: 4px 10px; border-radius: 8px; 
         if df_user_query('kullanici',self.QtUser.lineEdit_kullanici_adi.text()):
             self.QtUser.lineEdit_kullanici_adi.clear()
             QMessageBox.information(self,"Uyarı!","Kullanıcı adı kullanılmaktadır!")
-            self.QtUser.statusbar.showMessage("Kullanıcı adı kullanılmaktadır. Lütfen yeni bir kayıt deneyin",self.dur_msj)
+            self.mesaj_goster("Kullanıcı adı kullanılmaktadır. Lütfen yeni bir kayıt deneyin",self.dur_msj)
 
     def chk_sifre(self):
         if  not (self.QtUser.lineEdit_kullanici_adi.text()):
@@ -152,7 +155,7 @@ QLineEdit, QComboBox {{ font-size: 16px; padding: 4px 10px; border-radius: 8px; 
             self.QtUser.lineEdit_sifre.clear()
         elif self.QtUser.lineEdit_sifre.text():
             # Kısa şifre Kaydet'e basmadan, formun içinde bildirilir
-            self.QtUser.statusbar.showMessage(sifre_hatasi(self.QtUser.lineEdit_sifre.text()) or "",self.dur_msj*2)
+            self.mesaj_goster(sifre_hatasi(self.QtUser.lineEdit_sifre.text()) or "",self.dur_msj*2)
 
     def chk_adi_soyadi(self):
         if not self.QtUser.lineEdit_sifre.text():
@@ -162,7 +165,7 @@ QLineEdit, QComboBox {{ font-size: 16px; padding: 4px 10px; border-radius: 8px; 
             if df_user_query('adi_soyadi',self.QtUser.lineEdit_adi_soyadi.text()):
                 cvb=onay('Bu adda bir kullanıcı var. Devam etmek İstiyor musun?')
                 if cvb==QMessageBox.No:
-                    self.QtUser.statusbar.showMessage("Lütfen yeni bir isim giriniz",self.dur_msj)
+                    self.mesaj_goster("Lütfen yeni bir isim giriniz",self.dur_msj)
                     self.QtUser.lineEdit_adi_soyadi.clear()
 
     # Telefon ve e-posta isteğe bağlı: boş bırakılırsa uyarı verilmez

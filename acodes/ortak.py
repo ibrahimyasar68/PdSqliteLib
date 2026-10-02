@@ -36,21 +36,16 @@ class OrtakSekmeler:
         ###  Tab_2  ###
         self.create_form_tab2()
         self.arama_kutusu_kur()
-        # Liste sekmeye gelince kendiliğinden dolar ve yazdıkça süzülür; Listele butonuna gerek kalmadı
-        ui.pushButton_2_listele.hide()
+        # Liste sekmeye gelince kendiliğinden dolar ve yazdıkça süzülür
         ui.tabWidget.currentChanged.connect(self.liste_sekmesi_acildi)
         ui.pushButton_2_temizle.clicked.connect(self.temizle)
 
-        ###  Tab_4: dört ayrı filtre sekmesi yerine tek panel  ###
-        ui.gridLayout_3.removeWidget(ui.tabWidget_4)
-        ui.tabWidget_4.setParent(None)   # hemen ağaçtan çıksın (ikon, arama vb. eski bileşenleri görmesin)
-        ui.tabWidget_4.deleteLater()
+        ###  Tab_4: tür, yazar, yayınevi ve yıl tek panelde  ###
         self.filtre=FiltrePaneli(mesaj=lambda metin: self.QtLibrary.statusbar.showMessage(metin,self.dur_msj))
         ui.gridLayout_3.addWidget(self.filtre,0,0)
 
         ###  Tab_5  ###
-        # Grafikler: eski sabit resmin yerine her yenilemede çizilen grafikler
-        ui.widget.hide()
+        # Grafikler: her yenilemede veritabanından çizilir
         self.grafikler=GrafikPaneli(ui.tab_5_2)
         ui.gridLayout_6.addWidget(self.grafikler,0,0)
         self.create_tab_5()
@@ -60,7 +55,7 @@ class OrtakSekmeler:
         self.cizelgeleri_kartla()
 
         ###  Dışa aktarma: ana tablolarda buton, tüm tablolarda sağ tık menüsü  ###
-        self.aktar_liste=self.aktar_butonu(ui.tableWidget_2,"Kitap Listesi",ui.pushButton_2_temizle,(40,480,100,60))
+        self.aktar_liste=self.aktar_butonu(ui.tableWidget_2,"Kitap Listesi",ui.pushButton_2_temizle)
         self.filtre.btn_aktar.clicked.connect(lambda: disa_aktar(self,self.filtre.tablo,"Filtre"))
         sag_tik_menusu(self,self.filtre.tablo,"Filtre")
         for no,_,baslik,_ in ISTATISTIKLER:
@@ -79,11 +74,10 @@ class OrtakSekmeler:
         liste_sayfasi(ui.tab_2,[ui.pushButton_2_temizle,self.aktar_liste],ui.tableWidget_2,ust,
                       uyari=self.liste_kolonlari.soru)
 
-    def aktar_butonu(self,tablo,ad,ornek,konum):
+    def aktar_butonu(self,tablo,ad,ornek):
         ###  Örnek butonla aynı stilde "Dışa Aktar" butonu ve tabloya sağ tık menüsü  ###
         buton=panel_butonu(ornek,"Dışa Aktar",f"{ornek.objectName()}_aktar")
         buton.setParent(ornek.parentWidget())
-        buton.setGeometry(*konum)
         buton.setToolTip(f"{ad} tablosunu Excel veya CSV olarak kaydet")
         buton.clicked.connect(lambda: disa_aktar(self,tablo,ad))
         buton.show()
@@ -122,16 +116,13 @@ class OrtakSekmeler:
         tablo_basliklari(self.QtLibrary.tableWidget_2, LISTE_KOLONLARI)
 
     def arama_kutusu_kur(self):
-        ###  Tablonun üstüne arama kutusu (tablo biraz aşağı kaydırılır)  ###
+        ###  Tablonun üstüne arama kutusu ve sonuç sayısı (yerleşimi liste_sayfasi kurar)  ###
         ui=self.QtLibrary
-        ui.tableWidget_2.setGeometry(160,55,1160,545)
         self.arama=QLineEdit(ui.tab_2)
-        self.arama.setGeometry(160,10,520,36)
         self.arama.setPlaceholderText("Ara: kitap adı, yazar, çevirmen, tür, yayınevi, yıl, ISBN, raf, not...")
         self.arama.setClearButtonEnabled(True)
         self.arama.setStyleSheet('font-size: 17px; border-radius: 6px; padding: 2px 8px;')
         self.arama_sonuc=QLabel(ui.tab_2)
-        self.arama_sonuc.setGeometry(700,10,400,36)
         self.arama_sonuc.setStyleSheet(f'font-size: 16px; font-weight: bold; color: {tema.VURGU_KOYU};')
         self.arama.textChanged.connect(self.listele)
 
@@ -156,8 +147,6 @@ class OrtakSekmeler:
     def cizelgeleri_kartla(self):
         ###  Dört çizelge: başlıklı beyaz kartlar; ad kolonu kalan yeri alır, sayılar sığar, yatay kaydırma yok  ###
         ui=self.QtLibrary
-        for etiket in (ui.label_25,ui.label_56,ui.label_58,ui.label_59):
-            etiket.hide()
         basliklar={1:"Türlere Göre",2:"Yazarlara Göre",3:"Yayınevlerine Göre",4:"Basım Yıllarına Göre"}
         self.cizelge_kartlari=[]
         for no,*_ in ISTATISTIKLER:

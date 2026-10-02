@@ -23,92 +23,10 @@ class Ui_MainWindow(object):
         self.widget.setObjectName("widget")
         self.label_5 = QtWidgets.QLabel(self.widget)
         self.label_5.setGeometry(QtCore.QRect(50, 80, 291, 121))
-        font = QtGui.QFont()
-        font.setFamily("Monotype Corsiva")
-        font.setPointSize(28)
-        font.setBold(False)
-        font.setItalic(True)
-        font.setWeight(50)
-        self.label_5.setFont(font)
-        self.label_5.setStyleSheet("color: rgb(255, 255, 255);\n"
-"font: italic 28pt \"Monotype Corsiva\";")
         self.label_5.setObjectName("label_5")
-        self.formFrame = QtWidgets.QFrame(self.widget)
-        self.formFrame.setGeometry(QtCore.QRect(440, 110, 371, 121))
-        self.formFrame.setStyleSheet("#formFrame{background-color: qlineargradient(spread:pad, x1:0.943182, y1:0.966, x2:0.074, y2:0.074, stop:0 rgba(165, 111, 0, 255), stop:1 rgba(255, 255, 255, 255));\n"
-"border-radius:10px;}")
-        self.formFrame.setObjectName("formFrame")
-        self.label_3 = QtWidgets.QLabel(self.formFrame)
-        self.label_3.setGeometry(QtCore.QRect(9, 10, 121, 51))
-        font = QtGui.QFont()
-        font.setFamily("Monotype Corsiva")
-        font.setPointSize(14)
-        font.setBold(True)
-        font.setWeight(75)
-        self.label_3.setFont(font)
-        self.label_3.setObjectName("label_3")
-        self.lineEdit_kullanci_adi = QtWidgets.QLineEdit(self.formFrame)
-        self.lineEdit_kullanci_adi.setEnabled(True)
-        self.lineEdit_kullanci_adi.setGeometry(QtCore.QRect(140, 9, 220, 41))
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Minimum)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.lineEdit_kullanci_adi.sizePolicy().hasHeightForWidth())
-        self.lineEdit_kullanci_adi.setSizePolicy(sizePolicy)
-        font = QtGui.QFont()
-        font.setPointSize(12)
-        font.setBold(True)
-        font.setWeight(75)
-        self.lineEdit_kullanci_adi.setFont(font)
-        self.lineEdit_kullanci_adi.setAlignment(QtCore.Qt.AlignCenter)
-        self.lineEdit_kullanci_adi.setObjectName("lineEdit_kullanci_adi")
-        self.label_4 = QtWidgets.QLabel(self.formFrame)
-        self.label_4.setGeometry(QtCore.QRect(9, 70, 91, 31))
-        font = QtGui.QFont()
-        font.setFamily("Monotype Corsiva")
-        font.setPointSize(14)
-        font.setBold(True)
-        font.setItalic(False)
-        font.setWeight(75)
-        self.label_4.setFont(font)
-        self.label_4.setStyleSheet("selection-color: qlineargradient(spread:pad, x1:0.949438, y1:0.938, x2:0.073, y2:0.505682, stop:0 rgba(245, 81, 1, 255), stop:1 rgba(255, 255, 255, 255));")
-        self.label_4.setObjectName("label_4")
-        self.lineEdit_parola = QtWidgets.QLineEdit(self.formFrame)
-        self.lineEdit_parola.setGeometry(QtCore.QRect(140, 60, 220, 41))
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Fixed)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.lineEdit_parola.sizePolicy().hasHeightForWidth())
-        self.lineEdit_parola.setSizePolicy(sizePolicy)
-        font = QtGui.QFont()
-        font.setPointSize(12)
-        font.setBold(True)
-        font.setWeight(75)
-        self.lineEdit_parola.setFont(font)
-        self.lineEdit_parola.setEchoMode(QtWidgets.QLineEdit.Password)
-        self.lineEdit_parola.setAlignment(QtCore.Qt.AlignCenter)
-        self.lineEdit_parola.setObjectName("lineEdit_parola")
         self.pushButton_giris = QtWidgets.QPushButton(self.widget)
         self.pushButton_giris.setGeometry(QtCore.QRect(560, 360, 121, 81))
         self.pushButton_giris.setMinimumSize(QtCore.QSize(90, 60))
-        font = QtGui.QFont()
-        font.setFamily("Monotype Corsiva")
-        font.setPointSize(24)
-        font.setBold(True)
-        font.setWeight(75)
-        self.pushButton_giris.setFont(font)
-        self.pushButton_giris.setStyleSheet("QPushButton#pushButton_giris{\n"
-"background-color: rgb(255, 181, 61);\n"
-"border-radius:10px;}\n"
-"QPushButton#pushButton_giris:hover{\n"
-"background-color: qlineargradient(spread:pad, x1:1, y1:0.880682, x2:0.955, y2:0.0284091, stop:0.5 rgba(212, 75, 45, 255), stop:1 rgba(255, 255, 255, 255));\n"
-"border-radius:10px;}\n"
-"QPushButton#pushButton_giris:pressed{\n"
-"background-color:qlineargradient(spread:repeat, x1:0, y1:1, x2:0, y2:0, stop:0.301136 rgba(135, 88, 255, 255), stop:1 rgba(255, 255, 255, 255));\n"
-"padding-left:5px;\n"
-"padding-top:6px;\n"
-"border-radius:10px;}\n"
-"")
         self.pushButton_giris.setObjectName("pushButton_giris")
         self.label = QtWidgets.QLabel(self.widget)
         self.label.setGeometry(QtCore.QRect(9, 9, 410, 640))
@@ -121,81 +39,40 @@ class Ui_MainWindow(object):
         self.label.setObjectName("label")
         self.label_2 = QtWidgets.QLabel(self.widget)
         self.label_2.setGeometry(QtCore.QRect(410, 9, 410, 640))
-        self.label_2.setStyleSheet("background-color: qlineargradient(spread:pad, x1:0, y1:1, x2:0, y2:0, stop:0 rgba(0, 0, 0, 255), stop:0.05 rgba(14, 8, 73, 255), stop:0.36 rgba(28, 17, 145, 255), stop:0.6 rgba(126, 14, 81, 255), stop:0.75 rgba(234, 11, 11, 255), stop:0.79 rgba(244, 70, 5, 255), stop:0.86 rgba(255, 136, 0, 255), stop:0.935 rgba(239, 236, 55, 255));\n"
-"border-top-right-radius:20px;\n"
-"border-bottom-right-radius:20px\n"
-"")
         self.label_2.setText("")
         self.label_2.setObjectName("label_2")
-        self.pushButton_yeni_kayit = QtWidgets.QPushButton(self.widget)
-        self.pushButton_yeni_kayit.setGeometry(QtCore.QRect(560, 490, 111, 41))
-        font = QtGui.QFont()
-        font.setFamily("Monotype Corsiva")
-        font.setPointSize(18)
-        font.setItalic(True)
-        self.pushButton_yeni_kayit.setFont(font)
-        self.pushButton_yeni_kayit.setStyleSheet("\n"
-"QPushButton#pushButton_yeni_kayit{\n"
-"background-color: rgba(254, 254, 254, 0);\n"
-"color: rgb(255, 255, 0);}\n"
-"\n"
-"QPushButton#pushButton_yeni_kayit:hover{\n"
-"padding-left:10px;\n"
-"padding-top:12px; }\n"
-"\n"
-"QPushButton#pushButton_yeni_kayit:pressed{\n"
-"padding-left:5px;\n"
-"padding-top:6px;}\n"
-"")
-        self.pushButton_yeni_kayit.setObjectName("pushButton_yeni_kayit")
         self.pushButton_cikis = QtWidgets.QPushButton(self.widget)
         self.pushButton_cikis.setGeometry(QtCore.QRect(750, 560, 61, 61))
         self.pushButton_cikis.setMaximumSize(QtCore.QSize(100, 80))
-        font = QtGui.QFont()
-        font.setFamily("Monotype Corsiva")
-        font.setPointSize(12)
-        font.setBold(False)
-        font.setItalic(True)
-        font.setWeight(50)
-        self.pushButton_cikis.setFont(font)
-        self.pushButton_cikis.setLayoutDirection(QtCore.Qt.LeftToRight)
-        self.pushButton_cikis.setAutoFillBackground(False)
-        self.pushButton_cikis.setStyleSheet("QPushButton#pushButton_cikis{\n"
-"background-color: rgb(255, 0, 0);\n"
-"border-radius:30px;}\n"
-"\n"
-"\n"
-"QPushButton#pushButton_cikis:hover{\n"
-"background-color: qlineargradient(spread:pad, x1:1, y1:0.880682, x2:0.955, y2:0.0284091, stop:0.5 rgba(212, 75, 45, 255), stop:1 rgba(255, 255, 255, 255));\n"
-"border-radius:30px;}\n"
-"QPushButton#pushButton_cikis:pressed{\n"
-"background-color:qlineargradient(spread:repeat, x1:0, y1:1, x2:0, y2:0, stop:0.301136 rgba(135, 88, 255, 255), stop:1 rgba(255, 255, 255, 255));\n"
-"padding-left:3px;\n"
-"padding-top:4px;\n"
-"border-radius:30px;}\n"
-"")
         self.pushButton_cikis.setText("")
-        icon = QtGui.QIcon()
-        icon.addPixmap(QtGui.QPixmap(":/pic/guc.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
-        self.pushButton_cikis.setIcon(icon)
-        self.pushButton_cikis.setIconSize(QtCore.QSize(30, 30))
         self.pushButton_cikis.setObjectName("pushButton_cikis")
         self.label.raise_()
         self.label_2.raise_()
-        self.formFrame.raise_()
         self.pushButton_giris.raise_()
         self.label_5.raise_()
-        self.pushButton_yeni_kayit.raise_()
         self.pushButton_cikis.raise_()
+        self.lineEdit_kullanci_adi = QtWidgets.QLineEdit(self.widget)
+        self.lineEdit_kullanci_adi.setEnabled(True)
+        self.lineEdit_kullanci_adi.setGeometry(QtCore.QRect(140, 9, 220, 41))
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Minimum)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.lineEdit_kullanci_adi.sizePolicy().hasHeightForWidth())
+        self.lineEdit_kullanci_adi.setSizePolicy(sizePolicy)
+        self.lineEdit_kullanci_adi.setAlignment(QtCore.Qt.AlignCenter)
+        self.lineEdit_kullanci_adi.setObjectName("lineEdit_kullanci_adi")
+        self.lineEdit_parola = QtWidgets.QLineEdit(self.widget)
+        self.lineEdit_parola.setGeometry(QtCore.QRect(140, 60, 220, 41))
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Fixed)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.lineEdit_parola.sizePolicy().hasHeightForWidth())
+        self.lineEdit_parola.setSizePolicy(sizePolicy)
+        self.lineEdit_parola.setEchoMode(QtWidgets.QLineEdit.Password)
+        self.lineEdit_parola.setAlignment(QtCore.Qt.AlignCenter)
+        self.lineEdit_parola.setObjectName("lineEdit_parola")
         MainWindow.setCentralWidget(self.centralwidget)
         self.statusbar = QtWidgets.QStatusBar(MainWindow)
-        font = QtGui.QFont()
-        font.setFamily("Monotype Corsiva")
-        font.setPointSize(14)
-        font.setBold(True)
-        font.setItalic(True)
-        font.setWeight(75)
-        self.statusbar.setFont(font)
         self.statusbar.setObjectName("statusbar")
         MainWindow.setStatusBar(self.statusbar)
 
@@ -206,10 +83,7 @@ class Ui_MainWindow(object):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
         self.label_5.setText(_translate("MainWindow", "Yaşar Kütüphanesi"))
-        self.label_3.setText(_translate("MainWindow", "Kullanıcı Adı"))
-        self.lineEdit_kullanci_adi.setToolTip(_translate("MainWindow", "Kullanıcı Adını Girin"))
-        self.label_4.setText(_translate("MainWindow", "Parola"))
-        self.lineEdit_parola.setToolTip(_translate("MainWindow", "Parolayı Girin"))
         self.pushButton_giris.setText(_translate("MainWindow", "Giriş"))
-        self.pushButton_yeni_kayit.setText(_translate("MainWindow", "Yeni Kayıt"))
+        self.lineEdit_kullanci_adi.setToolTip(_translate("MainWindow", "Kullanıcı Adını Girin"))
+        self.lineEdit_parola.setToolTip(_translate("MainWindow", "Parolayı Girin"))
 from bforms import media_rc
