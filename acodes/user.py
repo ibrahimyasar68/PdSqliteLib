@@ -110,9 +110,9 @@ class User(QMainWindow):
         self.setFixedSize(520,700)                # Mac: tam ekran panelin üstünde ekrana yayılmasın
         self.setStyleSheet(tema.qss()+f"""
 #kullanici_karti {{ background-color: {tema.KART}; }}
-#form_baslik {{ font-size: 26px; font-weight: bold; color: {tema.METIN}; }}
+#form_baslik {{ font-size: 26px; font-weight: {tema.YARI_KALIN}; color: {tema.METIN}; }}
 #form_alt {{ color: {tema.IKINCIL_METIN}; }}
-#form_etiket {{ font-weight: bold; color: {tema.ETIKET}; }}
+#form_etiket {{ font-weight: {tema.ORTA}; color: {tema.ETIKET}; }}
 #form_mesaj {{ color: {tema.TEHLIKE}; }}
 QLineEdit, QComboBox {{ font-size: 16px; padding: 4px 10px; border-radius: 8px; }}
 """)

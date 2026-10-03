@@ -112,6 +112,12 @@ def ayarla(gorunum):
 # verilir; Mac ve Windows nokta (pt) boyutlarını farklı ölçeklediği için iki sistemde de aynı görünür.
 YAZI_PX = 15
 
+# Yazı ağırlıkları: kalın (bold) yalnızca vurgu için; başlıklar yarı kalın, etiketler orta ağırlıkta.
+# Qt5 stil sayfasında sayısal ağırlık 8'e bölünüp QFont ağırlığına çevrilir (600 → 75 = Bold olurdu):
+# 500 → 62 ≈ DemiBold (yarı kalın), 460 → 57 = Medium (orta).
+YARI_KALIN = 500
+ORTA = 460
+
 # Geri alınamayan işlem butonları kırmızı gösterilir
 TEHLIKELI_BUTONLAR = ["kitap_sil", "kullanici_sil"]
 
@@ -120,7 +126,7 @@ def _tema():
 QMainWindow, #centralwidget {{ background-color: {ZEMIN}; }}
 
 QTabWidget::pane {{ border: 1px solid {KENAR}; background-color: {SAYFA}; border-radius: 6px; }}
-QTabBar {{ font-size: 17px; font-weight: bold; }}
+QTabBar {{ font-size: 17px; font-weight: {YARI_KALIN}; }}
 QTabBar::tab {{ background-color: {SEKME}; color: {IKINCIL_METIN}; padding: 7px 18px; margin-right: 2px;
                border: 1px solid {KENAR}; border-bottom: none;
                border-top-left-radius: 6px; border-top-right-radius: 6px; }}
@@ -145,8 +151,8 @@ QPushButton[rol="ikincil"]:disabled {{ background-color: {KART}; color: {SOLUK};
 QPushButton#filtre_etiketi {{ background-color: {VURGU_ACIK}; color: {VURGU_YAZI}; border-radius: 12px;
                padding: 4px 10px; }}
 QPushButton#filtre_etiketi:hover {{ background-color: {TEHLIKE_ACIK}; color: {TEHLIKE}; }}
-#sayfa_baslik {{ font-size: 22px; font-weight: bold; color: {METIN}; }}
-QLabel[rol="sayac"] {{ font-size: 15px; font-weight: bold; color: {VURGU_YAZI}; }}
+#sayfa_baslik {{ font-size: 22px; font-weight: {YARI_KALIN}; color: {METIN}; }}
+QLabel[rol="sayac"] {{ font-size: 15px; font-weight: {ORTA}; color: {VURGU_YAZI}; }}
 QLabel[rol="bilgi_simgesi"] {{ color: {SOLUK}; font-size: 17px; }}
 
 QLineEdit, QComboBox, QSpinBox, QPlainTextEdit {{ background-color: {KART}; color: {METIN};
@@ -163,11 +169,11 @@ QTableWidget, QTreeWidget {{ background-color: {KART}; alternate-background-colo
 QTableWidget::item {{ padding: 0 6px; }}
 QTableWidget::item:hover {{ background-color: {SATIR_HOVER}; }}
 QHeaderView::section:vertical {{ color: {IKINCIL_METIN}; font-weight: normal; padding: 0 8px 0 10px; }}
-QHeaderView::section {{ background-color: {ZEMIN}; color: {ETIKET}; padding: 4px 6px; border: none; font-weight: bold;
+QHeaderView::section {{ background-color: {ZEMIN}; color: {ETIKET}; padding: 4px 6px; border: none; font-weight: {YARI_KALIN};
                border-right: 1px solid {KENAR}; border-bottom: 1px solid {KENAR}; }}
 
 QGroupBox {{ background-color: {KART}; border: 1px solid {KENAR}; border-radius: 8px; color: {ETIKET};
-               font-weight: bold; margin-top: 0; padding: 44px 12px 12px 12px; }}
+               font-weight: {YARI_KALIN}; margin-top: 0; padding: 44px 12px 12px 12px; }}
 QGroupBox::title {{ subcontrol-origin: padding; subcontrol-position: top left; left: 14px; top: 12px; }}
 
 QStatusBar {{ background-color: {SEKME}; color: {ETIKET}; }}

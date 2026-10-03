@@ -48,9 +48,9 @@ class KitapEkrani(QWidget):
         self.setObjectName("kitap_ekrani")
         self.setStyleSheet(f"""
             #kitap_arama {{ font-size: 17px; padding: 4px 8px; }}
-            #form_baslik {{ font-size: 18px; font-weight: bold; }}
+            #form_baslik {{ font-size: 18px; font-weight: {tema.YARI_KALIN}; }}
             #kopya_bilgi {{ color: {tema.IKINCIL_METIN}; }}
-            QGroupBox {{ font-weight: bold; }}
+            QGroupBox {{ font-weight: {tema.YARI_KALIN}; }}
         """)
 
         # --- Üst: arama ve liste

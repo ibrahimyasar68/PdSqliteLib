@@ -24,7 +24,7 @@ class VeriDuzeltme(QWidget):
         self.degisti = degisti
         self.yedek_alindi = None
         self.setObjectName("tab_3_4")
-        self.setStyleSheet("QGroupBox { font-weight: bold; }")   # zemin saydam: panelin fotoğrafı görünür
+        self.setStyleSheet(f"QGroupBox {{ font-weight: {tema.YARI_KALIN}; }}")
 
         # --- Benzer yazımlar
         self.alan = QComboBox()

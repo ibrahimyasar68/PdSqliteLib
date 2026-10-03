@@ -14,15 +14,14 @@ def stil():
     return f"""
 #ana_sayfa {{ background: transparent; }}
 #ana_baslik {{ background: transparent; }}
-#hosgeldin {{ color: #FDBA74; font-family: "{tema.BASLIK_YAZISI}"; font-size: 84px; font-weight: normal;
-               font-style: normal; }}
-#karsilama {{ color: white; font-size: 19px; font-weight: bold; }}
+#hosgeldin {{ color: white; font-size: 40px; font-weight: {tema.YARI_KALIN}; }}
+#karsilama {{ color: rgba(255, 255, 255, 0.88); font-size: 18px; font-weight: {tema.ORTA}; }}
 #kart {{ background-color: {tema.KART}; border: 1px solid {tema.KENAR}; border-radius: 10px; }}
 #kart:hover {{ border-color: {tema.VURGU}; }}
-#kart_sayi {{ font-size: 30px; font-weight: bold; color: {tema.METIN}; }}
-#kart_baslik {{ font-size: 16px; font-weight: bold; color: {tema.ETIKET}; }}
+#kart_sayi {{ font-size: 32px; font-weight: {tema.YARI_KALIN}; color: {tema.METIN}; }}
+#kart_baslik {{ font-size: 16px; font-weight: {tema.ORTA}; color: {tema.ETIKET}; }}
 #kart_alt {{ font-size: 14px; color: {tema.IKINCIL_METIN}; }}
-QGroupBox {{ font-weight: bold; }}
+QGroupBox {{ font-weight: {tema.YARI_KALIN}; }}
 #ana_sayfa QTableWidget, #ana_sayfa QHeaderView {{ color: {tema.METIN}; }}
 """
 

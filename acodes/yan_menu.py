@@ -21,9 +21,9 @@ def stil():
 #yan_menu {{ background-color: rgba(15, 23, 42, 0.88); border-radius: 14px; }}
 #menu_baslik {{ color: #FFE14D; font-family: "{tema.BASLIK_YAZISI}"; font-size: 27px; font-style: normal; }}
 QPushButton#menu_ogesi {{ background: transparent; color: #CBD5E1; border: none; border-radius: 8px; text-align: left;
-               padding: 11px 13px; font-size: 16px; font-weight: bold; }}
+               padding: 11px 13px; font-size: 16px; font-weight: {tema.ORTA}; }}
 QPushButton#menu_ogesi:hover {{ background-color: rgba(255,255,255,0.08); color: white; }}
-QPushButton#menu_ogesi:checked {{ background-color: rgba(96,165,250,0.24); color: white; }}
+QPushButton#menu_ogesi:checked {{ background-color: rgba(96,165,250,0.24); color: white; font-weight: {tema.YARI_KALIN}; }}
 QPushButton#menu_ara {{ background-color: rgba(255,255,255,0.07); color: #94A3B8; border: 1px solid rgba(255,255,255,0.10);
                border-radius: 8px; text-align: left; padding: 8px 12px; font-size: 15px; }}
 QPushButton#menu_ara:hover {{ background-color: rgba(255,255,255,0.12); color: white; }}
@@ -33,11 +33,11 @@ QPushButton#daralt:hover {{ background-color: rgba(255,255,255,0.10); }}
 #rozet {{ background-color: {tema.TEHLIKE}; color: white; border-radius: 9px; font-size: 12px; font-weight: bold;
                padding: 0 6px; min-width: 8px; }}
 #kullanici_kart {{ background-color: rgba(255,255,255,0.06); border-radius: 10px; }}
-#avatar {{ background-color: {tema.VURGU}; color: white; border-radius: 20px; font-size: 15px; font-weight: bold; }}
-#kul_ad {{ color: white; font-size: 15px; font-weight: bold; }}
+#avatar {{ background-color: {tema.VURGU}; color: white; border-radius: 20px; font-size: 15px; font-weight: {tema.YARI_KALIN}; }}
+#kul_ad {{ color: white; font-size: 15px; font-weight: {tema.YARI_KALIN}; }}
 #kul_rol {{ color: #94A3B8; font-size: 13px; }}
 QPushButton#pushButton_1_cikis {{ background: transparent; color: #FCA5A5; border: 1px solid rgba(252,165,165,0.5);
-               border-radius: 8px; padding: 8px; font-size: 14px; font-weight: bold; }}
+               border-radius: 8px; padding: 8px; font-size: 14px; font-weight: {tema.ORTA}; }}
 QPushButton#pushButton_1_cikis:hover {{ background-color: rgba(220,38,38,0.25); color: white; }}
 #imza {{ color: #64748B; font-size: 12px; }}
 """
@@ -212,9 +212,9 @@ def segment_stil():
     return f"""
 #segment {{ background-color: {tema.YUZEY_2}; border-radius: 10px; }}
 QPushButton#segment_ogesi {{ background: transparent; color: {tema.IKON}; border: none; border-radius: 8px;
-               padding: 7px 18px; font-size: 15px; font-weight: bold; }}
+               padding: 7px 18px; font-size: 15px; font-weight: {tema.ORTA}; }}
 QPushButton#segment_ogesi:hover {{ color: {tema.METIN}; }}
-QPushButton#segment_ogesi:checked {{ background-color: {tema.KART}; color: {tema.VURGU_YAZI}; }}
+QPushButton#segment_ogesi:checked {{ background-color: {tema.KART}; color: {tema.VURGU_YAZI}; font-weight: {tema.YARI_KALIN}; }}
 """
 
 

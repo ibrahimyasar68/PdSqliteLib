@@ -53,7 +53,7 @@ class Bildirim(QObject):
         self.eylem = QPushButton(self.kutu, objectName="bildirim_eylem")
         self.eylem.setCursor(Qt.PointingHandCursor)
         self.eylem.setStyleSheet("QPushButton#bildirim_eylem { background: transparent; color: white; font-size: 15px;"
-                                 " font-weight: bold; border: 1px solid rgba(255,255,255,0.75); border-radius: 7px;"
+                                 f" font-weight: {tema.YARI_KALIN}; border: 1px solid rgba(255,255,255,0.75); border-radius: 7px;"
                                  " padding: 4px 12px; }"
                                  " QPushButton#bildirim_eylem:hover { background: rgba(255,255,255,0.18); }")
         self.eylem.clicked.connect(self._eylem_tiklandi)
@@ -75,7 +75,7 @@ class Bildirim(QObject):
         self.kutu.setAttribute(Qt.WA_TransparentForMouseEvents, not eylem)
         sag = self.eylem.width() + 30 if eylem else 18
         self.kutu.setStyleSheet(f"background-color: {RENKLER[self.tur]}; color: white; font-size: 16px;"
-                                f" font-weight: bold; padding: 10px {sag}px 10px 18px; border-radius: 10px;")
+                                f" font-weight: {tema.ORTA}; padding: 10px {sag}px 10px 18px; border-radius: 10px;")
         self._yerlestir()
         self.kutu.raise_()
         self.kutu.show()

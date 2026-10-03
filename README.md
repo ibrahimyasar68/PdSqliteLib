@@ -41,9 +41,9 @@ kolon tercihleri veritabanının yanındaki `tercihler.ini` dosyasında tutulur.
 
 Programdan çıkmak için giriş ekranındaki kırmızı çıkış butonu kullanılır. Paneller macOS'ta büyütülmüş
 pencerede (küçültülebilir, diğer programlara geçilebilir), Windows'ta tam ekran açılır.
-Panellerin arka planı yaprak fotoğrafıdır (`media/autumn.jpg`). Giriş sekmesinde fotoğraf olduğu gibi
-görünür; diğer sayfalar yarı saydam olduğu için içeriğin arkasından hafifçe görünür, tablolar ve formlar
-okunaklı kalsın diye beyazdır (saydamlık `acodes/arka_plan.py` içindeki `SAYFA_SAYDAMLIK` ile ayarlanır).
+Giriş sekmesinin arka planı yaprak fotoğrafıdır (`media/autumn.jpg`); diğer sayfalar sade, düz tema
+zeminindedir (`acodes/arka_plan.py`). Yazı ağırlıkları `acodes/tema.py`'deki `YARI_KALIN` (başlıklar) ve
+`ORTA` (etiketler, menü) değerlerinden gelir; kalın yazı yalnızca vurgu içindir.
 
 **Ayarlar → Yardım → Kullanma Kılavuzu** ayrı bir pencerede açılır: program hakkında kısa bilgi ve her
 sekmenin nasıl kullanıldığını anlatan, tıklanınca açılan başlıklar (yönetici ve üye panellerinde kendi
@@ -307,7 +307,7 @@ acodes/filtre_paneli.py       Filtre sekmesi (dört ölçüt üstte tek satırda
 acodes/ek_bilgi.py            Kitap formundaki Ek Bilgiler kutusu, ISBN doğrulama
 acodes/kitaplarim.py          Guest paneli > Kitaplarım sekmesi
 acodes/ana_sayfa.py           Ana sayfa özet panosu (kartlar ve listeler)
-acodes/arka_plan.py           Panellerin arka plan fotoğrafı
+acodes/arka_plan.py           Giriş sekmesinin arka plan fotoğrafı
 acodes/yan_menu.py            Sol kenar menüsü (daraltılabilir) ve alt bölümler için üst anahtar
 acodes/tercihler.py           Menü ve kolon tercihleri (tercihler.ini)
 acodes/kilavuz.py             Ayarlar > Yardım > Kullanma Kılavuzu metinleri (yönetici ve üye)

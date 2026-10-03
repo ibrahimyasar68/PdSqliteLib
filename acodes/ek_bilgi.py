@@ -5,6 +5,8 @@ import re
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QFormLayout, QGridLayout, QGroupBox, QLabel, QLineEdit, QPlainTextEdit, QSpinBox
 
+from acodes import tema
+
 
 def isbn_normal(metin):
     """Tire ve boşlukları atar, sondaki x'i büyütür: '978-975-07-0321-5' -> '9789750703215'"""
@@ -27,7 +29,7 @@ class EkBilgiler(QGroupBox):
     def __init__(self, parent=None, salt_okunur=False, izgara=False):
         """izgara=True: alanlar iki sütunda (geniş ve alçak form, ör. listenin altındaki kitap formu)."""
         super().__init__("Ek Bilgiler", parent)
-        self.setStyleSheet("QGroupBox { font-weight: bold; font-size: 16px; }")
+        self.setStyleSheet(f"QGroupBox {{ font-weight: {tema.YARI_KALIN}; font-size: 16px; }}")
         self.isbn = QLineEdit()
         self.isbn.setPlaceholderText("ör. 978-975-07-0321-5 (isteğe bağlı)")
         self.kopya = QSpinBox()

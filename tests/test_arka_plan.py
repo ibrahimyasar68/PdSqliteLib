@@ -2,7 +2,7 @@
 import pytest
 from PyQt5.QtWidgets import QApplication
 
-from acodes import arka_plan
+from acodes import arka_plan, tema
 from acodes.guest import Guest
 from acodes.library import Library
 
@@ -33,9 +33,14 @@ def test_giris_sayfasinda_fotograf_perdesiz(app, uyarilar, panel):
     p.close()
 
 
-def test_diger_sayfalarda_yari_saydam_perde(app, uyarilar):
+def test_diger_sayfalarda_duz_zemin(app, uyarilar):
     p = Library()
-    goruntu = goster(p, p.QtLibrary.tab_4)
-    kenar = goruntu.pixelColor(1180, 690)          # tablonun dışında kalan sayfa zemini
-    assert kenar.name() not in ("#f7f8fb", "#ffffff") and kenar.lightness() > 120   # perdeli fotoğraf
+    goruntu = goster(p, p.QtLibrary.tab_2)
+    en = goruntu.width()
+    assert renk(goruntu, en - 18, 350) == tema.SAYFA.lower()       # sayfanın tablo dışında kalan kenarı
+    assert renk(goruntu, en - 3, 350) == tema.ZEMIN.lower()        # sayfanın dışı: fotoğraf yok
+    p.QtLibrary.tabWidget.setCurrentIndex(0)                       # Giriş'e dönünce fotoğraf yeniden çizilir
+    QApplication.processEvents()
+    goruntu = p.centralWidget().grab().toImage()
+    assert goruntu.pixelColor(en - 3, 350).lightness() < 200
     p.close()
