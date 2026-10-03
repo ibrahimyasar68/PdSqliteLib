@@ -150,3 +150,17 @@ def test_geri_al_suresi_cubukta_gorunur_ve_fare_ustundeyken_durur(lib):
     lib.QtLibrary.statusbar.showMessage("Liste görüntülendi.")          # eylemsiz bildirimde çubuk yok
     assert not b.cubuk.isVisibleTo(b.kutu)
     lib.close()
+
+
+def test_acilista_gosterilen_bildirim_sag_altta(app, uyarilar, db):
+    """Pencere görünmeden önce gelen bildirim (açılıştaki gecikme uyarısı) pencere açılınca sağ alttadır."""
+    eski = str(datetime.date.today() - datetime.timedelta(days=30))
+    db.execute("INSERT INTO follow VALUES ('3','1',?,'10:00','out','','')", (eski,))
+    db.commit()
+    l = Library()
+    l.resize(1200, 700)
+    l.show()
+    k = l.bildirim.kutu
+    assert k.isVisible() and l.width() - (k.x() + k.width()) == bildirim.KENAR_BOSLUK
+    assert l.height() - (k.y() + k.height()) == bildirim.KENAR_BOSLUK
+    l.close()

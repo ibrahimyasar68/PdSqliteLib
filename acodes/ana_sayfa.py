@@ -2,12 +2,12 @@
 # Üstte başlık şeridi (panelin arka plan fotoğrafı üzerinde), altında tıklanabilir özet kartları ve iki kısa liste.
 # Yönetici ve üye panelleri aynı bileşeni farklı kartlar/listelerle kurar.
 
-from PyQt5.QtCore import Qt, pyqtSignal
+from PyQt5.QtCore import QEasingCurve, Qt, QVariantAnimation, pyqtSignal
 from PyQt5.QtGui import QColor
 from PyQt5.QtWidgets import (QFrame, QGraphicsDropShadowEffect, QGridLayout, QGroupBox, QHBoxLayout, QHeaderView,
                              QLabel, QTableWidget, QVBoxLayout, QWidget)
 
-from acodes import ikonlar, tema
+from acodes import hareket, ikonlar, tema
 from acodes.tablo import tablo_ayarla, tabloya_yaz
 
 def stil():
@@ -28,7 +28,7 @@ QGroupBox {{ font-weight: {tema.YARI_KALIN}; }}
 
 class Kart(QFrame):
     """Üstte başlık, büyük sayı ve açıklama; sağ üstte rengin açık tonunda yuvarlak zeminli ikon.
-    Tıklanabilir kartlar üstüne gelince hafif gölgeyle öne çıkar."""
+    Tıklanabilir kartlar üstüne gelince gölgesi yumuşakça büyüyerek öne çıkar. Sayı ilk görünüşte 0'dan sayarak gelir."""
     tiklandi = pyqtSignal()
     IKON_EN = 44
 
@@ -58,6 +58,14 @@ class Kart(QFrame):
         self.golge.setColor(QColor(0, 0, 0, 90 if tema.KOYU_MU else 40))
         self.golge.setEnabled(False)
         self.setGraphicsEffect(self.golge)
+        self.golge_guc = 0.0
+        self.golge_animasyonu = QVariantAnimation(self)
+        self.golge_animasyonu.setDuration(tema.SURE.kisa)
+        self.golge_animasyonu.setEasingCurve(QEasingCurve.OutCubic)
+        self.golge_animasyonu.valueChanged.connect(self._golge_ciz)
+        self.golge_animasyonu.finished.connect(lambda: self.golge.setEnabled(self.golge_guc > 0))
+        self.hedef = None
+        self.sayildi = False
         self._renklendir(renk)
 
     def _renklendir(self, renk):
@@ -69,20 +77,57 @@ class Kart(QFrame):
         self.ikon.renk = renk
 
     def ayarla(self, sayi, alt="", renk=None):
-        self.sayi.setText(str(sayi))
+        self.hedef = sayi
         self.alt.setText(alt)
         self._renklendir(renk or self.renk)
+        if not self.sayildi and self.isVisible():
+            self._say()
+            return
+        sayac = getattr(self.sayi, "_sayac", None)
+        if sayac is not None:
+            if sayac.endValue() == sayi:                  # zaten bu sayıya doğru sayıyor
+                return
+            sayac.stop()
+            self.sayi._sayac = None
+        self.sayi.setText(str(sayi))
 
     def mousePressEvent(self, olay):
         if olay.button() == Qt.LeftButton:
             self.tiklandi.emit()
 
+    def _say(self):
+        self.sayildi = True
+        hareket.say(self.sayi, self.hedef)
+
+    def showEvent(self, olay):
+        super().showEvent(olay)
+        if not self.sayildi and self.hedef is not None:
+            self._say()
+
+    def _golge_ciz(self, guc):
+        self.golge_guc = guc
+        self.golge.setBlurRadius(22 * guc)
+        self.golge.setOffset(0, 4 * guc)
+        self.golge.setColor(QColor(0, 0, 0, round((90 if tema.KOYU_MU else 40) * guc)))
+
+    def _golgeye_git(self, hedef):
+        if not hareket.acik_mi(self):
+            self._golge_ciz(hedef)
+            self.golge.setEnabled(hedef > 0)
+            return
+        self.golge.setEnabled(True)
+        self.golge_animasyonu.stop()
+        self.golge_animasyonu.setStartValue(self.golge_guc)
+        self.golge_animasyonu.setEndValue(float(hedef))
+        self.golge_animasyonu.start()
+
     def enterEvent(self, olay):
-        self.golge.setEnabled(self.toolTip() != "")      # yalnızca tıklanabilir kartlar
+        if self.toolTip() != "":                          # yalnızca tıklanabilir kartlar
+            self._golgeye_git(1.0)
         super().enterEvent(olay)
 
     def leaveEvent(self, olay):
-        self.golge.setEnabled(False)
+        self._golgeye_git(0.0)
         super().leaveEvent(olay)
 
     def tiklanabilir(self, islev, ipucu):

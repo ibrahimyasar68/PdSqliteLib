@@ -5,7 +5,7 @@
 
 import re
 
-from PyQt5.QtCore import QSize, Qt
+from PyQt5.QtCore import QSize, Qt, QTimer
 from PyQt5.QtWidgets import QButtonGroup, QFrame, QHBoxLayout, QLabel, QPushButton, QVBoxLayout, QWidget
 
 from acodes import hareket, ikonlar, tema, tercihler
@@ -23,7 +23,8 @@ def stil():
 QPushButton#menu_ogesi {{ background: transparent; color: {t.MENU_OGE}; border: none; border-radius: {K.kucuk}px;
                text-align: left; padding: 11px 13px; font-size: {Y.metin}px; font-weight: {t.ORTA}; }}
 QPushButton#menu_ogesi:hover {{ background-color: rgba(255,255,255,0.08); color: white; }}
-QPushButton#menu_ogesi:checked {{ background-color: rgba(96,165,250,0.24); color: white; font-weight: {t.YARI_KALIN}; }}
+QPushButton#menu_ogesi:checked {{ background: transparent; color: white; font-weight: {t.YARI_KALIN}; }}
+#menu_vurgu {{ background-color: rgba(96,165,250,0.24); border-radius: {K.kucuk}px; }}
 QPushButton#menu_ara {{ background-color: rgba(255,255,255,0.07); color: {t.MENU_IKINCIL};
                border: 1px solid rgba(255,255,255,0.10); border-radius: {K.kucuk}px; text-align: left; padding: 8px 12px;
                font-size: {Y.metin}px; }}
@@ -110,6 +111,8 @@ class YanMenu(QFrame):
             dikey.addWidget(buton)
             self.ogeler.append((buton, rozet))
         dikey.addStretch()
+        # Seçili bölümün zemini butonların arkasında ayrı bir parça: bölüm değişince kayarak gider
+        self.vurgu = hareket.KayanVurgu(self, self.grup, "menu_vurgu")
 
         self.kart = QFrame(objectName="kullanici_kart")
         kd = QVBoxLayout(self.kart)
@@ -165,7 +168,22 @@ class YanMenu(QFrame):
             buton.setToolTip(f"{ad} ({sayi} gecikmiş)" if sayi else ad)
             rozet.setText(sayi or "")
             rozet.setVisible(bool(sayi))
+            onceki, rozet.sayi = getattr(rozet, "sayi", 0), int(sayi or 0)
+            if rozet.sayi > onceki:
+                hareket.nabiz(rozet)            # gecikme arttı: rozet bir kez dikkat çeker (sürekli değil)
             buton.setText("" if getattr(self, "kapali", False) else f"  {ad}")
+
+    def showEvent(self, olay):
+        super().showEvent(olay)
+        if not getattr(self, "_ilk_gorunus", False):
+            self._ilk_gorunus = True
+            # Panel açılınca gecikme rozeti bir kez atar (yerleşim bittikten sonra)
+            QTimer.singleShot(0, self._rozetleri_atlat)
+
+    def _rozetleri_atlat(self):
+        for _, rozet in self.ogeler:
+            if rozet.isVisible():
+                hareket.nabiz(rozet)
 
     def kullanici(self, ad, rol):
         self.kul_ad.setText(ad)
@@ -223,7 +241,8 @@ def segment_stil():
 QPushButton#segment_ogesi {{ background: transparent; color: {tema.IKON}; border: none; border-radius: {tema.KOSE.kucuk}px;
                padding: 7px 18px; font-size: {tema.YAZI.metin}px; font-weight: {tema.ORTA}; }}
 QPushButton#segment_ogesi:hover {{ color: {tema.METIN}; }}
-QPushButton#segment_ogesi:checked {{ background-color: {tema.KART}; color: {tema.VURGU_YAZI}; }}
+QPushButton#segment_ogesi:checked {{ background: transparent; color: {tema.VURGU_YAZI}; }}
+#segment_vurgu {{ background-color: {tema.KART}; border-radius: {tema.KOSE.kucuk}px; }}
 """
 
 
@@ -247,6 +266,7 @@ class SegmentAnahtari(QFrame):
             self.grup.addButton(b, i)
             yatay.addWidget(b)
         self.grup.button(max(0, sekmeler.currentIndex())).setChecked(True)
+        self.vurgu = hareket.KayanVurgu(self, self.grup, "segment_vurgu")     # seçili zemin kayarak gider
         sekmeler.currentChanged.connect(lambda i: self.grup.button(i) and self.grup.button(i).setChecked(True))
 
 

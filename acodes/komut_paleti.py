@@ -6,7 +6,7 @@
 from PyQt5.QtCore import QEvent, QSize, Qt, QTimer
 from PyQt5.QtWidgets import QDialog, QFrame, QLabel, QLineEdit, QListWidget, QListWidgetItem, QVBoxLayout
 
-from acodes import ikonlar, tema
+from acodes import hareket, ikonlar, tema
 from database.dbframe import katla
 
 EN = 680
@@ -70,6 +70,7 @@ class KomutPaleti(QDialog):
         self.arama.clear()
         self.doldur("")
         self.show()
+        hareket.acilir_pencere_belir(self)          # birkaç piksel aşağıdan kayarak ve belirerek gelir
         self.raise_()
         self.activateWindow()
         self.arama.setFocus(Qt.PopupFocusReason)

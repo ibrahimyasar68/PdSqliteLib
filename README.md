@@ -70,7 +70,14 @@ Yeni kullanıcı ve üye kayıtlarını (`admin` veya `guest`) sadece giriş yap
 - **Animasyonlar** (`acodes/hareket.py`; testlerde kapalıdır): menüden sayfa değişince yeni sayfa hafifçe belirir,
   kenar menüsü daralıp açılırken genişliği yumuşakça değişir. Kaydedilen kitap, verilen ödünç ve geri alınan
   satır listede kısa süre parlayıp söner. Tema değişince eski görünüm yeni görünümün üstünde solarak kaybolur.
+  Seçili menü bölümünün ve alt sekme anahtarının zemini kayarak yer değiştirir. Ana sayfa sayıları ilk açılışta
+  sayarak gelir, kartların gölgesi üstüne gelince yumuşakça büyür; grafikler büyüyerek çizilir (çubuklar sırayla
+  uzar, pasta dilimleri dönerek açılır). Hızlı arama aşağıdan kayarak açılır, gecikme rozeti panel açılınca bir kez
+  nabız gibi atar. Girişte yanlış parolada kart sallanır; boş veya hatalı alanın (giriş, kitap adı, ISBN, kopya
+  sayısı) çerçevesi kırmızı yanıp söner. Panel giriş ekranından belirerek açılır.
   Süreler `tema.SURE` ölçeğindedir; modüllerde sabit süre yazılmaz.
+- **Bildirim yığını:** Yeni mesaj gelince "Geri Al"lı bildirim kaybolmaz, yukarı kayar ve süresi bitene kadar
+  kullanılabilir; yeni bildirim altına gelir (aynı anda en fazla 3).
 - **Geri Al:** Kitap silme ve iade alma sonrasında sağ alttaki bildirimde birkaç saniye **Geri Al** butonu
   durur; altındaki ince çubuk kalan süreyi gösterir, fare bildirimin üstündeyken süre durur. Silinen kitap aynı numara ve bilgilerle geri gelir; iade alma onay sormaz, yanlış iade geri alınır
   (bu arada kitap başka üyeye verildiyse geri alınmaz).

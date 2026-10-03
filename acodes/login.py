@@ -101,6 +101,7 @@ class Login(QMainWindow):
         ui.label_5.setGraphicsEffect(golge)
 
         kart=QWidget(objectName="giris_karti")
+        self.kart=kart                            # yanlış girişte sallanır
         kart.setFixedWidth(320)
         duzen=QVBoxLayout(kart)
         duzen.setContentsMargins(0,0,0,0)
@@ -230,6 +231,9 @@ class Login(QMainWindow):
 
         if ad=="" or sifre=="":
             self.mesaj_goster("Kullanıcı adı ve parola bilgilerini giriniz!")
+            for alan in (self.QtLogin.lineEdit_kullanci_adi,self.QtLogin.lineEdit_parola):
+                if alan.text()=="":
+                    hareket.hata_vurgula(alan)
             return
         self._bekliyor(True)
         try:
@@ -237,6 +241,7 @@ class Login(QMainWindow):
             if yetki is None:
                 # Hangisinin yanlış olduğu söylenmez (kullanıcı adı tahminini zorlaştırır)
                 self.mesaj_goster("Kullanıcı adı veya parola yanlış!")
+                hareket.salla(self.kart)
                 self.QtLogin.lineEdit_parola.selectAll()
                 self.QtLogin.lineEdit_parola.setFocus()
             elif yetki in ('admin','guest'):
@@ -260,6 +265,7 @@ class Login(QMainWindow):
         panel.ayarlar.gorunum.degisti.connect(self.gorunumu_degistir)
         if goster:
             panel_goster(panel)
+            hareket.pencere_belir(panel)          # giriş ekranından panele yumuşak geçiş
         return panel
 
     def gorunumu_degistir(self,gorunum):
@@ -268,6 +274,8 @@ class Login(QMainWindow):
         # Eski görünümün resmi yeni panelin üstünde solarak kaybolur (yanıp sönme yerine yumuşak geçiş).
         eski=self.library or self.guest
         goruntu=eski.grab() if hareket.acik_mi(eski) else None    # stil değişmeden önce
+        if eski is not None:
+            eski.bildirim.temizle()             # stil değişirken bildirim animasyonu sürmesin
         tema.ayarla(gorunum)
         tema.uygulamaya_uygula(QApplication.instance())
         self.stil_uygula()
@@ -277,7 +285,7 @@ class Login(QMainWindow):
         kaydirma=eski.ayarlar.verticalScrollBar().value()
         yeni=self.panel_ac('admin' if eski is self.library else 'guest',eski.aktif_kullanici,goster=False)
         yeni.QtLibrary.tabWidget.setCurrentIndex(sekme)
-        yeni.bildirim.kutu.hide()               # açılıştaki gecikme uyarısı tema değişiminde tekrar çıkmasın
+        yeni.bildirim.temizle()                 # açılıştaki gecikme uyarısı tema değişiminde tekrar çıkmasın
         yeni.QtLibrary.statusbar.clearMessage()
         yeni.setGeometry(eski.geometry())
         if eski.isFullScreen():
@@ -302,6 +310,7 @@ class Login(QMainWindow):
         self.QtLogin.lineEdit_kullanci_adi.clear()
         self.QtLogin.lineEdit_parola.clear()
         self.show()
+        hareket.pencere_belir(self)
         self.raise_()
         self.activateWindow()
         self.QtLogin.lineEdit_kullanci_adi.setFocus()

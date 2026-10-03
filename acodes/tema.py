@@ -150,6 +150,7 @@ class SURE:
     kisa = 120          # küçük öğeler: açılır pencere, düğme durumu
     orta = 200          # sayfa, menü genişliği, bildirimin belirmesi
     uzun = 450          # bildirimin solması, tema geçişindeki perde
+    sayac = 600         # ana sayfa sayıları, grafiklerin çizilmesi
     parlama = 900       # değişen tablo satırının sönen vurgusu
 
 

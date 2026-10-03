@@ -234,11 +234,12 @@ class KitapEkrani(QWidget):
 
     def kaydet(self):
         kayit = self.degerler()
+        # Hatalı alanın çerçevesi kırmızı yanıp söner; uyarıdan sonra imleç o alana gider
         if not kayit[0]:
-            QMessageBox.warning(self, "Uyarı!", "Kitap adı boş olamaz.")
+            self._hatali(self.alan["Adi"], "Kitap adı boş olamaz.")
             return
         if self.ek.hata():
-            QMessageBox.warning(self, "Uyarı!", self.ek.hata())
+            self._hatali(self.ek.isbn, self.ek.hata())
             return
         if self.kitap_id is None:
             if onay(f"'{kayit[0]}' kaydedilsin mi?") != QMessageBox.Yes:
@@ -249,8 +250,8 @@ class KitapEkrani(QWidget):
         else:
             disarida = kopya_durumu(self.kitap_id)[1]
             if kayit[8] < disarida:
-                QMessageBox.warning(self, "Uyarı!", f"Bu kitabın {disarida} kopyası şu an üyelerde. "
-                                                    f"Kopya sayısı {disarida}'den az olamaz.")
+                self._hatali(self.ek.kopya, f"Bu kitabın {disarida} kopyası şu an üyelerde. "
+                                            f"Kopya sayısı {disarida}'den az olamaz.")
                 return
             if onay("Kayıt değiştirilsin mi?") != QMessageBox.Yes:
                 return
@@ -258,6 +259,11 @@ class KitapEkrani(QWidget):
             self.mesaj(f"'{kayit[0]}' güncellendi.", "basari")
         self._degisiklik_sonrasi()
         hareket.secili_satiri_parlat(self.tablo)              # kaydedilen satır kısa süre parlar
+
+    def _hatali(self, alan, metin):
+        hareket.hata_vurgula(alan)
+        QMessageBox.warning(self, "Uyarı!", metin)
+        alan.setFocus(Qt.OtherFocusReason)
 
     def sil(self):
         if self.kitap_id is None:

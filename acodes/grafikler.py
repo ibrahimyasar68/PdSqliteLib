@@ -1,16 +1,18 @@
 ## İstatistik > Grafikler alt sekmesi ##
 # Grafikler veritabanından her yenilemede yeniden çizilir (eskiden sabit bir resim gösteriliyordu).
 # Ek kütüphane gerektirmemek için Qt'nin kendi çizim araçları (QPainter) kullanılır.
+# Veri değişince grafik ilk görünüşte büyüyerek çizilir: çubuklar sırayla uzar, pasta dilimleri dönerek açılır.
 
-from PyQt5.QtCore import QRectF, Qt
+from PyQt5.QtCore import QEasingCurve, QRectF, Qt, QVariantAnimation
 from PyQt5.QtGui import QColor, QPainter, QPen
 from PyQt5.QtWidgets import QGridLayout, QWidget
 
-from acodes import tema
+from acodes import hareket, tema
 from database.dbframe import rapor, yil_dagilimi
 
 PASTA_DILIM = 7        # en büyük 7 tür, gerisi "Diğer"
 CUBUK_SAYISI = 10
+GECIKME = 0.06         # çubuklar arası başlama farkı (toplam sürenin oranı)
 
 
 def renk(i):
@@ -26,10 +28,47 @@ class Grafik(QWidget):
         self.baslik = baslik
         self.veri = []          # [(etiket, değer), ...]
         self.setMinimumSize(300, 220)
+        self.ilerleme = 1.0     # çizim animasyonu: 0 boş, 1 tam
+        self.canlandir = False  # veri değişti, görününce büyüyerek çizilsin
+        self.animasyon = QVariantAnimation(self)
+        self.animasyon.setDuration(tema.SURE.sayac)
+        self.animasyon.setStartValue(0.0)
+        self.animasyon.setEndValue(1.0)
+        self.animasyon.setEasingCurve(QEasingCurve.OutCubic)
+        self.animasyon.valueChanged.connect(self._ilerle)
 
     def veri_ver(self, veri):
-        self.veri = [(str(e) if str(e).strip() else "(belirtilmemiş)", int(d)) for e, d in veri if int(d) > 0]
+        yeni = [(str(e) if str(e).strip() else "(belirtilmemiş)", int(d)) for e, d in veri if int(d) > 0]
+        if yeni != self.veri:
+            self.canlandir = True
+        self.veri = yeni
+        if self.isVisible():
+            self._baslat()
         self.update()
+
+    def _ilerle(self, deger):
+        self.ilerleme = deger
+        self.update()
+
+    def _baslat(self):
+        if not self.canlandir:
+            return
+        self.canlandir = False
+        if not hareket.acik_mi(self) or not self.veri:
+            self.ilerleme = 1.0
+            return
+        self.ilerleme = 0.0
+        self.animasyon.start()
+
+    def showEvent(self, olay):
+        super().showEvent(olay)
+        self._baslat()
+
+    def oran(self, i):
+        """i. çubuğun ilerlemesi: her çubuk bir öncekinden biraz sonra başlar, hepsi birlikte biter."""
+        n = len(self.veri)
+        pay = GECIKME * max(0, n - 1)
+        return max(0.0, min(1.0, (self.ilerleme * (1 + pay) - GECIKME * i)))
 
     def paintEvent(self, olay):
         p = QPainter(self)
@@ -58,7 +97,7 @@ class PastaGrafik(Grafik):
         daire = QRectF(alan.left(), alan.top() + (alan.height() - cap) / 2, cap, cap)
         aci = 90 * 16
         for i, (_, deger) in enumerate(self.veri):
-            dilim = -round(deger / toplam * 360 * 16)
+            dilim = -round(deger / toplam * 360 * 16 * self.ilerleme)
             p.setPen(QPen(QColor(tema.KART), 1.5))
             p.setBrush(renk(i))
             p.drawPie(daire, aci, dilim)
@@ -87,7 +126,7 @@ class YatayCubukGrafik(Grafik):
             p.setPen(QColor(tema.METIN))
             metin = p.fontMetrics().elidedText(etiket, Qt.ElideRight, int(etiket_eni - 8))
             p.drawText(QRectF(alan.left(), y, etiket_eni - 8, satir), Qt.AlignRight | Qt.AlignVCenter, metin)
-            en = max(2, cubuk_alani * deger / en_buyuk)
+            en = max(2, cubuk_alani * deger / en_buyuk * self.oran(i))
             p.setPen(Qt.NoPen)
             p.setBrush(renk(0))
             p.drawRoundedRect(QRectF(alan.left() + etiket_eni, y + satir * 0.18, en, satir * 0.64), 3, 3)
@@ -103,7 +142,7 @@ class DikeyCubukGrafik(Grafik):
         sutun = alan.width() / len(self.veri)
         for i, (etiket, deger) in enumerate(self.veri):
             x = alan.left() + sutun * i
-            boy = max(2, (alt - ust) * deger / en_buyuk)
+            boy = max(2, (alt - ust) * deger / en_buyuk * self.oran(i))
             p.setPen(Qt.NoPen)
             p.setBrush(renk(2))
             p.drawRoundedRect(QRectF(x + sutun * 0.15, alt - boy, sutun * 0.7, boy), 3, 3)

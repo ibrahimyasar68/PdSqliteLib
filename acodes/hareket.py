@@ -1,12 +1,15 @@
 ## Kısa geçiş animasyonları ##
 # Sayfa değişince yeni sayfa hafifçe belirir, kenar menüsü daralıp açılırken genişliği yumuşakça değişir,
 # tema değişince eski görünüm solarak kaybolur, kaydedilen / ödünç verilen satır kısa süre parlayıp söner.
+# Ayrıca: yanlış girişte kart sallanır, hatalı alanın çerçevesi kırmızıdan söner, seçili menü / segment vurgusu
+# kayarak gider, sayılar sayarak gelir, gecikme rozeti bir kez nabız gibi atar.
 # Süreler tema.SURE ölçeğinden gelir. Animasyonlar yalnızca pencere ekrandayken çalışır.
 # ANIMASYON = False testlerde kapatır; AZALT kullanıcının "Hareketi azalt" tercihidir (Ayarlar > Görünüm).
 
-from PyQt5.QtCore import QEasingCurve, QPersistentModelIndex, QPropertyAnimation, Qt, QVariantAnimation
+from PyQt5.QtCore import (QEasingCurve, QEvent, QObject, QPersistentModelIndex, QPoint, QPropertyAnimation, QRect,
+                          QSequentialAnimationGroup, Qt, QTimer, QVariantAnimation)
 from PyQt5.QtGui import QColor, QPainter
-from PyQt5.QtWidgets import QGraphicsOpacityEffect, QLabel, QWidget
+from PyQt5.QtWidgets import QFrame, QGraphicsOpacityEffect, QLabel, QWidget
 
 from acodes import tema
 
@@ -148,3 +151,191 @@ def satiri_parlat(tablo, satir):
 def secili_satiri_parlat(tablo):
     satirlar = tablo.selectionModel().selectedRows() if tablo.selectionModel() else []
     return satiri_parlat(tablo, satirlar[0].row()) if satirlar else None
+
+
+def salla(bilesen):
+    """Yanlış girişte bileşeni yatayda kısa süre sallar (sönen titreşim), sonra yerine bırakır."""
+    if not acik_mi(bilesen) or getattr(bilesen, "_salla", None) is not None:
+        return None
+    yer = bilesen.pos()
+    animasyon = QVariantAnimation(bilesen)
+    animasyon.setDuration(tema.SURE.uzun)
+    animasyon.setStartValue(0.0)
+    animasyon.setEndValue(1.0)
+
+    def adim(t):
+        import math
+        bilesen.move(yer.x() + round(8 * (1 - t) * math.sin(t * math.pi * 6)), yer.y())
+
+    def bitti():
+        bilesen.move(yer)
+        bilesen._salla = None
+
+    animasyon.valueChanged.connect(adim)
+    animasyon.finished.connect(bitti)
+    bilesen._salla = animasyon
+    animasyon.start()
+    return animasyon
+
+
+def pencere_belir(pencere):
+    """Üst düzey pencereyi saydamdan görünüre getirir (girişten panele geçiş)."""
+    if not acik_mi(pencere):
+        return None
+    animasyon = QPropertyAnimation(pencere, b"windowOpacity", pencere)
+    animasyon.setDuration(tema.SURE.orta)
+    animasyon.setStartValue(0.0)
+    animasyon.setEndValue(1.0)
+    animasyon.setEasingCurve(QEasingCurve.OutCubic)
+    animasyon.finished.connect(lambda: pencere.setWindowOpacity(1.0))
+    pencere.setWindowOpacity(0.0)
+    animasyon.start()
+    return animasyon
+
+
+def acilir_pencere_belir(pencere, kayma=8):
+    """Açılır pencere (hızlı arama) birkaç piksel aşağıdan kayarak ve belirerek gelir."""
+    if not acik_mi(pencere):
+        return None
+    hedef = pencere.pos()
+    konum = QPropertyAnimation(pencere, b"pos", pencere)
+    konum.setDuration(tema.SURE.kisa)
+    konum.setStartValue(hedef + QPoint(0, kayma))
+    konum.setEndValue(hedef)
+    konum.setEasingCurve(QEasingCurve.OutCubic)
+    saydam = pencere_belir(pencere)
+    if saydam is not None:
+        saydam.setDuration(tema.SURE.kisa)
+    pencere.move(hedef + QPoint(0, kayma))
+    konum.start()
+    return konum
+
+
+def hata_vurgula(alan):
+    """Hatalı alanın çerçevesi tehlike renginde belirir, kısa süre kalır ve normale söner.
+    Animasyon kapalıyken çerçeve kısa süre kırmızı kalıp normale döner (hata yine görünsün)."""
+    eski = getattr(alan, "_hata_animasyonu", None)
+    if eski is not None:
+        eski.stop()
+    stil = getattr(alan, "_ozgun_stil", None)
+    if stil is None:
+        stil = alan._ozgun_stil = alan.styleSheet()
+
+    def boya(renk):
+        alan.setStyleSheet(stil + f"\n{type(alan).__name__} {{ border-color: {renk.name().upper()}; }}")
+
+    def bitti():
+        alan.setStyleSheet(stil)
+        alan._hata_animasyonu = None
+
+    if not izinli():
+        boya(QColor(tema.TEHLIKE))
+        QTimer.singleShot(tema.SURE.parlama * 2, bitti)
+        return None
+    animasyon = QVariantAnimation(alan)
+    animasyon.setDuration(tema.SURE.parlama * 2)
+    animasyon.setStartValue(QColor(tema.TEHLIKE))
+    animasyon.setKeyValueAt(0.5, QColor(tema.TEHLIKE))          # yarı süre kırmızı kalır
+    animasyon.setEndValue(QColor(tema.KENAR_GIRDI))
+    animasyon.valueChanged.connect(boya)
+    animasyon.finished.connect(bitti)
+    alan._hata_animasyonu = animasyon
+    boya(QColor(tema.TEHLIKE))
+    animasyon.start()
+    return animasyon
+
+
+def nabiz(bilesen, tekrar=2):
+    """Bileşen dikkat çekmek için birkaç kez soluklaşıp geri gelir (sürekli değil); bitince efekt kalkar."""
+    if not acik_mi(bilesen) or bilesen.graphicsEffect() is not None:
+        return None
+    efekt = QGraphicsOpacityEffect(bilesen)
+    bilesen.setGraphicsEffect(efekt)
+    grup = QSequentialAnimationGroup(efekt)
+    for _ in range(tekrar):
+        for bas, son in ((1.0, 0.3), (0.3, 1.0)):
+            a = QPropertyAnimation(efekt, b"opacity")
+            a.setDuration(tema.SURE.uzun)
+            a.setStartValue(bas)
+            a.setEndValue(son)
+            a.setEasingCurve(QEasingCurve.InOutSine)
+            grup.addAnimation(a)
+    grup.finished.connect(lambda: bilesen.graphicsEffect() is efekt and bilesen.setGraphicsEffect(None))
+    grup.start()
+    return grup
+
+
+def say(etiket, hedef, bicim=str):
+    """Etiketteki sayı 0'dan hedefe sayarak gelir; animasyon kapalıysa hemen yazılır."""
+    eski = getattr(etiket, "_sayac", None)
+    if eski is not None:
+        eski.stop()
+        etiket._sayac = None
+    if not acik_mi(etiket) or not isinstance(hedef, int) or hedef <= 0:
+        etiket.setText(bicim(hedef))
+        return None
+    animasyon = QVariantAnimation(etiket)
+    animasyon.setDuration(tema.SURE.sayac)
+    animasyon.setStartValue(0)
+    animasyon.setEndValue(hedef)
+    animasyon.setEasingCurve(QEasingCurve.OutCubic)
+    animasyon.valueChanged.connect(lambda d: etiket.setText(bicim(int(d))))
+    def bitti():
+        etiket.setText(bicim(hedef))
+        etiket._sayac = None
+
+    animasyon.finished.connect(bitti)
+    etiket._sayac = animasyon
+    etiket.setText(bicim(0))
+    animasyon.start()
+    return animasyon
+
+
+class KayanVurgu(QObject):
+    """Buton grubunda seçili olanın arkasındaki vurgu: seçim değişince yeni butonun altına kayarak gider.
+    Butonlar yer / boyut değiştirince (menü daralırken) vurgu animasyonsuz izler. Vurgunun görünümü kabın stil
+    sayfasında nesne adıyla verilir; seçili butonun kendi zemini saydam olmalıdır."""
+
+    def __init__(self, kap, grup, ad):
+        super().__init__(kap)
+        self.kap = kap
+        self.grup = grup
+        self.cerceve = QFrame(kap, objectName=ad)
+        self.cerceve.setAttribute(Qt.WA_TransparentForMouseEvents)
+        self.cerceve.lower()
+        self.cerceve.hide()
+        self.animasyon = QPropertyAnimation(self.cerceve, b"geometry", self)
+        self.animasyon.setDuration(tema.SURE.orta)
+        self.animasyon.setEasingCurve(QEasingCurve.OutCubic)
+        grup.buttonToggled.connect(lambda buton, secili: secili and self.hedefle(True))
+        kap.installEventFilter(self)
+        for buton in grup.buttons():
+            buton.installEventFilter(self)
+
+    def hedef(self):
+        buton = self.grup.checkedButton()
+        if buton is None or not buton.isVisibleTo(self.kap):
+            return None
+        return QRect(buton.mapTo(self.kap, QPoint()), buton.size())
+
+    def hedefle(self, animasyonlu=False):
+        alan = self.hedef()
+        if alan is None:
+            self.cerceve.hide()
+            return
+        if animasyonlu and acik_mi(self.kap) and self.cerceve.isVisible() and self.cerceve.geometry() != alan:
+            self.animasyon.stop()
+            self.animasyon.setStartValue(self.cerceve.geometry())
+            self.animasyon.setEndValue(alan)
+            self.animasyon.start()
+        else:
+            self.animasyon.stop()
+            self.cerceve.setGeometry(alan)
+        self.cerceve.show()
+        self.cerceve.lower()
+
+    def eventFilter(self, nesne, olay):
+        if olay.type() in (QEvent.Resize, QEvent.Move, QEvent.Show, QEvent.LayoutRequest):
+            if self.animasyon.state() != QPropertyAnimation.Running:
+                self.hedefle()
+        return False
