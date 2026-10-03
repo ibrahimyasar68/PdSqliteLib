@@ -54,7 +54,7 @@ class Library(OrtakSekmeler, QMainWindow):
 
         ###  Kitap Verme: ödünç verme, iade alma ve dışarıdaki kitaplar tek ekranda  ###
         ui=self.QtLibrary
-        self.odunc=OduncEkrani(mesaj=lambda metin: self.QtLibrary.statusbar.showMessage(metin,8000),
+        self.odunc=OduncEkrani(mesaj=lambda metin,tur=None: self.bildirim.mesaj(metin,tur,8000),
                                degisti=self.yenile,bildir=self.bildirim.eylemli)
         ui.tabWidget_6.addTab(self.odunc,"Ödünç ve İade")
         self.odunc.btn_aktar.clicked.connect(lambda: disa_aktar(self,self.odunc.tablo,"Dışarıdaki Kitaplar"))
@@ -105,7 +105,7 @@ class Library(OrtakSekmeler, QMainWindow):
 
         ###  Kitap Kayıt: ekleme / düzenleme / silme tek ekranda; Veri Düzeltme sadece açıkken yenilenir  ###
         ui=self.QtLibrary
-        self.kitaplar=KitapEkrani(mesaj=lambda metin: self.QtLibrary.statusbar.showMessage(metin,self.dur_msj),
+        self.kitaplar=KitapEkrani(mesaj=lambda metin,tur=None: self.bildirim.mesaj(metin,tur,self.dur_msj),
                                   degisti=self.yenile,bildir=self.bildirim.eylemli)
         sag_tik_menusu(self,self.kitaplar.tablo,"Kitaplar")
         ui.tabWidget_3.addTab(self.kitaplar,"Kitaplar")
@@ -182,8 +182,8 @@ class Library(OrtakSekmeler, QMainWindow):
         if hasattr(self,"yan_menu"):
             self.yan_menu.yenile()
         if sayi:
-            self.QtLibrary.statusbar.showMessage(
-                f"Teslim süresi ({ODUNC_SURESI_GUN} gün) geçmiş {sayi} kitap var. Kitap Verme > Ödünç ve İade", 10000)
+            self.bildirim.mesaj(
+                f"Teslim süresi ({ODUNC_SURESI_GUN} gün) geçmiş {sayi} kitap var. Kitap Verme > Ödünç ve İade", "uyari", 10000)
         return sayi
 
     def kayit_sekmesi_degisti(self):
@@ -241,7 +241,7 @@ class Library(OrtakSekmeler, QMainWindow):
         elif odunclar:
             self.disaridakileri_goster()
             self.odunc.arama.setText(odunclar[0][2])
-            self.QtLibrary.statusbar.showMessage(f"Bu kitabın {len(odunclar)} kopyası dışarıda; iade alınacak olanı seçin.",self.dur_msj*3)
+            self.bildirim.mesaj(f"Bu kitabın {len(odunclar)} kopyası dışarıda; iade alınacak olanı seçin.","bilgi",self.dur_msj*3)
 
     def kitap_gecmisi(self,kitap_id):
         q=self.QtLibrary
@@ -283,7 +283,7 @@ class Library(OrtakSekmeler, QMainWindow):
         q.tabWidget.setCurrentWidget(q.tab_3)
         q.tabWidget_3.setCurrentWidget(self.kitaplar)
         if df_book_find_by_id(kitap_id) is None:
-            q.statusbar.showMessage("Kitap bulunamadı (silinmiş olabilir).",self.dur_msj)
+            self.bildirim.mesaj("Kitap bulunamadı (silinmiş olabilir).","uyari",self.dur_msj)
             return
         self.kitaplar.sec(kitap_id)
 
@@ -312,7 +312,7 @@ class Library(OrtakSekmeler, QMainWindow):
     def kullanici_eklendi(self,kullanici):
         ###  Yeni kullanıcı kaydından sonra: listeler (ödünç verme, bilgiler) yenilenir, aynı menüde kalınır  ###
         self.yenile()
-        self.QtLibrary.statusbar.showMessage(f"'{kullanici}' kullanıcısı kaydedildi.",self.dur_msj*2)
+        self.bildirim.mesaj(f"'{kullanici}' kullanıcısı kaydedildi.","basari",self.dur_msj*2)
 
     def kullanici_yonetimi(self):
         KullaniciYonetimi(self.aktif_kullanici, self).exec_()

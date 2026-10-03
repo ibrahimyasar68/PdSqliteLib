@@ -20,7 +20,7 @@ ACIK = dict(
     METIN="#1F2937",
     ETIKET="#334155",          # kalın etiketler, başlıklar
     IKINCIL_METIN="#5B6475",
-    SOLUK="#94A3B8",           # sönük sayılar, açıklamalar
+    SOLUK="#647186",           # sönük sayılar, açıklamalar (kart ve sayfa zemininde en az 4,5:1 kontrast)
     PASIF="#64748B",           # devre dışı yazılar
     IKON="#475569",            # zemin üstündeki ikonlar (göz, açılır liste oku)
     YUZEY="#F1F5F9",           # ikincil buton üstüne gelince, salt okunur alan
@@ -46,7 +46,7 @@ ACIK = dict(
     UYARI_ARKA="#FEF3C7",      # tablo üstündeki soru şeridi
     UYARI_KENAR="#FCD34D",
     UYARI_METIN="#78350F",
-    BOS_METIN="#8A94A6",       # boş tablo mesajı
+    BOS_METIN="#647186",       # boş tablo mesajı
     IPUCU_ARKA="#1F2937",
     IPUCU_YAZI="#FFFFFF",
     # Kenar menüsü iki temada da koyudur (yarı saydam lacivert; ana sayfada fotoğrafın üstünde durur)
@@ -61,7 +61,7 @@ ACIK = dict(
 KOYU = dict(
     ZEMIN="#0B1120", SAYFA="#111827", KART="#1E293B", KART_2="#18233A",
     KENAR="#334155", KENAR_GIRDI="#475569", KENAR_IKINCIL="#475569",
-    METIN="#E5E7EB", ETIKET="#CBD5E1", IKINCIL_METIN="#94A3B8", SOLUK="#64748B", PASIF="#94A3B8", IKON="#CBD5E1",
+    METIN="#E5E7EB", ETIKET="#CBD5E1", IKINCIL_METIN="#94A3B8", SOLUK="#8B98AD", PASIF="#94A3B8", IKON="#CBD5E1",
     YUZEY="#273449", YUZEY_2="#334155", SEKME="#1E293B", SEKME_HOVER="#273449", SATIR_HOVER="#24324A",
     IZGARA="#273449",
     VURGU="#3B82F6", VURGU_KOYU="#2563EB", VURGU_BASILI="#1D4ED8", VURGU_YAZI="#93C5FD", VURGU_ACIK="#1E3A5F",
@@ -69,7 +69,7 @@ KOYU = dict(
     BASARI="#4ADE80", UYARI="#FBBF24", BILGI="#38BDF8", YESIL="#22C55E",
     GECIKME_ARKA="#4C1D1D", GECIKME_YAZI="#FCA5A5",
     UYARI_ARKA="#422006", UYARI_KENAR="#A16207", UYARI_METIN="#FDE68A",
-    BOS_METIN="#64748B", IPUCU_ARKA="#F1F5F9", IPUCU_YAZI="#0F172A",
+    BOS_METIN="#8B98AD", IPUCU_ARKA="#F1F5F9", IPUCU_YAZI="#0F172A",
     MENU_ZEMIN_RGB="15, 23, 42", MENU_YAZI="#E2E8F0", MENU_OGE="#CBD5E1", MENU_IKINCIL="#94A3B8",
     MENU_SONUK="#64748B", MENU_LOGO="#FFE14D", MENU_CIKIS="#FCA5A5",
 )
@@ -143,6 +143,14 @@ class KOSE:
     kucuk = 6           # buton, yazı kutusu, tablo, menü öğesi
     orta = 10           # kart, kutu, bildirim
     buyuk = 14          # sayfa paneli, kenar menüsü, hızlı arama, giriş kartı
+
+
+class SURE:
+    """Animasyon süreleri (milisaniye). Modüllerde sabit süre yazılmaz; hepsi bu ölçekten gelir."""
+    kisa = 120          # küçük öğeler: açılır pencere, düğme durumu
+    orta = 200          # sayfa, menü genişliği, bildirimin belirmesi
+    uzun = 450          # bildirimin solması, tema geçişindeki perde
+    parlama = 900       # değişen tablo satırının sönen vurgusu
 
 
 YAZI_PX = YAZI.metin

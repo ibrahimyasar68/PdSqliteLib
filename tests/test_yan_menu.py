@@ -134,7 +134,7 @@ def test_kolon_secici_uc_listede(app, uyarilar):
 
 def test_daralma_ve_sayfa_gecisi_animasyonlu(app, uyarilar, monkeypatch):
     from PyQt5.QtTest import QTest
-    from acodes import hareket
+    from acodes import hareket, tema
     monkeypatch.setattr(hareket, "ANIMASYON", True)
     l = Library()
     l.resize(1200, 700)
@@ -142,15 +142,15 @@ def test_daralma_ve_sayfa_gecisi_animasyonlu(app, uyarilar, monkeypatch):
     m = l.yan_menu
     m.btn_daralt.click()
     assert m.kapali and m.width() > KAPALI_EN                          # genişlik hemen değil, yumuşakça değişir
-    QTest.qWait(hareket.GENISLIK_MS + 150)
+    QTest.qWait(tema.SURE.orta + 150)
     assert m.width() == KAPALI_EN
     m.btn_daralt.click()
     assert m.baslik.isHidden()                                          # açılırken yazılar genişlik oturunca gelir
-    QTest.qWait(hareket.GENISLIK_MS + 150)
+    QTest.qWait(tema.SURE.orta + 150)
     assert m.width() == ACIK_EN and not m.baslik.isHidden()
     sayfa = l.QtLibrary.tab_2
     l.QtLibrary.tabWidget.setCurrentWidget(sayfa)
     assert sayfa.graphicsEffect() is not None                           # yeni sayfa belirerek gelir
-    QTest.qWait(hareket.SAYFA_MS + 150)
+    QTest.qWait(tema.SURE.kisa + 150)
     assert sayfa.graphicsEffect() is None                               # bitince efekt kalkar
     l.close()

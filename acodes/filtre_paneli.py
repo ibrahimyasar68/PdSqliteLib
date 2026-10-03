@@ -28,7 +28,7 @@ SONUC_YOK = "Ölçütlerin hepsine uyan kitap yok.\nBir seçimi kaldırmayı vey
 class FiltrePaneli(QWidget):
     def __init__(self, mesaj=None, parent=None):
         super().__init__(parent)
-        self.mesaj = mesaj or (lambda metin: None)
+        self.mesaj = mesaj or (lambda metin, tur=None: None)
         self.secimler = {kolon: [] for kolon, _ in OLCUTLER}
         self.combo, self.kutu, self.etiketler = {}, {}, {}
         self.secenekler = {}
@@ -137,7 +137,7 @@ class FiltrePaneli(QWidget):
 
     def temizle(self):
         if not any(self.kosullar().values()):
-            self.mesaj("Temizlenecek seçim yok!")
+            self.mesaj("Temizlenecek seçim yok!", "uyari")
             return
         for kolon, secilen in self.secimler.items():
             secilen.clear()
@@ -147,7 +147,7 @@ class FiltrePaneli(QWidget):
             cmb.blockSignals(False)
             cmb.suzgec.ayarla("")
         self.listele()
-        self.mesaj("Filtre temizlendi.")
+        self.mesaj("Filtre temizlendi.", "basari")
 
     def listele(self):
         for kolon, ad in OLCUTLER:

@@ -6,7 +6,7 @@ import ctypes
 import sys
 from acodes.library import Library
 from acodes.guest import Guest
-from acodes import ikonlar, kilavuz, tema
+from acodes import hareket, ikonlar, kilavuz, tema
 from bforms.login_py import Ui_MainWindow
 from database.dbframe import giris_kontrol
 
@@ -264,11 +264,13 @@ class Login(QMainWindow):
 
     def gorunumu_degistir(self,gorunum):
         ###  Ayarlar > Görünüm: tema değişir, panel aynı kullanıcı, sayfa, kaydırma ve pencere boyutuyla yeniden kurulur  ###
-        # Yeni panel gösterilmeden önce eskisinin yerine oturtulur: sayfa en üste zıplamaz, pencere yeniden büyümez
+        # Yeni panel gösterilmeden önce eskisinin yerine oturtulur: sayfa en üste zıplamaz, pencere yeniden büyümez.
+        # Eski görünümün resmi yeni panelin üstünde solarak kaybolur (yanıp sönme yerine yumuşak geçiş).
+        eski=self.library or self.guest
+        goruntu=eski.grab() if hareket.acik_mi(eski) else None    # stil değişmeden önce
         tema.ayarla(gorunum)
         tema.uygulamaya_uygula(QApplication.instance())
         self.stil_uygula()
-        eski=self.library or self.guest
         if eski is None:
             return
         sekme=eski.QtLibrary.tabWidget.currentIndex()
@@ -287,6 +289,7 @@ class Login(QMainWindow):
         yeni.ayarlar.widget().adjustSize()
         QApplication.processEvents()            # sayfa yerleşsin, kaydırma sınırı belli olsun
         yeni.ayarlar.verticalScrollBar().setValue(kaydirma)
+        hareket.perde(yeni,goruntu)
         eski.hide()
         eski.deleteLater()
 

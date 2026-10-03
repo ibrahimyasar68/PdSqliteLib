@@ -73,7 +73,7 @@ class Guest(OrtakSekmeler, QMainWindow):
         self.ayarlar.yenile()
         self.ana_sayfa_yenile()
         if self.kitaplarim_yenile():
-            self.QtLibrary.statusbar.showMessage("Teslim süresi geçmiş kitabınız var. Kitaplarım sekmesine bakın.",10000)
+            self.bildirim.mesaj("Teslim süresi geçmiş kitabınız var. Kitaplarım sekmesine bakın.","uyari",10000)
 
     def kitaplarim_yenile(self):
         sayi=self.kitaplarim.yukle(self.aktif_kullanici)

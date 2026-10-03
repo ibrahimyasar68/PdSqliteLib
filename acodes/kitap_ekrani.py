@@ -8,7 +8,7 @@ from PyQt5.QtWidgets import (QCompleter, QGridLayout, QGroupBox, QHBoxLayout, QH
                              QMessageBox, QPushButton, QTableWidget, QVBoxLayout, QWidget)
 
 from acodes.onay import onay
-from acodes import tema
+from acodes import hareket, tema
 from acodes.ek_bilgi import EkBilgiler
 from acodes.kisayollar import arama_kutusu_yap, kisayol, metin
 from acodes.tablo import KolonSecici, durum_ekle, durum_rozeti_kur, satir_verisi, tablo_ayarla, tabloya_yaz
@@ -38,10 +38,10 @@ def buyuk_harf(metin):
 
 class KitapEkrani(QWidget):
     def __init__(self, mesaj=None, degisti=None, bildir=None, parent=None):
-        """mesaj(metin): panelin bildirimine yazar. degisti(): kitap eklenince/değişince/silinince çağrılır.
+        """mesaj(metin, tur): panelin bildirimine yazar (tur: "basari", "uyari", "bilgi"). degisti(): kitap eklenince/değişince/silinince çağrılır.
         bildir(metin, eylem adı, işlev): eylem butonlu bildirim (silmeden sonra "Geri Al")."""
         super().__init__(parent)
-        self.mesaj = mesaj or (lambda metin: None)
+        self.mesaj = mesaj or (lambda metin, tur=None: None)
         self.bildir = bildir or (lambda metin, *_: self.mesaj(metin))
         self.degisti = degisti
         self.kitap_id = None
@@ -245,7 +245,7 @@ class KitapEkrani(QWidget):
                 return
             ekle_kayit(kayit)
             self.kitap_id = baglantı.execute("SELECT MAX(Id) FROM kayitlistesi").fetchone()[0]
-            self.mesaj(f"'{kayit[0]}' kaydedildi")
+            self.mesaj(f"'{kayit[0]}' kaydedildi", "basari")
         else:
             disarida = kopya_durumu(self.kitap_id)[1]
             if kayit[8] < disarida:
@@ -255,8 +255,9 @@ class KitapEkrani(QWidget):
             if onay("Kayıt değiştirilsin mi?") != QMessageBox.Yes:
                 return
             degistir_kayit([self.kitap_id] + kayit)
-            self.mesaj(f"'{kayit[0]}' güncellendi.")
+            self.mesaj(f"'{kayit[0]}' güncellendi.", "basari")
         self._degisiklik_sonrasi()
+        hareket.secili_satiri_parlat(self.tablo)              # kaydedilen satır kısa süre parlar
 
     def sil(self):
         if self.kitap_id is None:
@@ -281,7 +282,8 @@ class KitapEkrani(QWidget):
         geri_ekle_kayit(kayit)
         self.kitap_id = kayit[0]
         self._degisiklik_sonrasi()
-        self.mesaj(f"'{kayit[1]}' geri getirildi.")
+        hareket.secili_satiri_parlat(self.tablo)
+        self.mesaj(f"'{kayit[1]}' geri getirildi.", "basari")
 
     def _degisiklik_sonrasi(self):
         if self.degisti:

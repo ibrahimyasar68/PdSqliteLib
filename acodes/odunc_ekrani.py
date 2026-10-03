@@ -10,7 +10,7 @@ from PyQt5.QtWidgets import (QApplication, QComboBox, QGridLayout, QGroupBox, QH
 
 from acodes.kisayollar import arama_kutusu_yap
 from acodes.onay import onay
-from acodes import tema
+from acodes import hareket, tema
 from acodes.aranabilir import aranabilir_yap, secili_veri
 from acodes.tablo import satir_verisi, tablo_ayarla, tabloya_yaz
 from acodes.yerlesim import baslik_satiri
@@ -70,7 +70,7 @@ class OduncEkrani(QWidget):
     def __init__(self, mesaj=None, degisti=None, bildir=None, parent=None):
         """bildir(metin, eylem adı, işlev): eylem butonlu bildirim (iadeden sonra "Geri Al")."""
         super().__init__(parent)
-        self.mesaj = mesaj or (lambda metin: None)
+        self.mesaj = mesaj or (lambda metin, tur=None: None)
         self.bildir = bildir or (lambda metin, *_: self.mesaj(metin))
         self.degisti = degisti
 
@@ -251,7 +251,7 @@ class OduncEkrani(QWidget):
         # Listeden seçmeyip adı yazdıysa, yazılan metin tek seçenekle eşleşiyorsa o seçilir
         kitap_id, uye_id = secili_veri(self.kitap), secili_veri(self.uye)
         if kitap_id is None or uye_id is None:
-            self.mesaj("Kitap ve üye seçiniz!")
+            self.mesaj("Kitap ve üye seçiniz!", "uyari")
             return
         engel = self.ver_durumu()
         if engel:
@@ -265,7 +265,8 @@ class OduncEkrani(QWidget):
             cmb.setCurrentIndex(0)
         self._degisiklik_sonrasi()
         self._satiri_sec(uye_id, kitap_id)
-        self.mesaj(f"İşlem kaydedildi. Teslim tarihi: {tarih_yazi(teslim_tarihi(simdi.date()))}")
+        hareket.secili_satiri_parlat(self.tablo)              # yeni ödünç listede kısa süre parlar
+        self.mesaj(f"İşlem kaydedildi. Teslim tarihi: {tarih_yazi(teslim_tarihi(simdi.date()))}", "basari")
 
     # --- İade alma
 
@@ -287,7 +288,7 @@ class OduncEkrani(QWidget):
         if not self._satiri_sec(user_id, book_id) and self.arama.text():
             self.arama.clear()
         if not self._satiri_sec(user_id, book_id):
-            self.mesaj("Bu ödünç bulunamadı (iade alınmış olabilir).")
+            self.mesaj("Bu ödünç bulunamadı (iade alınmış olabilir).", "uyari")
             return False
         return True
 
@@ -329,7 +330,7 @@ class OduncEkrani(QWidget):
         # Onay sorulmaz: yanlışlıkla alınan iade bildirimdeki "Geri Al" ile kısa süre içinde geri alınabilir
         secili = self.secili_odunc()
         if secili is None:
-            self.mesaj("İade için listeden seçim yapınız!")
+            self.mesaj("İade için listeden seçim yapınız!", "uyari")
             return
         r = self.tablo.selectionModel().selectedRows()[0].row()
         kitap, durum = self.tablo.item(r, 0).text(), self.tablo.item(r, 6).text()
@@ -345,21 +346,22 @@ class OduncEkrani(QWidget):
         """İade alınan ödünç yeniden dışarıda olur (bu arada kitap başka üyeye verildiyse geri alınamaz)."""
         kopya, disarida = kopya_durumu(book_id)
         if kayit_no is None or disarida >= kopya or uyede_mi(user_id, book_id):
-            self.mesaj("İade geri alınamaz: kitap bu arada yeniden ödünç verilmiş!")
+            self.mesaj("İade geri alınamaz: kitap bu arada yeniden ödünç verilmiş!", "uyari")
             return
         iade_geri_al(kayit_no)
         self._degisiklik_sonrasi()
         self._satiri_sec(user_id, book_id)
-        self.mesaj(f"'{kitap}' iadesi geri alındı; kitap yeniden üyede görünüyor.")
+        hareket.secili_satiri_parlat(self.tablo)
+        self.mesaj(f"'{kitap}' iadesi geri alındı; kitap yeniden üyede görünüyor.", "basari")
 
     def hatirlatma_kopyala(self):
         if self.secili_odunc() is None:
-            self.mesaj("Hatırlatma için listeden seçim yapınız!")
+            self.mesaj("Hatırlatma için listeden seçim yapınız!", "uyari")
             return
         r = self.tablo.selectionModel().selectedRows()[0].row()
         hucre = lambda c: self.tablo.item(r, c).text()
         QApplication.clipboard().setText(hatirlatma_metni(hucre(0), hucre(2), hucre(5), hucre(6)))
-        self.mesaj(f"Hatırlatma metni panoya kopyalandı: {hucre(2)}")
+        self.mesaj(f"Hatırlatma metni panoya kopyalandı: {hucre(2)}", "basari")
 
     def _degisiklik_sonrasi(self):
         if self.degisti:

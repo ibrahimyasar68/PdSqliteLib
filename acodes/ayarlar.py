@@ -6,7 +6,7 @@ import os
 
 from PyQt5.QtCore import Qt, QUrl, pyqtSignal
 from PyQt5.QtGui import QDesktopServices
-from acodes import tema, tercihler
+from acodes import hareket, tema, tercihler
 from acodes.kilavuz import Kilavuz
 from PyQt5.QtWidgets import (QApplication, QButtonGroup, QDialog, QFormLayout, QGroupBox, QHBoxLayout, QLabel,
                              QPushButton, QScrollArea, QSizePolicy, QToolTip, QVBoxLayout, QWidget)
@@ -89,7 +89,8 @@ class Bolum(QGroupBox):
 
 
 class GorunumBolumu(QGroupBox):
-    """Açık / koyu / sistemle aynı görünüm seçimi. Seçim değişince degisti(görünüm) yayınlanır."""
+    """Açık / koyu / sistemle aynı görünüm seçimi. Seçim değişince degisti(görünüm) yayınlanır.
+    "Hareketi azalt" geçiş animasyonlarını kapatır (hemen uygulanır, panel yeniden kurulmaz)."""
     degisti = pyqtSignal(str)
 
     def __init__(self, parent=None):
@@ -112,6 +113,25 @@ class GorunumBolumu(QGroupBox):
         aciklama = QLabel("“Sistemle aynı” bilgisayarın açık/koyu görünümünü izler. Tercih hatırlanır.")
         aciklama.setWordWrap(True)
         duzen.addWidget(aciklama)
+        # Onay kutusu yerine basılı kalan düğme: macOS stili sarmalandığında (tema._sabit_aralikli) onay kutusu
+        # çizilirken program çöküyordu; görünüm düğmeleriyle de aynı biçimde durur
+        self.hareket = QPushButton("Hareketi azalt", checkable=True)
+        self.hareket.setProperty("rol", "ikincil")
+        self.hareket.setToolTip("Sayfa geçişleri, menü, bildirim ve tema geçişindeki animasyonlar kapanır; "
+                                "değişiklikler hemen görünür.")
+        self.hareket.setCursor(Qt.PointingHandCursor)
+        self.hareket.setChecked(hareket.AZALT)
+        self.hareket.toggled.connect(self.hareket_degisti)
+        alt = QHBoxLayout()
+        alt.addWidget(self.hareket)
+        alt.addSpacing(8)
+        alt.addWidget(QLabel("Geçiş animasyonlarını kapatır; değişiklikler hemen görünür."))
+        alt.addStretch()
+        duzen.addLayout(alt)
+
+    def hareket_degisti(self, azalt):
+        hareket.AZALT = azalt
+        tercihler.yaz(hareket.TERCIH, "1" if azalt else "0")
 
     def sec(self, gorunum):
         if gorunum != tema.GORUNUM:

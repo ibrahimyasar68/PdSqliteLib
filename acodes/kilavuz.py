@@ -113,7 +113,8 @@ def kisayollar_ve_gorunum(yonetici):
             "<li><b>Ctrl+F</b> açık sayfadaki arama kutusuna gider; sayfada arama yoksa Kitap Listesi'ni açıp "
             "aramaya gider.</li>" + kayit + "</ul>"
             "<b>Görünüm:</b> <b>Ayarlar → Görünüm</b> bölümünden açık veya koyu renkler seçilebilir; "
-            "<b>Sistemle aynı</b> bilgisayarın açık/koyu ayarını izler. Seçim hemen uygulanır ve hatırlanır.")
+            "<b>Sistemle aynı</b> bilgisayarın açık/koyu ayarını izler. Seçim hemen uygulanır ve hatırlanır. "
+            "<b>Hareketi azalt</b> geçiş animasyonlarını kapatır.")
 
 
 YONETICI = [
@@ -181,7 +182,7 @@ YONETICI = [
      "<li>Uzun açılır listelerde (kitap, üye, filtre ölçütleri) kaydırmak yerine yazarak arayın.</li>"
      "<li>İşlemlerin sonucu pencerenin altında birkaç saniye görünen bildirimlerle haber verilir: "
      "başarılı işlemler yeşil, uyarılar kırmızı. Kitap silme ve iade alma bildirimlerinde <b>Geri Al</b> "
-     "butonu vardır.</li>"
+     "butonu vardır; alttaki çubuk kalan süreyi gösterir, fareyi bildirimin üstünde tutarsanız süre durur.</li>"
      "<li>Tüm tablolar kolon başlığına tıklanarak sıralanabilir; sağ tıklayarak Excel/CSV'ye aktarılabilir.</li>"
      "</ul>"),
 ]

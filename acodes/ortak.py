@@ -46,7 +46,7 @@ class OrtakSekmeler:
         ui.pushButton_2_temizle.clicked.connect(self.temizle)
 
         ###  Tab_4: tür, yazar, yayınevi ve yıl tek panelde  ###
-        self.filtre=FiltrePaneli(mesaj=lambda metin: self.QtLibrary.statusbar.showMessage(metin,self.dur_msj))
+        self.filtre=FiltrePaneli(mesaj=lambda metin,tur=None: self.bildirim.mesaj(metin,tur,self.dur_msj))
         ui.gridLayout_3.addWidget(self.filtre,0,0)
 
         ###  Tab_5  ###

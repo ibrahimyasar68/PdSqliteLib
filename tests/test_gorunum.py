@@ -95,10 +95,72 @@ def test_modullerde_sabit_yazi_boyutu_yok():
     assert bulunan == {}
 
 
+def _parlaklik(renk):
+    kanallar = [int(renk[i:i + 2], 16) / 255 for i in (1, 3, 5)]
+    r, g, b = [k / 12.92 if k <= 0.03928 else ((k + 0.055) / 1.055) ** 2.4 for k in kanallar]
+    return 0.2126 * r + 0.7152 * g + 0.0722 * b
+
+
+def kontrast(on, arka):
+    a, b = sorted((_parlaklik(on), _parlaklik(arka)), reverse=True)
+    return (a + 0.05) / (b + 0.05)
+
+
+@pytest.mark.parametrize("palet", ["ACIK", "KOYU"])
+def test_yazi_renkleri_okunur(palet):
+    """Yazı renkleri kart, sıra sıra renkli satır ve sayfa zemininde en az 4,5:1 kontrastlı (WCAG AA)."""
+    p = getattr(tema, palet)
+    zayif = [(yazi, zemin, round(kontrast(p[yazi], p[zemin]), 2))
+             for yazi in ("METIN", "ETIKET", "IKINCIL_METIN", "SOLUK", "BOS_METIN", "VURGU_YAZI")
+             for zemin in ("KART", "KART_2", "SAYFA") if kontrast(p[yazi], p[zemin]) < 4.5]
+    assert zayif == []
+
+
+def test_modullerde_sabit_animasyon_suresi_yok():
+    """Animasyon süreleri tema.SURE ölçeğinden gelir."""
+    klasor = os.path.join(os.path.dirname(__file__), "..", "acodes")
+    bulunan = {}
+    for ad in sorted(os.listdir(klasor)):
+        if ad.endswith(".py") and ad != "tema.py":
+            sabitler = re.findall(r"setDuration\(\d+|_solma\([^)]*, \d+\)", open(os.path.join(klasor, ad), encoding="utf-8").read())
+            if sabitler:
+                bulunan[ad] = sabitler
+    assert bulunan == {}
+
+
+def test_tema_degisince_eski_gorunum_solarak_kaybolur(app, uyarilar, monkeypatch):
+    from PyQt5.QtTest import QTest
+    from PyQt5.QtWidgets import QLabel
+    from acodes import hareket
+    monkeypatch.setattr(hareket, "ANIMASYON", True)
+    monkeypatch.setattr(hareket, "AZALT", False)
+    w = Login()
+    w.panel_ac("admin", "admin")
+    eski = w.library
+    eski.ayarlar.gorunum.butonlar["koyu"].click()
+    yeni = w.library
+    perde = yeni.findChild(QLabel, "tema_perdesi")
+    assert perde is not None and perde.isVisible() and perde.geometry() == yeni.rect()
+    assert not perde.pixmap().isNull()
+    QTest.qWait(tema.SURE.uzun + 200)
+    assert yeni.findChild(QLabel, "tema_perdesi") is None
+    yeni.close()
+
+
+def test_animasyon_kapaliyken_tema_perdesi_yok(app, uyarilar):
+    from PyQt5.QtWidgets import QLabel
+    w = Login()
+    w.panel_ac("admin", "admin")
+    w.library.ayarlar.gorunum.butonlar["koyu"].click()
+    assert w.library.findChild(QLabel, "tema_perdesi") is None
+    w.library.close()
+
+
 def test_olcekler_artan_sirada():
     yazi = [v for k, v in vars(tema.YAZI).items() if not k.startswith("_") and not k.startswith("logo")]
     kose = [v for k, v in vars(tema.KOSE).items() if not k.startswith("_")]
-    assert yazi == sorted(yazi) and kose == sorted(kose)
+    sure = [v for k, v in vars(tema.SURE).items() if not k.startswith("_")]
+    assert yazi == sorted(yazi) and kose == sorted(kose) and sure == sorted(sure)
     assert tema.YAZI_PX == tema.YAZI.metin
 
 
