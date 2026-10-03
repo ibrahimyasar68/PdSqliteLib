@@ -10,9 +10,21 @@ from acodes import tema, tercihler
 from acodes.login import Login
 
 
+def pencereleri_sil(app):
+    """Önceki testlerden kalan pencereleri siler: çizim stili değişince Qt her açık pencereyi yeniden biçimlendirir,
+    kalan yüzlerce pencere bu testleri yavaşlatıyor ve birbirine bağımlı kılıyordu."""
+    from PyQt5.QtCore import QEvent
+    for pencere in app.topLevelWidgets():
+        pencere.close()
+        pencere.deleteLater()
+    QApplication.sendPostedEvents(None, QEvent.DeferredDelete)
+
+
 @pytest.fixture(autouse=True)
 def acik_temaya_don(app):
+    pencereleri_sil(app)
     yield
+    pencereleri_sil(app)
     tema.ayarla("acik")
     tema.uygulamaya_uygula(app)
     tercihler.yaz("gorunum/tema", "sistem")
@@ -94,7 +106,7 @@ def test_bildirim_ve_grafik_renkleri_temadan(app):
     from acodes import bildirim, grafikler
     tema.ayarla("koyu")
     assert grafikler.renk(0).name().upper() == tema.GRAFIK_KOYU[0]
-    assert bildirim.renk("basari") == tema.BILDIRIM_BASARI
+    assert bildirim.renk("basari") == tema.KOYU["BASARI"] and bildirim.renk("uyari") == tema.KOYU["TEHLIKE"]
     tema.ayarla("acik")
     assert grafikler.renk(0).name().upper() == tema.VURGU
     assert grafikler.renk(len(tema.GRAFIK)) == grafikler.renk(0)

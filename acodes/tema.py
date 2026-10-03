@@ -57,10 +57,6 @@ ACIK = dict(
     MENU_SONUK="#64748B",      # kısayol, imza
     MENU_LOGO="#FFE14D",       # el yazısı "Yaşar Kütüphanesi"
     MENU_CIKIS="#FCA5A5",      # Oturumu Kapat
-    # Bildirim kutuları (beyaz yazı) iki temada da aynı koyu tonlarda
-    BILDIRIM_BASARI="#15803D",
-    BILDIRIM_UYARI="#DC2626",
-    BILDIRIM_BILGI="#1F2937",
 )
 KOYU = dict(
     ZEMIN="#0B1120", SAYFA="#111827", KART="#1E293B", KART_2="#18233A",
@@ -76,7 +72,6 @@ KOYU = dict(
     BOS_METIN="#64748B", IPUCU_ARKA="#F1F5F9", IPUCU_YAZI="#0F172A",
     MENU_ZEMIN_RGB="15, 23, 42", MENU_YAZI="#E2E8F0", MENU_OGE="#CBD5E1", MENU_IKINCIL="#94A3B8",
     MENU_SONUK="#64748B", MENU_LOGO="#FFE14D", MENU_CIKIS="#FCA5A5",
-    BILDIRIM_BASARI="#15803D", BILDIRIM_UYARI="#DC2626", BILDIRIM_BILGI="#1F2937",
 )
 assert ACIK.keys() == KOYU.keys()
 
@@ -366,7 +361,10 @@ def _sabit_aralikli(stil):
             return ipuclari[ipucu] if ipucu in ipuclari else super().styleHint(ipucu, secenek, bilesen, donus)
 
     sarilmis = SabitAralik(stil)
-    sarilmis.olcu_stili = olcu_stili          # Python tarafında yaşasın (silinirse çizimde çöker)
+    # Ölçü stili sarmalayıcıyla birlikte yaşar: Qt tarafında ona bağlanır. Yalnızca Python niteliğinde tutulunca
+    # program kapanırken (Python nesneleri silinirken) sarmalayıcıdan önce silinip hata veriyordu.
+    olcu_stili.setParent(sarilmis)
+    sarilmis.olcu_stili = olcu_stili
     sarilmis.setObjectName(stil.objectName())
     return sarilmis
 

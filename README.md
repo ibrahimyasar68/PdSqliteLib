@@ -39,7 +39,8 @@ Adı, yazar, çevirmen ve yayınevi kolonları kalan genişliği oranla paylaş�
 metin "…" ile kısalır. Liste yine de sığmazsa tablonun üstünde hangi kolonların gizleneceği sorulur. Menü ve
 kolon tercihleri veritabanının yanındaki `tercihler.ini` dosyasında tutulur.
 
-Programdan çıkmak için giriş ekranındaki kırmızı çıkış butonu kullanılır. Paneller macOS'ta büyütülmüş
+Programdan çıkmak için giriş ekranının sağ üstündeki **×** kullanılır. Giriş ekranı açılınca ekranın ortasındadır;
+parola kutusundayken Caps Lock açıksa altında uyarı çıkar, giriş sürerken butonda "Giriş yapılıyor…" yazar. Paneller macOS'ta büyütülmüş
 pencerede (küçültülebilir, diğer programlara geçilebilir), Windows'ta tam ekran açılır.
 Giriş sekmesinin arka planı yaprak fotoğrafıdır (`media/autumn.jpg`); diğer sayfalar sade, düz tema
 zeminindedir (`acodes/arka_plan.py`). Yazı ağırlıkları `acodes/tema.py`'deki `YARI_KALIN` (başlıklar) ve
@@ -63,7 +64,10 @@ Yeni kullanıcı ve üye kayıtlarını (`admin` veya `guest`) sadece giriş yap
   *Ödünç ver*, *İade al*, *Yedek al* …), kitaplar ve (yöneticide) üyeler aranır; ok tuşlarıyla seçilip
   Enter ile açılır. Kitap seçilince yöneticide düzenleme ekranı, üyede süzülmüş Kitap Listesi açılır; üye
   seçilince ödünç verme ekranı o üyeyle açılır (`acodes/komut_paleti.py`).
-- **Geri Al:** Kitap silme ve iade alma sonrasında alttaki bildirimde birkaç saniye **Geri Al** butonu
+- **Bildirimler** pencerenin sağ altında beliren kartlardır; solda türüne göre renkli çizgi ve ikon (başarı
+  yeşil, uyarı kırmızı, bilgi mavi). Menüden sayfa değişince yeni sayfa hafifçe belirir,
+  kenar menüsü daralıp açılırken genişliği yumuşakça değişir (`acodes/hareket.py`; testlerde kapalıdır).
+- **Geri Al:** Kitap silme ve iade alma sonrasında sağ alttaki bildirimde birkaç saniye **Geri Al** butonu
   durur. Silinen kitap aynı numara ve bilgilerle geri gelir; iade alma onay sormaz, yanlış iade geri alınır
   (bu arada kitap başka üyeye verildiyse geri alınmaz).
 - **Ayarlar → Görünüm:** *Sistemle aynı*, *Açık* veya *Koyu*. Seçim hemen uygulanır (panel aynı sayfada
@@ -298,7 +302,8 @@ acodes/tablo.py               Tablo doldurma, Türkçe sıralama, satır vurgula
                               oran çubukları, oranlı kolon genişlikleri
 acodes/aranabilir.py          Yazdıkça süzülen açılır listeler
 acodes/ikonlar.py             Buton ve sekme ikonları (Qt ile çizilir, dosya gerektirmez)
-acodes/bildirim.py            Kısa süre görünen bildirimler (başarı yeşil, uyarı kırmızı; "Geri Al" butonlu)
+acodes/bildirim.py            Kısa süre görünen bildirimler (sağ altta kart; başarı yeşil, uyarı kırmızı; "Geri Al" butonlu)
+acodes/hareket.py             Sayfa geçişi ve menü daralma animasyonları
 acodes/onay.py                Evet / Hayır onay kutusu
 acodes/kisayollar.py          Klavye kısayolları (menü, arama, Kitap Kayıt)
 acodes/yerlesim.py            Esnek yerleşim kalıpları (sayfaları pencereyle büyüyen düzene alır)

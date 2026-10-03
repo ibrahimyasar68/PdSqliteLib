@@ -8,7 +8,7 @@ import re
 from PyQt5.QtCore import QSize, Qt
 from PyQt5.QtWidgets import QButtonGroup, QFrame, QHBoxLayout, QLabel, QPushButton, QVBoxLayout, QWidget
 
-from acodes import ikonlar, tema, tercihler
+from acodes import hareket, ikonlar, tema, tercihler
 from acodes.kilavuz import IMZA
 from acodes.kisayollar import metin as kisayol_metni
 
@@ -144,6 +144,7 @@ class YanMenu(QFrame):
 
         sekmeler.tabBar().hide()
         sekmeler.currentChanged.connect(self.secili_yap)
+        sekmeler.currentChanged.connect(lambda i: hareket.belir(sekmeler.widget(i)))   # yeni sayfa hafifçe belirir
         self.yenile()
         self.secili_yap(sekmeler.currentIndex())
         self.kapali = False
@@ -174,8 +175,17 @@ class YanMenu(QFrame):
 
     def daralt(self, kapali, kaydet=True):
         ###  Kapalıyken sadece simgeler (adlar ipucu olarak görünür), açıkken taslaktaki tam menü  ###
+        # Genişlik yumuşakça değişir; daralırken yazılar hemen gizlenir, açılırken genişlik yerine oturunca görünür
         self.kapali = kapali
-        self.setFixedWidth(KAPALI_EN if kapali else ACIK_EN)
+        if kapali:
+            self._gorunumu_uygula(True)
+            hareket.genislige_kay(self, KAPALI_EN)
+        else:
+            hareket.genislige_kay(self, ACIK_EN, lambda: self._gorunumu_uygula(False))
+        if kaydet:
+            tercihler.yaz("menu/kapali", "1" if kapali else "0")
+
+    def _gorunumu_uygula(self, kapali):
         for gizlenecek in (self.baslik, self.kul_ad, self.kul_rol, self.imza, self.ara_kisayol):
             gizlenecek.setVisible(not kapali)
         self.btn_ara.setText("" if kapali else " Hızlı ara")
@@ -190,8 +200,6 @@ class YanMenu(QFrame):
         self.btn_daralt.setToolTip("Menüyü aç" if kapali else "Menüyü daralt")
         self.kart.layout().setContentsMargins(*((4, 8, 4, 8) if kapali else (10, 10, 10, 10)))
         self.yenile()
-        if kaydet:
-            tercihler.yaz("menu/kapali", "1" if kapali else "0")
 
 
 def menuyu_yerlestir(pencere, menu):

@@ -94,3 +94,15 @@ def test_yeni_mesaj_eylem_butonunu_kaldirir(lib):
     lib.bildirim.eylemli("'Deneme' silindi", "Geri Al", lambda: None)
     lib.QtLibrary.statusbar.showMessage("Liste görüntülendi.")
     assert not lib.bildirim.eylem.isVisibleTo(lib.bildirim.kutu) and lib.bildirim.eylem_islevi is None
+
+
+def test_bildirim_sag_altta_kart(lib):
+    lib.show()
+    lib.QtLibrary.statusbar.showMessage("'Deneme' kaydedildi")
+    k = lib.bildirim.kutu
+    assert lib.width() - (k.x() + k.width()) == bildirim.KENAR_BOSLUK
+    assert lib.height() - (k.y() + k.height()) == bildirim.KENAR_BOSLUK
+    assert not lib.bildirim.simge.pixmap().isNull() and k.width() <= bildirim.EN_FAZLA_EN
+    assert bildirim.renk("uyari") != bildirim.renk("basari")
+    lib.close()
+

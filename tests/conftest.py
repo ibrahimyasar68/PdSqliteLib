@@ -16,6 +16,9 @@ import pytest  # noqa: E402
 from PyQt5.QtWidgets import QApplication, QMessageBox  # noqa: E402
 
 from database.dbbase import baglantı, sifre_hashle  # noqa: E402
+from acodes import hareket  # noqa: E402
+
+hareket.ANIMASYON = False       # sayfa geçişleri ve menü genişliği testlerde hemen sonuçlansın
 
 ADMIN_SIFRE = "admin123"
 ESKI_SIFRE = "eski123"      # Veritabanında düz metin duran eski kullanıcı

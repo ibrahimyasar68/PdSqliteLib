@@ -1,14 +1,18 @@
 ## Kısa süre görünen bildirimler ##
-# Panellerde durum çubuğuna yazılan her mesaj, pencerenin alt ortasında yumuşakça beliren ve birkaç saniye
-# sonra kaybolan bir kutuda gösterilir. Kodun mesaj yazdığı yerler (showMessage) değişmeden kalır.
+# Panellerde durum çubuğuna yazılan her mesaj, pencerenin sağ altında yumuşakça beliren ve birkaç saniye sonra
+# solarak kaybolan bir kartta gösterilir: kart zemini, solda türüne göre renkli çizgi ve ikon.
+# Kodun mesaj yazdığı yerler (showMessage) değişmeden kalır.
 # Geri alınabilen işlemlerde (kitap silme, iade alma) kutunun sağında "Geri Al" butonu çıkar ve kutu daha uzun kalır.
 
 from PyQt5.QtCore import QEvent, QObject, QPropertyAnimation, Qt, QTimer
 from PyQt5.QtWidgets import QGraphicsOpacityEffect, QLabel, QPushButton
 
-from acodes import tema
+from acodes import ikonlar, tema
 
-ALT_BOSLUK = 80
+KENAR_BOSLUK = 24           # pencerenin sağ ve alt kenarından uzaklık
+EN_FAZLA_EN = 440
+SIMGE = 20
+SIMGELER = {"basari": "kontrol", "uyari": "uyari", "bilgi": "bilgi"}
 UYARI_KELIMELERI = ("yanlış", "geçmiş", "silinemez", "bulunamadı", "eksik", "gecikti", "olamaz",
                     "seçim yapınız", "seçiniz", "yok!", "yetkiniz")
 BASARI_KELIMELERI = ("kaydedildi", "güncellendi", "silindi", "eklendi", "listelendi", "görüntülendi",
@@ -26,8 +30,8 @@ def tur_bul(metin):
 
 
 def renk(tur):
-    """Bildirim zemini; tema değişince güncel paletten okunur."""
-    return {"basari": tema.BILDIRIM_BASARI, "uyari": tema.BILDIRIM_UYARI, "bilgi": tema.BILDIRIM_BILGI}[tur]
+    """Bildirimin vurgu rengi (soldaki çizgi ve ikon); tema değişince güncel paletten okunur."""
+    return {"basari": tema.BASARI, "uyari": tema.TEHLIKE, "bilgi": tema.VURGU}[tur]
 
 
 def sure_ms(metin):
@@ -42,13 +46,18 @@ class Bildirim(QObject):
         self.kutu = QLabel(pencere)
         self.kutu.setObjectName("bildirim")
         self.kutu.setWordWrap(True)
-        self.kutu.setAlignment(Qt.AlignCenter)
+        self.kutu.setAlignment(Qt.AlignLeft | Qt.AlignVCenter)
         self.kutu.setAttribute(Qt.WA_TransparentForMouseEvents)
         self.kutu.hide()
+        # Belirip solarak gelir ve gider. Kutuyu kaydıran bir animasyon denendi; çizim stili değişirken (tema geçişi)
+        # süreci çökertiyordu, saydamlık animasyonu ise güvenli.
         self.saydamlik = QGraphicsOpacityEffect(self.kutu)
         self.kutu.setGraphicsEffect(self.saydamlik)
         self.animasyon = QPropertyAnimation(self.saydamlik, b"opacity", self)
         self.animasyon.finished.connect(self._animasyon_bitti)
+        self.simge = QLabel(self.kutu)
+        self.simge.setFixedSize(SIMGE, SIMGE)
+        self.simge.setAttribute(Qt.WA_TransparentForMouseEvents)
         self.zamanlayici = QTimer(self)
         self.zamanlayici.setSingleShot(True)
         self.zamanlayici.timeout.connect(self.kaybol)
@@ -56,11 +65,11 @@ class Bildirim(QObject):
         self.durum_cubugu = None
         self.eylem = QPushButton(self.kutu, objectName="bildirim_eylem")
         self.eylem.setCursor(Qt.PointingHandCursor)
-        self.eylem.setStyleSheet("QPushButton#bildirim_eylem { background: transparent; color: white;"
+        self.eylem.setStyleSheet(f"QPushButton#bildirim_eylem {{ background: transparent; color: {tema.VURGU_YAZI};"
                                  f" font-size: {tema.YAZI.metin}px; font-weight: {tema.YARI_KALIN};"
-                                 f" border: 1px solid rgba(255,255,255,0.75); border-radius: {tema.KOSE.kucuk}px;"
-                                 " padding: 4px 12px; }"
-                                 " QPushButton#bildirim_eylem:hover { background: rgba(255,255,255,0.18); }")
+                                 f" border: 1px solid {tema.KENAR_IKINCIL}; border-radius: {tema.KOSE.kucuk}px;"
+                                 f" padding: 4px 12px; }}"
+                                 f" QPushButton#bildirim_eylem:hover {{ background: {tema.YUZEY}; }}")
         self.eylem.clicked.connect(self._eylem_tiklandi)
         self.eylem.hide()
         self.eylem_islevi = None
@@ -79,9 +88,12 @@ class Bildirim(QObject):
         self.eylem.setVisible(bool(eylem))
         self.kutu.setAttribute(Qt.WA_TransparentForMouseEvents, not eylem)
         sag = self.eylem.width() + 30 if eylem else 18
-        self.kutu.setStyleSheet(f"background-color: {renk(self.tur)}; color: white; font-size: {tema.YAZI.metin}px;"
-                                f" font-weight: {tema.ORTA}; padding: 10px {sag}px 10px 18px;"
-                                f" border-radius: {tema.KOSE.orta}px;")
+        # Seçicili kural: kutunun ikonu ve butonu bu çerçeveyi devralmasın
+        self.kutu.setStyleSheet(f"QLabel#bildirim {{ background-color: {tema.KART}; color: {tema.METIN};"
+                                f" font-size: {tema.YAZI.metin}px; font-weight: {tema.ORTA};"
+                                f" padding: 12px {sag}px 12px {SIMGE + 28}px; border: 1px solid {tema.KENAR_IKINCIL};"
+                                f" border-left: 4px solid {renk(self.tur)}; border-radius: {tema.KOSE.orta}px; }}")
+        self.simge.setPixmap(ikonlar.ikon(SIMGELER[self.tur], renk(self.tur)).pixmap(SIMGE, SIMGE))
         self._yerlestir()
         self.kutu.raise_()
         self.kutu.show()
@@ -116,18 +128,19 @@ class Bildirim(QObject):
             self.kutu.hide()
 
     def _yerlestir(self):
-        # Genişlik metne göre: kısa mesaj küçük kutu, uzun mesaj en fazla 620 piksel (gerekirse alt satıra geçer)
-        sinir = min(620, self.pencere.width() - 80)
+        """Kartı ölçüp sağ alttaki yerine koyar."""
+        # Genişlik metne göre: kısa mesaj küçük kart, uzun mesaj en fazla EN_FAZLA_EN (gerekirse alt satıra geçer)
+        sinir = min(EN_FAZLA_EN, self.pencere.width() - 2 * KENAR_BOSLUK)
         self.kutu.setMinimumWidth(0)
         self.kutu.setMaximumWidth(16777215)
         ek = self.eylem.width() + 30 if self.eylem.isVisibleTo(self.kutu) else 0
-        en = max(220, min(sinir, self.kutu.fontMetrics().horizontalAdvance(self.kutu.text()) + 60 + ek))
+        en = max(260, min(sinir, self.kutu.fontMetrics().horizontalAdvance(self.kutu.text()) + SIMGE + 70 + ek))
         self.kutu.setFixedWidth(en)
         self.kutu.adjustSize()
         if ek:
             self.eylem.move(en - self.eylem.width() - 12, (self.kutu.height() - self.eylem.height()) // 2)
-        # Alt kenardan biraz yukarıda: sekmelerin alt çubuğunu (ör. Kayıt Ekleme / Düzenleme) örtmesin
-        self.kutu.move((self.pencere.width() - en) // 2, self.pencere.height() - self.kutu.height() - ALT_BOSLUK)
+        self.simge.move(18, (self.kutu.height() - SIMGE) // 2)
+        self.kutu.move(self.pencere.width() - en - KENAR_BOSLUK, self.pencere.height() - self.kutu.height() - KENAR_BOSLUK)
 
     def eventFilter(self, nesne, olay):
         if olay.type() == QEvent.Resize and self.kutu.isVisible():

@@ -1,7 +1,8 @@
-from PyQt5.QtWidgets import (QAction, QApplication, QGraphicsDropShadowEffect, QLabel, QLineEdit, QMainWindow, QSizePolicy, QVBoxLayout,
-                             QWidget)
-from PyQt5.QtCore import Qt
+from PyQt5.QtWidgets import (QAction, QApplication, QFrame, QGraphicsDropShadowEffect, QHBoxLayout, QLabel, QLineEdit,
+                             QMainWindow, QSizePolicy, QVBoxLayout, QWidget)
+from PyQt5.QtCore import QEvent, QEventLoop, QSize, Qt
 from PyQt5.QtGui import QColor
+import ctypes
 import sys
 from acodes.library import Library
 from acodes.guest import Guest
@@ -18,10 +19,25 @@ def panel_goster(panel):
         panel.showFullScreen()
 
 
-# Sağ taraf: geçişli zemin yerine beyaz kart; soldaki fotoğraf ve başlık korunur
+def caps_lock_acik():
+    """Caps Lock açık mı? Qt5 bunu sormaya izin vermediği için sistemden okunur; bilinemezse False."""
+    try:
+        if sys.platform=="darwin":
+            servis=ctypes.cdll.LoadLibrary("/System/Library/Frameworks/ApplicationServices.framework/ApplicationServices")
+            servis.CGEventSourceFlagsState.restype=ctypes.c_uint64
+            servis.CGEventSourceFlagsState.argtypes=[ctypes.c_int32]
+            return bool(servis.CGEventSourceFlagsState(0) & 0x10000)    # birleşik oturum durumu, AlphaShift bayrağı
+        if sys.platform=="win32":
+            return bool(ctypes.windll.user32.GetKeyState(0x14) & 1)       # VK_CAPITAL
+    except (OSError, AttributeError):
+        pass
+    return False
+
+
+# Solda fotoğraf ve el yazısı başlık, sağda ortalanmış giriş kartı; yerleşim layout ile (sabit koordinat yok)
 def giris_stili():
     return f"""
-#label_2 {{ background-color: {tema.KART}; border-top-right-radius: {tema.KOSE.buyuk}px;
+#giris_paneli {{ background-color: {tema.KART}; border-top-right-radius: {tema.KOSE.buyuk}px;
                border-bottom-right-radius: {tema.KOSE.buyuk}px; }}
 #label_5 {{ color: white; font-family: "{tema.BASLIK_YAZISI}"; font-size: {tema.YAZI.logo_giris}px; font-style: normal; }}
 #giris_karti QLabel {{ color: {tema.ETIKET}; font-size: {tema.YAZI.ince}px; font-weight: {tema.ORTA}; }}
@@ -30,11 +46,12 @@ def giris_stili():
 #giris_karti QLineEdit {{ font-size: {tema.YAZI.metin}px; padding: 8px 10px; border-radius: {tema.KOSE.kucuk}px; min-height: 22px; }}
 #giris_karti QLabel#giris_mesaj {{ color: {tema.TEHLIKE}; font-weight: normal; }}
 #giris_karti QLabel#giris_mesaj[tur="bilgi"] {{ color: {tema.BASARI}; }}
-#giris_karti QLabel#giris_imza {{ color: {tema.IKINCIL_METIN}; font-size: {tema.YAZI.kucuk}px; font-weight: normal; }}
+#giris_karti QLabel#caps_uyari {{ color: {tema.UYARI}; font-size: {tema.YAZI.kucuk}px; }}
+QLabel#giris_imza {{ color: {tema.IKINCIL_METIN}; font-size: {tema.YAZI.kucuk}px; font-weight: normal; }}
 #pushButton_giris {{ font-size: {tema.YAZI.metin}px; font-weight: {tema.YARI_KALIN}; padding: 10px;
                border-radius: {tema.KOSE.kucuk}px; }}
-#pushButton_cikis {{ background-color: {tema.YUZEY}; border: 1px solid {tema.KENAR}; border-radius: 22px; }}
-#pushButton_cikis:hover {{ background-color: {tema.TEHLIKE}; border-color: {tema.TEHLIKE}; }}
+#pushButton_cikis {{ background: transparent; border: none; border-radius: {tema.KOSE.kucuk}px; padding: 0; }}
+#pushButton_cikis:hover {{ background-color: {tema.TEHLIKE_ACIK}; }}
 """
 
 
@@ -44,7 +61,11 @@ class Login(QMainWindow):
         self.QtLogin = Ui_MainWindow()
         self.QtLogin.setupUi(self)
         self.setWindowFlags(Qt.FramelessWindowHint)
-        self.setGeometry(260,20,800,700)
+        self.resize(self.minimumSize())
+        ekran=QApplication.primaryScreen()
+        if ekran is not None:                     # ekranın ortasında açılır
+            alan=ekran.availableGeometry()
+            self.move(alan.center().x()-self.width()//2, alan.center().y()-self.height()//2)
         self.setWindowTitle("Yaşar Kütüphanesi - Giriş")
         self.library=None  # Paneller giriş yapılınca oluşturulur
         self.guest=None
@@ -59,28 +80,41 @@ class Login(QMainWindow):
         self.QtLogin.lineEdit_kullanci_adi.setFocus()   # açılınca doğrudan kullanıcı adı yazılabilsin
 
     def tasarim(self):
-        ###  Sağ tarafa beyaz giriş kartı: başlık, etiketli alanlar, kart içinde mesaj, tam genişlikte buton  ###
+        ###  Solda fotoğraf ve başlık, sağda panel: üstte kapatma (×), ortada giriş kartı, altta imza  ###
         ui=self.QtLogin
-        # Başlık fotoğrafın genişliğinde ve ortada (gömülü el yazısı .ui'daki dar kutuya sığmıyordu)
-        ui.label_5.setGeometry(18,70,400,150)
+        ui.statusbar.hide()                       # mesajlar kartın içinde gösterilir
+        ui.label_2.deleteLater()                  # .ui'daki sağ zemin yerine layout'lu panel
+
+        foto=ui.label
+        foto.setFixedWidth(410)
+        foto.setStyleSheet(f"QLabel#label {{ border-image: url(:/pic/login.jpeg); border-top-left-radius: {tema.KOSE.buyuk}px;"
+                           f" border-bottom-left-radius: {tema.KOSE.buyuk}px; }}")   # seçicili: başlığa geçmesin
+        ust_yazi=QVBoxLayout(foto)
+        ust_yazi.setContentsMargins(12,60,12,0)
+        ust_yazi.addWidget(ui.label_5)
+        ust_yazi.addStretch()
         ui.label_5.setAlignment(Qt.AlignCenter)
         golge=QGraphicsDropShadowEffect(ui.label_5)
         golge.setBlurRadius(16)
         golge.setOffset(0,2)
         golge.setColor(QColor(0,0,0,180))
         ui.label_5.setGraphicsEffect(golge)
-        ui.statusbar.hide()                       # mesajlar kartın içinde gösterilir
 
-        kart=QWidget(ui.widget)
-        kart.setObjectName("giris_karti")
-        kart.setGeometry(460,120,320,430)
+        kart=QWidget(objectName="giris_karti")
+        kart.setFixedWidth(320)
         duzen=QVBoxLayout(kart)
+        duzen.setContentsMargins(0,0,0,0)
         duzen.setSpacing(8)
         alt=QLabel("Devam etmek için hesabınıza giriş yapın.",objectName="giris_alt")
         alt.setWordWrap(True)
         self.mesaj=QLabel("",objectName="giris_mesaj")
         self.mesaj.setWordWrap(True)
         self.mesaj.setMinimumHeight(20)
+        self.caps=QLabel("Caps Lock açık",objectName="caps_uyari")
+        bosluk_kalsin=self.caps.sizePolicy()
+        bosluk_kalsin.setRetainSizeWhenHidden(True)   # görünüp kaybolurken kart kaymasın
+        self.caps.setSizePolicy(bosluk_kalsin)
+        self.caps.hide()
         for alan,ipucu in ((ui.lineEdit_kullanci_adi,"Kullanıcı adınız"),(ui.lineEdit_parola,"Parolanız")):
             alan.setParent(kart)
             alan.setPlaceholderText(ipucu)
@@ -89,6 +123,7 @@ class Login(QMainWindow):
             alan.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
             alan.setAlignment(Qt.AlignLeft | Qt.AlignVCenter)
         ui.lineEdit_parola.setEchoMode(QLineEdit.Password)
+        ui.lineEdit_parola.installEventFilter(self)   # Caps Lock uyarısı
         ui.pushButton_giris.setParent(kart)
         ui.pushButton_giris.setMinimumSize(0,46)
         ui.pushButton_giris.setMaximumSize(16777215,46)
@@ -101,29 +136,50 @@ class Login(QMainWindow):
         duzen.addSpacing(6)
         duzen.addWidget(QLabel("Parola"))
         duzen.addWidget(ui.lineEdit_parola)
+        duzen.addWidget(self.caps)
         duzen.addWidget(self.mesaj)
         duzen.addWidget(ui.pushButton_giris)
-        duzen.addStretch()
-        self.imza=QLabel(kilavuz.IMZA,objectName="giris_imza")
-        self.imza.setAlignment(Qt.AlignRight)
-        duzen.addWidget(self.imza)
 
         # Parolayı göster/gizle
         self.goster=QAction("Parolayı göster",ui.lineEdit_parola)
         self.goster.triggered.connect(self.parola_goster_gizle)
         ui.lineEdit_parola.addAction(self.goster,QLineEdit.TrailingPosition)
-
         ikonlar.yazili_ikon(ui.pushButton_giris, "ok_sag")
-        ui.pushButton_cikis.setGeometry(752,574,44,44)
-        ui.pushButton_cikis.setIconSize(ui.pushButton_cikis.size()*0.45)
-        ui.pushButton_cikis.setCursor(Qt.PointingHandCursor)
+
+        cikis=ui.pushButton_cikis
+        cikis.setFixedSize(32,32)
+        cikis.setIconSize(QSize(16,16))
+        cikis.setCursor(Qt.PointingHandCursor)
+        self.imza=QLabel(kilavuz.IMZA,objectName="giris_imza")
+        self.imza.setAlignment(Qt.AlignRight)
+
+        panel=QFrame(objectName="giris_paneli")
+        sag=QVBoxLayout(panel)
+        sag.setContentsMargins(24,12,12,18)
+        ust=QHBoxLayout()
+        ust.addStretch()
+        ust.addWidget(cikis)
+        sag.addLayout(ust)
+        sag.addStretch(2)
+        sag.addWidget(kart,0,Qt.AlignHCenter)
+        sag.addStretch(3)
+        sag.addWidget(self.imza)
+
+        yatay=QHBoxLayout(ui.widget)
+        yatay.setContentsMargins(0,0,0,0)
+        yatay.setSpacing(0)
+        yatay.addWidget(foto)
+        yatay.addWidget(panel,1)
+        dis=QVBoxLayout(ui.centralwidget)
+        dis.setContentsMargins(18,18,18,18)
+        dis.addWidget(ui.widget)
         self.stil_uygula()
 
     def stil_uygula(self):
         ###  Temaya bağlı renkler (açılışta ve görünüm değişince)  ###
         gizli=self.QtLogin.lineEdit_parola.echoMode()==QLineEdit.Password
         self.goster.setIcon(ikonlar.ikon("goz" if gizli else "goz_kapali",tema.IKON))
-        self.QtLogin.pushButton_cikis.setIcon(ikonlar.ikon("guc",tema.IKON))
+        self.QtLogin.pushButton_cikis.setIcon(ikonlar.ikon("x",tema.IKON))
         self.setStyleSheet(tema.qss()+giris_stili())
 
     def parola_goster_gizle(self):
@@ -138,6 +194,23 @@ class Login(QMainWindow):
         self.mesaj.setProperty("tur",tur)
         self.mesaj.style().unpolish(self.mesaj)   # tür değişince rengi yeniden uygula
         self.mesaj.style().polish(self.mesaj)
+
+    def eventFilter(self,nesne,olay):
+        # Parola kutusundayken Caps Lock açıksa uyar
+        if nesne is self.QtLogin.lineEdit_parola:
+            if olay.type() in (QEvent.FocusIn,QEvent.KeyPress,QEvent.KeyRelease):
+                self.caps.setVisible(caps_lock_acik())
+            elif olay.type()==QEvent.FocusOut:
+                self.caps.hide()
+        return super().eventFilter(nesne,olay)
+
+    def _bekliyor(self,durum):
+        ###  Giriş sürerken (şifre denetimi, panelin kurulması) buton kapalı ve "Giriş yapılıyor…" yazar  ###
+        buton=self.QtLogin.pushButton_giris
+        buton.setEnabled(not durum)
+        buton.setText("Giriş yapılıyor…" if durum else "Giriş")
+        if durum:       # yazı panel açılmadan görünsün; bu arada yapılan tıklama ve tuşlar işlenmez
+            QApplication.processEvents(QEventLoop.ExcludeUserInputEvents)
 
     # Çerçevesiz pencere fareyle sürüklenerek taşınabilir
     def mousePressEvent(self,olay):
@@ -157,7 +230,9 @@ class Login(QMainWindow):
 
         if ad=="" or sifre=="":
             self.mesaj_goster("Kullanıcı adı ve parola bilgilerini giriniz!")
-        else:
+            return
+        self._bekliyor(True)
+        try:
             yetki=giris_kontrol(ad,sifre)
             if yetki is None:
                 # Hangisinin yanlış olduğu söylenmez (kullanıcı adı tahminini zorlaştırır)
@@ -171,6 +246,8 @@ class Login(QMainWindow):
                 self.hide()
             else:
                 self.mesaj_goster("Yetkiniz yok!")
+        finally:
+            self._bekliyor(False)
 
     def panel_ac(self,yetki,ad,goster=True):
         panel=Library() if yetki=='admin' else Guest()

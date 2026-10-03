@@ -131,3 +131,52 @@ def test_acilista_kullanici_adi_odakta(app):
     w.show()
     app.processEvents()
     assert w.focusWidget() is w.QtLogin.lineEdit_kullanci_adi
+
+
+def test_caps_lock_uyarisi(w, monkeypatch):
+    from PyQt5.QtCore import QEvent
+    from PyQt5.QtGui import QFocusEvent
+    from PyQt5.QtWidgets import QApplication
+    alan = w.QtLogin.lineEdit_parola
+    monkeypatch.setattr(login_modulu, "caps_lock_acik", lambda: True)
+    QApplication.sendEvent(alan, QFocusEvent(QEvent.FocusIn))
+    assert not w.caps.isHidden() and w.caps.text() == "Caps Lock açık"
+    monkeypatch.setattr(login_modulu, "caps_lock_acik", lambda: False)
+    QApplication.sendEvent(alan, QFocusEvent(QEvent.FocusIn))
+    assert w.caps.isHidden()
+    monkeypatch.setattr(login_modulu, "caps_lock_acik", lambda: True)
+    QApplication.sendEvent(alan, QFocusEvent(QEvent.FocusIn))
+    QApplication.sendEvent(alan, QFocusEvent(QEvent.FocusOut))      # başka alana geçince kaybolur
+    assert w.caps.isHidden()
+
+
+def test_caps_lock_sistemden_okunur():
+    assert isinstance(login_modulu.caps_lock_acik(), bool)          # hata vermez; bilinemezse False
+
+
+def test_giris_surerken_buton_bekler(w, monkeypatch):
+    durum = []
+    gercek = login_modulu.giris_kontrol
+
+    def kontrol(ad, sifre):
+        b = w.QtLogin.pushButton_giris
+        durum.append((b.isEnabled(), b.text()))
+        return gercek(ad, sifre)
+
+    monkeypatch.setattr(login_modulu, "giris_kontrol", kontrol)
+    giris_yap(w, "admin", "yanlis")
+    assert durum == [(False, "Giriş yapılıyor…")]
+    assert w.QtLogin.pushButton_giris.isEnabled() and w.QtLogin.pushButton_giris.text() == "Giriş"
+
+
+def test_giris_ekrani_yerlesimi(w):
+    from PyQt5.QtCore import QPoint
+    ui = w.QtLogin
+    panel = w.findChild(type(ui.widget), "giris_paneli")
+    cikis = ui.pushButton_cikis
+    assert cikis.parent() is panel and cikis.size().width() == 32
+    sag_ust = cikis.mapTo(panel, QPoint(cikis.width(), 0))
+    assert panel.width() - sag_ust.x() < 20 and sag_ust.y() < 20               # panelin sağ üst köşesinde
+    kart = w.findChild(type(ui.widget), "giris_karti")
+    orta = kart.mapTo(panel, QPoint(kart.width() // 2, 0)).x()
+    assert abs(orta - panel.width() // 2) <= 12                                 # kart panelde ortalı (iç paylar hariç)
