@@ -10,7 +10,7 @@ from acodes import tema
 from acodes.guest import Guest
 from acodes.kullanici_yonetimi import KullaniciYonetimi
 from acodes.library import Library
-from acodes.tablo import siralama_anahtari, tablo_ayarla, tabloya_yaz
+from acodes.tablo import SATIR_BOY, siralama_anahtari, tablo_ayarla, tabloya_yaz
 from database.dbframe import df_sort_list, tr_sirala
 
 
@@ -121,7 +121,10 @@ def test_kullanici_tablosu_siralaninca_dogru_kullanici_secilir(app, uyarilar):
 def test_tablo_gorunumu(app):
     t = QTableWidget(0, 2)
     tablo_ayarla(t)
-    assert t.alternatingRowColors() and not t.verticalHeader().isHidden()    # sıra numarası görünür
+    assert not t.verticalHeader().isHidden()                                  # sıra numarası görünür
+    assert not t.alternatingRowColors() and not t.showGrid()                  # satırlar yalnızca ince çizgiyle ayrılır
+    assert t.verticalHeader().defaultSectionSize() == SATIR_BOY
+    assert t.verticalHeader().highlightSections()                             # seçili satırda vurgu çizgisi
     t2 = QTableWidget(0, 2)
     tablo_ayarla(t2, sira_no=False)
     assert t2.verticalHeader().isHidden()

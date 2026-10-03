@@ -10,6 +10,7 @@ from PyQt5.QtWidgets import (QAbstractItemView, QApplication, QHeaderView, QLabe
 from acodes import tema
 from database.dbframe import kitap_durumlari, tr_sirala
 
+SATIR_BOY = 38          # tablo satır yüksekliği (piksel)
 _TARIH = re.compile(r"(\d{2})\.(\d{2})\.(\d{4})")
 _SAYI = re.compile(r"-?\d+")
 
@@ -191,19 +192,20 @@ class OranCubugu(QStyledItemDelegate):
 def tablo_ayarla(tablo, siralama=True, bos_metin=None, sira_no=True, bos_simge="kitap", bos_eylem=None):
     """Hücreler düzenlenemez, tıklanınca satır seçilir, başlığa tıklanınca sıralanır.
     İlk açılışta veri geldiği sırada gösterilir (sıralama göstergesi yok).
-    Satırlar sırayla renklenir; bos_metin verilirse boş tabloda gösterilir.
+    Satırlar ince çizgiyle ayrılır; bos_metin verilirse boş tabloda gösterilir.
     sira_no: solda 1'den başlayan sıra numarası (kayıt numarasından bağımsız; sıralama değişince de
     ekrandaki sıraya göre numaralanır, son numara listedeki kayıt sayısını gösterir)."""
     tablo.setEditTriggers(QAbstractItemView.NoEditTriggers)
     tablo.setSelectionBehavior(QAbstractItemView.SelectRows)
-    tablo.setAlternatingRowColors(True)
+    tablo.setAlternatingRowColors(False)      # satırlar ince çizgiyle ayrılır (sıra sıra renk yok)
+    tablo.setShowGrid(False)
     tablo.setMouseTracking(True)
     tablo.setWordWrap(False)              # uzun metin satır yüksekliğini bozmadan "..." ile kısalır
     tablo.verticalHeader().setVisible(sira_no)
     tablo.verticalHeader().setDefaultAlignment(Qt.AlignRight | Qt.AlignVCenter)
     tablo.verticalHeader().setSectionResizeMode(QHeaderView.Fixed)
-    tablo.verticalHeader().setHighlightSections(False)
-    tablo.verticalHeader().setDefaultSectionSize(30)
+    tablo.verticalHeader().setHighlightSections(True)    # seçili satırın sıra numarasında vurgu çizgisi
+    tablo.verticalHeader().setDefaultSectionSize(SATIR_BOY)
     tablo.horizontalHeader().setStretchLastSection(True)
     tablo.horizontalHeader().setHighlightSections(False)
     if bos_metin:

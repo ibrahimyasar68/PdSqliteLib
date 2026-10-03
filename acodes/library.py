@@ -83,8 +83,8 @@ class Library(OrtakSekmeler, QMainWindow):
 
         ###  Ana sayfa özet panosu  ###
         self.ana_sayfa=AnaSayfa(
-            kartlar=[("kitap","Kitap",tema.VURGU),("disarida","Dışarıda",tema.BILGI),
-                     ("geciken","Geciken",tema.TEHLIKE),("uye","Üye",tema.YESIL)],
+            kartlar=[("kitap","Kitap",tema.VURGU,"kitap"),("disarida","Dışarıda",tema.BILGI,"takas"),
+                     ("geciken","Geciken",tema.TEHLIKE,"saat"),("uye","Üye",tema.YESIL,"kullanicilar")],
             listeler=[("yaklasan","Teslimi yaklaşan ve geciken kitaplar",["Kitap","Üye","Teslim Tarihi","Durum"],
                        "Önümüzdeki 3 gün içinde teslim edilecek\nveya teslim süresi geçmiş kitap yok."),
                       ("son","Son eklenen kitaplar",["Adı","Yazarı","Kayıt No"],"Henüz kitap eklenmemiş.")])

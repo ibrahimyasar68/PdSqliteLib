@@ -42,8 +42,8 @@ class Guest(OrtakSekmeler, QMainWindow):
 
         ###  Ana sayfa özet panosu  ###
         self.ana_sayfa=AnaSayfa(
-            kartlar=[("kitap","Kütüphanedeki kitap",tema.VURGU),("elimdeki","Elimdeki kitap",tema.BILGI),
-                     ("geciken","Gecikmiş",tema.TEHLIKE),("teslim","En yakın teslim",tema.YESIL)],
+            kartlar=[("kitap","Kütüphanedeki kitap",tema.VURGU,"kitap"),("elimdeki","Elimdeki kitap",tema.BILGI,"takas"),
+                     ("geciken","Gecikmiş",tema.TEHLIKE,"saat"),("teslim","En yakın teslim",tema.YESIL,"takvim")],
             listeler=[("elimdeki","Elimdeki kitaplar",["Kitap","Teslim Tarihi","Durum"],"Şu an elinizde ödünç kitap yok."),
                       ("son","Son eklenen kitaplar",["Adı","Yazarı"],"Henüz kitap eklenmemiş.")])
         ana_sayfayi_yerlestir(self.QtLibrary,self.ana_sayfa)

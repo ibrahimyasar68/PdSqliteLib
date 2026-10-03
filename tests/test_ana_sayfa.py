@@ -76,6 +76,17 @@ def test_admin_listeleri(lib):
     assert son.item(0, 0).text() == "Denemeler" and son.rowCount() == 8
 
 
+def test_kart_ikonlari_ve_gecikme_rengi(lib):
+    from acodes import tema
+    k = lib.ana_sayfa.kartlar
+    assert [k[a].ikon_adi for a in ("kitap", "disarida", "geciken", "uye")] == ["kitap", "takas", "saat", "kullanicilar"]
+    assert not k["kitap"].ikon.pixmap().isNull()
+    k["geciken"].ayarla(0, "", renk=tema.SOLUK)                   # gecikme yoksa sönük
+    assert k["geciken"].ikon.renk == tema.SOLUK
+    k["geciken"].ayarla(2, "")
+    assert k["geciken"].ikon.renk == tema.TEHLIKE
+
+
 def test_kart_tiklamalari(lib):
     q = lib.QtLibrary
     lib.ana_sayfa.kartlar["geciken"].tiklandi.emit()

@@ -110,7 +110,8 @@ karakter farkı gözetilmez.
 ### Tablolar
 
 - Listelerin solunda kayıt numarasından bağımsız bir **sıra numarası** vardır; 1'den başlar, sıralama
-  değişince de ekrandaki sıraya göre numaralanır. Son numara listedeki kayıt sayısını gösterir.
+  değişince de ekrandaki sıraya göre numaralanır. Son numara listedeki kayıt sayısını gösterir. Seçili
+  satırın sıra numarasında mavi bir vurgu çizgisi görünür; satırlar ızgara yerine ince çizgiyle ayrılır.
 - Kolon başlığına tıklayınca tablo o kolona göre sıralanır (tekrar tıklayınca ters sırada).
   Sayılar sayı olarak, tarihler tarih olarak, metinler Türk alfabesine göre sıralanır; boşlar en sona gider.
 - Hücreler salt okunurdur; değişiklikler ilgili düzenleme ekranlarından yapılır.

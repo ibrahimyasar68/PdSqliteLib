@@ -70,6 +70,9 @@ CIZIMLER = {
     "daralt": lambda p: (_cizgi(p, (15, 6), (9, 12), (15, 18)), _cizgi(p, (4, 4), (4, 20))),
     "arti": lambda p: (_cizgi(p, (12, 5), (12, 19)), _cizgi(p, (5, 12), (19, 12))),
     "kopyala": lambda p: (p.drawRoundedRect(QRectF(8, 8, 13, 13), 2, 2), _cizgi(p, (16, 4), (16, 3), (4, 3), (3, 4), (3, 16), (4, 16))),
+    "saat": lambda p: (_daire(p, 12, 12, 9), _cizgi(p, (12, 7), (12, 12), (15.5, 14))),
+    "takvim": lambda p: (p.drawRoundedRect(QRectF(3, 5, 18, 16), 2, 2), _cizgi(p, (3, 10), (21, 10)),
+                         _cizgi(p, (8, 3), (8, 7)), _cizgi(p, (16, 3), (16, 7))),
     "asagi": lambda p: _cizgi(p, (5, 8.5), (12, 15.5), (19, 8.5)),
     "yukari": lambda p: _cizgi(p, (5, 15.5), (12, 8.5), (19, 15.5)),
 }

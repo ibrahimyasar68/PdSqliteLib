@@ -12,7 +12,6 @@ from PyQt5.QtGui import QFont, QFontDatabase
 ACIK = dict(
     ZEMIN="#EEF1F6",           # pencere zemini
     SAYFA="#F7F8FB",           # sekme sayfaları
-    SAYFA_RGB="247, 248, 251", # yarı saydam sayfa perdesi (arka plan fotoğrafının üstünde)
     KART="#FFFFFF",            # tablolar, kutular
     KART_2="#F6F8FB",          # tablolarda sıra sıra renklenen satırlar
     KENAR="#D5DAE3",
@@ -64,7 +63,7 @@ ACIK = dict(
     BILDIRIM_BILGI="#1F2937",
 )
 KOYU = dict(
-    ZEMIN="#0B1120", SAYFA="#111827", SAYFA_RGB="17, 24, 39", KART="#1E293B", KART_2="#18233A",
+    ZEMIN="#0B1120", SAYFA="#111827", KART="#1E293B", KART_2="#18233A",
     KENAR="#334155", KENAR_GIRDI="#475569", KENAR_IKINCIL="#475569",
     METIN="#E5E7EB", ETIKET="#CBD5E1", IKINCIL_METIN="#94A3B8", SOLUK="#64748B", PASIF="#94A3B8", IKON="#CBD5E1",
     YUZEY="#273449", YUZEY_2="#334155", SEKME="#1E293B", SEKME_HOVER="#273449", SATIR_HOVER="#24324A",
@@ -177,7 +176,8 @@ QStackedWidget > QWidget {{ background-color: {SAYFA}; }}
 
 QLabel {{ color: {METIN}; background: transparent; }}
 
-QPushButton {{ background-color: {VURGU}; color: white; border: none; border-radius: {KOSE.kucuk}px; padding: 4px 8px; }}
+QPushButton {{ background-color: {VURGU}; color: white; border: none; border-radius: {KOSE.kucuk}px; padding: 7px 14px;
+               font-weight: {ORTA}; }}
 QPushButton:hover {{ background-color: {VURGU_KOYU}; }}
 QPushButton:pressed {{ background-color: {VURGU_BASILI}; }}
 QPushButton:disabled {{ background-color: {YUZEY_2}; color: {PASIF}; }}
@@ -207,11 +207,15 @@ QComboBox QAbstractItemView {{ background-color: {KART}; color: {METIN};
 QTableWidget, QTreeWidget {{ background-color: {KART}; alternate-background-color: {KART_2}; color: {METIN};
                gridline-color: {IZGARA}; border: 1px solid {KENAR}; border-radius: {KOSE.kucuk}px;
                selection-background-color: {VURGU_ACIK}; selection-color: {METIN}; }}
-QTableWidget::item {{ padding: 0 6px; }}
+QTableWidget::item {{ padding: 0 8px; border-bottom: 1px solid {IZGARA}; }}
 QTableWidget::item:hover {{ background-color: {SATIR_HOVER}; }}
-QHeaderView::section:vertical {{ color: {IKINCIL_METIN}; font-weight: normal; padding: 0 8px 0 10px; }}
-QHeaderView::section {{ background-color: {ZEMIN}; color: {ETIKET}; padding: 4px 6px; border: none; font-weight: {YARI_KALIN};
-               border-right: 1px solid {KENAR}; border-bottom: 1px solid {KENAR}; }}
+QHeaderView {{ background-color: {KART}; border: none; }}
+QHeaderView::section {{ background-color: {KART}; color: {IKINCIL_METIN}; padding: 6px 8px; border: none;
+               border-bottom: 1px solid {KENAR}; font-size: {YAZI.ince}px; font-weight: {YARI_KALIN}; }}
+QHeaderView::section:vertical {{ color: {SOLUK}; font-weight: normal; padding: 0 8px 0 7px; border-bottom: 1px solid {IZGARA};
+               border-left: 3px solid transparent; }}
+QHeaderView::section:vertical:checked {{ border-left-color: {VURGU}; color: {VURGU_YAZI}; background-color: {VURGU_ACIK}; }}
+QTableCornerButton::section {{ background-color: {KART}; border: none; border-bottom: 1px solid {KENAR}; }}
 
 QGroupBox {{ background-color: {KART}; border: 1px solid {KENAR}; border-radius: {KOSE.orta}px; color: {ETIKET};
                font-weight: {YARI_KALIN}; margin-top: 0; padding: 44px 12px 12px 12px; }}
@@ -276,7 +280,7 @@ def denetimler():
     return f"""
 QComboBox {{ padding-right: 30px; }}
 QComboBox:hover, QSpinBox:hover, QLineEdit:hover {{ border-color: {SOLUK}; }}
-QComboBox:focus, QSpinBox:focus, QLineEdit:focus, QPlainTextEdit:focus {{ border: 2px solid {VURGU}; }}
+QComboBox:focus, QSpinBox:focus, QLineEdit:focus, QPlainTextEdit:focus {{ border-color: {VURGU}; }}   /* kalınlık aynı: yazı kaymaz */
 QComboBox::drop-down {{ subcontrol-origin: padding; subcontrol-position: center right; width: 28px; border: none;
                background: transparent; }}
 QComboBox::down-arrow {{ image: url("{ok['asagi']}"); width: 18px; height: 18px; }}

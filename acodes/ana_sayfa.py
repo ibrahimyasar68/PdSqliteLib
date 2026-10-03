@@ -7,7 +7,7 @@ from PyQt5.QtGui import QColor
 from PyQt5.QtWidgets import (QFrame, QGraphicsDropShadowEffect, QGridLayout, QGroupBox, QHBoxLayout, QHeaderView,
                              QLabel, QTableWidget, QVBoxLayout, QWidget)
 
-from acodes import tema
+from acodes import ikonlar, tema
 from acodes.tablo import tablo_ayarla, tabloya_yaz
 
 def stil():
@@ -18,8 +18,8 @@ def stil():
 #karsilama {{ color: rgba(255, 255, 255, 0.88); font-size: {tema.YAZI.alt_baslik}px; font-weight: {tema.ORTA}; }}
 #kart {{ background-color: {tema.KART}; border: 1px solid {tema.KENAR}; border-radius: {tema.KOSE.orta}px; }}
 #kart:hover {{ border-color: {tema.VURGU}; }}
+#kart_baslik {{ font-size: {tema.YAZI.ince}px; font-weight: {tema.ORTA}; color: {tema.IKINCIL_METIN}; }}
 #kart_sayi {{ font-size: {tema.YAZI.gosterge}px; font-weight: {tema.YARI_KALIN}; color: {tema.METIN}; }}
-#kart_baslik {{ font-size: {tema.YAZI.metin}px; font-weight: {tema.ORTA}; color: {tema.ETIKET}; }}
 #kart_alt {{ font-size: {tema.YAZI.ince}px; color: {tema.IKINCIL_METIN}; }}
 QGroupBox {{ font-weight: {tema.YARI_KALIN}; }}
 #ana_sayfa QTableWidget, #ana_sayfa QHeaderView {{ color: {tema.METIN}; }}
@@ -27,39 +27,63 @@ QGroupBox {{ font-weight: {tema.YARI_KALIN}; }}
 
 
 class Kart(QFrame):
-    """Büyük sayı + başlık + açıklama; tıklanınca verilen işlevi çağırır."""
+    """Üstte başlık, büyük sayı ve açıklama; sağ üstte rengin açık tonunda yuvarlak zeminli ikon.
+    Tıklanabilir kartlar üstüne gelince hafif gölgeyle öne çıkar."""
     tiklandi = pyqtSignal()
+    IKON_EN = 44
 
-    def __init__(self, baslik, renk, parent=None):
+    def __init__(self, baslik, renk, ikon="kitap", parent=None):
         super().__init__(parent)
         self.setObjectName("kart")
         self.renk = renk
-        self.sayi = QLabel("-", objectName="kart_sayi")
+        self.ikon_adi = ikon
         self.baslik = QLabel(baslik, objectName="kart_baslik")
+        self.sayi = QLabel("-", objectName="kart_sayi")
         self.alt = QLabel("", objectName="kart_alt")
-        cizgi = QFrame()
-        cizgi.setFixedWidth(5)
-        cizgi.setStyleSheet(f"background-color: {renk}; border-radius: 2px;")
-        self.cizgi = cizgi
+        self.ikon = QLabel(objectName="kart_ikon")
+        self.ikon.setFixedSize(self.IKON_EN, self.IKON_EN)
+        self.ikon.setAlignment(Qt.AlignCenter)
         metin = QVBoxLayout()
         metin.setSpacing(2)
-        for w in (self.sayi, self.baslik, self.alt):
+        for w in (self.baslik, self.sayi, self.alt):
             metin.addWidget(w)
         duzen = QHBoxLayout(self)
-        duzen.setContentsMargins(12, 12, 16, 12)
-        duzen.addWidget(cizgi)
-        duzen.addSpacing(8)
+        duzen.setContentsMargins(16, 14, 16, 14)
         duzen.addLayout(metin, 1)
+        duzen.addWidget(self.ikon, 0, Qt.AlignTop)
         self.setMinimumHeight(105)
+        self.golge = QGraphicsDropShadowEffect(self)
+        self.golge.setBlurRadius(22)
+        self.golge.setOffset(0, 4)
+        self.golge.setColor(QColor(0, 0, 0, 90 if tema.KOYU_MU else 40))
+        self.golge.setEnabled(False)
+        self.setGraphicsEffect(self.golge)
+        self._renklendir(renk)
+
+    def _renklendir(self, renk):
+        zemin = QColor(renk)
+        zemin.setAlphaF(0.24 if tema.KOYU_MU else 0.12)
+        self.ikon.setStyleSheet(f"background-color: rgba({zemin.red()}, {zemin.green()}, {zemin.blue()}, "
+                                f"{zemin.alphaF():.2f}); border-radius: {self.IKON_EN // 2}px;")
+        self.ikon.setPixmap(ikonlar.ikon(self.ikon_adi, renk).pixmap(22, 22))
+        self.ikon.renk = renk
 
     def ayarla(self, sayi, alt="", renk=None):
         self.sayi.setText(str(sayi))
         self.alt.setText(alt)
-        self.cizgi.setStyleSheet(f"background-color: {renk or self.renk}; border-radius: 2px;")
+        self._renklendir(renk or self.renk)
 
     def mousePressEvent(self, olay):
         if olay.button() == Qt.LeftButton:
             self.tiklandi.emit()
+
+    def enterEvent(self, olay):
+        self.golge.setEnabled(self.toolTip() != "")      # yalnızca tıklanabilir kartlar
+        super().enterEvent(olay)
+
+    def leaveEvent(self, olay):
+        self.golge.setEnabled(False)
+        super().leaveEvent(olay)
 
     def tiklanabilir(self, islev, ipucu):
         self.setCursor(Qt.PointingHandCursor)
@@ -83,7 +107,7 @@ class Liste(QGroupBox):
 
 class AnaSayfa(QWidget):
     def __init__(self, kartlar, listeler, parent=None):
-        """kartlar: [(anahtar, başlık, renk)]; listeler: [(anahtar, başlık, kolonlar, boş metin)].
+        """kartlar: [(anahtar, başlık, renk, ikon)]; listeler: [(anahtar, başlık, kolonlar, boş metin)].
         Kütüphane adı ve Oturumu Kapat sol kenar menüsündedir; burada karşılama yazısı kalır."""
         super().__init__(parent)
         self.setObjectName("ana_sayfa")
@@ -114,8 +138,8 @@ class AnaSayfa(QWidget):
         self.kartlar = {}
         kart_satiri = QHBoxLayout()
         kart_satiri.setSpacing(14)
-        for anahtar, ad, renk in kartlar:
-            self.kartlar[anahtar] = Kart(ad, renk)
+        for anahtar, ad, renk, ikon in kartlar:
+            self.kartlar[anahtar] = Kart(ad, renk, ikon)
             kart_satiri.addWidget(self.kartlar[anahtar])
 
         self.listeler = {}
