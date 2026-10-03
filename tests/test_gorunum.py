@@ -57,9 +57,9 @@ def test_ayarlardan_degisince_panel_ayni_yerde_yeniden_kurulur(app, uyarilar, ku
 
 
 def test_modullerde_sabit_renk_yok():
-    """Renkler tema.py'deki paletten gelir; aşağıdakiler her iki temada aynı kalması istenen bilinçli istisnalardır:
-    koyu kenar menüsü, fotoğraf üstündeki başlık, bildirim kutuları, grafik serileri, mavi buton ikonu."""
-    istisna = {"tema.py", "yan_menu.py", "bildirim.py", "grafikler.py", "ikonlar.py", "ana_sayfa.py"}
+    """Renkler tema.py'deki paletten gelir (kenar menüsü, bildirimler ve grafik serileri dahil); tek istisna mavi
+    butonların üstündeki beyaz ikon rengidir."""
+    istisna = {"tema.py", "ikonlar.py"}
     klasor = os.path.join(os.path.dirname(__file__), "..", "acodes")
     bulunan = {}
     for ad in sorted(os.listdir(klasor)):
@@ -68,6 +68,36 @@ def test_modullerde_sabit_renk_yok():
             if renkler:
                 bulunan[ad] = renkler
     assert bulunan == {}
+
+
+def test_modullerde_sabit_yazi_boyutu_yok():
+    """Yazı boyutları tema.YAZI ölçeğinden gelir (stil sayfalarında ve kodla çizilen metinlerde)."""
+    klasor = os.path.join(os.path.dirname(__file__), "..", "acodes")
+    bulunan = {}
+    for ad in sorted(os.listdir(klasor)):
+        if ad.endswith(".py") and ad != "tema.py":
+            metin = open(os.path.join(klasor, ad), encoding="utf-8").read()
+            sabitler = re.findall(r"font-size: *\d+px|setPixelSize\(\d+\)|yazi_tipi\(\d+", metin)
+            if sabitler:
+                bulunan[ad] = sabitler
+    assert bulunan == {}
+
+
+def test_olcekler_artan_sirada():
+    yazi = [v for k, v in vars(tema.YAZI).items() if not k.startswith("_") and not k.startswith("logo")]
+    kose = [v for k, v in vars(tema.KOSE).items() if not k.startswith("_")]
+    assert yazi == sorted(yazi) and kose == sorted(kose)
+    assert tema.YAZI_PX == tema.YAZI.metin
+
+
+def test_bildirim_ve_grafik_renkleri_temadan(app):
+    from acodes import bildirim, grafikler
+    tema.ayarla("koyu")
+    assert grafikler.renk(0).name().upper() == tema.GRAFIK_KOYU[0]
+    assert bildirim.renk("basari") == tema.BILDIRIM_BASARI
+    tema.ayarla("acik")
+    assert grafikler.renk(0).name().upper() == tema.VURGU
+    assert grafikler.renk(len(tema.GRAFIK)) == grafikler.renk(0)
 
 
 def _yerlesim(app, gorunum):

@@ -13,35 +13,36 @@ from acodes.kilavuz import IMZA
 from acodes.kisayollar import metin as kisayol_metni
 
 ACIK_EN, KAPALI_EN = 260, 76
-YAZI_RENGI = "#E2E8F0"
 _SAYI = re.compile(r"^(.*) \((\d+) gecikmiş\)$")
 
 def stil():
+    t, Y, K = tema, tema.YAZI, tema.KOSE
     return f"""
-#yan_menu {{ background-color: rgba(15, 23, 42, 0.88); border-radius: 14px; }}
-#menu_baslik {{ color: #FFE14D; font-family: "{tema.BASLIK_YAZISI}"; font-size: 27px; font-style: normal; }}
-QPushButton#menu_ogesi {{ background: transparent; color: #CBD5E1; border: none; border-radius: 8px; text-align: left;
-               padding: 11px 13px; font-size: 16px; font-weight: {tema.ORTA}; }}
+#yan_menu {{ background-color: rgba({t.MENU_ZEMIN_RGB}, 0.88); border-radius: {K.buyuk}px; }}
+#menu_baslik {{ color: {t.MENU_LOGO}; font-family: "{t.BASLIK_YAZISI}"; font-size: {Y.logo_menu}px; font-style: normal; }}
+QPushButton#menu_ogesi {{ background: transparent; color: {t.MENU_OGE}; border: none; border-radius: {K.kucuk}px;
+               text-align: left; padding: 11px 13px; font-size: {Y.metin}px; font-weight: {t.ORTA}; }}
 QPushButton#menu_ogesi:hover {{ background-color: rgba(255,255,255,0.08); color: white; }}
-QPushButton#menu_ogesi:checked {{ background-color: rgba(96,165,250,0.24); color: white; font-weight: {tema.YARI_KALIN}; }}
-QPushButton#menu_ara {{ background-color: rgba(255,255,255,0.07); color: #94A3B8; border: 1px solid rgba(255,255,255,0.10);
-               border-radius: 8px; text-align: left; padding: 8px 12px; font-size: 15px; }}
+QPushButton#menu_ogesi:checked {{ background-color: rgba(96,165,250,0.24); color: white; font-weight: {t.YARI_KALIN}; }}
+QPushButton#menu_ara {{ background-color: rgba(255,255,255,0.07); color: {t.MENU_IKINCIL};
+               border: 1px solid rgba(255,255,255,0.10); border-radius: {K.kucuk}px; text-align: left; padding: 8px 12px;
+               font-size: {Y.metin}px; }}
 QPushButton#menu_ara:hover {{ background-color: rgba(255,255,255,0.12); color: white; }}
-#menu_ara_kisayol {{ color: #64748B; font-size: 13px; }}
-QPushButton#daralt {{ background: transparent; border: none; border-radius: 8px; padding: 6px; }}
+#menu_ara_kisayol {{ color: {t.MENU_SONUK}; font-size: {Y.ince}px; }}
+QPushButton#daralt {{ background: transparent; border: none; border-radius: {K.kucuk}px; padding: 6px; }}
 QPushButton#daralt:hover {{ background-color: rgba(255,255,255,0.10); }}
-#rozet {{ background-color: {tema.TEHLIKE}; color: white; border-radius: 9px; font-size: 12px; font-weight: bold;
+#rozet {{ background-color: {t.TEHLIKE}; color: white; border-radius: 9px; font-size: {Y.kucuk}px; font-weight: bold;
                padding: 0 6px; min-width: 8px; }}
-#kullanici_kart {{ background-color: rgba(255,255,255,0.06); border-radius: 10px; }}
-#avatar {{ background-color: {tema.VURGU}; color: white; border-radius: 20px; font-size: 15px; font-weight: {tema.YARI_KALIN}; }}
-#kul_ad {{ color: white; font-size: 15px; font-weight: {tema.YARI_KALIN}; }}
-#kul_rol {{ color: #94A3B8; font-size: 13px; }}
-QPushButton#pushButton_1_cikis {{ background: transparent; color: #FCA5A5; border: 1px solid rgba(252,165,165,0.5);
-               border-radius: 8px; padding: 8px; font-size: 14px; font-weight: {tema.ORTA}; }}
+#kullanici_kart {{ background-color: rgba(255,255,255,0.06); border-radius: {K.orta}px; }}
+#avatar {{ background-color: {t.VURGU}; color: white; border-radius: 20px; font-size: {Y.metin}px;
+               font-weight: {t.YARI_KALIN}; }}
+#kul_ad {{ color: white; font-size: {Y.metin}px; font-weight: {t.YARI_KALIN}; }}
+#kul_rol {{ color: {t.MENU_IKINCIL}; font-size: {Y.ince}px; }}
+QPushButton#pushButton_1_cikis {{ background: transparent; color: {t.MENU_CIKIS}; border: 1px solid rgba(252,165,165,0.5);
+               border-radius: {K.kucuk}px; padding: 8px; font-size: {Y.ince}px; font-weight: {t.ORTA}; }}
 QPushButton#pushButton_1_cikis:hover {{ background-color: rgba(220,38,38,0.25); color: white; }}
-#imza {{ color: #64748B; font-size: 12px; }}
+#imza {{ color: {t.MENU_SONUK}; font-size: {Y.kucuk}px; }}
 """
-
 
 def bas_harfler(ad):
     parcalar = [p for p in re.split(r"[\s._-]+", ad or "") if p]
@@ -74,7 +75,7 @@ class YanMenu(QFrame):
         # Hızlı arama (Ctrl+K): paneli panel bağlar
         self.btn_ara = QPushButton(objectName="menu_ara")
         self.btn_ara.setCursor(Qt.PointingHandCursor)
-        self.btn_ara.setIcon(ikonlar.ikon("ara", "#94A3B8", "#94A3B8"))
+        self.btn_ara.setIcon(ikonlar.ikon("ara", tema.MENU_IKINCIL, tema.MENU_IKINCIL))
         self.btn_ara.setIconSize(QSize(17, 17))
         self.btn_ara.setMinimumHeight(38)
         self.ara_kisayol = QLabel(objectName="menu_ara_kisayol")
@@ -93,7 +94,7 @@ class YanMenu(QFrame):
             buton = QPushButton(objectName="menu_ogesi")
             buton.setCheckable(True)
             buton.setCursor(Qt.PointingHandCursor)
-            buton.setIcon(ikonlar.ikon(ikonlar.SEKME_IKONLARI[sayfa_ikonlari[sayfa]], YAZI_RENGI, YAZI_RENGI))
+            buton.setIcon(ikonlar.ikon(ikonlar.SEKME_IKONLARI[sayfa_ikonlari[sayfa]], tema.MENU_YAZI, tema.MENU_YAZI))
             buton.setIconSize(QSize(20, 20))
             buton.setMinimumHeight(44)
             rozet = QLabel(objectName="rozet")
@@ -180,12 +181,12 @@ class YanMenu(QFrame):
         self.btn_ara.setText("" if kapali else " Hızlı ara")
         self.cikis.setText("" if kapali else "Oturumu Kapat")
         if kapali:          # yalnızca simge: ortalı dursun diye yanında boşluk payı olmayan ikon
-            self.cikis.setIcon(ikonlar.ikon("guc", "#FCA5A5"))
+            self.cikis.setIcon(ikonlar.ikon("guc", tema.MENU_CIKIS))
             self.cikis.setIconSize(QSize(16, 16))
         else:
-            ikonlar.yazili_ikon(self.cikis, "guc", "#FCA5A5")
+            ikonlar.yazili_ikon(self.cikis, "guc", tema.MENU_CIKIS)
         self.cikis.setToolTip("Oturumu kapatıp giriş ekranına dön")
-        self.btn_daralt.setIcon(ikonlar.ikon("menu" if kapali else "daralt", YAZI_RENGI, YAZI_RENGI))
+        self.btn_daralt.setIcon(ikonlar.ikon("menu" if kapali else "daralt", tema.MENU_YAZI, tema.MENU_YAZI))
         self.btn_daralt.setToolTip("Menüyü aç" if kapali else "Menüyü daralt")
         self.kart.layout().setContentsMargins(*((4, 8, 4, 8) if kapali else (10, 10, 10, 10)))
         self.yenile()
@@ -210,11 +211,11 @@ def menuyu_yerlestir(pencere, menu):
 
 def segment_stil():
     return f"""
-#segment {{ background-color: {tema.YUZEY_2}; border-radius: 10px; }}
-QPushButton#segment_ogesi {{ background: transparent; color: {tema.IKON}; border: none; border-radius: 8px;
-               padding: 7px 18px; font-size: 15px; font-weight: {tema.ORTA}; }}
+#segment {{ background-color: {tema.YUZEY_2}; border-radius: {tema.KOSE.orta}px; }}
+QPushButton#segment_ogesi {{ background: transparent; color: {tema.IKON}; border: none; border-radius: {tema.KOSE.kucuk}px;
+               padding: 7px 18px; font-size: {tema.YAZI.metin}px; font-weight: {tema.ORTA}; }}
 QPushButton#segment_ogesi:hover {{ color: {tema.METIN}; }}
-QPushButton#segment_ogesi:checked {{ background-color: {tema.KART}; color: {tema.VURGU_YAZI}; font-weight: {tema.YARI_KALIN}; }}
+QPushButton#segment_ogesi:checked {{ background-color: {tema.KART}; color: {tema.VURGU_YAZI}; }}
 """
 
 

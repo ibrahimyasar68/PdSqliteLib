@@ -67,8 +67,9 @@ Yeni kullanıcı ve üye kayıtlarını (`admin` veya `guest`) sadece giriş yap
   durur. Silinen kitap aynı numara ve bilgilerle geri gelir; iade alma onay sormaz, yanlış iade geri alınır
   (bu arada kitap başka üyeye verildiyse geri alınmaz).
 - **Ayarlar → Görünüm:** *Sistemle aynı*, *Açık* veya *Koyu*. Seçim hemen uygulanır (panel aynı sayfada
-  yeniden açılır) ve `tercihler.ini`'de hatırlanır. Renkler `acodes/tema.py`'deki iki palettedir; modüllerde
-  sabit renk yazılmaz (`tests/test_gorunum.py` denetler).
+  yeniden açılır) ve `tercihler.ini`'de hatırlanır. Renkler (kenar menüsü, bildirimler ve grafik serileri dahil)
+  `acodes/tema.py`'deki iki palettedir; yazı boyutları `tema.YAZI`, köşe yuvarlaklıkları `tema.KOSE` ölçeğinden
+  gelir. Modüllerde sabit renk ve yazı boyutu yazılmaz (`tests/test_gorunum.py` denetler).
 
 ### Arama
 

@@ -29,7 +29,7 @@ class EkBilgiler(QGroupBox):
     def __init__(self, parent=None, salt_okunur=False, izgara=False):
         """izgara=True: alanlar iki sütunda (geniş ve alçak form, ör. listenin altındaki kitap formu)."""
         super().__init__("Ek Bilgiler", parent)
-        self.setStyleSheet(f"QGroupBox {{ font-weight: {tema.YARI_KALIN}; font-size: 16px; }}")
+        self.setStyleSheet(f"QGroupBox {{ font-weight: {tema.YARI_KALIN}; font-size: {tema.YAZI.alt_baslik}px; }}")
         self.isbn = QLineEdit()
         self.isbn.setPlaceholderText("ör. 978-975-07-0321-5 (isteğe bağlı)")
         self.kopya = QSpinBox()

@@ -9,10 +9,13 @@ from PyQt5.QtWidgets import QGridLayout, QWidget
 from acodes import tema
 from database.dbframe import rapor, yil_dagilimi
 
-RENKLER = [QColor(c) for c in ("#4e79a7", "#f28e2b", "#59a14f", "#e15759", "#76b7b2",
-                                "#edc948", "#b07aa1", "#ff9da7", "#9c755f", "#bab0ac")]
 PASTA_DILIM = 7        # en büyük 7 tür, gerisi "Diğer"
 CUBUK_SAYISI = 10
+
+
+def renk(i):
+    """Grafik serisi rengi (tema paletinden, sırayla döner)."""
+    return QColor(tema.GRAFIK[i % len(tema.GRAFIK)])
 
 
 class Grafik(QWidget):
@@ -34,12 +37,12 @@ class Grafik(QWidget):
         kutu = QRectF(self.rect()).adjusted(4, 4, -4, -4)
         p.setPen(QPen(QColor(tema.KENAR)))
         p.setBrush(QColor(tema.KART))
-        p.drawRoundedRect(kutu, 8, 8)
+        p.drawRoundedRect(kutu, tema.KOSE.orta, tema.KOSE.orta)
         p.setPen(QColor(tema.METIN))
-        p.setFont(tema.yazi_tipi(17, kalin=True))
+        p.setFont(tema.yazi_tipi(tema.YAZI.alt_baslik, kalin=True))
         p.drawText(kutu.adjusted(12, 8, -12, 0), Qt.AlignLeft | Qt.AlignTop, self.baslik)
         alan = kutu.adjusted(14, 38, -14, -12)
-        p.setFont(tema.yazi_tipi(14))
+        p.setFont(tema.yazi_tipi(tema.YAZI.ince))
         if not self.veri:
             p.setPen(QColor(tema.SOLUK))
             p.drawText(alan, Qt.AlignCenter, "Gösterilecek veri yok")
@@ -57,7 +60,7 @@ class PastaGrafik(Grafik):
         for i, (_, deger) in enumerate(self.veri):
             dilim = -round(deger / toplam * 360 * 16)
             p.setPen(QPen(QColor(tema.KART), 1.5))
-            p.setBrush(RENKLER[i % len(RENKLER)])
+            p.setBrush(renk(i))
             p.drawPie(daire, aci, dilim)
             aci += dilim
         # Açıklama: renk, etiket, adet ve yüzde
@@ -66,7 +69,7 @@ class PastaGrafik(Grafik):
         y = alan.top() + (alan.height() - satir * len(self.veri)) / 2
         for i, (etiket, deger) in enumerate(self.veri):
             p.setPen(Qt.NoPen)
-            p.setBrush(RENKLER[i % len(RENKLER)])
+            p.setBrush(renk(i))
             p.drawRoundedRect(QRectF(x, y + satir * i + 4, 12, 12), 2, 2)
             p.setPen(QColor(tema.METIN))
             p.drawText(QRectF(x + 20, y + satir * i, alan.right() - x - 20, satir),
@@ -86,7 +89,7 @@ class YatayCubukGrafik(Grafik):
             p.drawText(QRectF(alan.left(), y, etiket_eni - 8, satir), Qt.AlignRight | Qt.AlignVCenter, metin)
             en = max(2, cubuk_alani * deger / en_buyuk)
             p.setPen(Qt.NoPen)
-            p.setBrush(RENKLER[0])
+            p.setBrush(renk(0))
             p.drawRoundedRect(QRectF(alan.left() + etiket_eni, y + satir * 0.18, en, satir * 0.64), 3, 3)
             p.setPen(QColor(tema.METIN))
             p.drawText(QRectF(alan.left() + etiket_eni + en + 6, y, 40, satir), Qt.AlignLeft | Qt.AlignVCenter, str(deger))
@@ -102,7 +105,7 @@ class DikeyCubukGrafik(Grafik):
             x = alan.left() + sutun * i
             boy = max(2, (alt - ust) * deger / en_buyuk)
             p.setPen(Qt.NoPen)
-            p.setBrush(RENKLER[2])
+            p.setBrush(renk(2))
             p.drawRoundedRect(QRectF(x + sutun * 0.15, alt - boy, sutun * 0.7, boy), 3, 3)
             p.setPen(QColor(tema.METIN))
             p.drawText(QRectF(x, alt - boy - 18, sutun, 18), Qt.AlignCenter, str(deger))

@@ -9,7 +9,6 @@ from PyQt5.QtWidgets import QGraphicsOpacityEffect, QLabel, QPushButton
 from acodes import tema
 
 ALT_BOSLUK = 80
-RENKLER = {"basari": "#15803D", "uyari": tema.TEHLIKE, "bilgi": "#1F2937"}
 UYARI_KELIMELERI = ("yanlış", "geçmiş", "silinemez", "bulunamadı", "eksik", "gecikti", "olamaz",
                     "seçim yapınız", "seçiniz", "yok!", "yetkiniz")
 BASARI_KELIMELERI = ("kaydedildi", "güncellendi", "silindi", "eklendi", "listelendi", "görüntülendi",
@@ -24,6 +23,11 @@ def tur_bul(metin):
     if any(k in kucuk for k in BASARI_KELIMELERI):
         return "basari"
     return "bilgi"
+
+
+def renk(tur):
+    """Bildirim zemini; tema değişince güncel paletten okunur."""
+    return {"basari": tema.BILDIRIM_BASARI, "uyari": tema.BILDIRIM_UYARI, "bilgi": tema.BILDIRIM_BILGI}[tur]
 
 
 def sure_ms(metin):
@@ -52,8 +56,9 @@ class Bildirim(QObject):
         self.durum_cubugu = None
         self.eylem = QPushButton(self.kutu, objectName="bildirim_eylem")
         self.eylem.setCursor(Qt.PointingHandCursor)
-        self.eylem.setStyleSheet("QPushButton#bildirim_eylem { background: transparent; color: white; font-size: 15px;"
-                                 f" font-weight: {tema.YARI_KALIN}; border: 1px solid rgba(255,255,255,0.75); border-radius: 7px;"
+        self.eylem.setStyleSheet("QPushButton#bildirim_eylem { background: transparent; color: white;"
+                                 f" font-size: {tema.YAZI.metin}px; font-weight: {tema.YARI_KALIN};"
+                                 f" border: 1px solid rgba(255,255,255,0.75); border-radius: {tema.KOSE.kucuk}px;"
                                  " padding: 4px 12px; }"
                                  " QPushButton#bildirim_eylem:hover { background: rgba(255,255,255,0.18); }")
         self.eylem.clicked.connect(self._eylem_tiklandi)
@@ -74,8 +79,9 @@ class Bildirim(QObject):
         self.eylem.setVisible(bool(eylem))
         self.kutu.setAttribute(Qt.WA_TransparentForMouseEvents, not eylem)
         sag = self.eylem.width() + 30 if eylem else 18
-        self.kutu.setStyleSheet(f"background-color: {RENKLER[self.tur]}; color: white; font-size: 16px;"
-                                f" font-weight: {tema.ORTA}; padding: 10px {sag}px 10px 18px; border-radius: 10px;")
+        self.kutu.setStyleSheet(f"background-color: {renk(self.tur)}; color: white; font-size: {tema.YAZI.metin}px;"
+                                f" font-weight: {tema.ORTA}; padding: 10px {sag}px 10px 18px;"
+                                f" border-radius: {tema.KOSE.orta}px;")
         self._yerlestir()
         self.kutu.raise_()
         self.kutu.show()

@@ -214,13 +214,13 @@ UYE = [
 
 def stil():
     return f"""
-#kilavuz_hakkinda {{ color: {tema.METIN}; font-size: 16px; font-weight: normal; }}
+#kilavuz_hakkinda {{ color: {tema.METIN}; font-size: {tema.YAZI.metin}px; font-weight: normal; }}
 QPushButton#kilavuz_konu {{ background: transparent; color: {tema.METIN}; border: none; border-radius: 0;
                border-top: 1px solid {tema.KENAR}; padding: 10px 4px; min-width: 0; text-align: left;
-               font-size: 17px; font-weight: {tema.YARI_KALIN}; }}
+               font-size: {tema.YAZI.alt_baslik}px; font-weight: {tema.YARI_KALIN}; }}
 QPushButton#kilavuz_konu:hover {{ color: {tema.VURGU_YAZI}; }}
 QPushButton#kilavuz_konu:checked {{ color: {tema.VURGU_YAZI}; }}
-#kilavuz_metin {{ color: {tema.METIN}; font-size: 16px; font-weight: normal; padding: 0 8px 10px 22px; }}
+#kilavuz_metin {{ color: {tema.METIN}; font-size: {tema.YAZI.metin}px; font-weight: normal; padding: 0 8px 10px 22px; }}
 """
 
 

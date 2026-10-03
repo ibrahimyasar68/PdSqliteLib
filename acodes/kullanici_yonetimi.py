@@ -17,10 +17,10 @@ YETKILER = ["admin", "guest"]
 
 # Formlar koyu arka planlı panellerin üstünde açıldığı için açık ve okunur bir görünüm
 def pencere_stili():
-    """Pencereler panelden bağımsız açılsa da (ör. testlerde) aynı temayla, biraz daha büyük yazıyla görünür."""
+    """Pencereler panelden bağımsız açılsa da (ör. testlerde) aynı temayla görünür."""
     return tema.qss() + f"""
 QDialog {{ background-color: {tema.SAYFA}; }}
-QWidget {{ font-size: 16px; }}
+QWidget {{ font-size: {tema.YAZI.metin}px; }}
 QPushButton {{ padding: 6px 14px; }}
 """
 

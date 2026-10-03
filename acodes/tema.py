@@ -50,6 +50,18 @@ ACIK = dict(
     BOS_METIN="#8A94A6",       # boş tablo mesajı
     IPUCU_ARKA="#1F2937",
     IPUCU_YAZI="#FFFFFF",
+    # Kenar menüsü iki temada da koyudur (yarı saydam lacivert; ana sayfada fotoğrafın üstünde durur)
+    MENU_ZEMIN_RGB="15, 23, 42",
+    MENU_YAZI="#E2E8F0",       # ikonlar, daraltma düğmesi
+    MENU_OGE="#CBD5E1",        # seçili olmayan bölümler
+    MENU_IKINCIL="#94A3B8",    # hızlı arama, yetki
+    MENU_SONUK="#64748B",      # kısayol, imza
+    MENU_LOGO="#FFE14D",       # el yazısı "Yaşar Kütüphanesi"
+    MENU_CIKIS="#FCA5A5",      # Oturumu Kapat
+    # Bildirim kutuları (beyaz yazı) iki temada da aynı koyu tonlarda
+    BILDIRIM_BASARI="#15803D",
+    BILDIRIM_UYARI="#DC2626",
+    BILDIRIM_BILGI="#1F2937",
 )
 KOYU = dict(
     ZEMIN="#0B1120", SAYFA="#111827", SAYFA_RGB="17, 24, 39", KART="#1E293B", KART_2="#18233A",
@@ -63,17 +75,24 @@ KOYU = dict(
     GECIKME_ARKA="#4C1D1D", GECIKME_YAZI="#FCA5A5",
     UYARI_ARKA="#422006", UYARI_KENAR="#A16207", UYARI_METIN="#FDE68A",
     BOS_METIN="#64748B", IPUCU_ARKA="#F1F5F9", IPUCU_YAZI="#0F172A",
+    MENU_ZEMIN_RGB="15, 23, 42", MENU_YAZI="#E2E8F0", MENU_OGE="#CBD5E1", MENU_IKINCIL="#94A3B8",
+    MENU_SONUK="#64748B", MENU_LOGO="#FFE14D", MENU_CIKIS="#FCA5A5",
+    BILDIRIM_BASARI="#15803D", BILDIRIM_UYARI="#DC2626", BILDIRIM_BILGI="#1F2937",
 )
 assert ACIK.keys() == KOYU.keys()
+
+# Grafik serileri: ilki vurgu rengi; koyu temada aynı renklerin açık tonları
+GRAFIK_ACIK = ["#2563EB", "#F59E0B", "#10B981", "#E11D48", "#0891B2", "#7C3AED", "#65A30D", "#EA580C",
+               "#DB2777", "#64748B"]
+GRAFIK_KOYU = ["#60A5FA", "#FBBF24", "#34D399", "#FB7185", "#22D3EE", "#A78BFA", "#A3E635", "#FB923C",
+               "#F472B6", "#94A3B8"]
 
 GORUNUMLER = {"sistem": "Sistemle aynı", "acik": "Açık", "koyu": "Koyu"}
 GORUNUM = "sistem"          # tercih edilen görünüm
 KOYU_MU = False             # şu an kullanılan palet koyu mu
 # Başlangıçta açık palet; ayarla() değiştirir
-(ZEMIN, SAYFA, SAYFA_RGB, KART, KART_2, KENAR, KENAR_GIRDI, KENAR_IKINCIL, METIN, ETIKET, IKINCIL_METIN,
- SOLUK, PASIF, IKON, YUZEY, YUZEY_2, SEKME, SEKME_HOVER, SATIR_HOVER, IZGARA, VURGU, VURGU_KOYU,
- VURGU_BASILI, VURGU_YAZI, VURGU_ACIK, TEHLIKE, TEHLIKE_KOYU, TEHLIKE_ACIK, BASARI, UYARI, BILGI, YESIL,
- GECIKME_ARKA, GECIKME_YAZI, UYARI_ARKA, UYARI_KENAR, UYARI_METIN, BOS_METIN, IPUCU_ARKA, IPUCU_YAZI) = ACIK.values()
+globals().update(ACIK)
+GRAFIK = GRAFIK_ACIK
 
 
 def sistem_koyu_mu():
@@ -102,15 +121,37 @@ _SISTEM_KOYU = None
 
 def ayarla(gorunum):
     """gorunum: "sistem", "acik" veya "koyu". Paleti bu modülün değişkenlerine yazar."""
-    global GORUNUM, KOYU_MU
+    global GORUNUM, KOYU_MU, GRAFIK
     GORUNUM = gorunum if gorunum in GORUNUMLER else "sistem"
     KOYU_MU = GORUNUM == "koyu" or (GORUNUM == "sistem" and sistem_koyu_mu())
     globals().update(KOYU if KOYU_MU else ACIK)
+    GRAFIK = GRAFIK_KOYU if KOYU_MU else GRAFIK_ACIK
 
 
 # Yazı: sistemin kendi yazı tipi (Mac: San Francisco, Windows: Segoe UI). Boyutlar piksel cinsinden
 # verilir; Mac ve Windows nokta (pt) boyutlarını farklı ölçeklediği için iki sistemde de aynı görünür.
-YAZI_PX = 15
+class YAZI:
+    """Yazı boyutu ölçeği (piksel). Modüllerde sabit font-size yazılmaz (tests/test_gorunum.py denetler)."""
+    kucuk = 12          # imza, rozet, liste grup başlıkları
+    ince = 13           # açıklamalar, alt yazılar, form etiketleri
+    metin = 15          # varsayılan
+    alt_baslik = 17     # kutu başlıkları, arama kutuları, boş tablo mesajı
+    baslik = 22         # sayfa başlıkları
+    buyuk = 28          # form ve giriş kartı başlığı
+    gosterge = 32       # ana sayfa kartlarındaki sayılar
+    karsilama = 40      # ana sayfadaki "Hoş geldiniz"
+    logo_menu = 27      # el yazısı logo: kenar menüsü
+    logo_giris = 48     # el yazısı logo: giriş ekranı
+
+
+class KOSE:
+    """Köşe yuvarlaklığı ölçeği (piksel). Rozet, avatar gibi boyuna göre tam yuvarlak öğeler bunun dışındadır."""
+    kucuk = 6           # buton, yazı kutusu, tablo, menü öğesi
+    orta = 10           # kart, kutu, bildirim
+    buyuk = 14          # sayfa paneli, kenar menüsü, hızlı arama, giriş kartı
+
+
+YAZI_PX = YAZI.metin
 
 # Yazı ağırlıkları: kalın (bold) yalnızca vurgu için; başlıklar yarı kalın, etiketler orta ağırlıkta.
 # Qt5 stil sayfasında sayısal ağırlık 8'e bölünüp QFont ağırlığına çevrilir (600 → 75 = Bold olurdu):
@@ -125,18 +166,18 @@ def _tema():
     return f"""
 QMainWindow, #centralwidget {{ background-color: {ZEMIN}; }}
 
-QTabWidget::pane {{ border: 1px solid {KENAR}; background-color: {SAYFA}; border-radius: 6px; }}
-QTabBar {{ font-size: 17px; font-weight: {YARI_KALIN}; }}
+QTabWidget::pane {{ border: 1px solid {KENAR}; background-color: {SAYFA}; border-radius: {KOSE.kucuk}px; }}
+QTabBar {{ font-size: {YAZI.alt_baslik}px; font-weight: {YARI_KALIN}; }}
 QTabBar::tab {{ background-color: {SEKME}; color: {IKINCIL_METIN}; padding: 7px 18px; margin-right: 2px;
                border: 1px solid {KENAR}; border-bottom: none;
-               border-top-left-radius: 6px; border-top-right-radius: 6px; }}
+               border-top-left-radius: {KOSE.kucuk}px; border-top-right-radius: {KOSE.kucuk}px; }}
 QTabBar::tab:selected {{ background-color: {KART}; color: {VURGU_YAZI}; }}
 QTabBar::tab:hover:!selected {{ background-color: {SEKME_HOVER}; color: {METIN}; }}
 QStackedWidget > QWidget {{ background-color: {SAYFA}; }}
 
 QLabel {{ color: {METIN}; background: transparent; }}
 
-QPushButton {{ background-color: {VURGU}; color: white; border: none; border-radius: 6px; padding: 4px 8px; }}
+QPushButton {{ background-color: {VURGU}; color: white; border: none; border-radius: {KOSE.kucuk}px; padding: 4px 8px; }}
 QPushButton:hover {{ background-color: {VURGU_KOYU}; }}
 QPushButton:pressed {{ background-color: {VURGU_BASILI}; }}
 QPushButton:disabled {{ background-color: {YUZEY_2}; color: {PASIF}; }}
@@ -151,12 +192,12 @@ QPushButton[rol="ikincil"]:disabled {{ background-color: {KART}; color: {SOLUK};
 QPushButton#filtre_etiketi {{ background-color: {VURGU_ACIK}; color: {VURGU_YAZI}; border-radius: 12px;
                padding: 4px 10px; }}
 QPushButton#filtre_etiketi:hover {{ background-color: {TEHLIKE_ACIK}; color: {TEHLIKE}; }}
-#sayfa_baslik {{ font-size: 22px; font-weight: {YARI_KALIN}; color: {METIN}; }}
-QLabel[rol="sayac"] {{ font-size: 15px; font-weight: {ORTA}; color: {VURGU_YAZI}; }}
-QLabel[rol="bilgi_simgesi"] {{ color: {SOLUK}; font-size: 17px; }}
+#sayfa_baslik {{ font-size: {YAZI.baslik}px; font-weight: {YARI_KALIN}; color: {METIN}; }}
+QLabel[rol="sayac"] {{ font-size: {YAZI.metin}px; font-weight: {ORTA}; color: {VURGU_YAZI}; }}
+QLabel[rol="bilgi_simgesi"] {{ color: {SOLUK}; font-size: {YAZI.alt_baslik}px; }}
 
 QLineEdit, QComboBox, QSpinBox, QPlainTextEdit {{ background-color: {KART}; color: {METIN};
-               border: 1px solid {KENAR_GIRDI}; border-radius: 5px; padding: 3px 6px; }}
+               border: 1px solid {KENAR_GIRDI}; border-radius: {KOSE.kucuk}px; padding: 3px 6px; }}
 QLineEdit:focus, QComboBox:focus, QSpinBox:focus, QPlainTextEdit:focus {{ border-color: {VURGU}; }}
 QLineEdit:read-only {{ background-color: {YUZEY}; }}
 QListView::item {{ padding: 4px 8px; }}
@@ -164,7 +205,7 @@ QComboBox QAbstractItemView {{ background-color: {KART}; color: {METIN};
                selection-background-color: {VURGU_ACIK}; selection-color: {METIN}; }}
 
 QTableWidget, QTreeWidget {{ background-color: {KART}; alternate-background-color: {KART_2}; color: {METIN};
-               gridline-color: {IZGARA}; border: 1px solid {KENAR}; border-radius: 4px;
+               gridline-color: {IZGARA}; border: 1px solid {KENAR}; border-radius: {KOSE.kucuk}px;
                selection-background-color: {VURGU_ACIK}; selection-color: {METIN}; }}
 QTableWidget::item {{ padding: 0 6px; }}
 QTableWidget::item:hover {{ background-color: {SATIR_HOVER}; }}
@@ -172,7 +213,7 @@ QHeaderView::section:vertical {{ color: {IKINCIL_METIN}; font-weight: normal; pa
 QHeaderView::section {{ background-color: {ZEMIN}; color: {ETIKET}; padding: 4px 6px; border: none; font-weight: {YARI_KALIN};
                border-right: 1px solid {KENAR}; border-bottom: 1px solid {KENAR}; }}
 
-QGroupBox {{ background-color: {KART}; border: 1px solid {KENAR}; border-radius: 8px; color: {ETIKET};
+QGroupBox {{ background-color: {KART}; border: 1px solid {KENAR}; border-radius: {KOSE.orta}px; color: {ETIKET};
                font-weight: {YARI_KALIN}; margin-top: 0; padding: 44px 12px 12px 12px; }}
 QGroupBox::title {{ subcontrol-origin: padding; subcontrol-position: top left; left: 14px; top: 12px; }}
 
@@ -245,7 +286,7 @@ QSpinBox::up-button, QSpinBox::down-button {{ subcontrol-origin: padding; width:
                background: transparent; margin-right: 2px; }}
 QSpinBox::up-button {{ subcontrol-position: top right; margin-top: 2px; }}
 QSpinBox::down-button {{ subcontrol-position: bottom right; margin-bottom: 2px; }}
-QSpinBox::up-button:hover, QSpinBox::down-button:hover {{ background: {VURGU_ACIK}; border-radius: 4px; }}
+QSpinBox::up-button:hover, QSpinBox::down-button:hover {{ background: {VURGU_ACIK}; border-radius: {KOSE.kucuk}px; }}
 QSpinBox::up-arrow {{ image: url("{ok['yukari']}"); width: 12px; height: 12px; }}
 QSpinBox::down-arrow {{ image: url("{ok['asagi']}"); width: 12px; height: 12px; }}
 """
@@ -262,7 +303,7 @@ def _koyu_ek():
     return f"""
 QDialog, QMessageBox {{ background-color: {ZEMIN}; }}
 QMenu {{ background-color: {KART}; color: {METIN}; border: 1px solid {KENAR}; padding: 4px; }}
-QMenu::item {{ padding: 6px 22px; border-radius: 4px; }}
+QMenu::item {{ padding: 6px 22px; border-radius: {KOSE.kucuk}px; }}
 QMenu::item:selected {{ background-color: {VURGU_ACIK}; }}
 QMenu::item:disabled {{ color: {SOLUK}; }}
 QMenu::separator {{ height: 1px; background: {KENAR}; margin: 4px 8px; }}

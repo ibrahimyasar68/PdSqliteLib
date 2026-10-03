@@ -27,7 +27,7 @@ class Kitaplarim(QWidget):
         self.setAttribute(Qt.WA_StyledBackground, True)   # panelin yarı saydam sayfa zemini çizilsin
         self.setStyleSheet(f"QGroupBox {{ font-weight: {tema.YARI_KALIN}; }}")
         self.ozet = QLabel()
-        self.ozet.setStyleSheet(f'font-size: 18px; font-weight: {tema.YARI_KALIN};')
+        self.ozet.setStyleSheet(f'font-size: {tema.YAZI.alt_baslik}px; font-weight: {tema.YARI_KALIN};')
         self.elimdeki = tablo_olustur(["Kitap", "Yazar", "Aldığım Tarih", "Teslim Tarihi", "Durum"],
                                       "Şu an elinizde ödünç kitap yok.")
         self.gecmis = tablo_olustur(["Kitap", "Yazar", "Aldığım Tarih", "İade Tarihi", "Gün"],
@@ -65,6 +65,6 @@ class Kitaplarim(QWidget):
             if gecikenler:
                 metin += f" {len(gecikenler)} tanesinin teslim süresi geçti, lütfen iade edin."
         self.ozet.setText(metin)
-        self.ozet.setStyleSheet(f'font-size: 18px; font-weight: {tema.YARI_KALIN};'
+        self.ozet.setStyleSheet(f'font-size: {tema.YAZI.alt_baslik}px; font-weight: {tema.YARI_KALIN};'
                                 f' color: {tema.TEHLIKE if gecikenler else tema.METIN};')
         return len(gecikenler)

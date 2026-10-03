@@ -21,14 +21,14 @@ def eslesir(metin, *alanlar):
 
 def stil():
     return f"""
-#palet {{ background-color: {tema.KART}; border: 1px solid {tema.KENAR}; border-radius: 12px; }}
-#palet_arama {{ font-size: 18px; padding: 10px 12px; border: none; border-bottom: 1px solid {tema.KENAR};
+#palet {{ background-color: {tema.KART}; border: 1px solid {tema.KENAR}; border-radius: {tema.KOSE.buyuk}px; }}
+#palet_arama {{ font-size: {tema.YAZI.alt_baslik}px; padding: 10px 12px; border: none; border-bottom: 1px solid {tema.KENAR};
                border-radius: 0; background: transparent; }}
 #palet_arama:focus {{ border: none; border-bottom: 1px solid {tema.KENAR}; }}
 #palet_liste {{ border: none; background: transparent; outline: none; }}
-#palet_liste::item {{ padding: 6px 10px; border-radius: 6px; color: {tema.METIN}; }}
+#palet_liste::item {{ padding: 6px 10px; border-radius: {tema.KOSE.kucuk}px; color: {tema.METIN}; }}
 #palet_liste::item:selected {{ background-color: {tema.VURGU_ACIK}; color: {tema.METIN}; }}
-#palet_ipucu {{ color: {tema.SOLUK}; font-size: 13px; padding: 6px 12px; border-top: 1px solid {tema.KENAR}; }}
+#palet_ipucu {{ color: {tema.SOLUK}; font-size: {tema.YAZI.ince}px; padding: 6px 12px; border-top: 1px solid {tema.KENAR}; }}
 """
 
 
@@ -83,7 +83,7 @@ class KomutPaleti(QDialog):
             baslik = QListWidgetItem(grup.upper())
             baslik.setFlags(Qt.NoItemFlags)
             yazi = baslik.font()
-            yazi.setPixelSize(12)
+            yazi.setPixelSize(tema.YAZI.kucuk)
             yazi.setBold(True)
             baslik.setFont(yazi)
             baslik.setForeground(self.palette().placeholderText())

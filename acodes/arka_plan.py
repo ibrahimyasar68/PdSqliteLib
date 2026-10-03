@@ -16,7 +16,7 @@ def stil():
 #centralwidget {{ background: transparent; }}
 QTabWidget::pane {{ background: transparent; }}
 QStackedWidget > QWidget {{ background: transparent; }}
-QTabWidget#tabWidget > QStackedWidget > QWidget {{ background-color: {tema.SAYFA}; border-radius: 12px; }}
+QTabWidget#tabWidget > QStackedWidget > QWidget {{ background-color: {tema.SAYFA}; border-radius: {tema.KOSE.buyuk}px; }}
 QTabWidget#tabWidget > QStackedWidget > QWidget#tab_1 {{ background: transparent; }}
 """
 

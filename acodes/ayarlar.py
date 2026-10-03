@@ -14,7 +14,7 @@ from PyQt5.QtWidgets import (QApplication, QButtonGroup, QDialog, QFormLayout, Q
 def stil():
     return f"""
 #ayarlar_ic {{ background: transparent; }}
-QGroupBox {{ font-size: 18px; font-weight: {tema.YARI_KALIN}; border-radius: 10px; padding: 48px 14px 14px 14px; }}
+QGroupBox {{ font-size: {tema.YAZI.alt_baslik}px; font-weight: {tema.YARI_KALIN}; border-radius: {tema.KOSE.orta}px; padding: 48px 14px 14px 14px; }}
 QLabel {{ color: {tema.IKINCIL_METIN}; }}
 QLabel[rol="deger"] {{ color: {tema.METIN}; }}
 QPushButton {{ padding: 9px 16px; min-width: 150px; }}

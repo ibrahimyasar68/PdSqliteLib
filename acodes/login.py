@@ -21,16 +21,18 @@ def panel_goster(panel):
 # Sağ taraf: geçişli zemin yerine beyaz kart; soldaki fotoğraf ve başlık korunur
 def giris_stili():
     return f"""
-#label_2 {{ background-color: {tema.KART}; border-top-right-radius: 16px; border-bottom-right-radius: 16px; }}
-#label_5 {{ color: white; font-family: "{tema.BASLIK_YAZISI}"; font-size: 48px; font-style: normal; }}
-#giris_karti QLabel {{ color: {tema.ETIKET}; font-size: 13px; font-weight: {tema.ORTA}; }}
-#giris_karti QLabel#giris_baslik {{ color: {tema.METIN}; font-size: 26px; font-weight: {tema.YARI_KALIN}; }}
-#giris_karti QLabel#giris_alt {{ color: {tema.IKINCIL_METIN}; font-size: 13px; font-weight: normal; }}
-#giris_karti QLineEdit {{ font-size: 15px; padding: 8px 10px; border-radius: 8px; min-height: 22px; }}
+#label_2 {{ background-color: {tema.KART}; border-top-right-radius: {tema.KOSE.buyuk}px;
+               border-bottom-right-radius: {tema.KOSE.buyuk}px; }}
+#label_5 {{ color: white; font-family: "{tema.BASLIK_YAZISI}"; font-size: {tema.YAZI.logo_giris}px; font-style: normal; }}
+#giris_karti QLabel {{ color: {tema.ETIKET}; font-size: {tema.YAZI.ince}px; font-weight: {tema.ORTA}; }}
+#giris_karti QLabel#giris_baslik {{ color: {tema.METIN}; font-size: {tema.YAZI.buyuk}px; font-weight: {tema.YARI_KALIN}; }}
+#giris_karti QLabel#giris_alt {{ color: {tema.IKINCIL_METIN}; font-size: {tema.YAZI.ince}px; font-weight: normal; }}
+#giris_karti QLineEdit {{ font-size: {tema.YAZI.metin}px; padding: 8px 10px; border-radius: {tema.KOSE.kucuk}px; min-height: 22px; }}
 #giris_karti QLabel#giris_mesaj {{ color: {tema.TEHLIKE}; font-weight: normal; }}
 #giris_karti QLabel#giris_mesaj[tur="bilgi"] {{ color: {tema.BASARI}; }}
-#giris_karti QLabel#giris_imza {{ color: {tema.IKINCIL_METIN}; font-size: 12px; font-weight: normal; }}
-#pushButton_giris {{ font-size: 16px; font-weight: {tema.YARI_KALIN}; padding: 10px; border-radius: 8px; }}
+#giris_karti QLabel#giris_imza {{ color: {tema.IKINCIL_METIN}; font-size: {tema.YAZI.kucuk}px; font-weight: normal; }}
+#pushButton_giris {{ font-size: {tema.YAZI.metin}px; font-weight: {tema.YARI_KALIN}; padding: 10px;
+               border-radius: {tema.KOSE.kucuk}px; }}
 #pushButton_cikis {{ background-color: {tema.YUZEY}; border: 1px solid {tema.KENAR}; border-radius: 22px; }}
 #pushButton_cikis:hover {{ background-color: {tema.TEHLIKE}; border-color: {tema.TEHLIKE}; }}
 """

@@ -13,7 +13,7 @@ from acodes.tablo import (KolonSecici, OranCubugu, OrantiliKolonlar, durum_ekle,
 from acodes.disa_aktar import disa_aktar, sag_tik_menusu
 from acodes.kisayollar import arama_kutusu_yap, kisayol, metin as kisayol_metni
 from acodes.komut_paleti import KomutPaleti, eslesir
-from acodes import ikonlar
+from acodes import ikonlar, tema
 from acodes.kullanici_yonetimi import SifreDegistir, panel_butonu
 
 LISTE_KOLONLARI = [(70,"Kayıt No"),(200,"Adı"),(160,"Yazarı"),(120,"Çeviren"),(90,"Türü"),
@@ -178,7 +178,7 @@ class OrtakSekmeler:
         self.arama=arama_kutusu_yap(QLineEdit(ui.tab_2))
         self.arama.setPlaceholderText("Ara: kitap adı, yazar, çevirmen, tür, yayınevi, yıl, ISBN, raf, not...")
         self.arama.setClearButtonEnabled(True)
-        self.arama.setStyleSheet('font-size: 17px; padding: 2px 8px;')
+        self.arama.setStyleSheet(f'font-size: {tema.YAZI.alt_baslik}px; padding: 2px 8px;')
         self.arama_sonuc=QLabel(ui.tab_2)
         self.arama.textChanged.connect(self.listele)
 

@@ -62,7 +62,7 @@ class BosDurum(QObject):
         self.etiket = QLabel(metin)
         self.etiket.setAlignment(Qt.AlignCenter)
         self.etiket.setWordWrap(True)
-        self.etiket.setStyleSheet(f"color: {tema.BOS_METIN}; font-size: 17px; background: transparent;")
+        self.etiket.setStyleSheet(f"color: {tema.BOS_METIN}; font-size: {tema.YAZI.alt_baslik}px; background: transparent;")
         dikey.addWidget(self.simge)
         dikey.addWidget(self.etiket)
         self.buton = None
@@ -119,7 +119,7 @@ def _zemin_ciz(temsilci, ressam, secenek, indeks):
 
 def _rozet_yazisi(secenek):
     yazi = QFont(secenek.font)
-    yazi.setPixelSize(13)
+    yazi.setPixelSize(tema.YAZI.ince)
     yazi.setBold(True)
     return yazi
 
@@ -343,7 +343,7 @@ class KolonSecici(QObject):
 
         self.soru = QFrame(objectName="kolon_sorusu")
         self.soru.setStyleSheet(f"#kolon_sorusu {{ background-color: {tema.UYARI_ARKA}; border: 1px solid {tema.UYARI_KENAR};"
-                                f" border-radius: 8px; }} #kolon_sorusu QLabel {{ color: {tema.UYARI_METIN}; }}")
+                                f" border-radius: {tema.KOSE.orta}px; }} #kolon_sorusu QLabel {{ color: {tema.UYARI_METIN}; }}")
         satir = QHBoxLayout(self.soru)
         satir.setContentsMargins(12, 6, 8, 6)
         satir.addWidget(QLabel("Liste pencereye sığmıyor. Hangi kolonların gizleneceğini seçmek ister misiniz?"), 1)
