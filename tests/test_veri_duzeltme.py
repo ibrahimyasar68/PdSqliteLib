@@ -4,7 +4,7 @@ import shutil
 import sqlite3
 
 import pytest
-from PyQt5.QtCore import Qt
+from PySide6.QtCore import Qt
 
 from acodes.library import Library
 from database import duzeltme as dz

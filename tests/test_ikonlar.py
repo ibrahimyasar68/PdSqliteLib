@@ -2,7 +2,7 @@
 import os
 
 import pytest
-from PyQt5.QtGui import QIcon
+from PySide6.QtGui import QIcon
 
 from acodes import ikonlar
 from acodes.guest import Guest
@@ -46,7 +46,7 @@ def test_pencerelerde_ikon(app):
     y = KullaniciYonetimi("admin")
     assert all(not b.icon().isNull() for b in (y.btn_duzenle, y.btn_sifre, y.btn_sil))
     s = SifreDegistir("admin")
-    from PyQt5.QtWidgets import QPushButton
+    from PySide6.QtWidgets import QPushButton
     assert all(not b.icon().isNull() for b in s.findChildren(QPushButton))
 
 
@@ -71,8 +71,8 @@ def test_acilir_liste_ve_sayi_kutusu_oklari(app):
 
 
 def test_baslik_yazisi_gomulu(app):
-    from PyQt5.QtGui import QFontDatabase
+    from PySide6.QtGui import QFontDatabase
     from acodes import tema
     assert tema.baslik_yazisini_yukle()
-    assert tema.BASLIK_YAZISI in QFontDatabase().families()
+    assert tema.BASLIK_YAZISI in QFontDatabase.families()
     assert os.path.exists(os.path.join(tema.font_klasoru(), "OFL.txt"))      # lisans fontla birlikte dağıtılır

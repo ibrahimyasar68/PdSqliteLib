@@ -1,7 +1,7 @@
 ## Arayüz (acodes/) testleri ##
 # Pencereler ekranda açılmaz; butonlara basmak yerine aynı fonksiyonlar çağrılır.
 import pytest
-from PyQt5.QtCore import Qt
+from PySide6.QtCore import Qt
 
 from conftest import ADMIN_SIFRE, UYE_SIFRE
 from acodes.guest import Guest
@@ -139,10 +139,10 @@ def test_yeni_uye_kaydindan_sonra_kalinan_menuye_donulur(lib, form, db):
 
 
 def test_onay_kutusu_acik_pencereye_baglanir(app, monkeypatch):
-    from PyQt5.QtWidgets import QMessageBox, QWidget
+    from PySide6.QtWidgets import QMessageBox, QWidget
     from acodes import onay as onay_modulu
     ebeveynler = []
-    monkeypatch.setattr(QMessageBox, "exec_", lambda self: ebeveynler.append(self.parentWidget()) or QMessageBox.Yes)
+    monkeypatch.setattr(QMessageBox, "exec", lambda self: ebeveynler.append(self.parentWidget()) or QMessageBox.Yes)
     w = QWidget()
     assert onay_modulu.onay("Emin misiniz?", w) == QMessageBox.Yes and ebeveynler == [w]
 
@@ -178,7 +178,7 @@ def test_ui_dosyalarinda_renk_ve_yazi_tipi_yok(app):
     # Görünüm tamamen temadan gelir: .ui'dan gelen bileşenlerde (yalnızca giriş ekranı kaldı) renk veya yazı tipi
     # bulunmamalı (giriş fotoğrafının border-image ve köşe yuvarlaklığı serbest).
     import re
-    from PyQt5.QtWidgets import QMainWindow, QWidget
+    from PySide6.QtWidgets import QMainWindow, QWidget
     from bforms.login_py import Ui_MainWindow
     w = QMainWindow()
     Ui_MainWindow().setupUi(w)

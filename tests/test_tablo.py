@@ -1,9 +1,9 @@
 ## Tablolarda sıralama, salt okunur hücreler ve çift tıklama testleri ##
 
 import pytest
-from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QColor
-from PyQt5.QtWidgets import QAbstractItemView, QApplication, QHeaderView, QTableWidget
+from PySide6.QtCore import Qt
+from PySide6.QtGui import QColor
+from PySide6.QtWidgets import QAbstractItemView, QApplication, QHeaderView, QTableWidget
 
 from conftest import sec
 from acodes import tema
@@ -204,7 +204,7 @@ def test_bos_listede_sira_numarasi_yok(app, uyarilar):
 
 
 def test_istatistik_cizelgeleri_kartlarda_ve_sayilar_sigar(app, uyarilar):
-    from PyQt5.QtWidgets import QGroupBox
+    from PySide6.QtWidgets import QGroupBox
     lib = Library()
     q = lib
     t = q.istatistik.tablolar[1]
@@ -237,7 +237,7 @@ def test_kitap_adi_kolonu_turden_genis(app, uyarilar):
     lib.resize(1300, 800)
     lib.show()
     q.sekmeler.setCurrentWidget(q.liste)
-    from PyQt5.QtTest import QTest
+    from PySide6.QtTest import QTest
     QTest.qWait(50)                                         # genişlikler liste dolduktan sonra dağıtılır
     t = q.liste.tablo
     assert t.columnWidth(1) > t.columnWidth(4) and t.columnWidth(1) > t.columnWidth(2)   # Adı > Türü, Yazarı

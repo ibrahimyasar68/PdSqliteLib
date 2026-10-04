@@ -1,5 +1,5 @@
-from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QFileDialog, QMessageBox
+from PySide6.QtCore import Qt
+from PySide6.QtWidgets import QFileDialog, QMessageBox
 import os
 import datetime
 
@@ -285,7 +285,7 @@ class Library(Panel):
         self.bildirim.mesaj(f"'{kullanici}' kullanıcısı kaydedildi.","basari",self.dur_msj*2)
 
     def kullanici_yonetimi(self):
-        KullaniciYonetimi(self.aktif_kullanici, self).exec_()
+        KullaniciYonetimi(self.aktif_kullanici, self).exec()
 
     def yedek_al_ekrani(self):
         varsayilan=os.path.join(yedek_klasoru(), f"DBL_Kayit_yedek_{datetime.date.today():%Y%m%d}.db")

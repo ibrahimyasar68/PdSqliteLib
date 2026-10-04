@@ -1,5 +1,5 @@
 ## Evet / Hayır onay kutusu ##
-from PyQt5.QtWidgets import QApplication, QMessageBox
+from PySide6.QtWidgets import QApplication, QMessageBox
 
 
 def onay(msj, parent=None):
@@ -12,4 +12,4 @@ def onay(msj, parent=None):
     mesaj.setEscapeButton(QMessageBox.No)
     mesaj.button(QMessageBox.Yes).setText("Evet")
     mesaj.button(QMessageBox.No).setText("Hayır")
-    return mesaj.exec_()
+    return mesaj.exec()

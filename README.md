@@ -1,6 +1,6 @@
 # PdSqliteLib
 
-PyQt5 ve SQLite ile yazılmış masaüstü kütüphane yönetim uygulaması.
+PySide6 (Qt 6) ve SQLite ile yazılmış masaüstü kütüphane yönetim uygulaması.
 Kitap kaydı, üye yönetimi, ödünç verme / iade takibi ve istatistikler içerir.
 Windows ve macOS üzerinde çalışır.
 
@@ -390,7 +390,7 @@ Yeni kullanıcı formunun `.ui` dosyası yoktur. Bir `.ui` dosyasını Qt Design
 .venv/bin/python scripts/convertFiles.py
 ```
 
-Betik `pyuic5` ve `pyrcc5` komutlarını sanal ortamda bulur (PyQt5 ile birlikte kurulur); ortamı
+Betik `pyside6-uic` ve `pyside6-rcc` komutlarını sanal ortamda bulur (PySide6 ile birlikte kurulur); ortamı
 etkinleştirmek gerekmez.
 
 ## Veritabanı şeması

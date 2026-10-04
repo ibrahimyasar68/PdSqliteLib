@@ -4,7 +4,7 @@
 
 from dataclasses import replace
 
-from PyQt5.QtWidgets import (QAbstractItemView, QComboBox, QDialog, QDialogButtonBox, QFormLayout,
+from PySide6.QtWidgets import (QAbstractItemView, QComboBox, QDialog, QDialogButtonBox, QFormLayout,
                              QHBoxLayout, QHeaderView, QLineEdit, QMessageBox, QPushButton,
                              QTableWidget, QVBoxLayout)
 from acodes.tablo import satir_verisi, tablo_ayarla, tabloya_yaz
@@ -175,14 +175,14 @@ class KullaniciYonetimi(QDialog):
 
     def duzenle(self):
         kayit = self.secili()
-        if kayit and KullaniciDuzenle(kayit, self.aktif_kullanici, self).exec_():
+        if kayit and KullaniciDuzenle(kayit, self.aktif_kullanici, self).exec():
             self.yukle()
             self.sec(kayit.kullanici)
 
     def sifre_degistir(self):
         kayit = self.secili()
         if kayit:
-            SifreDegistir(kayit.kullanici, parent=self).exec_()
+            SifreDegistir(kayit.kullanici, parent=self).exec()
 
     def sil(self):
         kayit = self.secili()

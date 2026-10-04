@@ -4,11 +4,11 @@
 
 import os
 
-from PyQt5.QtCore import QEasingCurve, QPropertyAnimation, QRectF, QSize, Qt, QUrl, pyqtProperty, pyqtSignal
-from PyQt5.QtGui import QColor, QDesktopServices, QPainter
+from PySide6.QtCore import QEasingCurve, QPropertyAnimation, QRectF, QSize, Qt, QUrl, Property, Signal
+from PySide6.QtGui import QColor, QDesktopServices, QPainter
 from acodes import hareket, tema, tercihler
 from acodes.kilavuz import Kilavuz
-from PyQt5.QtWidgets import (QAbstractButton, QApplication, QDialog, QFormLayout, QGroupBox, QHBoxLayout, QLabel,
+from PySide6.QtWidgets import (QAbstractButton, QApplication, QDialog, QFormLayout, QGroupBox, QHBoxLayout, QLabel,
                              QPushButton, QScrollArea, QSizePolicy, QToolTip, QVBoxLayout, QWidget)
 
 def stil():
@@ -56,7 +56,7 @@ class TamDeger(QLabel):
         super().paintEvent(olay)
         if not self.yol:
             return
-        from PyQt5.QtGui import QPainter
+        from PySide6.QtGui import QPainter
         from acodes import ikonlar
         yazi_en = self.fontMetrics().horizontalAdvance(self.text())
         x = min(yazi_en, self.contentsRect().width()) + 6
@@ -65,7 +65,7 @@ class TamDeger(QLabel):
 
     def mousePressEvent(self, olay):
         QApplication.clipboard().setText(self.tam)
-        QToolTip.showText(olay.globalPos(), "Panoya kopyalandı", self)
+        QToolTip.showText(olay.globalPosition().toPoint(), "Panoya kopyalandı", self)
 
 
 class Bolum(QGroupBox):
@@ -141,7 +141,7 @@ class Anahtar(QAbstractButton):
         self._konum = deger
         self.update()
 
-    konum = pyqtProperty(float, _konum_al, _konum_yaz)
+    konum = Property(float, _konum_al, _konum_yaz)
 
     def sizeHint(self):
         return QSize(self.IZ_EN + 10 + self.fontMetrics().horizontalAdvance(self.text()), max(self.IZ_BOY, 26))
@@ -174,7 +174,7 @@ class Anahtar(QAbstractButton):
 class GorunumBolumu(QGroupBox):
     """Açık / koyu / sistemle aynı görünüm seçimi. Seçim değişince degisti(görünüm) yayınlanır.
     "Hareketi azalt" geçiş animasyonlarını kapatır (hemen uygulanır, panel yeniden kurulmaz)."""
-    degisti = pyqtSignal(str)
+    degisti = Signal(str)
 
     def __init__(self, parent=None):
         super().__init__("Görünüm", parent)

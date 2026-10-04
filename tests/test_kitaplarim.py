@@ -6,7 +6,7 @@ import pytest
 from conftest import UYE_SIFRE
 from acodes.guest import Guest
 from acodes.login import Login
-from PyQt5.QtGui import QColor
+from PySide6.QtGui import QColor
 from acodes import tema
 from database import odunc
 

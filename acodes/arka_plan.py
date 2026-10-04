@@ -2,9 +2,9 @@
 # Fotoğraf yalnızca Giriş (ana sayfa) sekmesinde, pencereyi kaplayacak şekilde ölçeklenip ortalanarak çizilir
 # (taşan kenarlar kırpılır). Diğer sekmelerde düz tema zemini kalır: tablolar ve formlar sade bir yüzeyde durur.
 
-from PyQt5.QtCore import QEvent, QObject, QRect, Qt
-from PyQt5.QtGui import QColor, QPainter, QPixmap
-from PyQt5.QtWidgets import QTabWidget
+from PySide6.QtCore import QEvent, QObject, QRect, Qt
+from PySide6.QtGui import QColor, QPainter, QPixmap
+from PySide6.QtWidgets import QTabWidget
 
 from acodes import tema
 import bforms.media_rc  # noqa: F401  (Qt kaynakları: arka plan fotoğrafı)

@@ -5,8 +5,8 @@
 # seçimlerden biri ("Roman veya Deneme"), farklı ölçütlerin hepsi ("Roman ve Kemal TAHİR") tutmalıdır.
 # Sonuçlar her değişiklikte kendiliğinden güncellenir.
 
-from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import (QComboBox, QGroupBox, QHBoxLayout, QLabel, QPushButton, QTableWidget,
+from PySide6.QtCore import Qt
+from PySide6.QtWidgets import (QComboBox, QGroupBox, QHBoxLayout, QLabel, QPushButton, QTableWidget,
                              QVBoxLayout, QWidget)
 
 from acodes.aranabilir import aranabilir_yap

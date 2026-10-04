@@ -2,9 +2,9 @@
 # Üstte başlık şeridi (panelin arka plan fotoğrafı üzerinde), altında tıklanabilir özet kartları ve iki kısa liste.
 # Yönetici ve üye panelleri aynı bileşeni farklı kartlar/listelerle kurar.
 
-from PyQt5.QtCore import QEasingCurve, Qt, QVariantAnimation, pyqtSignal
-from PyQt5.QtGui import QColor
-from PyQt5.QtWidgets import (QFrame, QGraphicsDropShadowEffect, QGridLayout, QGroupBox, QHBoxLayout, QHeaderView,
+from PySide6.QtCore import QEasingCurve, Qt, QVariantAnimation, Signal
+from PySide6.QtGui import QColor
+from PySide6.QtWidgets import (QFrame, QGraphicsDropShadowEffect, QGridLayout, QGroupBox, QHBoxLayout, QHeaderView,
                              QLabel, QTableWidget, QVBoxLayout, QWidget)
 
 from acodes import hareket, ikonlar, tema
@@ -29,7 +29,7 @@ QGroupBox {{ font-weight: {tema.YARI_KALIN}; }}
 class Kart(QFrame):
     """Üstte başlık, büyük sayı ve açıklama; sağ üstte rengin açık tonunda yuvarlak zeminli ikon.
     Tıklanabilir kartlar üstüne gelince gölgesi yumuşakça büyüyerek öne çıkar. Sayı ilk görünüşte 0'dan sayarak gelir."""
-    tiklandi = pyqtSignal()
+    tiklandi = Signal()
     IKON_EN = 44
 
     def __init__(self, baslik, renk, ikon="kitap", parent=None):

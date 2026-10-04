@@ -2,8 +2,8 @@
 # .ui dosyalarındaki sayfalar sabit piksel konumlarıyla çizilmiş; pencere büyüyünce sol üstte küçük kalıyorlardı.
 # Buradaki kalıplar mevcut bileşenleri yerleşim düzenlerine (layout) alır: tablolar ve alanlar pencereyle büyür.
 
-from PyQt5.QtCore import QPoint, QRect, QSize, Qt
-from PyQt5.QtWidgets import QHBoxLayout, QLabel, QLayout, QVBoxLayout
+from PySide6.QtCore import QPoint, QRect, QSize, Qt
+from PySide6.QtWidgets import QHBoxLayout, QLabel, QLayout, QVBoxLayout
 
 SINIRSIZ = 16777215
 
@@ -48,7 +48,7 @@ def etiketli(etiket, alan, bosluk=4):
 
 def ustte_etiketli_form(form):
     """QFormLayout'ta etiketler alanların üstünde (iki noktasız, sola yaslı); formla aynı biçim."""
-    from PyQt5.QtWidgets import QFormLayout
+    from PySide6.QtWidgets import QFormLayout
     form.setRowWrapPolicy(QFormLayout.WrapAllRows)
     form.setLabelAlignment(Qt.AlignLeft)
     form.setVerticalSpacing(10)

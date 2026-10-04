@@ -1,7 +1,8 @@
 ## Ayarlar sekmesi ve sadeleştirilmiş ana sayfa testleri ##
 import pytest
-from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QDesktopServices
+from PySide6.QtCore import Qt
+from PySide6.QtGui import QDesktopServices
+from PySide6.QtWidgets import QFormLayout
 
 from acodes import ayarlar as ayarlar_modulu
 from acodes import kullanici_yonetimi
@@ -48,8 +49,8 @@ def test_admin_ayarlar_bolumleri(lib):
 
 def test_butonlar_ilgili_islemi_acar(lib, monkeypatch):
     acilan = []
-    monkeypatch.setattr(kullanici_yonetimi.KullaniciYonetimi, "exec_", lambda self: acilan.append("yonetim"))
-    monkeypatch.setattr(kullanici_yonetimi.SifreDegistir, "exec_",
+    monkeypatch.setattr(kullanici_yonetimi.KullaniciYonetimi, "exec", lambda self: acilan.append("yonetim"))
+    monkeypatch.setattr(kullanici_yonetimi.SifreDegistir, "exec",
                         lambda self: acilan.append(("sifre", self.kullanici, self.eski is not None)))
     lib.user_name("admin")
     lib.ayarlar.buton("Kullanıcı Yönetimi").click()
@@ -68,7 +69,8 @@ def test_yedek_klasorunu_ac(lib, monkeypatch):
 
 def bilgiler(bolum):
     form = bolum.form
-    return {form.itemAt(i, form.LabelRole).widget().text(): form.itemAt(i, form.FieldRole).widget().text()
+    rol = QFormLayout.ItemRole
+    return {form.itemAt(i, rol.LabelRole).widget().text(): form.itemAt(i, rol.FieldRole).widget().text()
             for i in range(form.rowCount())}
 
 
@@ -127,9 +129,9 @@ def test_bolumde_ilk_buton_asil_digerleri_ikincil(lib):
 
 
 def test_uzun_yol_ortadan_kisalir_tiklaninca_tamami_kopyalanir(app):
-    from PyQt5.QtCore import QPoint, Qt
-    from PyQt5.QtTest import QTest
-    from PyQt5.QtWidgets import QApplication
+    from PySide6.QtCore import QPoint, Qt
+    from PySide6.QtTest import QTest
+    from PySide6.QtWidgets import QApplication
     yol = "/Users/biri/Library/Application Support/PdSqliteLib/yedekler/cok/uzun/bir/klasor/adi"
     etiket = ayarlar_modulu.TamDeger(yol)
     etiket.resize(220, 24)
@@ -147,7 +149,7 @@ def test_uzun_yol_ortadan_kisalir_tiklaninca_tamami_kopyalanir(app):
 
 
 def test_bilgi_degerleri_mac_duzeninde_de_gorunur(app):
-    from PyQt5.QtWidgets import QApplication, QFormLayout
+    from PySide6.QtWidgets import QApplication, QFormLayout
     yol = "/Users/biri/Library/Application Support/PdSqliteLib/DBL_Kayit.db"
     bolum = ayarlar_modulu.Bolum("Deneme", bilgiler=lambda: [("Kitap", "737 kayıt"), ("Veritabanı", yol)])
     f = bolum.form

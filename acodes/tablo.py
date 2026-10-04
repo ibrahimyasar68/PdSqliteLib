@@ -2,9 +2,9 @@
 
 import re
 
-from PyQt5.QtCore import QEvent, QObject, QRectF, QSize, Qt, QTimer
-from PyQt5.QtGui import QColor, QFont, QFontMetrics, QPainter
-from PyQt5.QtWidgets import (QAbstractItemView, QApplication, QHeaderView, QLabel, QPushButton, QStyle,
+from PySide6.QtCore import QEvent, QObject, QRectF, QSize, Qt, QTimer
+from PySide6.QtGui import QColor, QFont, QFontMetrics, QPainter
+from PySide6.QtWidgets import (QAbstractItemView, QApplication, QHeaderView, QLabel, QPushButton, QStyle,
                              QStyledItemDelegate, QStyleOptionViewItem, QTableWidgetItem, QToolTip, QVBoxLayout, QWidget)
 
 from acodes import tema
@@ -87,7 +87,7 @@ class BosDurum(QObject):
         # Tablo doldurulurken her hücre için değil, doldurma bitince bir kez kontrol edilir
         if not self.bekliyor:
             self.bekliyor = True
-            QTimer.singleShot(0, self.guncelle)
+            QTimer.singleShot(0, self, self.guncelle)      # tablo silinirse çağrılmaz (bağlam: self)
 
     def bos_mu(self):
         for r in range(self.tablo.rowCount()):
@@ -327,7 +327,7 @@ class OrantiliKolonlar(QObject):
     def dagit_sonra(self, *_):
         if not self.bekliyor:
             self.bekliyor = True
-            QTimer.singleShot(0, self.dagit)
+            QTimer.singleShot(0, self, self.dagit)
 
     def dagit(self):
         self.bekliyor = False
@@ -386,7 +386,7 @@ class KolonSecici(QObject):
         kolonlar (ör. sıra numarasıyla aynı işi gören Kayıt No). otomatik: liste sığmazsa kendiliğinden
         gizlenecek kolonlar, önce gizlenecek olan başta."""
         super().__init__(parent or tablo)
-        from PyQt5.QtWidgets import QFrame, QHBoxLayout, QPushButton
+        from PySide6.QtWidgets import QFrame, QHBoxLayout, QPushButton
         from acodes import tercihler
         self.tablo, self.anahtar, self.zorunlu = tablo, anahtar, set(zorunlu)
         self.otomatik = [c for c in otomatik if c not in self.zorunlu]
@@ -399,10 +399,10 @@ class KolonSecici(QObject):
         self.buton = QPushButton("Kolonlar")
         self.buton.setProperty("rol", "ikincil")
         self.buton.setToolTip("Listede gösterilecek kolonları seçin")
-        self.buton.clicked.connect(lambda: self.menu().exec_(self.buton.mapToGlobal(self.buton.rect().bottomLeft())))
+        self.buton.clicked.connect(lambda: self.menu().exec(self.buton.mapToGlobal(self.buton.rect().bottomLeft())))
         baslik = tablo.horizontalHeader()
         baslik.setContextMenuPolicy(Qt.CustomContextMenu)
-        baslik.customContextMenuRequested.connect(lambda konum: self.menu().exec_(baslik.mapToGlobal(konum)))
+        baslik.customContextMenuRequested.connect(lambda konum: self.menu().exec(baslik.mapToGlobal(konum)))
 
         self.soru = QFrame(objectName="kolon_sorusu")
         self.soru.setStyleSheet(f"#kolon_sorusu {{ background-color: {tema.UYARI_ARKA}; border: 1px solid {tema.UYARI_KENAR};"
@@ -411,7 +411,7 @@ class KolonSecici(QObject):
         satir.setContentsMargins(12, 6, 8, 6)
         satir.addWidget(QLabel("Liste pencereye sığmıyor. Hangi kolonların gizleneceğini seçmek ister misiniz?"), 1)
         self.btn_sec = QPushButton("Kolonları Seç")
-        self.btn_sec.clicked.connect(lambda: self.menu().exec_(self.btn_sec.mapToGlobal(self.btn_sec.rect().bottomLeft())))
+        self.btn_sec.clicked.connect(lambda: self.menu().exec(self.btn_sec.mapToGlobal(self.btn_sec.rect().bottomLeft())))
         self.btn_sorma = QPushButton("Bir daha sorma")
         self.btn_sorma.setProperty("rol", "ikincil")
         self.btn_sorma.clicked.connect(self.sorma)
@@ -430,7 +430,7 @@ class KolonSecici(QObject):
             sinyal.connect(self.denetle_sonra)
 
     def menu(self):
-        from PyQt5.QtWidgets import QMenu
+        from PySide6.QtWidgets import QMenu
         menu = QMenu(self.tablo)
         for c in range(self.tablo.columnCount()):
             baslik = self.tablo.horizontalHeaderItem(c)
@@ -541,7 +541,7 @@ class KolonSecici(QObject):
     def denetle_sonra(self, *_):
         if not self.bekliyor:
             self.bekliyor = True
-            QTimer.singleShot(0, self.denetle)
+            QTimer.singleShot(0, self, self.denetle)
 
     def denetle(self):
         self.bekliyor = False

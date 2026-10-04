@@ -1,6 +1,6 @@
 ## Kitap formlarındaki "Ek bilgiler" kutusu: ISBN, kopya sayısı, raf yeri ve notlar ##
 
-from PyQt5.QtWidgets import QFormLayout, QGridLayout, QGroupBox, QLineEdit, QPlainTextEdit, QSpinBox
+from PySide6.QtWidgets import QFormLayout, QGridLayout, QGroupBox, QLineEdit, QPlainTextEdit, QSpinBox
 
 from acodes import tema
 from acodes.yerlesim import etiketli, ustte_etiketli_form
@@ -34,6 +34,9 @@ class EkBilgiler(QGroupBox):
             g.setColumnStretch(0, 3)
             g.setColumnStretch(1, 1)
             g.setColumnStretch(2, 1)
+            # Sayı kutusu üç basamak ve oklar kadar yer alır (Qt 6'nın önerdiği en küçük en, ISBN ve raf alanını
+            # daraltıp örnek metinlerini kesiyordu)
+            self.kopya.setMinimumWidth(self.kopya.fontMetrics().horizontalAdvance("999") + 60)
         else:
             form = ustte_etiketli_form(QFormLayout(self))
             form.addRow("ISBN", self.isbn)

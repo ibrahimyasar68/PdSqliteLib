@@ -1,7 +1,7 @@
 ## İstatistik sayfası: Çizelgeler (tür, yazar, yayınevi, basım yılı) ve Grafikler ##
 
-from PyQt5.QtCore import QEvent, Qt
-from PyQt5.QtWidgets import QGridLayout, QGroupBox, QHeaderView, QTableWidget, QVBoxLayout, QWidget
+from PySide6.QtCore import QEvent, Qt
+from PySide6.QtWidgets import QGridLayout, QGroupBox, QHeaderView, QTableWidget, QVBoxLayout, QWidget
 
 from acodes.disa_aktar import sag_tik_menusu
 from acodes.grafikler import GrafikPaneli

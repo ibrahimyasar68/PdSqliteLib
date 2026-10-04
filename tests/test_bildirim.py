@@ -2,7 +2,7 @@
 import datetime
 
 import pytest
-from PyQt5.QtTest import QTest
+from PySide6.QtTest import QTest
 
 from acodes import bildirim
 from acodes.guest import Guest
@@ -130,8 +130,8 @@ def test_panel_mesajlari_turuyle(lib):
 
 
 def test_geri_al_suresi_cubukta_gorunur_ve_fare_ustundeyken_durur(lib):
-    from PyQt5.QtCore import QEvent
-    from PyQt5.QtWidgets import QApplication
+    from PySide6.QtCore import QEvent
+    from PySide6.QtWidgets import QApplication
     lib.show()
     b = lib.bildirim
     b.eylemli("'Deneme' silindi", "Geri Al", lambda: None)

@@ -1,10 +1,13 @@
 ## Geçiş animasyonları: satır parlaması ve "Hareketi azalt" ##
 import pytest
-from PyQt5.QtTest import QTest
+from PySide6.QtCore import QAbstractAnimation
+from PySide6.QtTest import QTest
 
 from conftest import sec
 from acodes import hareket, tema, tercihler
 from acodes.library import Library
+
+CALISIYOR, DURDU = QAbstractAnimation.Running, QAbstractAnimation.Stopped
 
 
 @pytest.fixture
@@ -120,7 +123,7 @@ def test_hatali_alan_vurgulanir(lib):
 
 
 def test_hareket_azaltilinca_hata_yine_gorunur(app, uyarilar):
-    from PyQt5.QtWidgets import QLineEdit
+    from PySide6.QtWidgets import QLineEdit
     alan = QLineEdit()
     alan.setStyleSheet("QLineEdit { padding: 2px; }")
     hareket.hata_vurgula(alan)                                          # testlerde animasyon kapalı
@@ -138,16 +141,24 @@ def test_ana_sayfa_sayilari_sayarak_gelir(lib):
     assert kart.sayi._sayac is None and kart.sayi.text() == "8"
 
 
+def bitene_kadar_bekle(animasyon, sinir_ms=3000):
+    """Sabit süre beklemek yük altında yetmeyebilir: animasyon durana kadar (en fazla sinir_ms) bekler."""
+    for _ in range(sinir_ms // 20):
+        if animasyon.state() == DURDU:
+            return
+        QTest.qWait(20)
+
+
 def test_kart_golgesi_yumusakca_buyur(lib):
-    from PyQt5.QtCore import QEvent
-    from PyQt5.QtWidgets import QApplication
+    from PySide6.QtCore import QEvent
+    from PySide6.QtWidgets import QApplication
     kart = lib.ana_sayfa.kartlar["kitap"]
     QApplication.sendEvent(kart, QEvent(QEvent.Enter))
-    assert kart.golge.isEnabled() and kart.golge_animasyonu.state()
-    QTest.qWait(tema.SURE.kisa + 100)
+    assert kart.golge.isEnabled() and kart.golge_animasyonu.state() == CALISIYOR
+    bitene_kadar_bekle(kart.golge_animasyonu)
     assert kart.golge.blurRadius() == 22
     QApplication.sendEvent(kart, QEvent(QEvent.Leave))
-    QTest.qWait(tema.SURE.kisa + 100)
+    bitene_kadar_bekle(kart.golge_animasyonu)
     assert not kart.golge.isEnabled()
 
 
@@ -156,12 +167,12 @@ def test_grafikler_buyuyerek_cizilir(lib):
     q.sekmeler.setCurrentWidget(q.istatistik)
     q.istatistik.sekmeler.setCurrentIndex(1)
     g = lib.istatistik.grafikler.yazarlar
-    assert g.ilerleme < 1 and g.animasyon.state()
+    assert g.ilerleme < 1 and g.animasyon.state() == CALISIYOR
     assert g.oran(0) >= g.oran(len(g.veri) - 1)                         # ilk çubuk önde
     QTest.qWait(tema.SURE.sayac + 150)
     assert g.ilerleme == 1.0 and all(g.oran(i) == 1.0 for i in range(len(g.veri)))
     lib.istatistik.grafikler.yenile()                                              # veri aynıysa yeniden çizilmez
-    assert not g.animasyon.state()
+    assert g.animasyon.state() == DURDU
 
 
 def test_menu_vurgusu_kayarak_gider(lib):
@@ -169,7 +180,7 @@ def test_menu_vurgusu_kayarak_gider(lib):
     hedef = m.grup.button(3)
     hedef.click()
     vurgu = m.vurgu
-    assert vurgu.animasyon.state() and vurgu.animasyon.endValue() == vurgu.hedef()
+    assert vurgu.animasyon.state() == CALISIYOR and vurgu.animasyon.endValue() == vurgu.hedef()
     QTest.qWait(tema.SURE.orta + 150)
     assert vurgu.cerceve.geometry() == vurgu.hedef() and vurgu.hedef().topLeft() == hedef.mapTo(m, hedef.rect().topLeft())
     m.btn_daralt.click()                                                # menü daralırken vurgu butonu izler
@@ -186,7 +197,7 @@ def test_segment_vurgusu_kayar(lib):
     anahtar = q.kayit.findChild(SegmentAnahtari)
     QTest.qWait(50)
     anahtar.grup.button(1).click()
-    assert anahtar.vurgu.animasyon.state()
+    assert anahtar.vurgu.animasyon.state() == CALISIYOR
     QTest.qWait(tema.SURE.orta + 150)
     assert anahtar.vurgu.cerceve.geometry() == anahtar.grup.button(1).geometry()
 

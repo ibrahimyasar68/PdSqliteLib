@@ -113,7 +113,7 @@ def test_panel_hatali_yedegi_yuklemez(app, uyarilar, monkeypatch, db, tmp_path):
 
 
 def yedek_modulu_dialog():
-    from PyQt5.QtWidgets import QFileDialog
+    from PySide6.QtWidgets import QFileDialog
     return QFileDialog
 
 

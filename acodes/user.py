@@ -1,7 +1,7 @@
 from types import SimpleNamespace
-from PyQt5.QtWidgets import (QComboBox, QHBoxLayout, QLabel, QLineEdit, QListView, QMainWindow, QMessageBox,
+from PySide6.QtWidgets import (QComboBox, QHBoxLayout, QLabel, QLineEdit, QListView, QMainWindow, QMessageBox,
                              QPushButton, QVBoxLayout, QWidget)
-from PyQt5.QtCore import Qt, QTimer, pyqtSignal
+from PySide6.QtCore import Qt, QTimer, Signal
 from acodes import ikonlar, tema
 from database.kullanicilar import kullanici_var_mi
 from database.modeller import Kullanici
@@ -11,7 +11,7 @@ from servis import kullanici as kullanici_servisi
 from servis.dogrulama import SIFRE_EN_AZ, mail_gecerli, sifre_hatasi, telefon_gecerli
 
 class User(QMainWindow):
-    kaydedildi = pyqtSignal(str)      # kullanıcı adı: panel listeleri yeniler ve bildirim gösterir
+    kaydedildi = Signal(str)      # kullanıcı adı: panel listeleri yeniler ve bildirim gösterir
 
     def __init__(self, parent=None):
         super().__init__(parent)

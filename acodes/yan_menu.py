@@ -5,8 +5,8 @@
 
 import re
 
-from PyQt5.QtCore import QSize, Qt, QTimer, pyqtSignal
-from PyQt5.QtWidgets import (QButtonGroup, QFrame, QGridLayout, QHBoxLayout, QLabel, QPushButton, QSizePolicy, QTabWidget,
+from PySide6.QtCore import QSize, Qt, QTimer, Signal
+from PySide6.QtWidgets import (QButtonGroup, QFrame, QGridLayout, QHBoxLayout, QLabel, QPushButton, QSizePolicy, QTabWidget,
                              QVBoxLayout, QWidget)
 
 from acodes import hareket, ikonlar, tema, tercihler
@@ -179,7 +179,7 @@ class YanMenu(QFrame):
         if not getattr(self, "_ilk_gorunus", False):
             self._ilk_gorunus = True
             # Panel açılınca gecikme rozeti bir kez atar (yerleşim bittikten sonra)
-            QTimer.singleShot(0, self._rozetleri_atlat)
+            QTimer.singleShot(0, self, self._rozetleri_atlat)
 
     def _rozetleri_atlat(self):
         for _, rozet in self.ogeler:
@@ -236,7 +236,7 @@ class SegmentAnahtari(QFrame):
     """Alt sekmelerin (ör. Kitaplar | Veri Düzeltme) yerine sayfanın üstünde iki-üç seçenekli anahtar.
     sekmeler verilmezse adlar listesindeki seçenekler gösterilir (ör. Ayarlar > Görünüm); seçim secildi(i) ile
     bildirilir."""
-    secildi = pyqtSignal(int)
+    secildi = Signal(int)
 
     def __init__(self, sekmeler=None, parent=None, adlar=(), secili=0):
         super().__init__(parent)

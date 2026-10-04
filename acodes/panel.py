@@ -6,8 +6,8 @@
 from dataclasses import dataclass
 from typing import Callable, Optional
 
-from PyQt5.QtCore import Qt, pyqtSignal
-from PyQt5.QtWidgets import QHBoxLayout, QMainWindow, QPushButton, QStatusBar, QTabWidget, QWidget
+from PySide6.QtCore import Qt, Signal
+from PySide6.QtWidgets import QHBoxLayout, QMainWindow, QPushButton, QStatusBar, QTabWidget, QWidget
 
 from acodes import arka_plan, bildirim, ikonlar, kisayollar, tema
 from acodes.disa_aktar import disa_aktar, sag_tik_menusu
@@ -31,7 +31,7 @@ class Sayfa:
 
 
 class Panel(QMainWindow):
-    oturum_kapandi = pyqtSignal()
+    oturum_kapandi = Signal()
     PENCERE_BASLIGI = ""
     ROL = ""
 
@@ -169,7 +169,7 @@ class Panel(QMainWindow):
         self.close()
 
     def sifremi_degistir(self):
-        SifreDegistir(self.aktif_kullanici, eski_sor=True, parent=self).exec_()
+        SifreDegistir(self.aktif_kullanici, eski_sor=True, parent=self).exec()
 
     def user_name(self,name):
         self.aktif_kullanici=name

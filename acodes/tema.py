@@ -5,7 +5,7 @@
 import os
 import sys
 
-from PyQt5.QtGui import QFont, QFontDatabase
+from PySide6.QtGui import QFont, QFontDatabase
 
 # Renkler: açık ve koyu iki palet. Kullanılan palet açılışta (ve Ayarlar > Görünüm'den değişince) ayarla() ile
 # bu modülün değişkenlerine yazılır; diğer modüller renkleri her zaman tema.X olarak, kullanırken okur.
@@ -103,7 +103,7 @@ def sistem_koyu_mu():
     global _SISTEM_KOYU
     if _SISTEM_KOYU is None:
         # İlk sorulduğunda sistemin verdiği palete bakılır (sonra koyu temada palet programca değişir)
-        from PyQt5.QtGui import QGuiApplication, QPalette
+        from PySide6.QtGui import QGuiApplication, QPalette
         uygulama = QGuiApplication.instance()
         if uygulama is None:
             return False
@@ -158,10 +158,10 @@ class SURE:
 YAZI_PX = YAZI.metin
 
 # Yazı ağırlıkları: kalın (bold) yalnızca vurgu için; başlıklar yarı kalın, etiketler orta ağırlıkta.
-# Qt5 stil sayfasında sayısal ağırlık 8'e bölünüp QFont ağırlığına çevrilir (600 → 75 = Bold olurdu):
-# 500 → 62 ≈ DemiBold (yarı kalın), 460 → 57 = Medium (orta).
-YARI_KALIN = 500
-ORTA = 460
+# Qt 6 stil sayfasındaki sayısal ağırlığı CSS ölçeğinde (100-900) doğrudan kullanır: 600 DemiBold, 500 Medium.
+# (Qt 5'te 8'e bölünüp çevrildiği için aynı görünüm 500 ve 460 ile elde ediliyordu.)
+YARI_KALIN = 600
+ORTA = 500
 
 # Geri alınamayan işlem butonları zeminsiz, kırmızı yazılı gösterilir (asıl işlemle yarışmasın diye dolu değil)
 TEHLIKELI_BUTONLAR = ["kitap_sil", "kullanici_sil"]
@@ -329,20 +329,21 @@ def _sabit_aralikli(stil):
     """Düzen boşlukları ve form yerleşimi her temada aynı olsun diye çizim stilini sarar. macOS stili Fusion'dan
     (koyu tema) daha geniş boşluk ve kenar payı verdiği için tema değişince sayfa kayıyordu; Mac'te formlar da
     değerleri dar tutuyordu (Ayarlar'daki bilgiler görünmüyordu). Değerler Fusion'ınkilerdir."""
-    from PyQt5.QtCore import Qt
-    from PyQt5.QtWidgets import QFormLayout, QProxyStyle, QStyle
+    from PySide6.QtCore import Qt
+    from PySide6.QtWidgets import QFormLayout, QProxyStyle, QStyle
 
     olculer = {QStyle.PM_LayoutLeftMargin: 9, QStyle.PM_LayoutTopMargin: 9, QStyle.PM_LayoutRightMargin: 9,
                QStyle.PM_LayoutBottomMargin: 9, QStyle.PM_LayoutHorizontalSpacing: 6,
                QStyle.PM_LayoutVerticalSpacing: 6}
-    ipuclari = {QStyle.SH_FormLayoutFieldGrowthPolicy: QFormLayout.AllNonFixedFieldsGrow,
-                QStyle.SH_FormLayoutFormAlignment: int(Qt.AlignLeft | Qt.AlignTop),
-                QStyle.SH_FormLayoutLabelAlignment: int(Qt.AlignRight | Qt.AlignVCenter),
-                QStyle.SH_FormLayoutWrapPolicy: QFormLayout.DontWrapRows}
+    # styleHint sayı döndürmeli (PySide6 Qt enum'larını kendiliğinden sayıya çevirmez)
+    ipuclari = {QStyle.SH_FormLayoutFieldGrowthPolicy: QFormLayout.AllNonFixedFieldsGrow.value,
+                QStyle.SH_FormLayoutFormAlignment: (Qt.AlignLeft | Qt.AlignTop).value,
+                QStyle.SH_FormLayoutLabelAlignment: (Qt.AlignRight | Qt.AlignVCenter).value,
+                QStyle.SH_FormLayoutWrapPolicy: QFormLayout.DontWrapRows.value}
 
     yerlesim_ogeleri = {getattr(QStyle, ad) for ad in dir(QStyle) if ad.startswith("SE_") and ad.endswith("LayoutItem")}
 
-    from PyQt5.QtWidgets import QStyleFactory
+    from PySide6.QtWidgets import QStyleFactory
     olcu_stili = QStyleFactory.create("Fusion")       # tablo başlıklarının boyu iki temada da buna göre
 
     # Kodun stille çizdirdiği (QSS ile biçimlenen) parçaların ölçüleri de Fusion'dan: tablo başlığı, kaydırma alanı,
@@ -372,12 +373,13 @@ def _sabit_aralikli(stil):
         def styleHint(self, ipucu, secenek=None, bilesen=None, donus=None):
             return ipuclari[ipucu] if ipucu in ipuclari else super().styleHint(ipucu, secenek, bilesen, donus)
 
+    ad = stil.objectName()          # sarıldıktan sonra stil nesnesine Python'dan erişilemez (sahibi sarmalayıcı olur)
     sarilmis = SabitAralik(stil)
     # Ölçü stili sarmalayıcıyla birlikte yaşar: Qt tarafında ona bağlanır. Yalnızca Python niteliğinde tutulunca
     # program kapanırken (Python nesneleri silinirken) sarmalayıcıdan önce silinip hata veriyordu.
     olcu_stili.setParent(sarilmis)
     sarilmis.olcu_stili = olcu_stili
-    sarilmis.setObjectName(stil.objectName())
+    sarilmis.setObjectName(ad)
     return sarilmis
 
 
@@ -385,8 +387,8 @@ def uygulamaya_uygula(uygulama):
     """Uygulama genelindeki çizim stili ve renk paleti. Koyu temada Fusion stili ve koyu palet kullanılır
     (sistem açık görünümdeyken de onay kutuları, kaydırma çubukları, diyaloglar koyu çizilsin diye);
     açık temada sistemin kendi stili ve paleti kalır."""
-    from PyQt5.QtGui import QColor, QPalette
-    from PyQt5.QtWidgets import QStyleFactory
+    from PySide6.QtGui import QColor, QPalette
+    from PySide6.QtWidgets import QStyleFactory
     global _ILK_STIL
     if _ILK_STIL is None:
         _ILK_STIL = uygulama.style().objectName()

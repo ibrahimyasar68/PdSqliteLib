@@ -2,7 +2,7 @@
 import datetime
 
 import pytest
-from PyQt5.QtWidgets import QApplication
+from PySide6.QtWidgets import QApplication
 
 from acodes import tercihler
 from acodes.guest import Guest
@@ -187,7 +187,7 @@ def test_kolon_secici_uc_listede(app, uyarilar):
 
 
 def test_daralma_ve_sayfa_gecisi_animasyonlu(app, uyarilar, monkeypatch):
-    from PyQt5.QtTest import QTest
+    from PySide6.QtTest import QTest
     from acodes import hareket, tema
     monkeypatch.setattr(hareket, "ANIMASYON", True)
     l = Library()

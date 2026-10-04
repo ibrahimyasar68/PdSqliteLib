@@ -4,7 +4,7 @@
 
 import os
 
-from PyQt5.QtCore import QSettings
+from PySide6.QtCore import QSettings
 
 from database.baglanti import DB_YOLU
 

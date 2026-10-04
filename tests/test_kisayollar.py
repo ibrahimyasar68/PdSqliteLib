@@ -1,9 +1,7 @@
 ## Klavye kısayolları: tuşa basılmış gibi denenir ##
 import pytest
-from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QKeySequence
-from PyQt5.QtTest import QTest
-from PyQt5.QtWidgets import QApplication
+from PySide6.QtGui import QKeySequence
+from PySide6.QtTest import QTest
 
 from acodes.guest import Guest
 from acodes.library import Library
@@ -11,13 +9,14 @@ from acodes.library import Library
 
 def ac(pencere):
     pencere.show()
-    QApplication.setActiveWindow(pencere)       # ekransız testte pencere kendiliğinden etkin olmaz
+    pencere.windowHandle().requestActivate()    # ekransız testte pencere kendiliğinden etkin olmaz
+    assert QTest.qWaitForWindowActive(pencere)
     return pencere
 
 
 def bas(pencere, tus):
     dizi = QKeySequence(tus)
-    QTest.keyClick(pencere, Qt.Key(dizi[0] & ~Qt.KeyboardModifierMask), Qt.KeyboardModifiers(dizi[0] & Qt.KeyboardModifierMask))
+    QTest.keyClick(pencere, dizi[0].key(), dizi[0].keyboardModifiers())     # Qt 6: dizi öğesi QKeyCombination
 
 
 @pytest.fixture

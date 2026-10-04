@@ -19,4 +19,4 @@ yeniden yazılır. Pencere ayarları acodes/ altındaki dosyalarda yapılır:
 - .ui dosyalarına renk (styleSheet) veya yazı tipi (font) eklemeyin: görünüm acodes/tema.py'den
   gelir (tests/test_arayuz.py bunu denetler).
 - Kaynak dosyası (media_rc) içe aktarma satırını betik otomatik üretir
-  (pyuic5 --import-from=bforms).
+  (pyside6-uic çıktısındaki "import media.media_rc" satırı "bforms.media_rc" olarak düzeltilir).

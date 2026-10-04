@@ -1,8 +1,8 @@
 ## Guest paneli > Kitaplarım sekmesi ##
 # Üyenin elindeki kitaplar (teslim tarihi, kalan gün) ve daha önce aldığı kitaplar.
 
-from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QGroupBox, QHeaderView, QLabel, QTableWidget, QVBoxLayout, QWidget
+from PySide6.QtCore import Qt
+from PySide6.QtWidgets import QGroupBox, QHeaderView, QLabel, QTableWidget, QVBoxLayout, QWidget
 
 from acodes import tema
 from acodes.tablo import tablo_ayarla, tabloya_yaz

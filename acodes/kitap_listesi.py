@@ -1,7 +1,7 @@
 ## Kitap Listesi sayfası: tüm kitaplar, yazdıkça süzen arama, kolon seçimi, dışa aktarma ##
 # Yönetici ve üye panellerinde aynıdır; yönetici paneli tabloya çift tık ve sağ tık eylemleri ekler.
 
-from PyQt5.QtWidgets import QLabel, QLineEdit, QPushButton, QTableWidget, QWidget
+from PySide6.QtWidgets import QLabel, QLineEdit, QPushButton, QTableWidget, QWidget
 
 from acodes import tema
 from acodes.disa_aktar import disa_aktar, sag_tik_menusu

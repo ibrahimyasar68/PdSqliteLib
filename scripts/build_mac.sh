@@ -20,6 +20,7 @@ fi
     --clean \
     --icon "$PWD/media/family.ico" \
     --osx-bundle-identifier com.pdsqlitelib.app \
+    --exclude-module PyQt5 \
     --exclude-module matplotlib \
     --exclude-module PIL \
     --exclude-module tkinter \

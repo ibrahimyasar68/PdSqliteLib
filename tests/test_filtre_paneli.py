@@ -159,7 +159,7 @@ def test_guest_panelinde_de_var(app, uyarilar):
 
 
 def test_olcutler_ustte_yan_yana_sonuclar_altta(app, uyarilar):
-    from PyQt5.QtWidgets import QApplication
+    from PySide6.QtWidgets import QApplication
     from acodes.library import Library
     lib = Library()
     lib.resize(1300, 800)

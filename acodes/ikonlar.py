@@ -6,9 +6,9 @@ import math
 import os
 import tempfile
 
-from PyQt5.QtCore import QPointF, QRectF, QSize, Qt
-from PyQt5.QtGui import QColor, QIcon, QPainter, QPainterPath, QPen, QPixmap, QPolygonF
-from PyQt5.QtWidgets import QPushButton
+from PySide6.QtCore import QPointF, QRectF, QSize, Qt
+from PySide6.QtGui import QColor, QIcon, QPainter, QPainterPath, QPen, QPixmap, QPolygonF
+from PySide6.QtWidgets import QPushButton
 
 from acodes import tema
 

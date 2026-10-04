@@ -2,8 +2,8 @@
 # Uzun listelerde (737 kitap, yüzlerce yazar) kaydırmak yerine yazarak seçim yapılır.
 # Büyük/küçük harf ve Türkçe karakter farkı gözetilmez: "iklim" -> "İklimler", "sabahattin" -> "Sabahattin ALİ".
 
-from PyQt5.QtCore import QModelIndex, QSortFilterProxyModel
-from PyQt5.QtWidgets import QComboBox, QCompleter
+from PySide6.QtCore import QModelIndex, QSortFilterProxyModel
+from PySide6.QtWidgets import QComboBox, QCompleter
 
 from database.metin import katla
 
@@ -16,8 +16,9 @@ class TurkceSuzgec(QSortFilterProxyModel):
         self.kelimeler = []
 
     def ayarla(self, metin):
+        self.beginFilterChange()        # Qt 6.9+: süzgeç ölçütü değişmeden önce haber verilir
         self.kelimeler = katla(metin).split()
-        self.invalidateFilter()
+        self.endFilterChange()
 
     def filterAcceptsRow(self, satir, ust):
         if not self.kelimeler:

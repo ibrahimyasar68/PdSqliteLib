@@ -4,7 +4,7 @@ import datetime
 import pytest
 
 from acodes.library import Library
-from PyQt5.QtGui import QColor
+from PySide6.QtGui import QColor
 from acodes import tema
 from database import odunc
 

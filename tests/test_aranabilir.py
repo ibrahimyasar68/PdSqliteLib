@@ -1,6 +1,6 @@
 ## Yazdıkça süzülen açılır listeler testleri ##
 import pytest
-from PyQt5.QtWidgets import QComboBox
+from PySide6.QtWidgets import QComboBox
 
 from acodes.aranabilir import aranabilir_yap, secili_veri
 from acodes.library import Library

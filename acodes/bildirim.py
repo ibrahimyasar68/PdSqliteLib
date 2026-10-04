@@ -8,8 +8,8 @@
 # Yeni mesaj gelince eylemsiz kartın yazısı değişir; "Geri Al"lı kart ise süresi bitene kadar kalır, yeni kart altına
 # gelir ve eskiler yukarı kayar (en fazla UST_USTE kart).
 
-from PyQt5.QtCore import QEasingCurve, QEvent, QObject, QPropertyAnimation, Qt, QTimer, QVariantAnimation
-from PyQt5.QtWidgets import QFrame, QGraphicsOpacityEffect, QLabel, QPushButton
+from PySide6.QtCore import QAbstractAnimation, QEasingCurve, QEvent, QObject, QPropertyAnimation, Qt, QTimer, QVariantAnimation
+from PySide6.QtWidgets import QFrame, QGraphicsOpacityEffect, QLabel, QPushButton
 
 from acodes import hareket, ikonlar, tema
 
@@ -102,7 +102,8 @@ class Kart(QObject):
 
     def gorunur(self):
         """Ekranda mı (solarak kaybolmuyorsa)?"""
-        return self.kutu.isVisible() and not (self.animasyon.state() and self.animasyon.endValue() == 0.0)
+        solarak_kayboluyor = self.animasyon.state() != QAbstractAnimation.Stopped and self.animasyon.endValue() == 0.0
+        return self.kutu.isVisible() and not solarak_kayboluyor
 
     def eylemli_mi(self):
         return self.eylem_islevi is not None
@@ -133,7 +134,8 @@ class Kart(QObject):
         self.boyutla()
         self.kutu.raise_()
         self.kutu.show()
-        self._solma(self.saydamlik.opacity() if self.animasyon.state() else 0.0, 1.0, tema.SURE.orta)
+        calisiyor = self.animasyon.state() != QAbstractAnimation.Stopped
+        self._solma(self.saydamlik.opacity() if calisiyor else 0.0, 1.0, tema.SURE.orta)
         self.zamanlayici.start(sure)
         if eylem:
             self.cubuk_animasyonu.setDuration(sure)

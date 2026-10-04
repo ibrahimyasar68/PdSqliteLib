@@ -3,9 +3,9 @@
 # Ek kütüphane gerektirmemek için Qt'nin kendi çizim araçları (QPainter) kullanılır.
 # Veri değişince grafik ilk görünüşte büyüyerek çizilir: çubuklar sırayla uzar, pasta dilimleri dönerek açılır.
 
-from PyQt5.QtCore import QEasingCurve, QRectF, Qt, QVariantAnimation
-from PyQt5.QtGui import QColor, QPainter, QPen
-from PyQt5.QtWidgets import QGridLayout, QWidget
+from PySide6.QtCore import QEasingCurve, QRectF, Qt, QVariantAnimation
+from PySide6.QtGui import QColor, QPainter, QPen
+from PySide6.QtWidgets import QGridLayout, QWidget
 
 from acodes import hareket, tema
 from database.istatistik import rapor, yil_dagilimi

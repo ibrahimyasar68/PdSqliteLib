@@ -2,11 +2,11 @@
 import datetime
 
 import pytest
-from PyQt5.QtCore import Qt
+from PySide6.QtCore import Qt
 
 from conftest import sec
 from acodes.library import Library
-from PyQt5.QtGui import QColor
+from PySide6.QtGui import QColor
 from acodes import tema
 from database import odunc
 from database.modeller import Kitap, Kullanici
@@ -233,7 +233,7 @@ def test_hatirlatma_metni(durum, beklenen):
 
 
 def test_hatirlatma_panoya_kopyalanir(lib, o, db):
-    from PyQt5.QtWidgets import QApplication
+    from PySide6.QtWidgets import QApplication
     odunc_ekle(db, 3, 1, gun_once(20))
     o.yenile()
     assert not o.btn_hatirlat.isEnabled()

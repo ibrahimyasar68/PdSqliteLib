@@ -23,7 +23,7 @@ def test_tur_dagilimi_digeri_birlestirir(db):
     assert sum(d for _, d in veri) == 18      # toplam kitap sayısı korunur
 
 
-def test_bos_etiket_ve_sifir_deger():
+def test_bos_etiket_ve_sifir_deger(app):
     g = YatayCubukGrafik("Deneme")
     g.veri_ver([("", 3), ("A", 0), ("B", 2)])
     assert g.veri == [("(belirtilmemiş)", 3), ("B", 2)]

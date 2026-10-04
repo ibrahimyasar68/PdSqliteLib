@@ -3,7 +3,7 @@ import os
 import re
 
 import pytest
-from PyQt5.QtWidgets import QApplication
+from PySide6.QtWidgets import QApplication
 
 from conftest import ADMIN_SIFRE, UYE_SIFRE
 from acodes import tema, tercihler
@@ -13,7 +13,7 @@ from acodes.login import Login
 def pencereleri_sil(app):
     """Önceki testlerden kalan pencereleri siler: çizim stili değişince Qt her açık pencereyi yeniden biçimlendirir,
     kalan yüzlerce pencere bu testleri yavaşlatıyor ve birbirine bağımlı kılıyordu."""
-    from PyQt5.QtCore import QEvent
+    from PySide6.QtCore import QEvent
     for pencere in app.topLevelWidgets():
         pencere.close()
         pencere.deleteLater()
@@ -131,8 +131,8 @@ def test_modullerde_sabit_animasyon_suresi_yok():
 
 
 def test_tema_degisince_eski_gorunum_solarak_kaybolur(app, uyarilar, monkeypatch):
-    from PyQt5.QtTest import QTest
-    from PyQt5.QtWidgets import QLabel
+    from PySide6.QtTest import QTest
+    from PySide6.QtWidgets import QLabel
     from acodes import hareket
     monkeypatch.setattr(hareket, "ANIMASYON", True)
     monkeypatch.setattr(hareket, "AZALT", False)
@@ -150,7 +150,7 @@ def test_tema_degisince_eski_gorunum_solarak_kaybolur(app, uyarilar, monkeypatch
 
 
 def test_animasyon_kapaliyken_tema_perdesi_yok(app, uyarilar):
-    from PyQt5.QtWidgets import QLabel
+    from PySide6.QtWidgets import QLabel
     w = Login()
     w.panel_ac("admin", "admin")
     w.library.ayarlar.gorunum.butonlar["koyu"].click()
@@ -177,8 +177,8 @@ def test_bildirim_ve_grafik_renkleri_temadan(app):
 
 
 def _yerlesim(app, gorunum):
-    from PyQt5.QtCore import QPoint
-    from PyQt5.QtWidgets import QWidget
+    from PySide6.QtCore import QPoint
+    from PySide6.QtWidgets import QWidget
     from acodes.library import Library
     tema.ayarla(gorunum)
     tema.uygulamaya_uygula(app)
@@ -201,7 +201,7 @@ def _yerlesim(app, gorunum):
 def test_acik_ve_koyu_temada_yerlesim_ayni(app, uyarilar, monkeypatch):
     """Tema değişince sayfa kaymasın: boşluklar, kaydırma çubukları ve tablo başlıkları iki temada aynı ölçüde.
     Açık temada Mac'teki gibi macOS stili kullanılır (koyu tema Fusion); farkı ancak böyle yakalar."""
-    from PyQt5.QtWidgets import QStyleFactory
+    from PySide6.QtWidgets import QStyleFactory
     if "macintosh" in QStyleFactory.keys():
         tema.uygulamaya_uygula(app)                          # ilk stil kaydedilsin, sonra Mac'inkiyle değiştirilir
         monkeypatch.setattr(tema, "_ILK_STIL", "macintosh")

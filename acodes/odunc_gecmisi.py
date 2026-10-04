@@ -1,7 +1,7 @@
 ## Kitap Verme > Ödünç Geçmişi alt sekmesi ##
 # Üye ve kitap bazında tüm ödünç kayıtları; teslim tarihi, gün sayısı ve gecikme bilgisiyle.
 
-from PyQt5.QtWidgets import (QComboBox, QHBoxLayout, QHeaderView, QLabel, QPushButton, QTableWidget,
+from PySide6.QtWidgets import (QComboBox, QHBoxLayout, QHeaderView, QLabel, QPushButton, QTableWidget,
                              QVBoxLayout, QWidget)
 from acodes.disa_aktar import disa_aktar, sag_tik_menusu
 from acodes.tablo import tablo_ayarla, tabloya_yaz

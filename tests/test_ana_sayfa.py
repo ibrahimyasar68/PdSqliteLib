@@ -2,11 +2,11 @@
 import datetime
 
 import pytest
-from PyQt5.QtCore import Qt
+from PySide6.QtCore import Qt
 
 from acodes.guest import Guest
 from acodes.library import Library
-from PyQt5.QtGui import QColor
+from PySide6.QtGui import QColor
 from acodes import tema
 from database import odunc
 

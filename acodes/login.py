@@ -1,7 +1,7 @@
-from PyQt5.QtWidgets import (QAction, QApplication, QFrame, QGraphicsDropShadowEffect, QHBoxLayout, QLabel, QLineEdit,
-                             QMainWindow, QSizePolicy, QVBoxLayout, QWidget)
-from PyQt5.QtCore import QEvent, QEventLoop, QSize, Qt
-from PyQt5.QtGui import QColor
+from PySide6.QtWidgets import QApplication, QFrame, QGraphicsDropShadowEffect, QHBoxLayout, QLabel, QLineEdit, QMainWindow, QSizePolicy, QVBoxLayout, QWidget
+from PySide6.QtGui import QAction
+from PySide6.QtCore import QEvent, QEventLoop, QSize, Qt
+from PySide6.QtGui import QColor
 import ctypes
 import sys
 from acodes.library import Library
@@ -216,11 +216,11 @@ class Login(QMainWindow):
     # Çerçevesiz pencere fareyle sürüklenerek taşınabilir
     def mousePressEvent(self,olay):
         if olay.button()==Qt.LeftButton:
-            self._surukle=olay.globalPos()-self.frameGeometry().topLeft()
+            self._surukle=olay.globalPosition().toPoint()-self.frameGeometry().topLeft()
 
     def mouseMoveEvent(self,olay):
         if self._surukle is not None and olay.buttons() & Qt.LeftButton:
-            self.move(olay.globalPos()-self._surukle)
+            self.move(olay.globalPosition().toPoint()-self._surukle)
 
     def mouseReleaseEvent(self,olay):
         self._surukle=None

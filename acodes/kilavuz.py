@@ -2,8 +2,8 @@
 # En üstte program hakkında kısa bilgi, altında her sekme için tıklanınca açılan konu başlıkları.
 # Yönetici ve üye panelleri kendi sekmelerine göre farklı konular gösterir.
 
-from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QGroupBox, QLabel, QPushButton, QVBoxLayout
+from PySide6.QtCore import Qt
+from PySide6.QtWidgets import QGroupBox, QLabel, QPushButton, QVBoxLayout
 
 from acodes import tema
 from database.odunc import ODUNC_SURESI_GUN
@@ -17,7 +17,7 @@ HAKKINDA = (
     "<b>Yaşar Kütüphanesi</b> (PdSqliteLib), ev ya da küçük kurum kütüphaneleri için hazırlanmış bir masaüstü "
     "programıdır. Kitapların kaydını tutar, üyelere ödünç verilen kitapları ve teslim tarihlerini izler, "
     "kitaplığın istatistiklerini gösterir. Veriler bilgisayardaki tek bir veritabanı dosyasında saklanır; "
-    "internet bağlantısı gerekmez. Python, PyQt5 ve SQLite ile yazılmıştır.<br><br>"
+    "internet bağlantısı gerekmez. Python, PySide6 ve SQLite ile yazılmıştır.<br><br>"
     f"<b>{URETICI}</b> tarafından {URETIM_YILI} yılında üretilmiştir.<br><br>"
     "Programı iki tür kullanıcı kullanır: <b>yönetici</b> kitapları, üyeleri ve ödünç işlemlerini yönetir; "
     "<b>üye</b> kitapları arar, istatistikleri görür ve kendi ödünç aldığı kitapları izler. "

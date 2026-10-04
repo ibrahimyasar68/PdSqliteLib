@@ -6,10 +6,10 @@
 # Süreler tema.SURE ölçeğinden gelir. Animasyonlar yalnızca pencere ekrandayken çalışır.
 # ANIMASYON = False testlerde kapatır; AZALT kullanıcının "Hareketi azalt" tercihidir (Ayarlar > Görünüm).
 
-from PyQt5.QtCore import (QEasingCurve, QEvent, QObject, QPersistentModelIndex, QPoint, QPropertyAnimation, QRect,
+from PySide6.QtCore import (QEasingCurve, QEvent, QObject, QPersistentModelIndex, QPoint, QPropertyAnimation, QRect,
                           QSequentialAnimationGroup, Qt, QTimer, QVariantAnimation)
-from PyQt5.QtGui import QColor, QPainter
-from PyQt5.QtWidgets import QFrame, QGraphicsOpacityEffect, QLabel, QWidget
+from PySide6.QtGui import QColor, QPainter
+from PySide6.QtWidgets import QFrame, QGraphicsOpacityEffect, QLabel, QWidget
 
 from acodes import tema
 
@@ -53,10 +53,10 @@ def genislige_kay(bilesen, hedef, bitince=None):
         animasyon.valueChanged.connect(bilesen.setFixedWidth)
         bilesen._genislik_animasyonu = animasyon
     animasyon.stop()
-    try:
-        animasyon.finished.disconnect()
-    except TypeError:               # bağlı iş yok
-        pass
+    onceki = getattr(bilesen, "_genislik_bitince", None)
+    if onceki is not None:          # yarıda kalan isteğin bitince işi iptal
+        animasyon.finished.disconnect(onceki)
+        bilesen._genislik_bitince = None
     if not acik_mi(bilesen) or bilesen.width() == hedef:
         bilesen.setFixedWidth(hedef)
         if bitince:
@@ -66,6 +66,7 @@ def genislige_kay(bilesen, hedef, bitince=None):
     animasyon.setEndValue(hedef)
     if bitince:
         animasyon.finished.connect(bitince)
+        bilesen._genislik_bitince = bitince
     animasyon.start()
 
 
@@ -230,7 +231,7 @@ def hata_vurgula(alan):
 
     if not izinli():
         boya(QColor(tema.TEHLIKE))
-        QTimer.singleShot(tema.SURE.parlama * 2, bitti)
+        QTimer.singleShot(tema.SURE.parlama * 2, alan, bitti)     # alan bu arada silinirse çağrılmaz
         return None
     animasyon = QVariantAnimation(alan)
     animasyon.setDuration(tema.SURE.parlama * 2)

@@ -1,6 +1,6 @@
 ## Panellerin arka planı: yaprak fotoğrafı ##
 import pytest
-from PyQt5.QtWidgets import QApplication
+from PySide6.QtWidgets import QApplication
 
 from acodes import arka_plan, tema
 from acodes.guest import Guest

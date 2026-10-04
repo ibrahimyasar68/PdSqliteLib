@@ -2,9 +2,9 @@
 # Sol: aynı değerin farklı yazımları (ör. "Adam Yayınları" / "Adam yayınları") ve birleştirme.
 # Sağ: yılı, yayınevi, yazarı veya türü boş olan kitaplar (çift tıklayınca düzenlemede açılır).
 
-from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QColor
-from PyQt5.QtWidgets import (QComboBox, QGroupBox, QHBoxLayout, QHeaderView, QLabel, QLineEdit, QMessageBox,
+from PySide6.QtCore import Qt
+from PySide6.QtGui import QColor
+from PySide6.QtWidgets import (QComboBox, QGroupBox, QHBoxLayout, QHeaderView, QLabel, QLineEdit, QMessageBox,
                              QPushButton, QTableWidget, QTreeWidget, QTreeWidgetItem, QVBoxLayout, QWidget)
 from acodes.onay import onay
 from acodes import tema

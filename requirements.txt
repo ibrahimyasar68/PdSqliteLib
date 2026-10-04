@@ -1,5 +1,5 @@
 # Uygulama bağımlılıkları (Python 3.9 ile test edildi)
-PyQt5>=5.15,<5.16
+PySide6-Essentials>=6.9,<7   # Qt 6 (LGPL); QtCore, QtGui, QtWidgets, QtTest yeterli
 openpyxl>=3.1
 
 # Sadece .app/.exe paketi oluşturmak için gerekir (scripts/build_mac.sh):

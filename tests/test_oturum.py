@@ -1,10 +1,15 @@
 ## Oturum kapatma ve panel penceresi testleri ##
 import pytest
-from PyQt5.QtCore import Qt
+from PySide6.QtCore import QEvent, Qt
+from PySide6.QtWidgets import QApplication
 
 from conftest import ADMIN_SIFRE, UYE_SIFRE
 from acodes import login as login_modulu
+from acodes.guest import Guest
+from acodes.library import Library
 from acodes.login import Login
+from database.modeller import Kitap
+from servis import kitap as kitap_servisi
 
 
 def giris_yap(w, kullanici, sifre):
@@ -105,7 +110,7 @@ def test_giris_karti(w):
 
 
 def test_parola_goster_gizle(w):
-    from PyQt5.QtWidgets import QLineEdit
+    from PySide6.QtWidgets import QLineEdit
     alan = w.QtLogin.lineEdit_parola
     assert alan.echoMode() == QLineEdit.Password
     w.goster.trigger()
@@ -134,9 +139,9 @@ def test_acilista_kullanici_adi_odakta(app):
 
 
 def test_caps_lock_uyarisi(w, monkeypatch):
-    from PyQt5.QtCore import QEvent
-    from PyQt5.QtGui import QFocusEvent
-    from PyQt5.QtWidgets import QApplication
+    from PySide6.QtCore import QEvent
+    from PySide6.QtGui import QFocusEvent
+    from PySide6.QtWidgets import QApplication
     alan = w.QtLogin.lineEdit_parola
     monkeypatch.setattr(login_modulu, "caps_lock_acik", lambda: True)
     QApplication.sendEvent(alan, QFocusEvent(QEvent.FocusIn))
@@ -170,7 +175,7 @@ def test_giris_surerken_buton_bekler(w, monkeypatch):
 
 
 def test_giris_ekrani_yerlesimi(w):
-    from PyQt5.QtCore import QPoint
+    from PySide6.QtCore import QPoint
     ui = w.QtLogin
     panel = w.findChild(type(ui.widget), "giris_paneli")
     cikis = ui.pushButton_cikis
@@ -180,3 +185,19 @@ def test_giris_ekrani_yerlesimi(w):
     kart = w.findChild(type(ui.widget), "giris_karti")
     orta = kart.mapTo(panel, QPoint(kart.width() // 2, 0)).x()
     assert abs(orta - panel.width() // 2) <= 12                                 # kart panelde ortalı (iç paylar hariç)
+
+
+@pytest.mark.parametrize("panel", [Library, Guest])
+def test_silinen_panelden_sonra_olaylar_cokmez(app, uyarilar, panel):
+    # Oturum kapatılınca panel silinir; ertelenmiş işler (boş tablo mesajı, kolon yerleşimi) ve kayıt değişikliği
+    # sinyalleri silinmiş tablolara dokunmamalı (PySide6'da bağlamsız QTimer.singleShot buna yol açıyordu)
+    p = panel()
+    p.user_name("admin")
+    p.show()
+    QApplication.processEvents()
+    p.close()
+    p.deleteLater()
+    QApplication.sendPostedEvents(None, QEvent.DeferredDelete)
+    QApplication.processEvents()
+    kitap_servisi.kaydet(Kitap("Sonradan Eklenen"))      # olaylar.kitaplar artık silinmiş ekranlara gitmez
+    QApplication.processEvents()

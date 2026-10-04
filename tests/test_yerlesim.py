@@ -8,7 +8,7 @@ from acodes.library import Library
 def genislikler(panel, bilesenler, en, boy):
     panel.resize(en, boy)
     panel.show()
-    from PyQt5.QtWidgets import QApplication
+    from PySide6.QtWidgets import QApplication
     QApplication.processEvents()
     return [b.width() for b in bilesenler]
 

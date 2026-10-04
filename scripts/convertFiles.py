@@ -1,6 +1,6 @@
 ## .ui ve .qrc dosyalarını Python dosyalarına dönüştürme ##
 # Kullanım: proje klasöründen  .venv/bin/python scripts/convertFiles.py
-# pyuic5 / pyrcc5 bu betiği çalıştıran Python'un yanında (sanal ortamda) aranır; ortamı etkinleştirmek gerekmez.
+# pyside6-uic / pyside6-rcc bu betiği çalıştıran Python'un yanında (sanal ortamda) aranır; ortamı etkinleştirmek gerekmez.
 import os
 import shutil
 import subprocess
@@ -14,13 +14,20 @@ def arac(ad):
     return yol if os.path.exists(yol) or os.path.exists(yol + ".exe") else (shutil.which(ad) or ad)
 
 
-## Resimler: pyrcc5 dosya yollarını .qrc dosyasının bulunduğu klasöre göre çözer
-subprocess.run([arac("pyrcc5"), "media.qrc", "-o", os.path.join("..", "bforms", "media_rc.py")],
+## Resimler: pyside6-rcc dosya yollarını .qrc dosyasının bulunduğu klasöre göre çözer
+subprocess.run([arac("pyside6-rcc"), "media.qrc", "-o", os.path.join("..", "bforms", "media_rc.py")],
                check=True, cwd=os.path.join(KOK, "media"))
 print("media/media.qrc başarıyla dönüştürüldü.")
 
-## Arayüzler: --import-from ile kaynak dosyası "from bforms import media_rc" olarak içe aktarılır
+## Arayüzler: --absolute-imports ile kaynak dosyası proje köküne göre içe aktarılır
 for ad in ("login",):        # paneller kodla kurulur (acodes/panel.py); yalnızca giriş ekranı .ui
-    subprocess.run([arac("pyuic5"), "--import-from=bforms", f"cuis/{ad}.ui", "-o", f"bforms/{ad}_py.py"],
+    subprocess.run([arac("pyside6-uic"), "--absolute-imports", "--python-paths", KOK, f"cuis/{ad}.ui",
+                    "-o", f"bforms/{ad}_py.py"],
                    check=True, cwd=KOK)
+    # .qrc media/ klasöründe, üretilen kaynak dosyası ise bforms/ altında: içe aktarma satırı ona göre düzeltilir
+    yol = os.path.join(KOK, "bforms", f"{ad}_py.py")
+    with open(yol, encoding="utf-8") as f:
+        kod = f.read()
+    with open(yol, "w", encoding="utf-8") as f:
+        f.write(kod.replace("import media.media_rc", "import bforms.media_rc  # noqa: F401  (Qt kaynakları)"))
     print(f"cuis/{ad}.ui başarıyla dönüştürüldü.")

@@ -6,8 +6,8 @@ import datetime
 import os
 import re
 
-from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QFileDialog, QMenu, QMessageBox
+from PySide6.QtCore import Qt
+from PySide6.QtWidgets import QFileDialog, QMenu, QMessageBox
 
 from database.yedek import yedek_klasoru
 
@@ -123,7 +123,7 @@ def sag_tik_menusu(parent, tablo, ad):
     tablo.setContextMenuPolicy(Qt.CustomContextMenu)
     tablo.sag_tik_eylemleri = []
     tablo.sag_tik_menu = lambda konum: menu_kur(parent, tablo, ad, konum)
-    tablo.customContextMenuRequested.connect(lambda konum: tablo.sag_tik_menu(konum).exec_(
+    tablo.customContextMenuRequested.connect(lambda konum: tablo.sag_tik_menu(konum).exec(
         tablo.viewport().mapToGlobal(konum)))
 
 

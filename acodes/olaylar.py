@@ -6,15 +6,15 @@
 #   from acodes.olaylar import olaylar
 #   olaylar.kitaplar.connect(self.yenile)
 
-from PyQt5.QtCore import QObject, pyqtSignal
+from PySide6.QtCore import QObject, Signal
 
 import servis
 
 
 class Olaylar(QObject):
-    kitaplar = pyqtSignal()       # kitap eklendi, değişti, silindi, yazımlar birleştirildi
-    odunc = pyqtSignal()          # ödünç verildi, iade alındı, iade geri alındı
-    kullanicilar = pyqtSignal()   # kullanıcı eklendi, değişti, silindi
+    kitaplar = Signal()       # kitap eklendi, değişti, silindi, yazımlar birleştirildi
+    odunc = Signal()          # ödünç verildi, iade alındı, iade geri alındı
+    kullanicilar = Signal()   # kullanıcı eklendi, değişti, silindi
 
     def yayinla(self, konu):
         getattr(self, konu).emit()

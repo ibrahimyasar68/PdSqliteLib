@@ -6,14 +6,15 @@ import os
 import sys
 import tempfile
 
-# Bu ayarlar database/ ve PyQt5 import edilmeden önce yapılmalı
+# Bu ayarlar database/ ve PySide6 import edilmeden önce yapılmalı
 _gecici = tempfile.mkdtemp(prefix="pdsqlitelib_test_")
 os.environ["PDSQLITE_DB"] = os.path.join(_gecici, "test.db")
 os.environ["QT_QPA_PLATFORM"] = "offscreen"
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."))
 
 import pytest  # noqa: E402
-from PyQt5.QtWidgets import QApplication, QMessageBox  # noqa: E402
+from PySide6.QtCore import QEvent  # noqa: E402
+from PySide6.QtWidgets import QApplication, QMessageBox  # noqa: E402
 
 from database.baglanti import baglantı  # noqa: E402
 from database.kullanicilar import sifre_hashle  # noqa: E402
@@ -71,6 +72,20 @@ def app():
 def db():
     ornek_veri_yukle()
     return baglantı
+
+
+@pytest.fixture(autouse=True)
+def pencereleri_temizle():
+    """Her testten sonra açık kalan pencereler silinir (programda oturum kapatılınca panel de silinir).
+    Silinmeyen paneller kayıt değişikliği sinyallerine bağlı kaldığı için sonraki testlerde boşuna yenileniyordu."""
+    yield
+    uygulama = QApplication.instance()
+    if uygulama is None:
+        return
+    for pencere in uygulama.topLevelWidgets():
+        pencere.close()
+        pencere.deleteLater()
+    QApplication.sendPostedEvents(None, QEvent.DeferredDelete)
 
 
 @pytest.fixture

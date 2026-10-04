@@ -4,8 +4,8 @@ import datetime
 
 import pytest
 from openpyxl import load_workbook
-from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QFileDialog, QTableWidget
+from PySide6.QtCore import Qt
+from PySide6.QtWidgets import QFileDialog, QTableWidget
 
 from acodes import disa_aktar as da
 from acodes.guest import Guest

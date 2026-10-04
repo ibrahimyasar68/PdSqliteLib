@@ -23,6 +23,7 @@ if not exist ".venv\Scripts\python.exe" (
     --noconfirm ^
     --clean ^
     --icon "%CD%\media\family.ico" ^
+    --exclude-module PyQt5 ^
     --exclude-module matplotlib ^
     --exclude-module PIL ^
     --exclude-module tkinter ^

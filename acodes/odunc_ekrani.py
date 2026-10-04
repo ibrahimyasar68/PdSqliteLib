@@ -4,8 +4,8 @@
 
 import datetime
 
-from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import (QApplication, QComboBox, QGridLayout, QGroupBox, QHBoxLayout, QHeaderView, QLabel,
+from PySide6.QtCore import Qt
+from PySide6.QtWidgets import (QApplication, QComboBox, QGridLayout, QGroupBox, QHBoxLayout, QHeaderView, QLabel,
                              QLineEdit, QMessageBox, QPushButton, QTableWidget, QVBoxLayout, QWidget)
 
 from acodes.kisayollar import arama_kutusu_yap

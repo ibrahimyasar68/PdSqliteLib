@@ -3,8 +3,8 @@
 # (yöneticide) üyeler. Yazdıkça süzülür; büyük/küçük harf ve Türkçe karakter farkı gözetilmez. Ok tuşlarıyla
 # seçilip Enter ile çalıştırılır, Esc kapatır. Ne listeleneceğini panel verir (kaynak fonksiyonu).
 
-from PyQt5.QtCore import QEvent, QSize, Qt, QTimer
-from PyQt5.QtWidgets import QDialog, QFrame, QLabel, QLineEdit, QListWidget, QListWidgetItem, QVBoxLayout
+from PySide6.QtCore import QEvent, QSize, Qt, QTimer
+from PySide6.QtWidgets import QDialog, QFrame, QLabel, QLineEdit, QListWidget, QListWidgetItem, QVBoxLayout
 
 from acodes import hareket, ikonlar, tema
 from database.metin import katla
@@ -126,7 +126,7 @@ class KomutPaleti(QDialog):
         if islev is None:
             return
         self.close()
-        QTimer.singleShot(0, islev)           # palet kapandıktan sonra (açılan pencere odaklansın)
+        QTimer.singleShot(0, self, islev)     # palet kapandıktan sonra (açılan pencere odaklansın)
 
     def eventFilter(self, nesne, olay):
         if olay.type() == QEvent.KeyPress:

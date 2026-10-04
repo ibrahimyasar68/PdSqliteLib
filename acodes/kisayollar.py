@@ -4,9 +4,10 @@
 #   Ctrl+F             açık sayfadaki arama kutusu (yoksa Kitap Listesi araması)
 #   Kitap Kayıt: Ctrl+N yeni kitap, Ctrl+S kaydet, Esc vazgeç
 
-from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QKeySequence
-from PyQt5.QtWidgets import QLineEdit, QShortcut
+from PySide6.QtCore import Qt
+from PySide6.QtGui import QKeySequence
+from PySide6.QtWidgets import QLineEdit
+from PySide6.QtGui import QShortcut
 
 ARAMA = "arama_kutusu"      # arama kutularına verilen özellik adı
 
