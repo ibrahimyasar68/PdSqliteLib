@@ -303,11 +303,6 @@ QSpinBox::down-arrow {{ image: url("{ok['asagi']}"); width: 12px; height: 12px; 
 """
 
 
-def uygula(pencere):
-    """Temayı pencereye uygular (.ui dosyalarında renk ve yazı tipi tanımlanmaz)."""
-    pencere.setStyleSheet(qss())
-
-
 def _koyu_ek():
     """Koyu temada sistemin açık renkli çizdiği parçalar (diyalog zemini, menüler) da temaya uyar.
     Açık temada bunlar sistemin kendi görünümünde kalır."""
@@ -327,20 +322,13 @@ _ILK_STIL = None
 
 def _sabit_aralikli(stil):
     """Düzen boşlukları ve form yerleşimi her temada aynı olsun diye çizim stilini sarar. macOS stili Fusion'dan
-    (koyu tema) daha geniş boşluk ve kenar payı verdiği için tema değişince sayfa kayıyordu; Mac'te formlar da
-    değerleri dar tutuyordu (Ayarlar'daki bilgiler görünmüyordu). Değerler Fusion'ınkilerdir."""
-    from PySide6.QtCore import Qt
-    from PySide6.QtWidgets import QFormLayout, QProxyStyle, QStyle
+    (koyu tema) daha geniş boşluk ve kenar payı verdiği için tema değişince sayfa kayıyordu. Değerler Fusion'ınkilerdir.
+    (Form yerleşimi her forma ayrıca verilir: yerlesim.form_duzeni.)"""
+    from PySide6.QtWidgets import QProxyStyle, QStyle
 
     olculer = {QStyle.PM_LayoutLeftMargin: 9, QStyle.PM_LayoutTopMargin: 9, QStyle.PM_LayoutRightMargin: 9,
                QStyle.PM_LayoutBottomMargin: 9, QStyle.PM_LayoutHorizontalSpacing: 6,
                QStyle.PM_LayoutVerticalSpacing: 6}
-    # styleHint sayı döndürmeli (PySide6 Qt enum'larını kendiliğinden sayıya çevirmez)
-    ipuclari = {QStyle.SH_FormLayoutFieldGrowthPolicy: QFormLayout.AllNonFixedFieldsGrow.value,
-                QStyle.SH_FormLayoutFormAlignment: (Qt.AlignLeft | Qt.AlignTop).value,
-                QStyle.SH_FormLayoutLabelAlignment: (Qt.AlignRight | Qt.AlignVCenter).value,
-                QStyle.SH_FormLayoutWrapPolicy: QFormLayout.DontWrapRows.value}
-
     yerlesim_ogeleri = {getattr(QStyle, ad) for ad in dir(QStyle) if ad.startswith("SE_") and ad.endswith("LayoutItem")}
 
     from PySide6.QtWidgets import QStyleFactory
@@ -369,9 +357,6 @@ def _sabit_aralikli(stil):
             if oge in yerlesim_ogeleri and secenek is not None:
                 return secenek.rect
             return super().subElementRect(oge, secenek, bilesen)
-
-        def styleHint(self, ipucu, secenek=None, bilesen=None, donus=None):
-            return ipuclari[ipucu] if ipucu in ipuclari else super().styleHint(ipucu, secenek, bilesen, donus)
 
     ad = stil.objectName()          # sarıldıktan sonra stil nesnesine Python'dan erişilemez (sahibi sarmalayıcı olur)
     sarilmis = SabitAralik(stil)

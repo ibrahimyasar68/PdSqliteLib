@@ -8,6 +8,7 @@ from PySide6.QtCore import QEasingCurve, QPropertyAnimation, QRectF, QSize, Qt, 
 from PySide6.QtGui import QColor, QDesktopServices, QPainter
 from acodes import hareket, tema, tercihler
 from acodes.kilavuz import Kilavuz
+from acodes.yerlesim import form_duzeni
 from PySide6.QtWidgets import (QAbstractButton, QApplication, QDialog, QFormLayout, QGroupBox, QHBoxLayout, QLabel,
                              QPushButton, QScrollArea, QSizePolicy, QToolTip, QVBoxLayout, QWidget)
 
@@ -89,11 +90,7 @@ class Bolum(QGroupBox):
                 self.butonlar[metin] = b
             satir.addStretch()
             duzen.addLayout(satir)
-        self.form = QFormLayout()
-        # macOS'un varsayılanı (alanlar önerilen boyutta, form ortalı) değerleri sıfır genişlikte bırakıyordu:
-        # her sistemde değerler kalan genişliği alır, form sola yaslanır
-        self.form.setFieldGrowthPolicy(QFormLayout.AllNonFixedFieldsGrow)
-        self.form.setFormAlignment(Qt.AlignLeft | Qt.AlignTop)
+        self.form = form_duzeni(QFormLayout())    # değerler her sistemde kalan genişliği alır
         self.form.setLabelAlignment(Qt.AlignRight)
         self.form.setHorizontalSpacing(16)
         duzen.addLayout(self.form)

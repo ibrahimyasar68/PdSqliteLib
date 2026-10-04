@@ -67,3 +67,22 @@ def test_kitap_kayitta_liste_ustte_form_altta(lib):
     assert k.tablo.horizontalScrollBar().maximum() == 0
     k.kolonlar.denetle()
     assert not k.kolonlar.soru.isVisible()                                     # liste sığıyor, soru çıkmaz
+
+
+
+def test_formlar_her_sistemde_ayni_yerlesir(app, uyarilar):
+    # macOS stili form alanlarını önerilen boyutta bırakıp formu ortalar; her form yerlesim.form_duzeni ile
+    # açıkça sola yaslı ve genişleyen alanlı kurulur (çizim stili bunu artık her çizimde ayrıca yapmıyor).
+    # Form yerleşimi ipucunu üst bileşeninin stilinden okur: uygulamanın stili değiştirilmeden macOS denenir.
+    from PySide6.QtCore import Qt
+    from PySide6.QtWidgets import QFormLayout, QStyleFactory
+    from acodes.kullanici_yonetimi import KullaniciDuzenle, SifreDegistir
+    from database.kullanicilar import kullanici_bul
+    mac = QStyleFactory.create("macOS")
+    pencereler = [Library(), Guest(), SifreDegistir("admin", eski_sor=True), KullaniciDuzenle(kullanici_bul(3), "admin")]
+    formlar = [f for p in pencereler for f in p.findChildren(QFormLayout)]
+    assert len(formlar) >= 5
+    for form in formlar:
+        form.parentWidget().setStyle(mac)
+        assert form.fieldGrowthPolicy() == QFormLayout.AllNonFixedFieldsGrow
+        assert form.formAlignment() == Qt.AlignLeft | Qt.AlignTop

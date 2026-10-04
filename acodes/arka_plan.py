@@ -23,6 +23,9 @@ QTabWidget#sayfalar > QStackedWidget > QWidget#ana_sayfa {{ background: transpar
 
 
 class ArkaPlan(QObject):
+    """Giriş sekmesinde panelin orta bileşenine fotoğrafı çizer; diğer sayfalar düz zeminlidir.
+    Sayfa zeminlerinin stili (stil()) panelin stil sayfasındadır."""
+
     def __init__(self, pencere):
         super().__init__(pencere)
         self.pencere = pencere
@@ -30,22 +33,13 @@ class ArkaPlan(QObject):
         self.sekmeler = pencere.findChild(QTabWidget, "sayfalar")
         self.resim = QPixmap(RESIM)
         self.olcekli = None
-        self.gosterildi = False
         self.bilesen.installEventFilter(self)
-        pencere.installEventFilter(self)
         self.sekmeler.currentChanged.connect(lambda _: self.bilesen.update())
 
     def fotograf_gorunur(self):
         return self.sekmeler.currentWidget() is self.sekmeler.widget(0)
 
     def eventFilter(self, nesne, olay):
-        if nesne is self.pencere:
-            if olay.type() == QEvent.Show and not self.gosterildi:
-                # Sayfalar sekmelere yerleşmeden önce biçimlendirildiği için "sekme sayfası" kuralları
-                # ilk açılışta eşleşmeyebilir; pencere ilk gösterildiğinde stil bir kez yeniden uygulanır
-                self.gosterildi = True
-                self.pencere.setStyleSheet(self.pencere.styleSheet())
-            return False
         if olay.type() != QEvent.Paint:
             return False
         if self.resim.isNull() or not self.fotograf_gorunur():
@@ -61,8 +55,3 @@ class ArkaPlan(QObject):
         QPainter(self.bilesen).drawPixmap(self.bilesen.rect(), resim, kaynak)
         return True
 
-
-def uygula(pencere):
-    """Giriş sekmesinde panelin orta bileşenine fotoğrafı çizer; diğer sayfalar düz zeminlidir."""
-    pencere.setStyleSheet(pencere.styleSheet() + stil())
-    return ArkaPlan(pencere)

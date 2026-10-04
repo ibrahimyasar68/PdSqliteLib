@@ -40,6 +40,9 @@ class Panel(QMainWindow):
         self.aktif_kullanici=None
         self.dur_msj=2000
         self.alt_sekmeler={}            # {menü sayfası: alt sayfaların QTabWidget'ı}
+        # Tema ve arka plan stili bileşenler oluşturulmadan önce, tek seferde: sonradan verilen pencere stili
+        # yüzlerce bileşeni baştan biçimlendiriyordu (panel kurulumunun yarısı)
+        self.setStyleSheet(tema.qss()+arka_plan.stil())
         self.resize(1518,744)
         self.setMinimumSize(1300,720)
         self.setStatusBar(QStatusBar())
@@ -75,8 +78,7 @@ class Panel(QMainWindow):
         yatay.setSpacing(12)
         yatay.addWidget(self.yan_menu)
         yatay.addWidget(self.sekmeler,1)
-        tema.uygula(self)
-        self.arka_plan=arka_plan.uygula(self)       # yaprak fotoğrafı Giriş sayfasının zemininde
+        self.arka_plan=arka_plan.ArkaPlan(self)     # yaprak fotoğrafı Giriş sayfasının zemininde
         ikonlar.sekmelere_uygula(self.sekmeler,{s.bilesen: s.anahtar for s in self.sayfalar})
         self.sekmeler.currentChanged.connect(self._sayfa_acildi)
 

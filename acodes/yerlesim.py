@@ -46,9 +46,22 @@ def etiketli(etiket, alan, bosluk=4):
     return kutu
 
 
+def form_duzeni(form):
+    """Formlar her sistemde aynı yerleşir: alanlar kalan genişliği alır, form sola yaslıdır (macOS'un varsayılanı
+    alanları önerilen boyutta bırakıp formu ortalıyordu; değerler sıfır genişlikte kalıyordu). Değerler Fusion'ınkiler.
+    Çizim stilinde styleHint ile yapmak her çizimde Python'a binlerce çağrı demekti; her forma bir kez verilir."""
+    from PySide6.QtWidgets import QFormLayout
+    form.setFieldGrowthPolicy(QFormLayout.AllNonFixedFieldsGrow)
+    form.setFormAlignment(Qt.AlignLeft | Qt.AlignTop)
+    form.setLabelAlignment(Qt.AlignRight | Qt.AlignVCenter)
+    form.setRowWrapPolicy(QFormLayout.DontWrapRows)
+    return form
+
+
 def ustte_etiketli_form(form):
     """QFormLayout'ta etiketler alanların üstünde (iki noktasız, sola yaslı); formla aynı biçim."""
     from PySide6.QtWidgets import QFormLayout
+    form_duzeni(form)
     form.setRowWrapPolicy(QFormLayout.WrapAllRows)
     form.setLabelAlignment(Qt.AlignLeft)
     form.setVerticalSpacing(10)
