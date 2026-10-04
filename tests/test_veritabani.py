@@ -1,4 +1,8 @@
 ## Veritabanı katmanı (database/) testleri ##
+import sqlite3
+
+import pytest
+
 from conftest import ADMIN_SIFRE, ESKI_SIFRE
 from database.dbbase import (degistir_kayit, ekle_kayit, save_work_to_db, sifre_dogrula,
                              sifre_hashle, update_work_to_db, user_ekle)
@@ -127,3 +131,16 @@ def test_istatistik_her_kitabi_sayar_bos_degerler_belirtilmemis(db):
 def test_olmayan_kayit_none_dondurur():
     from database.dbframe import df_book_find_by_id, df_user_find_by_id
     assert df_book_find_by_id(999) is None and df_user_find_by_id(999) is None
+
+
+def test_ekle_kayit_yeni_numarayi_dondurur(db):
+    yeni = ekle_kayit(["Numaralı", "", "", "", "", "", ""])
+    assert db.execute("SELECT Adi FROM kayitlistesi WHERE Id=?", (yeni,)).fetchone()[0] == "Numaralı"
+
+
+def test_hatali_yazma_yarim_kalmaz(db):
+    # Kullanıcı adı benzersizdir: ikinci kayıt hata verir, bağlantıda bekleyen yazma kalmaz
+    user_ekle(["tek", "sifre123", "Tek Kişi", "", "", "guest"])
+    with pytest.raises(sqlite3.IntegrityError):
+        user_ekle(["tek", "sifre123", "Tek Kişi", "", "", "guest"])
+    assert not db.in_transaction

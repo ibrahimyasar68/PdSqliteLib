@@ -13,7 +13,7 @@ from acodes.ek_bilgi import EkBilgiler
 from acodes.kisayollar import arama_kutusu_yap, kisayol, metin
 from acodes.tablo import KolonSecici, durum_ekle, durum_rozeti_kur, satir_verisi, tablo_ayarla, tabloya_yaz
 from acodes.yerlesim import baslik_satiri, etiketli
-from database.dbbase import baglantı, degistir_kayit, ekle_kayit, geri_ekle_kayit, sil_kayit
+from database.dbbase import degistir_kayit, ekle_kayit, geri_ekle_kayit, sil_kayit
 from database.dbframe import df_book_find_by_id, df_sort_list, kitap_ara, kitap_oduncte, kopya_durumu
 
 # (veritabanı kolonu, etiket, önerilecek mevcut değerler var mı)
@@ -245,8 +245,7 @@ class KitapEkrani(QWidget):
         if self.kitap_id is None:
             if onay(f"'{kayit[0]}' kaydedilsin mi?") != QMessageBox.Yes:
                 return
-            ekle_kayit(kayit)
-            self.kitap_id = baglantı.execute("SELECT MAX(Id) FROM kayitlistesi").fetchone()[0]
+            self.kitap_id = ekle_kayit(kayit)
             self.mesaj(f"'{kayit[0]}' kaydedildi", "basari")
         else:
             disarida = kopya_durumu(self.kitap_id)[1]

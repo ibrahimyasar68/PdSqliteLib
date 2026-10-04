@@ -56,8 +56,8 @@ def yoksayilanlar(kol):
 
 
 def yoksay(kol, degerler):
-    baglantı.execute("INSERT INTO duzeltme_yoksay (kolon, imza) VALUES (?,?)", (kolon(kol, KITAP_KOLON), _imza(degerler)))
-    baglantı.commit()
+    with baglantı:
+        baglantı.execute("INSERT INTO duzeltme_yoksay (kolon, imza) VALUES (?,?)", (kolon(kol, KITAP_KOLON), _imza(degerler)))
 
 
 def benzer_gruplar(kol):
@@ -101,9 +101,9 @@ def birlestir(kol, eskiler, yeni):
     eskiler = [e for e in eskiler if e != yeni]
     if not eskiler:
         return 0
-    imlec = baglantı.execute(f"UPDATE kayitlistesi SET {k}=? WHERE {k} IN ({','.join('?' * len(eskiler))})",
-                             [yeni] + eskiler)
-    baglantı.commit()
+    with baglantı:
+        imlec = baglantı.execute(f"UPDATE kayitlistesi SET {k}=? WHERE {k} IN ({','.join('?' * len(eskiler))})",
+                                 [yeni] + eskiler)
     return imlec.rowcount
 
 

@@ -23,6 +23,9 @@ hareket.ANIMASYON = False       # sayfa geçişleri ve menü genişliği testler
 ADMIN_SIFRE = "admin123"
 ESKI_SIFRE = "eski123"      # Veritabanında düz metin duran eski kullanıcı
 UYE_SIFRE = "uye12345"
+# Hash'ler oturumda bir kez hesaplanır (her biri ~0,1 sn; her testte yeniden hesaplamak süreyi ikiye katlıyordu)
+ADMIN_HASH = sifre_hashle(ADMIN_SIFRE)
+UYE_HASH = sifre_hashle(UYE_SIFRE)
 
 KITAPLAR = [
     (1, "Yol Ayrımı", "Kemal TAHİR", "", "Roman", "İthaki Yayınları", "2005", "493"),
@@ -43,10 +46,10 @@ def ornek_veri_yukle():
                          " VALUES (?,?,?,?,?,?,?,?)", KITAPLAR)
     baglantı.executemany(
         "INSERT INTO users (id,kullanici,sifre,adi_soyadi,telefon,mail,yetki) VALUES (?,?,?,?,?,?,?)", [
-            (1, "admin", sifre_hashle(ADMIN_SIFRE), "Yönetici", "", "", "admin"),
+            (1, "admin", ADMIN_HASH, "Yönetici", "", "", "admin"),
             (2, "eski", ESKI_SIFRE, "Eski Kullanıcı", "", "", "guest"),
-            (3, "ayse1", sifre_hashle(UYE_SIFRE), "Ayşe Yılmaz", "5551112233", "ayse@ornek.com", "guest"),
-            (4, "ayse2", sifre_hashle(UYE_SIFRE), "Ayşe Yılmaz", "5550000000", "a2@ornek.com", "guest"),
+            (3, "ayse1", UYE_HASH, "Ayşe Yılmaz", "5551112233", "ayse@ornek.com", "guest"),
+            (4, "ayse2", UYE_HASH, "Ayşe Yılmaz", "5550000000", "a2@ornek.com", "guest"),
         ])
     baglantı.commit()
 

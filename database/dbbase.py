@@ -32,10 +32,10 @@ def db_yolu():
 DB_YOLU = db_yolu()
 
 
-# Uygulama tek bir bağlantı kullanır (dbframe.py de bunu kullanır)
+# Uygulama tek bir bağlantı kullanır (dbframe.py de bunu kullanır).
+# Yazma işlemleri "with baglantı:" bloğundadır: blok bitince kaydedilir, hata olursa hiçbiri yazılmaz.
 os.makedirs(os.path.dirname(os.path.abspath(DB_YOLU)), exist_ok=True)
 baglantı = sqlite3.connect(DB_YOLU)
-islem=baglantı.cursor()
 sema_olustur(baglantı)  # Eksik tablo varsa oluşturulur
 
 
@@ -43,37 +43,38 @@ sema_olustur(baglantı)  # Eksik tablo varsa oluşturulur
 EK_VARSAYILAN = ("", 1, "", "")
 
 #Kayıt ekleme (ActifLibrary): adi, yazari, ceviren, turu, yayinevi, yili, sayfa [, isbn, kopya, raf, notlar]
+# Yeni kitabın numarası (Id) döner
 def ekle_kayit(kayit):
     degerler=list(kayit)+list(EK_VARSAYILAN[len(kayit)-7:])   # eksik ek bilgiler varsayılanla tamamlanır
     ekle="Insert Into kayitlistesi (adi, yazari, ceviren, turu, yayinevi, yili, sayfa, isbn, kopya, raf, notlar) values (?,?,?,?,?,?,?,?,?,?,?)"
-    islem.execute(ekle,degerler)
-    baglantı.commit()
+    with baglantı:
+        return baglantı.execute(ekle,degerler).lastrowid
 
 
 # Kayıt değiştirme  (ActifLibrary)
 # kayit: id, adi, yazari, ceviren, turu, yayinevi, yili, sayfa [, isbn, kopya, raf, notlar]
 def degistir_kayit(kayit):
     dgsm="Update kayitlistesi Set adi=?, yazari=?, ceviren=?, turu=?, yayinevi=?, yili=?, sayfa=? where id=?"
-    islem.execute(dgsm,(kayit[1],kayit[2],kayit[3],kayit[4],kayit[5],kayit[6],kayit[7],kayit[0]))
-    if len(kayit)>=12:
-        islem.execute("Update kayitlistesi Set isbn=?, kopya=?, raf=?, notlar=? where id=?",
-                      (kayit[8],kayit[9],kayit[10],kayit[11],kayit[0]))
-    baglantı.commit()
+    with baglantı:
+        baglantı.execute(dgsm,(kayit[1],kayit[2],kayit[3],kayit[4],kayit[5],kayit[6],kayit[7],kayit[0]))
+        if len(kayit)>=12:
+            baglantı.execute("Update kayitlistesi Set isbn=?, kopya=?, raf=?, notlar=? where id=?",
+                             (kayit[8],kayit[9],kayit[10],kayit[11],kayit[0]))
 
 
 # id ile kayıt silme (ActifLibrary)
 def sil_kayit(id):
     sorgu=("Delete From kayitlistesi where Id=?")
-    islem.execute(sorgu,(id,))
-    baglantı.commit()
+    with baglantı:
+        baglantı.execute(sorgu,(id,))
 
 
 # Silinen kitabı aynı numarayla geri getirme ("Geri Al"); kayit: df_book_find_by_id'nin döndürdüğü tam kayıt
 # (Id, adi, yazari, ceviren, turu, yayinevi, yili, sayfa, isbn, kopya, raf, notlar). Ödünç geçmişi numarayla bağlı kalır.
 def geri_ekle_kayit(kayit):
-    islem.execute("Insert Into kayitlistesi (Id, adi, yazari, ceviren, turu, yayinevi, yili, sayfa, isbn, kopya, raf, notlar)"
-                  " values (?,?,?,?,?,?,?,?,?,?,?,?)", list(kayit))
-    baglantı.commit()
+    with baglantı:
+        baglantı.execute("Insert Into kayitlistesi (Id, adi, yazari, ceviren, turu, yayinevi, yili, sayfa, isbn, kopya, raf, notlar)"
+                         " values (?,?,?,?,?,?,?,?,?,?,?,?)", list(kayit))
 
 
 # Şifre hash'leme: "pbkdf2$tekrar$tuz$hash" biçiminde saklanır
@@ -95,47 +96,47 @@ def sifre_dogrula(sifre, kayitli):
     return hmac.compare_digest(yeni.hex(), ozet)
 
 def sifre_guncelle(kullanici, sifre):
-    islem.execute("Update users Set sifre=? where kullanici=?", (sifre_hashle(sifre), kullanici))
-    baglantı.commit()
+    with baglantı:
+        baglantı.execute("Update users Set sifre=? where kullanici=?", (sifre_hashle(sifre), kullanici))
 
 
 # kullanıcı ekleme (users)
 def user_ekle(user):
     ekle="Insert Into users ( kullanici, sifre, adi_soyadi, telefon, mail, yetki) values (?,?,?,?,?,?)"
-    islem.execute(ekle,(user[0],sifre_hashle(user[1]),user[2],user[3],user[4],user[5]))
-    baglantı.commit()
+    with baglantı:
+        baglantı.execute(ekle,(user[0],sifre_hashle(user[1]),user[2],user[3],user[4],user[5]))
 
 
 # kullanıcı bilgilerini güncelleme (kullanıcı adı ve şifre hariç)
 def kullanici_guncelle(id, adi_soyadi, telefon, mail, yetki):
-    islem.execute("Update users Set adi_soyadi=?, telefon=?, mail=?, yetki=? where id=?",
-                  (adi_soyadi, telefon, mail, yetki, id))
-    baglantı.commit()
+    with baglantı:
+        baglantı.execute("Update users Set adi_soyadi=?, telefon=?, mail=?, yetki=? where id=?",
+                         (adi_soyadi, telefon, mail, yetki, id))
 
 
 # kullanıcı silme (ödünç geçmişi korunur)
 def kullanici_sil(id):
-    islem.execute("Delete From users where id=?", (id,))
-    baglantı.commit()
+    with baglantı:
+        baglantı.execute("Delete From users where id=?", (id,))
 
 
 # Ödünç verme (follow)
 def save_work_to_db(kayit):
     ekle="Insert Into follow (userId,bookId,outdate,outtime,status,indate,intime) values (?,?,?,?,?,?,?)"
-    islem.execute(ekle,(kayit[0],kayit[1],str(kayit[2]),kayit[3],kayit[4],kayit[5],kayit[6]))
-    baglantı.commit()
+    with baglantı:
+        baglantı.execute(ekle,(kayit[0],kayit[1],str(kayit[2]),kayit[3],kayit[4],kayit[5],kayit[6]))
 
 # İade alma (follow); güncellenen ödünç kaydının numarası (rowid) döner: iade geri alınırken kullanılır
 def update_work_to_db(kayit):
     # Sadece dışarıdaki (status='out') kayıt güncellenir, geçmiş iadeler korunur
-    satir=islem.execute("Select rowid From follow where userId=? and bookId=? and status='out'",
-                        (str(kayit[0]),str(kayit[1]))).fetchone()
-    dgsm="Update follow Set status=?, indate=?, intime=? where userId=? and bookId=? and status='out'"
-    islem.execute(dgsm,(kayit[4],str(kayit[5]),kayit[6],str(kayit[0]),str(kayit[1])))
-    baglantı.commit()
+    with baglantı:
+        satir=baglantı.execute("Select rowid From follow where userId=? and bookId=? and status='out'",
+                               (str(kayit[0]),str(kayit[1]))).fetchone()
+        dgsm="Update follow Set status=?, indate=?, intime=? where userId=? and bookId=? and status='out'"
+        baglantı.execute(dgsm,(kayit[4],str(kayit[5]),kayit[6],str(kayit[0]),str(kayit[1])))
     return satir[0] if satir else None
 
 # İadeyi geri alma ("Geri Al"): ödünç kaydı yeniden dışarıda olur
 def iade_geri_al(rowid):
-    islem.execute("Update follow Set status='out', indate='', intime='' where rowid=? and status='in'",(rowid,))
-    baglantı.commit()
+    with baglantı:
+        baglantı.execute("Update follow Set status='out', indate='', intime='' where rowid=? and status='in'",(rowid,))
