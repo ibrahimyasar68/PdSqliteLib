@@ -82,8 +82,8 @@ def test_kitap_listesinde_yeni_kolonlar(app, uyarilar, db, panel):
     db.execute("UPDATE kayitlistesi SET ISBN='9780306406157', Kopya=2, Raf='A-1' WHERE Id=1")
     db.commit()
     p = panel()
-    t = p.QtLibrary.tableWidget_2
-    p.arama.setText("yol ayrımı")
+    t = p.liste.tablo
+    p.liste.arama.setText("yol ayrımı")
     basliklar = [t.horizontalHeaderItem(c).text() for c in range(t.columnCount())]
     assert basliklar[-4:] == ["ISBN", "Kopya", "Raf", "Durum"]
     assert [t.item(0, c).text() for c in (8, 9, 10, 11)] == ["9780306406157", "2", "A-1", "Rafta"]
@@ -105,8 +105,8 @@ def test_listelerde_durum_kolonu_renkli(app, uyarilar, db, panel):
     db.execute("INSERT INTO follow (userId, bookId, outdate, outtime, status, indate, intime) VALUES ('3','6','2026-01-01','10:00 ','out','','')")
     db.commit()
     p = panel()
-    t = p.QtLibrary.tableWidget_2
-    p.listele()
+    t = p.liste.tablo
+    p.liste.listele()
     durum = {t.item(r, 1).text(): t.item(r, 11) for r in range(t.rowCount())}
     assert durum["Yol Ayrımı"].text() == "1/2 kopya rafta" and durum["Satranç"].text() == "Ödünçte"
     assert durum["Denemeler"].text() == "Rafta"

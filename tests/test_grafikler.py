@@ -40,11 +40,11 @@ def test_grafikler_verisiz_ve_verili_cizilir(app):
 
 def test_panellerde_sabit_resim_yerine_grafik(app, uyarilar):
     for panel in (Library(), Guest()):
-        q = panel.QtLibrary
+        q = panel
         assert not hasattr(q, "widget")                 # eski sabit resim kutusu .ui'dan kaldırıldı
-        assert panel.grafikler.parent() is q.tab_5_2
-        assert panel.grafikler.yazarlar.veri[:2] == [("Andre MAUROIS", 2), ("Kemal TAHİR", 2)]   # eşitlikte alfabetik
-        assert panel.grafikler.yillar.veri == yil_dagilimi()
+        assert panel.istatistik.grafikler.parent() is q.istatistik.sekmeler.widget(1)
+        assert panel.istatistik.grafikler.yazarlar.veri[:2] == [("Andre MAUROIS", 2), ("Kemal TAHİR", 2)]   # eşitlikte alfabetik
+        assert panel.istatistik.grafikler.yillar.veri == yil_dagilimi()
 
 
 def test_kitap_eklenince_grafik_guncellenir(app, uyarilar):
@@ -52,8 +52,8 @@ def test_kitap_eklenince_grafik_guncellenir(app, uyarilar):
     for alan, deger in [("Adi", "yeni kitap"), ("Yazari", "yeni yazar"), ("Turu", "Şiir"), ("Yili", "1975")]:
         lib.kitaplar.alan[alan].setText(deger)
     lib.kitaplar.kaydet()
-    assert ("Şiir", 1) in lib.grafikler.turler.veri
-    assert ("1970'ler", 1) in lib.grafikler.yillar.veri
+    assert ("Şiir", 1) in lib.istatistik.grafikler.turler.veri
+    assert ("1970'ler", 1) in lib.istatistik.grafikler.yillar.veri
 
 
 def test_panel_tek_basina_kullanilabilir(app):
@@ -67,4 +67,4 @@ def test_en_cok_yazar_grafiginde_bos_yazar_yok(app, uyarilar, db):
     db.executemany("INSERT INTO kayitlistesi (Adi, Yazari) VALUES (?, '')", [("a",), ("b",), ("c",)])
     db.commit()
     lib = Library()
-    assert all(ad != "(belirtilmemiş)" for ad, _ in lib.grafikler.yazarlar.veri)
+    assert all(ad != "(belirtilmemiş)" for ad, _ in lib.istatistik.grafikler.yazarlar.veri)

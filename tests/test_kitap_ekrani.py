@@ -26,7 +26,7 @@ def doldur(k, **alanlar):
 # --- Liste ve seçim ---
 
 def test_eski_uc_ekran_yerine_tek_ekran(lib):
-    t = lib.QtLibrary.tabWidget_3
+    t = lib.alt_sekmeler[lib.kayit]
     assert [t.tabText(i) for i in range(t.count())] == ["Kitaplar", "Veri Düzeltme"]
 
 
@@ -129,7 +129,7 @@ def test_silme_geri_alinir(lib, k, db):
     assert b.kutu.text() == "Denemeler silindi" and b.eylem.isVisibleTo(b.kutu) and b.eylem.text() == "Geri Al"
     b.eylem.click()
     assert db.execute("SELECT Adi, Yazari, Yili FROM kayitlistesi WHERE Id=8").fetchone() == ("Denemeler", "MONTAIGNE", "1983")
-    assert k.kitap_id == 8 and "Denemeler" in liste(k) and lib.QtLibrary.statusbar.currentMessage() == "'Denemeler' geri getirildi."
+    assert k.kitap_id == 8 and "Denemeler" in liste(k) and lib.statusBar().currentMessage() == "'Denemeler' geri getirildi."
     assert not b.eylem.isVisibleTo(b.kutu)
 
 

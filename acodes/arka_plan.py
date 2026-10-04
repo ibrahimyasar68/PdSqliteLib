@@ -7,17 +7,18 @@ from PyQt5.QtGui import QColor, QPainter, QPixmap
 from PyQt5.QtWidgets import QTabWidget
 
 from acodes import tema
+import bforms.media_rc  # noqa: F401  (Qt kaynakları: arka plan fotoğrafı)
 
-RESIM = ":/pic/autumn.jpg"      # kaynak dosyası (media_rc) panellerin .ui formlarıyla yüklenir
+RESIM = ":/pic/autumn.jpg"      # Qt kaynak dosyasında (bforms/media_rc.py, yukarıda yüklenir)
 
-# Ana sekmelerin sayfaları düz zeminlidir (iç içe sekmelerde tekrar etmez); Giriş sayfası (tab_1) saydamdır
+# Ana sekmelerin sayfaları düz zeminlidir (iç içe sekmelerde tekrar etmez); Giriş sayfası (ana_sayfa) saydamdır
 def stil():
     return f"""
-#centralwidget {{ background: transparent; }}
+#orta_alan {{ background: transparent; }}
 QTabWidget::pane {{ background: transparent; }}
 QStackedWidget > QWidget {{ background: transparent; }}
-QTabWidget#tabWidget > QStackedWidget > QWidget {{ background-color: {tema.SAYFA}; border-radius: {tema.KOSE.buyuk}px; }}
-QTabWidget#tabWidget > QStackedWidget > QWidget#tab_1 {{ background: transparent; }}
+QTabWidget#sayfalar > QStackedWidget > QWidget {{ background-color: {tema.SAYFA}; border-radius: {tema.KOSE.buyuk}px; }}
+QTabWidget#sayfalar > QStackedWidget > QWidget#ana_sayfa {{ background: transparent; }}
 """
 
 
@@ -26,7 +27,7 @@ class ArkaPlan(QObject):
         super().__init__(pencere)
         self.pencere = pencere
         self.bilesen = pencere.centralWidget()
-        self.sekmeler = pencere.findChild(QTabWidget, "tabWidget")
+        self.sekmeler = pencere.findChild(QTabWidget, "sayfalar")
         self.resim = QPixmap(RESIM)
         self.olcekli = None
         self.gosterildi = False
@@ -40,8 +41,8 @@ class ArkaPlan(QObject):
     def eventFilter(self, nesne, olay):
         if nesne is self.pencere:
             if olay.type() == QEvent.Show and not self.gosterildi:
-                # .ui sayfaları sekmelere yerleşmeden önce biçimlendirildiği için "sekme sayfası" kuralları
-                # ilk açılışta eşleşmez; pencere ilk gösterildiğinde stil bir kez yeniden uygulanır
+                # Sayfalar sekmelere yerleşmeden önce biçimlendirildiği için "sekme sayfası" kuralları
+                # ilk açılışta eşleşmeyebilir; pencere ilk gösterildiğinde stil bir kez yeniden uygulanır
                 self.gosterildi = True
                 self.pencere.setStyleSheet(self.pencere.styleSheet())
             return False

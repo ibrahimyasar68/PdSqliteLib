@@ -14,13 +14,13 @@ from servis import kullanici as kullanici_servisi
 
 
 def sekmeler(panel):
-    t = panel.QtLibrary.tabWidget
+    t = panel.sekmeler
     return [t.tabText(i) for i in range(t.count())]
 
 
 def gorunen_butonlar(panel):
-    sayfa = panel.QtLibrary.tab_1
-    return [b.text() for b in sayfa.findChildren(type(panel.QtLibrary.pushButton_1_cikis)) if b.isVisibleTo(panel)]
+    sayfa = panel.ana_sayfa
+    return [b.text() for b in sayfa.findChildren(type(panel.btn_cikis)) if b.isVisibleTo(panel)]
 
 
 @pytest.fixture
@@ -31,7 +31,7 @@ def lib(app, uyarilar):
 def test_ana_sayfada_buton_yok_oturumu_kapat_menude(lib, app):
     for panel in (lib, Guest()):
         assert gorunen_butonlar(panel) == []
-        assert panel.QtLibrary.pushButton_1_cikis.parentWidget() is panel.yan_menu.kart
+        assert panel.btn_cikis.parentWidget() is panel.yan_menu.kart
 
 
 def test_ayarlar_son_sekme(lib, app):

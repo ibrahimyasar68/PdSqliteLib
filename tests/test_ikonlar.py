@@ -29,16 +29,16 @@ def test_eslemelerdeki_ikonlar_tanimli():
 
 def test_panel_butonlarinda_ikon(app, uyarilar):
     lib = Library()
-    q = lib.QtLibrary
-    for buton in (q.pushButton_2_temizle, lib.kitaplar.btn_kaydet, lib.kitaplar.btn_sil,
+    q = lib
+    for buton in (q.liste.btn_temizle, lib.kitaplar.btn_kaydet, lib.kitaplar.btn_sil,
                   lib.odunc.btn_ver, lib.odunc.btn_iade, lib.odunc.btn_aktar, lib.filtre.btn_temizle,
-                  q.pushButton_1_cikis, lib.ayarlar.buton("Yedek Al")):
+                  q.btn_cikis, lib.ayarlar.buton("Yedek Al")):
         assert not buton.icon().isNull(), buton.text()
 
 
 def test_sekmelerde_ikon(app, uyarilar):
     for panel in (Library(), Guest()):
-        t = panel.QtLibrary.tabWidget
+        t = panel.sekmeler
         assert all(not t.tabIcon(i).isNull() for i in range(t.count()))
 
 
@@ -56,7 +56,7 @@ def test_ikincil_ve_asil_butonlar(app, uyarilar):
     assert k.btn_kaydet.property("rol") is None                         # asıl işlem: dolu mavi
     assert k.btn_vazgec.property("rol") == "ikincil" and k.btn_yeni.property("rol") == "ikincil"
     assert lib.odunc.btn_ver.property("rol") is None and lib.odunc.btn_aktar.property("rol") == "ikincil"
-    assert lib.QtLibrary.pushButton_2_temizle.property("rol") == "ikincil"
+    assert lib.liste.btn_temizle.property("rol") == "ikincil"
     y = KullaniciYonetimi("admin")
     assert y.btn_sil.objectName() == "kullanici_sil"                    # silme kırmızı
 

@@ -20,7 +20,7 @@ subprocess.run([arac("pyrcc5"), "media.qrc", "-o", os.path.join("..", "bforms", 
 print("media/media.qrc başarıyla dönüştürüldü.")
 
 ## Arayüzler: --import-from ile kaynak dosyası "from bforms import media_rc" olarak içe aktarılır
-for ad in ("library", "login", "guest"):
+for ad in ("login",):        # paneller kodla kurulur (acodes/panel.py); yalnızca giriş ekranı .ui
     subprocess.run([arac("pyuic5"), "--import-from=bforms", f"cuis/{ad}.ui", "-o", f"bforms/{ad}_py.py"],
                    check=True, cwd=KOK)
     print(f"cuis/{ad}.ui başarıyla dönüştürüldü.")

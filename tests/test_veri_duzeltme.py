@@ -103,9 +103,9 @@ def test_eski_yedek_geri_yuklenince_yoksay_tablosu_olusur(db, tmp_path):
 @pytest.fixture
 def lib(app, uyarilar, varyasyonlar):
     l = Library()
-    q = l.QtLibrary
-    q.tabWidget.setCurrentWidget(q.tab_3)
-    q.tabWidget_3.setCurrentWidget(l.duzeltme)
+    q = l
+    q.sekmeler.setCurrentWidget(q.kayit)
+    q.alt_sekmeler[q.kayit].setCurrentWidget(l.duzeltme)
     return l
 
 
@@ -115,8 +115,8 @@ def alan_sec(ekran, kolon):
 
 def test_sekme_acilinca_oneriler_yuklenir(lib):
     e = lib.duzeltme
-    q = lib.QtLibrary
-    assert q.tabWidget_3.tabText(q.tabWidget_3.indexOf(e)) == "Veri Düzeltme"
+    q = lib
+    assert q.alt_sekmeler[q.kayit].tabText(q.alt_sekmeler[q.kayit].indexOf(e)) == "Veri Düzeltme"
     alan_sec(e, "Yayinevi")
     assert e.agac.topLevelItemCount() == 1 and e.ozet.text() == "1 öneri (1 kesin, 0 olası)"
     assert e.hedef.text() == "Adam Yayınları"       # en çok kullanılan yazım önerilir
@@ -170,5 +170,5 @@ def test_yoksay_butonu(lib):
 def test_eksik_kitaba_cift_tiklama_duzenlemede_acar(lib):
     e = lib.duzeltme
     e.eksik_ac(0)
-    q = lib.QtLibrary
-    assert q.tabWidget_3.currentWidget() is lib.kitaplar and lib.kitaplar.alan["Adi"].text() == "Kuyucaklı Yusuf"
+    q = lib
+    assert q.alt_sekmeler[q.kayit].currentWidget() is lib.kitaplar and lib.kitaplar.alan["Adi"].text() == "Kuyucaklı Yusuf"

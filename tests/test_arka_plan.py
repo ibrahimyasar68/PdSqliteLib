@@ -9,7 +9,7 @@ from acodes.library import Library
 
 def goster(panel, sayfa=None):
     if sayfa is not None:
-        panel.QtLibrary.tabWidget.setCurrentWidget(sayfa)
+        panel.sekmeler.setCurrentWidget(sayfa)
     panel.resize(1200, 700)
     panel.show()
     QApplication.processEvents()
@@ -35,11 +35,11 @@ def test_giris_sayfasinda_fotograf_perdesiz(app, uyarilar, panel):
 
 def test_diger_sayfalarda_duz_zemin(app, uyarilar):
     p = Library()
-    goruntu = goster(p, p.QtLibrary.tab_2)
+    goruntu = goster(p, p.liste)
     en = goruntu.width()
     assert renk(goruntu, en - 18, 350) == tema.SAYFA.lower()       # sayfanın tablo dışında kalan kenarı
     assert renk(goruntu, en - 3, 350) == tema.ZEMIN.lower()        # sayfanın dışı: fotoğraf yok
-    p.QtLibrary.tabWidget.setCurrentIndex(0)                       # Giriş'e dönünce fotoğraf yeniden çizilir
+    p.sekmeler.setCurrentIndex(0)                       # Giriş'e dönünce fotoğraf yeniden çizilir
     QApplication.processEvents()
     goruntu = p.centralWidget().grab().toImage()
     assert goruntu.pixelColor(en - 3, 350).lightness() < 200

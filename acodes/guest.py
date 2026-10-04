@@ -1,46 +1,26 @@
-from PyQt5.QtCore import pyqtSignal
-from PyQt5.QtWidgets import QMainWindow
-from bforms.guest_py import Ui_MainWindow
-from acodes.ortak import OrtakSekmeler
-from acodes.kitaplarim import Kitaplarim
+from acodes import kilavuz, tema
+from acodes.ana_sayfa import AnaSayfa
 from acodes.ayarlar import Ayarlar
-from acodes import kilavuz
-from acodes.ana_sayfa import AnaSayfa, ana_sayfayi_yerlestir
-from acodes import arka_plan, bildirim, ikonlar, kisayollar
-from acodes.yan_menu import YanMenu, menuyu_yerlestir, segmente_cevir
+from acodes.kitaplarim import Kitaplarim
+from acodes.panel import Panel, Sayfa
 from database.istatistik import genel_ozet
 from database.kitaplar import son_eklenenler
 from database.kullanicilar import kullanici_adiyla_bul
 from database.odunc import gecikme_gunu, kalan_gun_yazi, tarih_yazi, teslim_tarihi, uye_odunc
-from acodes import tema
 
 
-## Guest paneli: Giriş, Kitap Listesi, Filtre ve İstatistik sekmeleri (salt okunur)
-class Guest(OrtakSekmeler, QMainWindow):
-    oturum_kapandi = pyqtSignal()
+## Üye paneli: Giriş, Kitap Listesi, Filtre, İstatistik (salt okunur), Kitaplarım ve Hesabım
+class Guest(Panel):
     PENCERE_BASLIGI = "Yaşar Kütüphanesi - Üye Paneli"
     ROL = "Üye"
 
-    def __init__(self):
-        super().__init__()
-        self.QtLibrary = Ui_MainWindow()
-        self.QtLibrary.setupUi(self)
-        tema.uygula(self)   # .ui renkleri yerine tek tema
-        self.arka_plan=arka_plan.uygula(self)   # yaprak fotoğrafı tüm panelin zemininde
-        self.bildirim=bildirim.baglan(self,self.QtLibrary.statusbar)   # mesajlar kısa süreli bildirim olarak
-        self.QtLibrary.tabWidget.setCurrentIndex(0)
-        self.dur_msj=2000
-        self.aktif_kullanici=None
-        self.ortak_sekmeleri_kur()
-
+    def sayfalari_kur(self):
         ###  Kitaplarım: üyenin elindeki ve daha önce aldığı kitaplar  ###
         self.kitaplarim=Kitaplarim()
-        self.QtLibrary.tabWidget.addTab(self.kitaplarim,"Kitaplarım")
 
         ###  Ayarlar: hesap bilgileri ve şifre değiştirme  ###
         self.ayarlar=Ayarlar([("Hesabım", [("Şifremi Değiştir", self.sifremi_degistir, "Kendi şifrenizi değiştirin")],
                                self.hesap_bilgisi)], kilavuz=kilavuz.UYE)
-        self.QtLibrary.tabWidget.addTab(self.ayarlar,"Ayarlar")
 
         ###  Ana sayfa özet panosu  ###
         self.ana_sayfa=AnaSayfa(
@@ -48,27 +28,18 @@ class Guest(OrtakSekmeler, QMainWindow):
                      ("geciken","Gecikmiş",tema.TEHLIKE,"saat"),("teslim","En yakın teslim",tema.YESIL,"takvim")],
             listeler=[("elimdeki","Elimdeki kitaplar",["Kitap","Teslim Tarihi","Durum"],"Şu an elinizde ödünç kitap yok."),
                       ("son","Son eklenen kitaplar",["Adı","Yazarı"],"Henüz kitap eklenmemiş.")])
-        ana_sayfayi_yerlestir(self.QtLibrary,self.ana_sayfa)
         k=self.ana_sayfa.kartlar
         k["kitap"].tiklanabilir(self.tum_kitaplari_goster,"Kitap listesini aç")
         for anahtar in ("elimdeki","geciken","teslim"):
-            k[anahtar].tiklanabilir(lambda: self.QtLibrary.tabWidget.setCurrentWidget(self.kitaplarim),"Kitaplarım sekmesini aç")
+            k[anahtar].tiklanabilir(lambda: self.ac(self.kitaplarim),"Kitaplarım sekmesini aç")
         self.ana_sayfa_yenile()
-        self.QtLibrary.tabWidget.currentChanged.connect(self.sekme_degisti)
 
-        ###  İkonlar  ###
-        ui=self.QtLibrary
-        ikonlar.butonlara_uygula(self)
-        sayfalar={ui.tab_1:"tab_1",ui.tab_2:"tab_2",ui.tab_4:"tab_4",ui.tab_5:"tab_5",
-                  self.kitaplarim:"kitaplarim",self.ayarlar:"ayarlar"}
-        ikonlar.sekmelere_uygula(ui.tabWidget,sayfalar)
-
-        ###  Sol kenar menüsü (sekme çubuğu yerine) ve alt sekmeler yerine üstte anahtar  ###
-        self.yan_menu=YanMenu(ui.tabWidget,sayfalar,ui.pushButton_1_cikis)
-        menuyu_yerlestir(self,self.yan_menu)
-        kisayollar.panele_kur(self,ui.tabWidget,ui.tab_2,self.arama)   # Ctrl+1..9 menü, Ctrl+F arama
-        self.hizli_arama_kur(sayfalar)                                 # Ctrl+K
-        segmente_cevir(ui.tabWidget_5,"İstatistik")
+        return [Sayfa("giris","Giriş",self.ana_sayfa,self.ana_sayfa_yenile),
+                Sayfa("liste","Kitap Listesi",self.liste,self.liste.listele),
+                Sayfa("filtre","Filtre",self.filtre),
+                Sayfa("istatistik","İstatistik",self.istatistik),
+                Sayfa("kitaplarim","Kitaplarım",self.kitaplarim,self.kitaplarim_yenile),
+                Sayfa("ayarlar","Ayarlar",self.ayarlar)]
 
     def user_name(self,name):
         super().user_name(name)
@@ -79,17 +50,8 @@ class Guest(OrtakSekmeler, QMainWindow):
 
     def kitaplarim_yenile(self):
         sayi=self.kitaplarim.yukle(self.aktif_kullanici)
-        sekme=self.QtLibrary.tabWidget.indexOf(self.kitaplarim)
-        self.QtLibrary.tabWidget.setTabText(sekme, f"Kitaplarım ({sayi} gecikmiş)" if sayi else "Kitaplarım")
-        if hasattr(self,"yan_menu"):
-            self.yan_menu.yenile()
+        self.sayfa_adi(self.kitaplarim, f"Kitaplarım ({sayi} gecikmiş)" if sayi else "Kitaplarım")
         return sayi
-
-    def sekme_degisti(self):
-        if self.QtLibrary.tabWidget.currentWidget() is self.kitaplarim:
-            self.kitaplarim_yenile()
-        elif self.QtLibrary.tabWidget.currentWidget() is self.QtLibrary.tab_1:
-            self.ana_sayfa_yenile()
 
     def ana_sayfa_yenile(self):
         elimdeki=[(kitap,verilis) for kitap,_,verilis,durum,_ in uye_odunc(self.aktif_kullanici)
@@ -107,10 +69,6 @@ class Guest(OrtakSekmeler, QMainWindow):
         self.ana_sayfa.listeler["elimdeki"].doldur(
             [[kitap,tarih_yazi(teslim_tarihi(v)),kalan_gun_yazi(v)] for kitap,v in elimdeki],vurgulu=gecikmis)
         self.ana_sayfa.listeler["son"].doldur([[adi,yazar] for _,adi,yazar in son_eklenenler()])
-
-    def tum_kitaplari_goster(self):
-        self.QtLibrary.tabWidget.setCurrentWidget(self.QtLibrary.tab_2)
-        self.listele()
 
     def hesap_bilgisi(self):
         k=kullanici_adiyla_bul(self.aktif_kullanici) if self.aktif_kullanici else None

@@ -6,7 +6,8 @@
 import re
 
 from PyQt5.QtCore import QSize, Qt, QTimer, pyqtSignal
-from PyQt5.QtWidgets import QButtonGroup, QFrame, QHBoxLayout, QLabel, QPushButton, QSizePolicy, QVBoxLayout, QWidget
+from PyQt5.QtWidgets import (QButtonGroup, QFrame, QGridLayout, QHBoxLayout, QLabel, QPushButton, QSizePolicy, QTabWidget,
+                             QVBoxLayout, QWidget)
 
 from acodes import hareket, ikonlar, tema, tercihler
 from acodes.kilavuz import IMZA
@@ -39,9 +40,9 @@ QPushButton#daralt:hover {{ background-color: rgba(255,255,255,0.10); }}
                font-weight: {t.YARI_KALIN}; }}
 #kul_ad {{ color: white; font-size: {Y.metin}px; font-weight: {t.YARI_KALIN}; }}
 #kul_rol {{ color: {t.MENU_IKINCIL}; font-size: {Y.ince}px; }}
-QPushButton#pushButton_1_cikis {{ background: transparent; color: {t.MENU_CIKIS}; border: 1px solid rgba(252,165,165,0.5);
+QPushButton#oturum_kapat {{ background: transparent; color: {t.MENU_CIKIS}; border: 1px solid rgba(252,165,165,0.5);
                border-radius: {K.kucuk}px; padding: 8px; font-size: {Y.ince}px; font-weight: {t.ORTA}; }}
-QPushButton#pushButton_1_cikis:hover {{ background-color: rgba(220,38,38,0.25); color: white; }}
+QPushButton#oturum_kapat:hover {{ background-color: rgba(220,38,38,0.25); color: white; }}
 #imza {{ color: {t.MENU_SONUK}; font-size: {Y.kucuk}px; }}
 """
 
@@ -220,21 +221,6 @@ class YanMenu(QFrame):
         self.yenile()
 
 
-def menuyu_yerlestir(pencere, menu):
-    """Orta alan: solda menü, sağda sekme sayfaları."""
-    sekmeler = menu.sekmeler
-    duzen = pencere.centralWidget().layout()
-    duzen.removeWidget(sekmeler)
-    kap = QWidget()
-    yatay = QHBoxLayout(kap)
-    yatay.setContentsMargins(6, 6, 6, 6)
-    yatay.setSpacing(12)
-    yatay.addWidget(menu)
-    yatay.addWidget(sekmeler, 1)
-    duzen.addWidget(kap, 0, 0)
-    sekmeler.setStyleSheet("QTabWidget#tabWidget::pane { border: none; }")
-
-
 def segment_stil():
     return f"""
 #segment {{ background-color: {tema.YUZEY_2}; border-radius: {tema.KOSE.orta}px; }}
@@ -304,3 +290,16 @@ def segmente_cevir(sekmeler, baslik=None):
     yeni.addWidget(sekmeler, 1)
     duzen.addLayout(yeni, 0, 0)
     return anahtar
+
+
+def alt_sekmeli_sayfa(baslik, alt_sayfalar):
+    """[(ad, bileşen)] alt sayfalarından bir menü sayfası: üstte sayfa adı ve alt bölüm anahtarı, altında seçili
+    alt sayfa. (sayfa, alt sekmeler) döndürür."""
+    sayfa = QWidget()
+    duzen = QGridLayout(sayfa)
+    sekmeler = QTabWidget()
+    for ad, bilesen in alt_sayfalar:
+        sekmeler.addTab(bilesen, ad)
+    duzen.addWidget(sekmeler, 0, 0)
+    segmente_cevir(sekmeler, baslik)
+    return sayfa, sekmeler

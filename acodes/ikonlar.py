@@ -145,9 +145,9 @@ BUTON_IKONLARI = {
     "Aramayı Temizle": "x", "Hatırlatma Metni": "kopyala",
 }
 
-# Sekme nesnesinin adına göre ikon
-SEKME_IKONLARI = {"tab_1": "ev", "tab_2": "liste", "tab_3": "kalem", "tab_4": "huni", "tab_5": "grafik",
-                  "tab_6": "takas", "ayarlar": "disli", "kitaplarim": "kitap"}
+# Menü sayfalarının ikonları (Sayfa.anahtar -> çizim adı)
+SEKME_IKONLARI = {"giris": "ev", "liste": "liste", "kayit": "kalem", "filtre": "huni", "istatistik": "grafik",
+                  "verme": "takas", "ayarlar": "disli", "kitaplarim": "kitap"}
 
 
 # Yardımcı işlemler beyaz zeminli, çerçeveli (ikincil) gösterilir; asıl işlem (Kaydet, Ödünç Ver ...) mavi kalır

@@ -59,8 +59,8 @@ def test_ctrl_k_paleti_acar_oklar_ve_enter(lib):
     assert "KITAPLAR" in gorunen(p) and p.liste.currentItem().text().startswith("Kuyucaklı Yusuf")
     QTest.keyClick(p.arama, Qt.Key_Return)
     QTest.qWait(10)
-    q = lib.QtLibrary
-    assert not p.isVisible() and q.tabWidget.currentWidget() is q.tab_3 and lib.kitaplar.kitap_id == 7
+    q = lib
+    assert not p.isVisible() and q.sekmeler.currentWidget() is q.kayit and lib.kitaplar.kitap_id == 7
 
 
 def test_ok_tuslari_basliklari_atlar(lib):
@@ -76,7 +76,7 @@ def test_ok_tuslari_basliklari_atlar(lib):
 def test_uye_secince_odunc_ekrani_o_uyeyle_acilir(lib):
     _, _, _, islev = next(o for g, ogeler in lib.komut_kaynagi("ayse1") if g == "Üyeler" for o in ogeler)
     islev()
-    assert lib.QtLibrary.tabWidget_6.currentWidget() is lib.odunc and lib.odunc.uye.currentData() == 3
+    assert lib.alt_sekmeler[lib.verme].currentWidget() is lib.odunc and lib.odunc.uye.currentData() == 3
 
 
 def test_menude_hizli_ara_butonu(lib):
@@ -95,8 +95,8 @@ def test_uyede_uye_ve_yonetici_islemleri_yok(app):
     assert "Üyeler" not in gruplar(g, "ayse")
     _, _, _, islev = next(o for grup, ogeler in g.komut_kaynagi("satranç") if grup == "Kitaplar" for o in ogeler)
     islev()
-    assert g.QtLibrary.tabWidget.currentWidget() is g.QtLibrary.tab_2 and g.arama.text() == "Satranç"
-    assert g.QtLibrary.tableWidget_2.rowCount() == 1
+    assert g.sekmeler.currentWidget() is g.liste and g.liste.arama.text() == "Satranç"
+    assert g.liste.tablo.rowCount() == 1
 
 
 # --- Sağ tık ---
@@ -107,15 +107,15 @@ def menu_metinleri(tablo, satir):
 
 
 def test_kitap_listesinde_sag_tik_islemleri(lib, db):
-    q = lib.QtLibrary
-    q.tabWidget.setCurrentWidget(q.tab_2)
-    satir = next(r for r in range(q.tableWidget_2.rowCount()) if q.tableWidget_2.item(r, 1).text() == "Satranç")
-    e = menu_metinleri(q.tableWidget_2, satir)
+    q = lib
+    q.sekmeler.setCurrentWidget(q.liste)
+    satir = next(r for r in range(q.liste.tablo.rowCount()) if q.liste.tablo.item(r, 1).text() == "Satranç")
+    e = menu_metinleri(q.liste.tablo, satir)
     assert list(e)[:4] == ["Düzenle", "Ödünç ver...", "İade al...", "Ödünç geçmişi"]
     assert e["Ödünç ver..."].isEnabled() and not e["İade al..."].isEnabled() and not e["Ödünç geçmişi"].isEnabled()
     assert "Excel / CSV olarak dışa aktar..." in e
     e["Ödünç ver..."].trigger()
-    assert q.tabWidget_6.currentWidget() is lib.odunc and lib.odunc.kitap.currentData() == 6
+    assert q.alt_sekmeler[q.verme].currentWidget() is lib.odunc and lib.odunc.kitap.currentData() == 6
 
 
 def test_sag_tik_iade_ve_gecmis(lib, db):
@@ -129,7 +129,7 @@ def test_sag_tik_iade_ve_gecmis(lib, db):
     e["İade al..."].trigger()
     assert lib.odunc.secili_odunc() == (3, 6)
     menu_metinleri(t, 0)["Ödünç geçmişi"].trigger()
-    assert lib.QtLibrary.tabWidget_6.currentWidget() is lib.gecmis and lib.gecmis.kitap.currentData() == 6
+    assert lib.alt_sekmeler[lib.verme].currentWidget() is lib.gecmis and lib.gecmis.kitap.currentData() == 6
 
 
 def test_odunc_listesinde_sag_tik(lib, db):

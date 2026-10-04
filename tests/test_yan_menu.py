@@ -30,12 +30,12 @@ def ogeler(menu):
 
 def test_menu_sekmelerin_yerinde(lib):
     m = lib.yan_menu
-    q = lib.QtLibrary
-    assert q.tabWidget.tabBar().isHidden()
+    q = lib
+    assert q.sekmeler.tabBar().isHidden()
     assert ogeler(m) == ["Giriş", "Kitap Listesi", "Kitap Kayıt", "Filtre", "İstatistik", "Kitap Verme", "Ayarlar"]
     m.ogeler[2][0].click()
-    assert q.tabWidget.currentWidget() is q.tab_3 and m.grup.checkedId() == 2
-    q.tabWidget.setCurrentWidget(lib.ayarlar)                   # başka yoldan geçince de menü işaretlenir
+    assert q.sekmeler.currentWidget() is q.kayit and m.grup.checkedId() == 2
+    q.sekmeler.setCurrentWidget(lib.ayarlar)                   # başka yoldan geçince de menü işaretlenir
     assert m.grup.checkedButton() is m.ogeler[6][0]
     assert m.baslik.text() == "Yaşar Kütüphanesi"
     assert ogeler(Guest().yan_menu) == ["Giriş", "Kitap Listesi", "Filtre", "İstatistik", "Kitaplarım", "Ayarlar"]
@@ -72,51 +72,51 @@ def test_gecikme_rozeti(app, uyarilar, db):
 
 
 def test_alt_sekmeler_segment_anahtari(lib):
-    q = lib.QtLibrary
-    for alt in (q.tabWidget_3, q.tabWidget_5, q.tabWidget_6):
+    q = lib
+    for alt in (q.alt_sekmeler[q.kayit], q.istatistik.sekmeler, q.alt_sekmeler[q.verme]):
         assert alt.tabBar().isHidden()
     from acodes.yan_menu import SegmentAnahtari
-    anahtar = q.tab_6.findChild(SegmentAnahtari)
+    anahtar = q.verme.findChild(SegmentAnahtari)
     assert [b.text() for b in anahtar.grup.buttons()] == ["Ödünç ve İade", "Ödünç Geçmişi"]
     anahtar.grup.button(1).click()
-    assert q.tabWidget_6.currentWidget() is lib.gecmis
+    assert q.alt_sekmeler[q.verme].currentWidget() is lib.gecmis
 
 
 # --- Kolon seçici ---
 
 def test_kolon_gizle_hatirla_zorunlular_gizlenmez(app, uyarilar):
     l = Library()
-    s, t = l.liste_kolonlari, l.QtLibrary.tableWidget_2
+    s, t = l.liste.kolonlar, l.liste.tablo
     s.goster(3, False)                                          # Çeviren
     s.goster(1, False)                                          # Adı: zorunlu, gizlenmez
     assert t.isColumnHidden(3) and not t.isColumnHidden(1)
     eylemler = s.menu().actions()
     assert not eylemler[1].isEnabled() and eylemler[0].isEnabled() and not eylemler[3].isChecked()
-    assert Library().QtLibrary.tableWidget_2.isColumnHidden(3)  # hatırlanır
+    assert Library().liste.tablo.isColumnHidden(3)  # hatırlanır
     s.hepsini_goster()
-    assert not Library().QtLibrary.tableWidget_2.isColumnHidden(3)
+    assert not Library().liste.tablo.isColumnHidden(3)
 
 
 def test_kayit_no_ve_isbn_varsayilan_gizli_secim_yapilinca_hatirlanir(app, uyarilar):
     from acodes import tercihler
     tercihler._dosya().remove("kolonlar/kitap_listesi")            # henüz seçim yapılmamış
-    t = Library().QtLibrary.tableWidget_2
+    t = Library().liste.tablo
     assert t.isColumnHidden(0) and t.isColumnHidden(8) and not t.isColumnHidden(1)   # Kayıt No, ISBN
     l = Library()
-    l.liste_kolonlari.goster(0, True)
-    t = Library().QtLibrary.tableWidget_2
+    l.liste.kolonlar.goster(0, True)
+    t = Library().liste.tablo
     assert not t.isColumnHidden(0) and t.isColumnHidden(8)
-    l.liste_kolonlari.hepsini_goster()
+    l.liste.kolonlar.hepsini_goster()
 
 
 def test_sigmayan_listede_kolonlar_kendiliginden_gizlenir_ve_geri_gelir(app, uyarilar):
     from acodes import tercihler
     l = Library()
-    q = l.QtLibrary
-    t, s = q.tableWidget_2, l.liste_kolonlari
+    q = l
+    t, s = q.liste.tablo, l.liste.kolonlar
     l.resize(1100, 700)
     l.show()
-    q.tabWidget.setCurrentWidget(q.tab_2)
+    q.sekmeler.setCurrentWidget(q.liste)
     QApplication.processEvents()
     s.denetle()
     assert s.oto_gizli and not s.sigmiyor() and not s.soru.isVisible()      # yer açıldı, soru sorulmaz
@@ -143,10 +143,10 @@ def test_sinirdaki_listede_kolonlar_gidip_gelmez(app, uyarilar):
     açılınca sığmayıp yeniden gizleniyordu (liste titriyordu)."""
     import time
     l = Library()
-    q = l.QtLibrary
-    t, s = q.tableWidget_2, l.liste_kolonlari
+    q = l
+    t, s = q.liste.tablo, l.liste.kolonlar
     l.show()
-    q.tabWidget.setCurrentWidget(q.tab_2)
+    q.sekmeler.setCurrentWidget(q.liste)
     QApplication.processEvents()
     gorunen = lambda: tuple(c for c in range(t.columnCount()) if not t.isColumnHidden(c))
     for en in range(1300, 1700, 20):              # sığma sınırı bu aralıkta bir yerde
@@ -164,12 +164,12 @@ def test_sinirdaki_listede_kolonlar_gidip_gelmez(app, uyarilar):
 
 def test_yine_sigmayan_listede_soru_cikar_ve_bir_daha_sorulmaz(app, uyarilar):
     l = Library()
-    q = l.QtLibrary
+    q = l
     l.resize(1100, 700)
     l.show()
-    q.tabWidget.setCurrentWidget(q.tab_2)
+    q.sekmeler.setCurrentWidget(q.liste)
     QApplication.processEvents()
-    s = l.liste_kolonlari
+    s = l.liste.kolonlar
     s.PAY_EN = 400                  # uzun kolonlar çok yer istesin: gizlenecek kolon kalmayınca da sığmaz
     s.denetle()
     assert s.sigmiyor() and s.soru.isVisible()
@@ -182,7 +182,7 @@ def test_yine_sigmayan_listede_soru_cikar_ve_bir_daha_sorulmaz(app, uyarilar):
 
 def test_kolon_secici_uc_listede(app, uyarilar):
     l = Library()
-    for secici in (l.liste_kolonlari, l.kitaplar.kolonlar, l.filtre.kolonlar):
+    for secici in (l.liste.kolonlar, l.kitaplar.kolonlar, l.filtre.kolonlar):
         assert secici.buton.text() == "Kolonlar" and secici.buton.property("rol") == "ikincil"
 
 
@@ -202,8 +202,8 @@ def test_daralma_ve_sayfa_gecisi_animasyonlu(app, uyarilar, monkeypatch):
     assert m.baslik.isHidden()                                          # açılırken yazılar genişlik oturunca gelir
     QTest.qWait(tema.SURE.orta + 150)
     assert m.width() == ACIK_EN and not m.baslik.isHidden()
-    sayfa = l.QtLibrary.tab_2
-    l.QtLibrary.tabWidget.setCurrentWidget(sayfa)
+    sayfa = l.liste
+    l.sekmeler.setCurrentWidget(sayfa)
     assert sayfa.graphicsEffect() is not None                           # yeni sayfa belirerek gelir
     QTest.qWait(tema.SURE.kisa + 150)
     assert sayfa.graphicsEffect() is None                               # bitince efekt kalkar

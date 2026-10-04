@@ -4,7 +4,6 @@
 
 from dataclasses import replace
 
-from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import (QAbstractItemView, QComboBox, QDialog, QDialogButtonBox, QFormLayout,
                              QHBoxLayout, QHeaderView, QLineEdit, QMessageBox, QPushButton,
                              QTableWidget, QVBoxLayout)
@@ -199,15 +198,3 @@ class KullaniciYonetimi(QDialog):
             except KuralHatasi as hata:
                 QMessageBox.warning(self, "Uyarı!", str(hata))
             self.yukle()
-
-
-def panel_butonu(ornek, metin, ad):
-    """Paneldeki mevcut bir butonla aynı yazı tipi ve stilde yeni buton oluşturur."""
-    buton = QPushButton(metin)
-    buton.setObjectName(ad)
-    buton.setFont(ornek.font())
-    buton.setMinimumSize(ornek.minimumSize())
-    buton.setMaximumSize(ornek.maximumSize())
-    buton.setCursor(Qt.PointingHandCursor)
-    buton.setStyleSheet(ornek.styleSheet().replace(ornek.objectName(), ad))
-    return buton

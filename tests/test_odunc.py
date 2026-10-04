@@ -78,8 +78,8 @@ def lib(app, uyarilar):
 
 
 def sekme_adi(lib):
-    q = lib.QtLibrary
-    return q.tabWidget.tabText(q.tabWidget.indexOf(q.tab_6))
+    q = lib
+    return q.sekmeler.tabText(q.sekmeler.indexOf(q.verme))
 
 
 def test_sekme_adinda_gecikme_sayisi(app, uyarilar, db):
@@ -97,8 +97,8 @@ def test_gecmis_sekmesi(lib, db):
     odunc_ekle(db, 4, 3, gun_once(2))
     g = lib.gecmis
     g.yenile()
-    q = lib.QtLibrary
-    assert q.tabWidget_6.tabText(q.tabWidget_6.indexOf(g)) == "Ödünç Geçmişi"
+    q = lib
+    assert q.alt_sekmeler[q.verme].tabText(q.alt_sekmeler[q.verme].indexOf(g)) == "Ödünç Geçmişi"
     assert g.tablo.rowCount() == 3 and g.ozet.text() == "3 kayıt, 2 dışarıda"
     durumlar = [g.tablo.item(r, 6).text() for r in range(3)]
     assert durumlar == ["Dışarıda", "Gecikmiş (5 gün)", "İade edildi (9 gün geç)"]

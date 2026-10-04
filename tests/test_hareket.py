@@ -27,9 +27,9 @@ def secili_satir(tablo):
 
 
 def test_kaydedilen_kitap_satiri_parlar_ve_soner(lib):
-    q = lib.QtLibrary
-    q.tabWidget.setCurrentWidget(q.tab_3)
-    q.tabWidget_3.setCurrentWidget(lib.kitaplar)
+    q = lib
+    q.sekmeler.setCurrentWidget(q.kayit)
+    q.alt_sekmeler[q.kayit].setCurrentWidget(lib.kitaplar)
     k = lib.kitaplar
     k.yeni()
     k.alan["Adi"].setText("Parlayan Kitap")
@@ -51,8 +51,8 @@ def test_odunc_verilen_satir_parlar(lib):
 
 
 def test_yeni_parlama_eskisini_kaldirir(lib):
-    tablo = lib.QtLibrary.tableWidget_2
-    lib.QtLibrary.tabWidget.setCurrentWidget(lib.QtLibrary.tab_2)
+    tablo = lib.liste.tablo
+    lib.sekmeler.setCurrentWidget(lib.liste)
     ilk = hareket.satiri_parlat(tablo, 0)
     ikinci = hareket.satiri_parlat(tablo, 1)
     assert ilk is not ikinci and tablo._parlama is ikinci
@@ -62,7 +62,7 @@ def test_yeni_parlama_eskisini_kaldirir(lib):
 def test_animasyon_kapaliyken_parlama_yok(app, uyarilar):
     l = Library()
     l.show()
-    assert hareket.satiri_parlat(l.QtLibrary.tableWidget_2, 0) is None  # testlerde ANIMASYON = False
+    assert hareket.satiri_parlat(l.liste.tablo, 0) is None  # testlerde ANIMASYON = False
     l.close()
 
 
@@ -71,13 +71,13 @@ def test_hareketi_azalt_ayari(lib, monkeypatch):
     assert not kutu.isChecked()
     kutu.setChecked(True)
     assert hareket.AZALT and not hareket.izinli() and tercihler.mantiksal(hareket.TERCIH)
-    sayfa = lib.QtLibrary.tab_2
-    lib.QtLibrary.tabWidget.setCurrentWidget(sayfa)
+    sayfa = lib.liste
+    lib.sekmeler.setCurrentWidget(sayfa)
     assert sayfa.graphicsEffect() is None                               # sayfa beklemeden görünür
     lib.yan_menu.btn_daralt.click()
     assert lib.yan_menu.width() == lib.yan_menu.minimumWidth()          # menü hemen daralır
     lib.yan_menu.btn_daralt.click()
-    lib.QtLibrary.statusbar.showMessage("Deneme silindi")
+    lib.statusBar().showMessage("Deneme silindi")
     lib.bildirim.kaybol()
     assert lib.bildirim.kutu.isHidden()                                 # bildirim solmadan kaybolur
     kutu.setChecked(False)
@@ -107,8 +107,8 @@ def test_yanlis_giriste_kart_sallanir_bos_alan_kirmizi(app, uyarilar, animasyonl
 
 
 def test_hatali_alan_vurgulanir(lib):
-    q = lib.QtLibrary
-    q.tabWidget.setCurrentWidget(q.tab_3)
+    q = lib
+    q.sekmeler.setCurrentWidget(q.kayit)
     k = lib.kitaplar
     k.yeni()
     k.kaydet()                                                          # kitap adı boş
@@ -152,15 +152,15 @@ def test_kart_golgesi_yumusakca_buyur(lib):
 
 
 def test_grafikler_buyuyerek_cizilir(lib):
-    q = lib.QtLibrary
-    q.tabWidget.setCurrentWidget(q.tab_5)
-    q.tabWidget_5.setCurrentIndex(1)
-    g = lib.grafikler.yazarlar
+    q = lib
+    q.sekmeler.setCurrentWidget(q.istatistik)
+    q.istatistik.sekmeler.setCurrentIndex(1)
+    g = lib.istatistik.grafikler.yazarlar
     assert g.ilerleme < 1 and g.animasyon.state()
     assert g.oran(0) >= g.oran(len(g.veri) - 1)                         # ilk çubuk önde
     QTest.qWait(tema.SURE.sayac + 150)
     assert g.ilerleme == 1.0 and all(g.oran(i) == 1.0 for i in range(len(g.veri)))
-    lib.grafikler.yenile()                                              # veri aynıysa yeniden çizilmez
+    lib.istatistik.grafikler.yenile()                                              # veri aynıysa yeniden çizilmez
     assert not g.animasyon.state()
 
 
@@ -181,9 +181,9 @@ def test_menu_vurgusu_kayarak_gider(lib):
 
 def test_segment_vurgusu_kayar(lib):
     from acodes.yan_menu import SegmentAnahtari
-    q = lib.QtLibrary
-    q.tabWidget.setCurrentWidget(q.tab_3)
-    anahtar = q.tab_3.findChild(SegmentAnahtari)
+    q = lib
+    q.sekmeler.setCurrentWidget(q.kayit)
+    anahtar = q.kayit.findChild(SegmentAnahtari)
     QTest.qWait(50)
     anahtar.grup.button(1).click()
     assert anahtar.vurgu.animasyon.state()
@@ -221,7 +221,7 @@ def test_geri_al_karti_yeni_mesajla_kaybolmaz(lib):
     cagri = []
     b.eylemli("'Deneme' silindi", "Geri Al", lambda: cagri.append(1))
     eski = b.son
-    lib.QtLibrary.statusbar.showMessage("Liste görüntülendi.")
+    lib.statusBar().showMessage("Liste görüntülendi.")
     assert b.son is not eski and b.eskiler == [eski] and eski.kutu.isVisible()
     QTest.qWait(tema.SURE.orta + 100)
     assert eski.kutu.y() + eski.kutu.height() + bildirim.ARALIK == b.kutu.y()   # yeni kart altta, eski üstünde
@@ -229,7 +229,7 @@ def test_geri_al_karti_yeni_mesajla_kaybolmaz(lib):
     assert cagri == [1]
     QTest.qWait(tema.SURE.uzun + 150)
     assert b.eskiler == []
-    lib.QtLibrary.statusbar.showMessage("Başka bir mesaj.")             # eylemsiz kart yeniden kullanılır
+    lib.statusBar().showMessage("Başka bir mesaj.")             # eylemsiz kart yeniden kullanılır
     assert b.eskiler == []
 
 

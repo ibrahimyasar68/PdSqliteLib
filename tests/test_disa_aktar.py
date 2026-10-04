@@ -85,22 +85,19 @@ def test_vazgecilirse_bir_sey_yazilmaz(app, uyarilar, monkeypatch, tablo):
 
 def test_kitap_listesi_arama_sonucunu_aktarir(app, uyarilar, monkeypatch, tmp_path):
     lib = Library()
-    lib.arama.setText("tahir")
+    lib.liste.arama.setText("tahir")
     dosya_sec(monkeypatch, tmp_path / "kitaplar.xlsx")
-    da.disa_aktar(lib, lib.QtLibrary.tableWidget_2, "Kitap Listesi")
+    da.disa_aktar(lib, lib.liste.tablo, "Kitap Listesi")
     sayfa = load_workbook(tmp_path / "kitaplar.xlsx").active
     assert sayfa.max_row == 3 and sayfa["A1"].value == "Adı" and sayfa.title == "Kitap Listesi"   # gizli Kayıt No yazılmaz
 
 
 def test_panellerde_aktar_butonlari(app, uyarilar):
     lib = Library()
-    q = lib.QtLibrary
-    for tablo, ornek in [(q.tableWidget_2, q.pushButton_2_temizle)]:
-        buton = ornek.parentWidget().findChild(type(ornek), f"{ornek.objectName()}_aktar")
-        assert buton is not None and buton.text() == "Dışa Aktar"
-        assert tablo.contextMenuPolicy() == Qt.CustomContextMenu
-    assert q.tableWidget_5_1_2.contextMenuPolicy() == Qt.CustomContextMenu
+    q = lib
+    assert q.liste.btn_aktar.text() == "Dışa Aktar" and q.liste.tablo.contextMenuPolicy() == Qt.CustomContextMenu
+    assert q.istatistik.tablolar[1].contextMenuPolicy() == Qt.CustomContextMenu
     assert lib.gecmis.aktar.text() == "Dışa Aktar" and lib.odunc.btn_aktar.text() == "Dışa Aktar"
     assert lib.filtre.btn_aktar.text() == "Dışa Aktar" and lib.filtre.tablo.contextMenuPolicy() == Qt.CustomContextMenu
     g = Guest()
-    assert g.QtLibrary.tab_2.findChild(type(q.pushButton_2_temizle), "pushButton_2_temizle_aktar") is not None
+    assert g.liste.btn_aktar.text() == "Dışa Aktar" and g.filtre.tablo.contextMenuPolicy() == Qt.CustomContextMenu

@@ -62,18 +62,18 @@ def test_basliga_tiklayinca_siralanir_ve_veri_satirla_tasinir(app):
 
 def test_tablolar_salt_okunur_ve_siralanabilir(app, uyarilar):
     lib = Library()
-    q = lib.QtLibrary
-    for t in (q.tableWidget_2, lib.filtre.tablo, q.tableWidget_5_1_1, lib.odunc.tablo, lib.gecmis.tablo):
+    q = lib
+    for t in (q.liste.tablo, lib.filtre.tablo, q.istatistik.tablolar[0], lib.odunc.tablo, lib.gecmis.tablo):
         assert t.isSortingEnabled()
         assert t.editTriggers() == QAbstractItemView.NoEditTriggers
     g = Guest()
-    assert g.QtLibrary.tableWidget_2.isSortingEnabled()
+    assert g.liste.tablo.isSortingEnabled()
 
 
 def test_kitap_listesi_yila_gore_siralanir(app, uyarilar):
     lib = Library()
-    t = lib.QtLibrary.tableWidget_2
-    lib.listele()
+    t = lib.liste.tablo
+    lib.liste.listele()
     t.sortItems(6, Qt.AscendingOrder)
     yillar = kolon(t, 6)
     assert yillar[0] == "1983" and yillar[-1] == ""   # boş yıl en sonda
@@ -87,11 +87,11 @@ def lib(app, uyarilar):
 
 
 def test_listeden_cift_tiklama_kitabi_duzenlemede_acar(lib):
-    q = lib.QtLibrary
-    lib.arama.setText("şaheser")                   # İklimler'in ikinci baskısı (Id 4)
-    lib.tablodan_kitap_duzenle(q.tableWidget_2, 0)
+    q = lib
+    lib.liste.arama.setText("şaheser")                   # İklimler'in ikinci baskısı (Id 4)
+    lib.tablodan_kitap_duzenle(q.liste.tablo, 0)
     k = lib.kitaplar
-    assert q.tabWidget.currentWidget() is q.tab_3 and q.tabWidget_3.currentWidget() is k
+    assert q.sekmeler.currentWidget() is q.kayit and q.alt_sekmeler[q.kayit].currentWidget() is k
     assert k.kitap_id == 4 and k.alan["Yayinevi"].text() == "Şaheser Romanlar"
     assert k.btn_sil.isEnabled() and k.form_baslik.text() == "Kitap #4"
 
@@ -103,9 +103,9 @@ def test_filtreden_cift_tiklama(lib):
 
 
 def test_bos_satira_cift_tiklama_bir_sey_yapmaz(lib):
-    q = lib.QtLibrary
-    lib.tablodan_kitap_duzenle(q.tableWidget_2, 0)  # liste henüz boş
-    assert q.tabWidget.currentWidget() is q.tab_1
+    q = lib
+    lib.tablodan_kitap_duzenle(q.liste.tablo, 0)  # liste henüz boş
+    assert q.sekmeler.currentWidget() is q.ana_sayfa
 
 
 def test_kullanici_tablosu_siralaninca_dogru_kullanici_secilir(app, uyarilar):
@@ -150,14 +150,14 @@ def test_bos_tablo_mesaji(app):
 
 
 def test_panellerde_bos_tablo_mesajlari(lib, app):
-    q = lib.QtLibrary
-    lib.arama.setText("tahir")
+    q = lib
+    lib.liste.arama.setText("tahir")
     app.processEvents()
-    assert q.tableWidget_2.bos_durum.etiket.isHidden()
-    lib.arama.setText("olmayan kitap")
+    assert q.liste.tablo.bos_durum.etiket.isHidden()
+    lib.liste.arama.setText("olmayan kitap")
     app.processEvents()
-    assert q.tableWidget_2.bos_durum.etiket.text() == "Aramanıza uyan kitap yok."
-    assert not q.tableWidget_2.bos_durum.etiket.isHidden()
+    assert q.liste.tablo.bos_durum.etiket.text() == "Aramanıza uyan kitap yok."
+    assert not q.liste.tablo.bos_durum.etiket.isHidden()
     assert lib.odunc.tablo.bos_durum.etiket.text() == "Şu an dışarıda kitap yok."
 
 
@@ -186,28 +186,28 @@ def sira_numaralari(t):
 
 def test_listelerde_sira_numarasi(app, uyarilar):
     lib = Library()
-    q = lib.QtLibrary
-    q.tabWidget.setCurrentWidget(q.tab_2)
-    t = q.tableWidget_2
+    q = lib
+    q.sekmeler.setCurrentWidget(q.liste)
+    t = q.liste.tablo
     assert not t.verticalHeader().isHidden() and sira_numaralari(t) == list(range(1, 9))   # son numara = kayıt sayısı
     t.sortItems(0, Qt.DescendingOrder)                  # kayıt numarası tersine: sıra numarası yine 1'den
     assert kolon(t, 0)[0] == "8" and sira_numaralari(t) == list(range(1, 9))
-    lib.arama.setText("tahir")
+    lib.liste.arama.setText("tahir")
     assert sira_numaralari(t) == [1, 2]
-    for tablo in (lib.kitaplar.tablo, lib.filtre.tablo, lib.odunc.tablo, lib.gecmis.tablo, q.tableWidget_5_1_1):
+    for tablo in (lib.kitaplar.tablo, lib.filtre.tablo, lib.odunc.tablo, lib.gecmis.tablo, q.istatistik.tablolar[0]):
         assert not tablo.verticalHeader().isHidden()
 
 
 def test_bos_listede_sira_numarasi_yok(app, uyarilar):
     lib = Library()
-    assert lib.QtLibrary.tableWidget_2.rowCount() == 0      # sekme açılmadan boş satır ("1") görünmez
+    assert lib.liste.tablo.rowCount() == 0      # sekme açılmadan boş satır ("1") görünmez
 
 
 def test_istatistik_cizelgeleri_kartlarda_ve_sayilar_sigar(app, uyarilar):
     from PyQt5.QtWidgets import QGroupBox
     lib = Library()
-    q = lib.QtLibrary
-    t = q.tableWidget_5_1_2
+    q = lib
+    t = q.istatistik.tablolar[1]
     assert isinstance(t.parentWidget(), QGroupBox) and t.parentWidget().title() == "Yazarlara göre"
     assert not hasattr(q, "label_56") and t.horizontalScrollBarPolicy() == Qt.ScrollBarAlwaysOff
     assert t.horizontalHeader().sectionResizeMode(1) == QHeaderView.Fixed and t.columnWidth(1) == 170
@@ -218,28 +218,28 @@ def test_istatistik_cizelgeleri_kartlarda_ve_sayilar_sigar(app, uyarilar):
 def test_durum_kolonu_rozet_ve_bos_tabloda_eylem(app, uyarilar):
     from acodes.tablo import DurumRozeti
     lib = Library()
-    q = lib.QtLibrary
-    t = q.tableWidget_2
+    q = lib
+    t = q.liste.tablo
     assert isinstance(t.itemDelegateForColumn(t.columnCount() - 1), DurumRozeti)
     assert isinstance(lib.filtre.tablo.itemDelegateForColumn(8), DurumRozeti)
     assert isinstance(lib.kitaplar.tablo.itemDelegateForColumn(6), DurumRozeti)
-    lib.arama.setText("bulunmayan kitap")
+    lib.liste.arama.setText("bulunmayan kitap")
     bos = t.bos_durum
     QApplication.processEvents()
     assert not bos.etiket.isHidden() and bos.buton.text() == "Aramayı Temizle"
     bos.buton.click()
-    assert lib.arama.text() == "" and t.rowCount() == 8
+    assert lib.liste.arama.text() == "" and t.rowCount() == 8
 
 
 def test_kitap_adi_kolonu_turden_genis(app, uyarilar):
     lib = Library()
-    q = lib.QtLibrary
+    q = lib
     lib.resize(1300, 800)
     lib.show()
-    q.tabWidget.setCurrentWidget(q.tab_2)
+    q.sekmeler.setCurrentWidget(q.liste)
     from PyQt5.QtTest import QTest
     QTest.qWait(50)                                         # genişlikler liste dolduktan sonra dağıtılır
-    t = q.tableWidget_2
+    t = q.liste.tablo
     assert t.columnWidth(1) > t.columnWidth(4) and t.columnWidth(1) > t.columnWidth(2)   # Adı > Türü, Yazarı
     assert t.horizontalScrollBar().maximum() == 0 and not t.wordWrap()
     lib.close()

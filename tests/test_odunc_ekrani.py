@@ -57,7 +57,7 @@ def satiri_sec(o, kitap):
 # --- Ekran ---
 
 def test_eski_uc_ekran_yerine_tek_ekran(lib):
-    t = lib.QtLibrary.tabWidget_6
+    t = lib.alt_sekmeler[lib.verme]
     assert [t.tabText(i) for i in range(t.count())] == ["Ödünç ve İade", "Ödünç Geçmişi"]
     assert t.currentWidget() is lib.odunc
 
@@ -108,7 +108,7 @@ def test_odunc_verme(lib, o, db):
     odunc_ver(o, "Satranç", 4)
     assert db.execute("SELECT userId, bookId, status FROM follow").fetchall() == [(4, 6, "out")]
     teslim = odunc.tarih_yazi(BUGUN + datetime.timedelta(days=15))
-    assert lib.QtLibrary.statusbar.currentMessage() == f"İşlem kaydedildi. Teslim tarihi: {teslim}"
+    assert lib.statusBar().currentMessage() == f"İşlem kaydedildi. Teslim tarihi: {teslim}"
     assert o.kitap.currentIndex() == 0 and o.uye.currentIndex() == 0 and not o.btn_ver.isEnabled()
     # yeni ödünç listede seçili, iade kartında görünür
     assert kolon(o.tablo, 0) == ["Satranç"] and o.secili_odunc() == (4, 6) and o.btn_iade.isEnabled()
@@ -130,7 +130,7 @@ def test_yazilan_adla_da_verilir(o, db):
 
 def test_seçim_eksikse_uyarir(lib, o):
     o.odunc_ver()
-    assert lib.QtLibrary.statusbar.currentMessage() == "Kitap ve üye seçiniz!"
+    assert lib.statusBar().currentMessage() == "Kitap ve üye seçiniz!"
 
 
 def test_oduncteki_kitap_verilemez(o, db, uyarilar):
@@ -189,10 +189,10 @@ def test_iade_alma(lib, o, db):
     o.iade_al()
     assert db.execute("SELECT status FROM follow WHERE bookId='1'").fetchone()[0] == "in"
     assert db.execute("SELECT status FROM follow WHERE bookId='6'").fetchone()[0] == "out"
-    assert lib.QtLibrary.statusbar.currentMessage() == "'Yol Ayrımı' iade alındı (5 gün gecikti)."
+    assert lib.statusBar().currentMessage() == "'Yol Ayrımı' iade alındı (5 gün gecikti)."
     assert kolon(o.tablo, 0) == ["Satranç"] and not o.btn_iade.isEnabled()
-    q = lib.QtLibrary
-    assert q.tabWidget.tabText(q.tabWidget.indexOf(q.tab_6)) == "Kitap Verme"            # gecikme kalmadı
+    q = lib
+    assert q.sekmeler.tabText(q.sekmeler.indexOf(q.verme)) == "Kitap Verme"            # gecikme kalmadı
 
 
 def test_iade_onaysiz_ve_geri_alinabilir(lib, o, db, monkeypatch):
@@ -206,7 +206,7 @@ def test_iade_onaysiz_ve_geri_alinabilir(lib, o, db, monkeypatch):
     lib.bildirim.eylem.click()                                        # Geri Al
     assert db.execute("SELECT status, indate FROM follow WHERE bookId='1'").fetchone() == ("out", "")
     assert kolon(o.tablo, 0) == ["Yol Ayrımı"] and o.secili_odunc() == (3, 1)
-    assert "geri alındı" in lib.QtLibrary.statusbar.currentMessage()
+    assert "geri alındı" in lib.statusBar().currentMessage()
 
 
 def test_iade_geri_alinamaz_kitap_yeniden_verildiyse(lib, o, db):
@@ -217,7 +217,7 @@ def test_iade_geri_alinamaz_kitap_yeniden_verildiyse(lib, o, db):
     odunc_ekle(db, 4, 1, gun_once(0))                                 # tek kopya başka üyeye verildi
     lib.bildirim.eylem.click()
     assert db.execute("SELECT COUNT(*) FROM follow WHERE bookId='1' AND status='out'").fetchone()[0] == 1
-    assert "geri alınamaz" in lib.QtLibrary.statusbar.currentMessage()
+    assert "geri alınamaz" in lib.statusBar().currentMessage()
 
 
 @pytest.mark.parametrize("durum,beklenen", [
@@ -241,7 +241,7 @@ def test_hatirlatma_panoya_kopyalanir(lib, o, db):
     assert o.btn_hatirlat.isEnabled()
     o.btn_hatirlat.click()
     assert "Yol Ayrımı" in QApplication.clipboard().text() and "5 gün gecikti" in QApplication.clipboard().text()
-    assert lib.QtLibrary.statusbar.currentMessage().startswith("Hatırlatma metni panoya kopyalandı")
+    assert lib.statusBar().currentMessage().startswith("Hatırlatma metni panoya kopyalandı")
 
 
 def test_disaridan_kitap_ve_uye_secilir(o):
@@ -274,8 +274,8 @@ def test_ana_sayfadan_iade_ekrani(lib, o, db):
     lib.ana_sayfa_yenile()
     o.arama.setText("tahir")                          # arama gizlese de seçilir
     lib.ana_sayfa.listeler["yaklasan"].tablo.cellDoubleClicked.emit(1, 0)
-    q = lib.QtLibrary
-    assert q.tabWidget.currentWidget() is q.tab_6 and q.tabWidget_6.currentWidget() is o
+    q = lib
+    assert q.sekmeler.currentWidget() is q.verme and q.alt_sekmeler[q.verme].currentWidget() is o
     assert o.secili_odunc() == (4, 6) and o.arama.text() == ""
 
 

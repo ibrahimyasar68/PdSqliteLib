@@ -320,7 +320,10 @@ Paket imzasız olduğu için Windows SmartScreen ilk açılışta uyarabilir: **
 ```
 main.py              Giriş noktası
 acodes/              Pencerelerin iş mantığı (login, library, guest, user)
-acodes/ortak.py      Admin ve Guest panellerinde ortak sekmeler (liste, filtre, istatistik)
+acodes/panel.py      Panel iskeleti: kenar menüsü ve sayfalar; menü, kısayollar ve hızlı arama panelin Sayfa
+                     listesinden kurulur (library.py ve guest.py sayfalari_kur ile kendi listesini verir)
+acodes/kitap_listesi.py       Kitap Listesi sayfası (iki panelde ortak)
+acodes/istatistik.py          İstatistik sayfası: Çizelgeler ve Grafikler (iki panelde ortak)
 acodes/tema.py       Açık ve koyu renk paletleri, stil sayfası (tüm renkler burada; .ui dosyalarında stil yoktur)
 acodes/kullanici_yonetimi.py  Kullanıcı yönetimi ve şifre değiştirme pencereleri
 acodes/odunc_ekrani.py        Kitap Verme > Ödünç ve İade (ödünç verme, iade, dışarıdakiler tek ekranda)
@@ -350,7 +353,7 @@ acodes/kilavuz.py             Ayarlar > Yardım > Kullanma Kılavuzu metinleri (
 acodes/komut_paleti.py        Hızlı arama (Ctrl+K): bölümler, işlemler, kitaplar, üyeler
 acodes/ayarlar.py             Ayarlar sekmesi (kullanıcılar, yedekleme, bilgiler / hesabım)
 bforms/              .ui dosyalarından üretilen formlar (elle düzenlenmez)
-cuis/                Qt Designer .ui kaynakları (panel iskeleti ve giriş ekranı)
+cuis/                Qt Designer .ui kaynağı (yalnızca giriş ekranı)
 database/baglanti.py      Veritabanı yolu, uygulamanın tek bağlantısı ve iç içe kullanılabilen işlem (islem)
 database/modeller.py      Kitap, Kullanici ve Odunc veri sınıfları (kayıtlar adla kullanılır: kitap.kopya)
 database/kitaplar.py      Kitap kaydı, arama, filtre ve Durum kolonu
@@ -376,8 +379,10 @@ data/                Veritabanı ve yedekler (git dışında)
 
 ### Arayüzü düzenlemek
 
-Ekranların çoğu kodla kurulur (`acodes/`). `cuis/` altındaki `.ui` dosyalarında yalnızca panellerin
-sekme iskeleti ile giriş ekranı kalmıştır; renk ve yazı tipi tanımlanmaz (görünüm `acodes/tema.py`'den gelir).
+Ekranlar kodla kurulur (`acodes/`); paneller `acodes/panel.py` iskeletini kullanır. Menüye sayfa eklemek için
+panelin `sayfalari_kur` listesine bir `Sayfa` eklemek yeter (menü düğmesi, ikon, Ctrl+N kısayolu ve hızlı aramadaki
+bölüm kendiliğinden gelir). `cuis/` altında yalnızca giriş ekranının `.ui` dosyası kalmıştır; renk ve yazı tipi
+tanımlanmaz (görünüm `acodes/tema.py`'den gelir).
 Yeni kullanıcı formunun `.ui` dosyası yoktur. Bir `.ui` dosyasını Qt Designer ile değiştirdikten sonra
 `bforms/` altındaki Python dosyalarını yeniden üretin:
 

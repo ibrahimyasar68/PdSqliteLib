@@ -54,12 +54,12 @@ def test_ayarlardan_degisince_panel_ayni_yerde_yeniden_kurulur(app, uyarilar, ku
     w.QtLogin.lineEdit_parola.setText(sifre)
     w.giris()
     eski = w.library or w.guest
-    eski.QtLibrary.tabWidget.setCurrentWidget(eski.ayarlar)
-    sekme = eski.QtLibrary.tabWidget.currentIndex()
+    eski.sekmeler.setCurrentWidget(eski.ayarlar)
+    sekme = eski.sekmeler.currentIndex()
     eski.ayarlar.gorunum.butonlar["koyu"].click()
     yeni = w.library or w.guest
     assert yeni is not eski and not eski.isVisible() and yeni.isVisible()
-    assert yeni.aktif_kullanici == kullanici and yeni.QtLibrary.tabWidget.currentIndex() == sekme
+    assert yeni.aktif_kullanici == kullanici and yeni.sekmeler.currentIndex() == sekme
     assert tema.KOYU_MU and tercihler.oku("gorunum/tema") == "koyu"
     assert yeni.ayarlar.gorunum.butonlar["koyu"].isChecked()
     assert tema.KOYU["KART"] in w.styleSheet()                         # giriş ekranı da koyu
@@ -186,7 +186,7 @@ def _yerlesim(app, gorunum):
     w.resize(1300, 800)
     w.show()
     olculer = {}
-    t = w.QtLibrary.tabWidget
+    t = w.sekmeler
     for i in range(t.count()):
         t.setCurrentIndex(i)
         QApplication.processEvents()
@@ -214,7 +214,7 @@ def test_tema_degisince_kaydirma_ve_pencere_korunur(app, uyarilar):
     w = Login()
     w.panel_ac("admin", "admin")
     eski = w.library
-    eski.QtLibrary.tabWidget.setCurrentWidget(eski.ayarlar)
+    eski.sekmeler.setCurrentWidget(eski.ayarlar)
     QApplication.processEvents()
     kaydirma = eski.ayarlar.verticalScrollBar()
     kaydirma.setValue(kaydirma.maximum())

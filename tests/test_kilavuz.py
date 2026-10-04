@@ -15,7 +15,7 @@ def panel(request, app, uyarilar):
 
 
 def sekme_adlari(panel):
-    t = panel.QtLibrary.tabWidget
+    t = panel.sekmeler
     return [re.sub(r" \(.*\)$", "", t.tabText(i)) for i in range(t.count())]   # "Kitap Verme (2 gecikmiş)"
 
 

@@ -168,7 +168,7 @@ TEHLIKELI_BUTONLAR = ["kitap_sil", "kullanici_sil"]
 
 def _tema():
     return f"""
-QMainWindow, #centralwidget {{ background-color: {ZEMIN}; }}
+QMainWindow, #orta_alan {{ background-color: {ZEMIN}; }}
 
 QTabWidget::pane {{ border: 1px solid {KENAR}; background-color: {SAYFA}; border-radius: {KOSE.kucuk}px; }}
 QTabBar {{ font-size: {YAZI.alt_baslik}px; font-weight: {YARI_KALIN}; }}

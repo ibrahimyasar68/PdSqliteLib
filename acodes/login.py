@@ -281,12 +281,12 @@ class Login(QMainWindow):
         self.stil_uygula()
         if eski is None:
             return
-        sekme=eski.QtLibrary.tabWidget.currentIndex()
+        sekme=eski.sekmeler.currentIndex()
         kaydirma=eski.ayarlar.verticalScrollBar().value()
         yeni=self.panel_ac('admin' if eski is self.library else 'guest',eski.aktif_kullanici,goster=False)
-        yeni.QtLibrary.tabWidget.setCurrentIndex(sekme)
+        yeni.sekmeler.setCurrentIndex(sekme)
         yeni.bildirim.temizle()                 # açılıştaki gecikme uyarısı tema değişiminde tekrar çıkmasın
-        yeni.QtLibrary.statusbar.clearMessage()
+        yeni.statusBar().clearMessage()
         yeni.setGeometry(eski.geometry())
         if eski.isFullScreen():
             yeni.showFullScreen()

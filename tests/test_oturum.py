@@ -28,8 +28,8 @@ def test_giriste_giris_ekrani_gizlenir(w):
 def test_oturumu_kapat_giris_ekranina_doner(w):
     giris_yap(w, "admin", ADMIN_SIFRE)
     panel = w.library
-    assert panel.QtLibrary.pushButton_1_cikis.text() == "Oturumu Kapat"
-    panel.QtLibrary.pushButton_1_cikis.click()
+    assert panel.btn_cikis.text() == "Oturumu Kapat"
+    panel.btn_cikis.click()
     assert not panel.isVisible() and w.isVisible()
     assert w.library is None
     assert w.QtLogin.lineEdit_kullanci_adi.text() == "" and w.QtLogin.lineEdit_parola.text() == ""
@@ -41,7 +41,7 @@ def test_oturum_kapatip_baska_kullaniciyla_girilir(w):
     w.library.oturumu_kapat()
     giris_yap(w, "ayse1", UYE_SIFRE)
     assert w.guest.isVisible() and w.guest.aktif_kullanici == "ayse1"
-    assert w.guest.QtLibrary.pushButton_1_cikis.text() == "Oturumu Kapat"
+    assert w.guest.btn_cikis.text() == "Oturumu Kapat"
     w.guest.oturumu_kapat()
     assert w.isVisible() and w.guest is None
     giris_yap(w, "admin", ADMIN_SIFRE)

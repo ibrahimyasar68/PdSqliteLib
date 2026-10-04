@@ -63,9 +63,8 @@ def etiketler(f, kolon):
 
 
 def test_eski_alt_sekmeler_yok(lib):
-    q = lib.QtLibrary
-    assert not hasattr(q, "tabWidget_4")
-    assert f"{lib.filtre.parentWidget().objectName()}" == "tab_4"
+    # Filtre tek sayfadır: alt sekmesi yok, doğrudan menü sayfası
+    assert lib.filtre not in lib.alt_sekmeler and lib.sekmeler.indexOf(lib.filtre) == 3
 
 
 def test_secim_yapinca_sonuclar_kendiliginden_gelir(f):
@@ -141,7 +140,7 @@ def test_temizle(f, uyarilar, lib):
     assert all(not v for v in f.secimler.values()) and f.tablo.rowCount() == 0
     assert f.combo["Yazari"].currentText() == "" and f.combo["Yazari"].count() == 6
     assert etiketler(f, "Turu") == [] and f.kutu["Turu"].title() == "Tür"
-    assert lib.QtLibrary.statusbar.currentMessage() == "Filtre temizlendi."
+    assert lib.statusBar().currentMessage() == "Filtre temizlendi."
 
 
 def test_yenilemede_secimler_korunur_yeni_degerler_eklenir(lib, f, db):
@@ -165,7 +164,7 @@ def test_olcutler_ustte_yan_yana_sonuclar_altta(app, uyarilar):
     lib = Library()
     lib.resize(1300, 800)
     lib.show()
-    lib.QtLibrary.tabWidget.setCurrentWidget(lib.QtLibrary.tab_4)
+    lib.sekmeler.setCurrentWidget(lib.filtre)
     QApplication.processEvents()
     f = lib.filtre
     ustler = {f.kutu[k].mapTo(f, f.kutu[k].rect().topLeft()).y() for k in f.kutu}

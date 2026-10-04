@@ -49,8 +49,8 @@ def guest(app, db):
 
 
 def sekme_adi(g):
-    q = g.QtLibrary
-    return q.tabWidget.tabText(q.tabWidget.indexOf(g.kitaplarim))
+    q = g
+    return q.sekmeler.tabText(q.sekmeler.indexOf(g.kitaplarim))
 
 
 def test_elimdeki_ve_eski_kitaplar(guest):
@@ -66,13 +66,13 @@ def test_elimdeki_ve_eski_kitaplar(guest):
 
 def test_sekme_adi_ve_giris_uyarisi(guest):
     assert sekme_adi(guest) == "Kitaplarım (1 gecikmiş)"
-    assert "Teslim süresi geçmiş kitabınız var" in guest.QtLibrary.statusbar.currentMessage()
+    assert "Teslim süresi geçmiş kitabınız var" in guest.statusBar().currentMessage()
 
 
 def test_iade_sonrasi_sekme_guncellenir(guest, db):
     db.execute("UPDATE follow SET status='in', indate=? WHERE bookId='2'", (str(BUGUN),))
     db.commit()
-    guest.QtLibrary.tabWidget.setCurrentWidget(guest.kitaplarim)
+    guest.sekmeler.setCurrentWidget(guest.kitaplarim)
     assert sekme_adi(guest) == "Kitaplarım" and guest.kitaplarim.elimdeki.rowCount() == 1
 
 
@@ -84,8 +84,8 @@ def test_kitabi_olmayan_uye(app, db):
 
 def test_admin_panelinde_kitaplarim_yok(app, uyarilar):
     from acodes.library import Library
-    q = Library().QtLibrary
-    assert all(q.tabWidget.tabText(i) != "Kitaplarım" for i in range(q.tabWidget.count()))
+    q = Library()
+    assert all(q.sekmeler.tabText(i) != "Kitaplarım" for i in range(q.sekmeler.count()))
 
 
 def test_giris_yapan_uye_kendi_kitaplarini_gorur(app, db):

@@ -28,9 +28,9 @@ def lib(app, uyarilar):
 
 
 def test_ctrl_rakam_menu_bolumleri(lib):
-    sekmeler = lib.QtLibrary.tabWidget
+    sekmeler = lib.sekmeler
     bas(lib, "Ctrl+2")
-    assert sekmeler.currentWidget() is lib.QtLibrary.tab_2
+    assert sekmeler.currentWidget() is lib.liste
     bas(lib, "Ctrl+7")
     assert sekmeler.currentWidget() is lib.ayarlar
     bas(lib, "Ctrl+1")
@@ -38,20 +38,20 @@ def test_ctrl_rakam_menu_bolumleri(lib):
 
 
 def test_ctrl_f_acik_sayfanin_aramasina_gider(lib):
-    q = lib.QtLibrary
-    q.tabWidget.setCurrentWidget(q.tab_6)
+    q = lib
+    q.sekmeler.setCurrentWidget(q.verme)
     bas(lib, QKeySequence.Find)
     assert lib.focusWidget() is lib.odunc.arama
-    q.tabWidget.setCurrentWidget(q.tab_4)
+    q.sekmeler.setCurrentWidget(q.filtre)
     bas(lib, QKeySequence.Find)
     assert lib.focusWidget() is lib.filtre.combo["Turu"]           # yazılabilir liste odağı kendisi alır
-    q.tabWidget.setCurrentWidget(lib.ayarlar)                     # aramasız sayfa: Kitap Listesi'ne gider
+    q.sekmeler.setCurrentWidget(lib.ayarlar)                     # aramasız sayfa: Kitap Listesi'ne gider
     bas(lib, QKeySequence.Find)
-    assert q.tabWidget.currentWidget() is q.tab_2 and lib.focusWidget() is lib.arama
+    assert q.sekmeler.currentWidget() is q.liste and lib.focusWidget() is lib.liste.arama
 
 
 def test_kitap_kayit_kisayollari(lib, db):
-    q = lib.QtLibrary
+    q = lib
     k = lib.kitaplar
     lib.kitap_duzenle(6)
     k.alan["Adi"].setText("DEĞİŞTİ")
@@ -63,7 +63,7 @@ def test_kitap_kayit_kisayollari(lib, db):
     bas(lib, QKeySequence.Save)
     assert db.execute("SELECT COUNT(*) FROM kayitlistesi WHERE Adi='Kısayolla Eklenen'").fetchone()[0] == 1
     assert "(" in k.btn_kaydet.toolTip()                          # ipucunda kısayol yazar
-    q.tabWidget.setCurrentWidget(q.tab_2)                         # başka sayfadayken çalışmaz
+    q.sekmeler.setCurrentWidget(q.liste)                         # başka sayfadayken çalışmaz
     k.alan["Adi"].setText("X")
     bas(lib, QKeySequence.Save)
     assert db.execute("SELECT COUNT(*) FROM kayitlistesi WHERE Adi='X'").fetchone()[0] == 0
@@ -72,7 +72,7 @@ def test_kitap_kayit_kisayollari(lib, db):
 def test_uye_panelinde_kisayollar(app, uyarilar):
     g = ac(Guest())
     bas(g, "Ctrl+5")
-    assert g.QtLibrary.tabWidget.currentWidget() is g.kitaplarim
+    assert g.sekmeler.currentWidget() is g.kitaplarim
     bas(g, QKeySequence.Find)
-    assert g.QtLibrary.tabWidget.currentWidget() is g.QtLibrary.tab_2 and g.focusWidget() is g.arama
+    assert g.sekmeler.currentWidget() is g.liste and g.focusWidget() is g.liste.arama
     g.close()

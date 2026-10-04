@@ -4,7 +4,8 @@ Proje klasöründen (sanal ortamı etkinleştirmek gerekmez):
 
     .venv/bin/python scripts/convertFiles.py
 
-Bu betik cuis/*.ui dosyalarını bforms/*_py.py dosyalarına, media/media.qrc
+Bu betik cuis/login.ui dosyasını (paneller .ui kullanmaz, acodes/panel.py ile kurulur)
+bforms/login_py.py dosyasına, media/media.qrc
 dosyasını bforms/media_rc.py dosyasına çevirir.
 
 

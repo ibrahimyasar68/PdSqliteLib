@@ -49,10 +49,10 @@ def test_yaklasan_teslimler(veri):
 
 
 def test_eski_ana_sayfa_icerigi_yok(lib):
-    q = lib.QtLibrary
+    q = lib
     assert not hasattr(q, "label") and not hasattr(q, "verticalLayoutWidget")
-    assert q.pushButton_1_cikis.isVisibleTo(lib) and q.pushButton_1_cikis.text() == "Oturumu Kapat"
-    assert q.pushButton_1_cikis.parentWidget() is lib.yan_menu.kart                    # Oturumu Kapat menüde
+    assert q.btn_cikis.isVisibleTo(lib) and q.btn_cikis.text() == "Oturumu Kapat"
+    assert q.btn_cikis.parentWidget() is lib.yan_menu.kart                    # Oturumu Kapat menüde
     a = lib.ana_sayfa
     assert a.hosgeldin.text() == "Hoş geldiniz" and a.karsilama.text() == "admin  ·  Yönetici"
     assert a.hosgeldin.alignment() & Qt.AlignHCenter
@@ -95,28 +95,28 @@ def test_kart_ikonlari_ve_gecikme_rengi(lib):
 
 
 def test_kart_tiklamalari(lib):
-    q = lib.QtLibrary
+    q = lib
     lib.ana_sayfa.kartlar["geciken"].tiklandi.emit()
-    assert q.tabWidget.currentWidget() is q.tab_6 and q.tabWidget_6.currentWidget() is lib.odunc
+    assert q.sekmeler.currentWidget() is q.verme and q.alt_sekmeler[q.verme].currentWidget() is lib.odunc
     lib.ana_sayfa.kartlar["kitap"].tiklandi.emit()
-    assert q.tabWidget.currentWidget() is q.tab_2 and q.tableWidget_2.rowCount() == 8
+    assert q.sekmeler.currentWidget() is q.liste and q.liste.tablo.rowCount() == 8
     lib.ana_sayfa.kartlar["uye"].tiklandi.emit()
-    assert q.tabWidget.currentWidget() is lib.ayarlar
+    assert q.sekmeler.currentWidget() is lib.ayarlar
 
 
 def test_liste_cift_tiklama(lib):
-    q = lib.QtLibrary
+    q = lib
     lib.ana_sayfa.listeler["son"].tablo.cellDoubleClicked.emit(0, 0)
-    assert q.tabWidget_3.currentWidget() is lib.kitaplar and lib.kitaplar.alan["Adi"].text() == "Denemeler"
+    assert q.alt_sekmeler[q.kayit].currentWidget() is lib.kitaplar and lib.kitaplar.alan["Adi"].text() == "Denemeler"
     lib.ana_sayfa.listeler["yaklasan"].tablo.cellDoubleClicked.emit(1, 0)
-    assert q.tabWidget_6.currentWidget() is lib.odunc and "Satranç" in lib.odunc.iade_bilgi.text()
+    assert q.alt_sekmeler[q.verme].currentWidget() is lib.odunc and "Satranç" in lib.odunc.iade_bilgi.text()
 
 
 def test_ana_sayfa_guncellenir(lib, db):
     db.execute("UPDATE follow SET status='in' WHERE bookId='1'")
     db.commit()
-    lib.QtLibrary.tabWidget.setCurrentWidget(lib.QtLibrary.tab_2)
-    lib.QtLibrary.tabWidget.setCurrentWidget(lib.QtLibrary.tab_1)
+    lib.sekmeler.setCurrentWidget(lib.liste)
+    lib.sekmeler.setCurrentWidget(lib.ana_sayfa)
     assert kart(lib, "geciken")[0] == "0" and kart(lib, "disarida")[0] == "2"
 
 
@@ -130,7 +130,7 @@ def test_guest_panosu(app, veri):
     liste = g.ana_sayfa.listeler["elimdeki"].tablo
     assert [liste.item(r, 0).text() for r in range(liste.rowCount())] == ["Yol Ayrımı", "Satranç"]  # en yakın teslim üstte
     g.ana_sayfa.kartlar["elimdeki"].tiklandi.emit()
-    assert g.QtLibrary.tabWidget.currentWidget() is g.kitaplarim
+    assert g.sekmeler.currentWidget() is g.kitaplarim
 
 
 def test_kitabi_olmayan_uye_panosu(app, veri):

@@ -60,8 +60,8 @@ def test_buyuk_harf(girdi, beklenen):
 
 def test_az_turle_istatistik_ekrani_acilir(app, uyarilar):
     # 35'ten az tür varken eskiden çöküyordu
-    assert Library().QtLibrary.tableWidget_5_1_1.rowCount() == 3
-    assert Guest().QtLibrary.tableWidget_5_1_1.rowCount() == 3
+    assert Library().istatistik.tablolar[0].rowCount() == 3
+    assert Guest().istatistik.tablolar[0].rowCount() == 3
 
 
 # --- Yeni kullanıcı formu ---
@@ -108,7 +108,7 @@ def test_yeni_uye_sekme_degisince_odunc_listesinde(lib, form):
                  telefon="5551234567", mail="veli@ornek.com")
     form.QtUser.comboBox_yetki.setCurrentText("guest")
     form.save_user()
-    lib.QtLibrary.tabWidget.setCurrentIndex(5)
+    lib.sekmeler.setCurrentIndex(5)
     assert "Veli Can (veli)" in etiketler(lib.odunc.uye)
 
 
@@ -121,8 +121,8 @@ def test_yeni_kullanici_penceresi_temada(form):
 
 
 def test_yeni_uye_kaydindan_sonra_kalinan_menuye_donulur(lib, form, db):
-    q = lib.QtLibrary
-    q.tabWidget.setCurrentWidget(lib.ayarlar)
+    q = lib
+    q.sekmeler.setCurrentWidget(lib.ayarlar)
     lib.ayarlar.buton("Yeni Kullanıcı Ekle").click()
     assert form.isVisible() and form.parentWidget() is lib            # panele bağlı açılır (ayrı pencere değil)
     assert form.isWindow() and form.windowModality() == Qt.WindowModal
@@ -132,8 +132,8 @@ def test_yeni_uye_kaydindan_sonra_kalinan_menuye_donulur(lib, form, db):
     form.save_user()
     assert db.execute("SELECT COUNT(*) FROM users WHERE kullanici='veli'").fetchone()[0] == 1
     assert not form.isVisible()                                         # form kapandı
-    assert q.tabWidget.currentWidget() is lib.ayarlar                   # aynı menüde kalındı
-    assert q.statusbar.currentMessage() == "'veli' kullanıcısı kaydedildi."
+    assert q.sekmeler.currentWidget() is lib.ayarlar                   # aynı menüde kalındı
+    assert q.statusBar().currentMessage() == "'veli' kullanıcısı kaydedildi."
     assert "Veli Can (veli)" in etiketler(lib.odunc.uye)                 # listeler hemen yenilendi
     assert form.QtUser.lineEdit_kullanici_adi.text() == ""
 
@@ -171,16 +171,17 @@ def test_silinmis_kitap_duzenlenmek_istenince_mesaj(lib, db):
     db.execute("DELETE FROM kayitlistesi WHERE Id=6")
     db.commit()
     lib.kitap_duzenle(6)
-    assert lib.QtLibrary.statusbar.currentMessage() == "Kitap bulunamadı (silinmiş olabilir)."
+    assert lib.statusBar().currentMessage() == "Kitap bulunamadı (silinmiş olabilir)."
 
 
-@pytest.mark.parametrize("panel", [Library, Guest])
-def test_ui_dosyalarinda_stil_yok(app, uyarilar, panel):
-    # Görünüm tamamen temadan gelir: .ui'dan gelen bileşenlerde ayrı stil bulunmamalı
-    from PyQt5.QtWidgets import QWidget
-    from bforms.library_py import Ui_MainWindow as AdminUi
-    from bforms.guest_py import Ui_MainWindow as UyeUi
-    from PyQt5.QtWidgets import QMainWindow
+def test_ui_dosyalarinda_renk_ve_yazi_tipi_yok(app):
+    # Görünüm tamamen temadan gelir: .ui'dan gelen bileşenlerde (yalnızca giriş ekranı kaldı) renk veya yazı tipi
+    # bulunmamalı (giriş fotoğrafının border-image ve köşe yuvarlaklığı serbest).
+    import re
+    from PyQt5.QtWidgets import QMainWindow, QWidget
+    from bforms.login_py import Ui_MainWindow
     w = QMainWindow()
-    (AdminUi if panel is Library else UyeUi)().setupUi(w)
-    assert [b.objectName() for b in w.findChildren(QWidget) if b.styleSheet()] == []
+    Ui_MainWindow().setupUi(w)
+    stiller = {b.objectName(): b.styleSheet() for b in w.findChildren(QWidget) if b.styleSheet()}
+    yasak = re.compile(r"(^|[;{\s])(color|background(-color)?|font(-[a-z]+)?)\s*:")
+    assert [ad for ad, stil in stiller.items() if yasak.search(stil)] == []

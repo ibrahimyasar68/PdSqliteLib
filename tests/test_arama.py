@@ -35,35 +35,35 @@ def test_kitap_ara(sorgu, sayi):
 @pytest.mark.parametrize("panel", [Library, Guest])
 def test_arama_kutusu(app, uyarilar, panel):
     p = panel()
-    tablo = p.QtLibrary.tableWidget_2
-    p.arama.setText("tahir")               # yazdıkça liste güncellenir
-    assert tablo.rowCount() == 2 and p.arama_sonuc.text() == "2 kitap bulundu"
+    tablo = p.liste.tablo
+    p.liste.arama.setText("tahir")               # yazdıkça liste güncellenir
+    assert tablo.rowCount() == 2 and p.liste.sonuc.text() == "2 kitap bulundu"
     assert {tablo.item(r, 1).text() for r in range(2)} == {"Yol Ayrımı", "Esir Şehrin İnsanları"}
-    p.arama.clear()
-    assert tablo.rowCount() == 8 and p.arama_sonuc.text() == "Toplam 8 kitap"
-    p.arama.setText("iklimler")
-    p.temizle()                            # arama temizlenince tüm kitaplar
-    assert p.arama.text() == "" and tablo.rowCount() == 8 and p.arama_sonuc.text() == "Toplam 8 kitap"
+    p.liste.arama.clear()
+    assert tablo.rowCount() == 8 and p.liste.sonuc.text() == "Toplam 8 kitap"
+    p.liste.arama.setText("iklimler")
+    p.liste.temizle()                            # arama temizlenince tüm kitaplar
+    assert p.liste.arama.text() == "" and tablo.rowCount() == 8 and p.liste.sonuc.text() == "Toplam 8 kitap"
 
 
 @pytest.mark.parametrize("panel", [Library, Guest])
 def test_sekmeye_gelince_kendiliginden_listelenir(app, uyarilar, db, panel):
     p = panel()
-    q = p.QtLibrary
+    q = p
     assert not hasattr(q, "pushButton_2_listele")
-    q.tabWidget.setCurrentWidget(q.tab_2)
-    assert q.tableWidget_2.rowCount() == 8 and p.arama_sonuc.text() == "Toplam 8 kitap"
+    q.sekmeler.setCurrentWidget(q.liste)
+    assert q.liste.tablo.rowCount() == 8 and p.liste.sonuc.text() == "Toplam 8 kitap"
     db.execute("INSERT INTO kayitlistesi (Adi) VALUES ('Yeni')")
     db.commit()
-    q.tabWidget.setCurrentWidget(q.tab_1)
-    q.tabWidget.setCurrentWidget(q.tab_2)   # her gelişte güncel
-    assert q.tableWidget_2.rowCount() == 9
+    q.sekmeler.setCurrentWidget(q.ana_sayfa)
+    q.sekmeler.setCurrentWidget(q.liste)   # her gelişte güncel
+    assert q.liste.tablo.rowCount() == 9
 
 
 def test_listele_butonu_aramayi_dikkate_alir(app, uyarilar):
     p = Library()
-    p.arama.blockSignals(True)
-    p.arama.setText("zweig")
-    p.arama.blockSignals(False)
-    p.listele()
-    assert p.QtLibrary.tableWidget_2.rowCount() == 1 and p.QtLibrary.tableWidget_2.item(0, 1).text() == "Satranç"
+    p.liste.arama.blockSignals(True)
+    p.liste.arama.setText("zweig")
+    p.liste.arama.blockSignals(False)
+    p.liste.listele()
+    assert p.liste.tablo.rowCount() == 1 and p.liste.tablo.item(0, 1).text() == "Satranç"
