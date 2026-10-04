@@ -9,8 +9,8 @@ from PyQt5.QtWidgets import (QComboBox, QGroupBox, QHBoxLayout, QHeaderView, QLa
 from acodes.onay import onay
 from acodes import tema
 from acodes.tablo import tablo_ayarla, tabloya_yaz
-from database.duzeltme import benzer_gruplar, birlestir, eksik_kitaplar, yoksay
-from database.yedek import guvenlik_yedegi_al
+from database.duzeltme import benzer_gruplar, eksik_kitaplar
+from servis import duzeltme as duzeltme_servisi
 
 ALANLAR = [("Yazari", "Yazar"), ("Yayinevi", "Yayınevi"), ("Ceviren", "Çevirmen"), ("Turu", "Tür")]
 EKSIK_ALANLAR = [("Yili", "Basım yılı"), ("Yayinevi", "Yayınevi"), ("Yazari", "Yazar"), ("Turu", "Tür")]
@@ -167,9 +167,8 @@ class VeriDuzeltme(QWidget):
         if onay(f"Şu yazımlar '{yeni}' olarak değiştirilecek:\n{liste}\n\nToplam {kitap} kitap. "
                 "Değişiklikten önce yedek alınır. Devam edilsin mi?") != QMessageBox.Yes:
             return
-        if self.yedek_alindi is None:   # oturumdaki ilk birleştirmeden önce bir kez
-            self.yedek_alindi = guvenlik_yedegi_al("duzeltme_oncesi_")
-        degisen = birlestir(self.alan.currentData(), eskiler, yeni)
+        # Yedek oturumdaki ilk birleştirmeden önce bir kez alınır
+        degisen, self.yedek_alindi = duzeltme_servisi.birlestir(self.alan.currentData(), eskiler, yeni, self.yedek_alindi)
         self.gruplari_yukle()
         self.eksikleri_yukle()
         if self.degisti:
@@ -180,7 +179,7 @@ class VeriDuzeltme(QWidget):
         grup = self.secili_grup()
         if grup is None:
             return
-        yoksay(self.alan.currentData(), [grup.child(i).text(0) for i in range(grup.childCount())])
+        duzeltme_servisi.yoksay(self.alan.currentData(), [grup.child(i).text(0) for i in range(grup.childCount())])
         self.gruplari_yukle()
 
     # --- Eksik bilgiler

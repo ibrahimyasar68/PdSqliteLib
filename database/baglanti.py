@@ -6,6 +6,7 @@ import os
 import shutil
 import sqlite3
 import sys
+from contextlib import contextmanager
 
 from database.sema import sema_olustur
 
@@ -34,7 +35,30 @@ DB_YOLU = db_yolu()
 
 
 # Uygulama tek bir bağlantı kullanır.
-# Yazma işlemleri "with baglantı:" bloğundadır: blok bitince kaydedilir, hata olursa hiçbiri yazılmaz.
 os.makedirs(os.path.dirname(os.path.abspath(DB_YOLU)), exist_ok=True)
 baglantı = sqlite3.connect(DB_YOLU)
 sema_olustur(baglantı)  # Eksik tablo varsa oluşturulur
+
+
+_derinlik = 0
+
+@contextmanager
+def islem():
+    """Yazma işlemi: blok bitince kaydedilir, hata olursa bloktaki her şey geri alınır.
+    İç içe kullanılabilir; yalnızca en dıştaki blok kaydeder. Böylece bir servis işlemi (ör. ödünç verme)
+    kontrolleri ve yazmaları tek işlemde yapar, içinde çağırdığı veritabanı fonksiyonları erkenden kaydetmez.
+    BEGIN IMMEDIATE ile işlem okumalardan önce başlar: kontrol ile yazma arasına başka bir yazma giremez."""
+    global _derinlik
+    if _derinlik == 0 and not baglantı.in_transaction:
+        baglantı.execute("BEGIN IMMEDIATE")
+    _derinlik += 1
+    try:
+        yield baglantı
+    except BaseException:
+        _derinlik -= 1
+        if _derinlik == 0:
+            baglantı.rollback()
+        raise
+    _derinlik -= 1
+    if _derinlik == 0:
+        baglantı.commit()

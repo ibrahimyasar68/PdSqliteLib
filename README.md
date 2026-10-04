@@ -349,7 +349,7 @@ acodes/komut_paleti.py        Hızlı arama (Ctrl+K): bölümler, işlemler, kit
 acodes/ayarlar.py             Ayarlar sekmesi (kullanıcılar, yedekleme, bilgiler / hesabım)
 bforms/              .ui dosyalarından üretilen formlar (elle düzenlenmez)
 cuis/                Qt Designer .ui kaynakları (panel iskeleti ve giriş ekranı)
-database/baglanti.py      Veritabanı yolu ve uygulamanın tek bağlantısı
+database/baglanti.py      Veritabanı yolu, uygulamanın tek bağlantısı ve iç içe kullanılabilen işlem (islem)
 database/modeller.py      Kitap, Kullanici ve Odunc veri sınıfları (kayıtlar adla kullanılır: kitap.kopya)
 database/kitaplar.py      Kitap kaydı, arama, filtre ve Durum kolonu
 database/kullanicilar.py  Giriş, şifre hash'leme, kullanıcı kaydı
@@ -359,6 +359,13 @@ database/sema.py          Tablo şeması (eksik tablolar açılışta oluşturul
 database/yedek.py         Yedek alma ve geri yükleme
 database/odunc.py         Ödünç verme, iade, teslim tarihi, gecikme ve ödünç geçmişi
 database/duzeltme.py      Benzer yazımları bulma ve birleştirme, eksik bilgiler
+servis/                   Kütüphanenin kuralları (müsait kopya, son admin, ödünçteki kitap ...); ekranlar yazma
+                          işlemlerini buradan yapar, kural ihlalinde KuralHatasi döner (tests/test_mimari.py denetler)
+servis/dogrulama.py       ISBN, telefon, e-posta ve şifre doğrulama
+servis/kitap.py           Kitap kaydetme, silme, silmeyi geri alma
+servis/odunc.py           Ödünç verme, iade alma, iadeyi geri alma
+servis/kullanici.py       Kullanıcı kaydı, düzenleme, silme, şifre değiştirme
+servis/duzeltme.py        Farklı yazımları birleştirme (önce güvenlik yedeği)
 tests/               Otomatik testler (pytest)
 media/               Resimler, ikon ve media.qrc
 scripts/             Dönüştürme, veri aktarma ve paketleme betikleri

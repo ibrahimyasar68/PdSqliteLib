@@ -1,6 +1,6 @@
 ## Kitaplar (kayitlistesi tablosu): kayıt, arama, filtre ##
 
-from database.baglanti import baglantı
+from database.baglanti import baglantı, islem
 from database.metin import katla, tr_sirala
 from database.modeller import Kitap
 
@@ -119,22 +119,22 @@ def kitap_bul(id):
 
 ## Yeni kitap; numarası (Id) döner
 def kitap_ekle(kitap):
-    with baglantı:
+    with islem():
         return baglantı.execute(f"INSERT INTO kayitlistesi ({_YAZ_KOLONLARI}) VALUES ({','.join('?'*len(Kitap.KOLONLAR))})",
                                 kitap.degerler()).lastrowid
 
 ## Kitabın tüm bilgilerini günceller (kitap.id ile)
 def kitap_guncelle(kitap):
     atama=", ".join(f"{k}=?" for k in Kitap.KOLONLAR)
-    with baglantı:
+    with islem():
         baglantı.execute(f"UPDATE kayitlistesi SET {atama} WHERE Id=?", (*kitap.degerler(), kitap.id))
 
 def kitap_sil(id):
-    with baglantı:
+    with islem():
         baglantı.execute("DELETE FROM kayitlistesi WHERE Id=?",(id,))
 
 ## Silinen kitabı aynı numarayla geri getirme ("Geri Al"); ödünç geçmişi numarayla bağlı kalır
 def kitap_geri_ekle(kitap):
-    with baglantı:
+    with islem():
         baglantı.execute(f"INSERT INTO kayitlistesi (Id, {_YAZ_KOLONLARI}) VALUES ({','.join('?'*(len(Kitap.KOLONLAR)+1))})",
                          (kitap.id, *kitap.degerler()))

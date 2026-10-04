@@ -13,10 +13,11 @@ from acodes.ek_bilgi import EkBilgiler
 from acodes.kisayollar import arama_kutusu_yap, kisayol, metin
 from acodes.tablo import KolonSecici, durum_ekle, durum_rozeti_kur, satir_verisi, tablo_ayarla, tabloya_yaz
 from acodes.yerlesim import baslik_satiri, etiketli
-from database.kitaplar import (farkli_degerler, kitap_ara, kitap_bul, kitap_ekle, kitap_geri_ekle, kitap_guncelle,
-                               kitap_sil)
+from database.kitaplar import farkli_degerler, kitap_ara, kitap_bul
 from database.modeller import Kitap
-from database.odunc import kitap_oduncte, kopya_durumu
+from database.odunc import kopya_durumu
+from servis import KuralHatasi
+from servis import kitap as kitap_servisi
 
 # (veritabanı kolonu, etiket, önerilecek mevcut değerler var mı)
 ALANLAR = [("Adi", "Kitap adı (zorunlu)", False), ("Yazari", "Yazarı", True), ("Ceviren", "Çevirmen", True),
@@ -239,47 +240,47 @@ class KitapEkrani(QWidget):
 
     def kaydet(self):
         kitap = self.degerler()
-        # Hatalı alanın çerçevesi kırmızı yanıp söner; uyarıdan sonra imleç o alana gider
-        if not kitap.adi:
-            self._hatali(self.alan["Adi"], "Kitap adı boş olamaz.")
+        # Kurallar onay sorulmadan önce denetlenir (servis/kitap.py)
+        engel = kitap_servisi.kayit_engeli(kitap)
+        if engel:
+            self._kural_hatasi(engel)
             return
-        if self.ek.hata():
-            self._hatali(self.ek.isbn, self.ek.hata())
+        if onay(f"'{kitap.adi}' kaydedilsin mi?" if kitap.id is None else "Kayıt değiştirilsin mi?") != QMessageBox.Yes:
             return
-        if self.kitap_id is None:
-            if onay(f"'{kitap.adi}' kaydedilsin mi?") != QMessageBox.Yes:
-                return
-            self.kitap_id = kitap_ekle(kitap)
-            self.mesaj(f"'{kitap.adi}' kaydedildi", "basari")
-        else:
-            disarida = kopya_durumu(self.kitap_id)[1]
-            if kitap.kopya < disarida:
-                self._hatali(self.ek.kopya, f"Bu kitabın {disarida} kopyası şu an üyelerde. "
-                                            f"Kopya sayısı {disarida}'den az olamaz.")
-                return
-            if onay("Kayıt değiştirilsin mi?") != QMessageBox.Yes:
-                return
-            kitap_guncelle(kitap)
-            self.mesaj(f"'{kitap.adi}' güncellendi.", "basari")
+        try:
+            self.kitap_id = kitap_servisi.kaydet(kitap)
+        except KuralHatasi as hata:
+            self._kural_hatasi(hata)
+            return
+        self.mesaj(f"'{kitap.adi}' kaydedildi" if kitap.id is None else f"'{kitap.adi}' güncellendi.", "basari")
         self._degisiklik_sonrasi()
         hareket.secili_satiri_parlat(self.tablo)              # kaydedilen satır kısa süre parlar
 
-    def _hatali(self, alan, metin):
+    def _kural_hatasi(self, hata):
+        """Hatalı alanın çerçevesi kırmızı yanıp söner; uyarıdan sonra imleç o alana gider."""
+        alan = {"adi": self.alan["Adi"], "isbn": self.ek.isbn, "kopya": self.ek.kopya}.get(hata.alan)
+        if alan is None:
+            QMessageBox.warning(self, "Uyarı!", str(hata))
+            return
         hareket.hata_vurgula(alan)
-        QMessageBox.warning(self, "Uyarı!", metin)
+        QMessageBox.warning(self, "Uyarı!", str(hata))
         alan.setFocus(Qt.OtherFocusReason)
 
     def sil(self):
         if self.kitap_id is None:
             return
-        if kitap_oduncte(self.kitap_id):
-            QMessageBox.information(self, "Uyarı!", "Bu kitap ödünçte. İade alınmadan silinemez!")
+        engel = kitap_servisi.silme_engeli(self.kitap_id)
+        if engel:
+            QMessageBox.information(self, "Uyarı!", str(engel))
             return
         adi = self.alan["Adi"].text()
         if onay(f"'{adi}' silinsin mi?\nSildikten sonra kısa bir süre \"Geri Al\" ile geri getirebilirsiniz.") != QMessageBox.Yes:
             return
-        kitap = kitap_bul(self.kitap_id)
-        kitap_sil(self.kitap_id)
+        try:
+            kitap = kitap_servisi.sil(self.kitap_id)
+        except KuralHatasi as hata:
+            QMessageBox.warning(self, "Uyarı!", str(hata))
+            return
         self.kitap_id = None
         self._degisiklik_sonrasi()
         self.yeni()
@@ -287,9 +288,11 @@ class KitapEkrani(QWidget):
 
     def silmeyi_geri_al(self, kitap):
         """Silinen kitabı aynı numara ve bilgilerle geri getirir, formda açar."""
-        if kitap is None or kitap_bul(kitap.id) is not None:
+        try:
+            kitap_servisi.geri_getir(kitap)
+        except KuralHatasi as hata:
+            self.mesaj(str(hata), "uyari")
             return
-        kitap_geri_ekle(kitap)
         self.kitap_id = kitap.id
         self._degisiklik_sonrasi()
         hareket.secili_satiri_parlat(self.tablo)

@@ -5,7 +5,7 @@ import re
 import unicodedata
 from collections import Counter
 
-from database.baglanti import baglantı
+from database.baglanti import baglantı, islem
 from database.kitaplar import KITAP_KOLON, kolon
 
 _KATLAMA = str.maketrans("ÇĞIİÖŞÜçğıöşü", "CGIIOSUcgiosu")
@@ -56,7 +56,7 @@ def yoksayilanlar(kol):
 
 
 def yoksay(kol, degerler):
-    with baglantı:
+    with islem():
         baglantı.execute("INSERT INTO duzeltme_yoksay (kolon, imza) VALUES (?,?)", (kolon(kol, KITAP_KOLON), _imza(degerler)))
 
 
@@ -101,7 +101,7 @@ def birlestir(kol, eskiler, yeni):
     eskiler = [e for e in eskiler if e != yeni]
     if not eskiler:
         return 0
-    with baglantı:
+    with islem():
         imlec = baglantı.execute(f"UPDATE kayitlistesi SET {k}=? WHERE {k} IN ({','.join('?' * len(eskiler))})",
                                  [yeni] + eskiler)
     return imlec.rowcount

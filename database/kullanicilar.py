@@ -4,7 +4,7 @@ import hashlib
 import hmac
 import secrets
 
-from database.baglanti import baglantı
+from database.baglanti import baglantı, islem
 from database.modeller import Kullanici
 
 # Sorguya adı yazılabilecek kolonlar (değerler her zaman ? ile verilir)
@@ -30,7 +30,7 @@ def sifre_dogrula(sifre, kayitli):
     return hmac.compare_digest(yeni.hex(), ozet)
 
 def sifre_guncelle(kullanici, sifre):
-    with baglantı:
+    with islem():
         baglantı.execute("UPDATE users SET sifre=? WHERE kullanici=?", (sifre_hashle(sifre), kullanici))
 
 
@@ -82,18 +82,18 @@ def admin_sayisi():
 
 ## Yeni kullanıcı (kullanici.id yok sayılır); numarası döner
 def kullanici_ekle(kullanici, sifre):
-    with baglantı:
+    with islem():
         return baglantı.execute("INSERT INTO users (kullanici, sifre, adi_soyadi, telefon, mail, yetki) VALUES (?,?,?,?,?,?)",
                                 (kullanici.kullanici, sifre_hashle(sifre), kullanici.adi_soyadi, kullanici.telefon,
                                  kullanici.mail, kullanici.yetki)).lastrowid
 
 ## Bilgileri güncelleme (kullanıcı adı ve şifre hariç)
 def kullanici_guncelle(kullanici):
-    with baglantı:
+    with islem():
         baglantı.execute("UPDATE users SET adi_soyadi=?, telefon=?, mail=?, yetki=? WHERE id=?",
                          (kullanici.adi_soyadi, kullanici.telefon, kullanici.mail, kullanici.yetki, kullanici.id))
 
 ## Silme (ödünç geçmişi korunur)
 def kullanici_sil(id):
-    with baglantı:
+    with islem():
         baglantı.execute("DELETE FROM users WHERE id=?", (id,))

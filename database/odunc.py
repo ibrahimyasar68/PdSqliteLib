@@ -4,7 +4,7 @@
 
 import datetime
 
-from database.baglanti import baglantı
+from database.baglanti import baglantı, islem
 from database.modeller import Odunc
 
 ODUNC_SURESI_GUN = 15
@@ -136,7 +136,7 @@ def _zaman(zaman):
 
 def odunc_ver(uye_id, kitap_id, zaman=None):
     tarih_, saat = _zaman(zaman)
-    with baglantı:
+    with islem():
         baglantı.execute("INSERT INTO follow (userId,bookId,outdate,outtime,status,indate,intime) VALUES (?,?,?,?,'out','','')",
                          (str(uye_id), str(kitap_id), tarih_, saat))
 
@@ -145,7 +145,7 @@ def iade_al(uye_id, kitap_id, zaman=None):
     """Dışarıdaki ödüncü kapatır (geçmiş iadelere dokunmaz); ödünç kaydının numarası (rowid) döner,
     iade geri alınırken kullanılır. Dışarıda böyle bir ödünç yoksa None."""
     tarih_, saat = _zaman(zaman)
-    with baglantı:
+    with islem():
         satir = baglantı.execute("SELECT rowid FROM follow WHERE userId=? AND bookId=? AND status='out'",
                                  (str(uye_id), str(kitap_id))).fetchone()
         baglantı.execute("UPDATE follow SET status='in', indate=?, intime=? WHERE userId=? AND bookId=? AND status='out'",
@@ -155,7 +155,7 @@ def iade_al(uye_id, kitap_id, zaman=None):
 
 def iade_geri_al(rowid):
     """İadeyi geri alma ("Geri Al"): ödünç kaydı yeniden dışarıda olur."""
-    with baglantı:
+    with islem():
         baglantı.execute("UPDATE follow SET status='out', indate='', intime='' WHERE rowid=? AND status='in'", (rowid,))
 
 

@@ -17,8 +17,10 @@ from acodes.yerlesim import baslik_satiri, etiketli
 from database import kitaplar, kullanicilar
 from database.metin import katla
 from database.modeller import id_sayi
-from database.odunc import (ODUNC_SURESI_GUN, disaridakiler, gecikme_gunu, iade_al, iade_geri_al, kalan_gun_yazi,
-                            kopya_durumu, odunc_ver, tarih_yazi, teslim_tarihi, uye_durumu, uyede_mi)
+from database.odunc import (ODUNC_SURESI_GUN, disaridakiler, gecikme_gunu, kalan_gun_yazi, kopya_durumu, tarih_yazi,
+                            teslim_tarihi, uye_durumu)
+from servis import KuralHatasi
+from servis import odunc as odunc_servisi
 
 SECINIZ = ' Seçiniz...'
 LISTE_KOLONLARI = ["Kitap", "Yazarı", "Üye", "Telefon", "Veriliş", "Teslim", "Durum"]
@@ -201,7 +203,8 @@ class OduncEkrani(QWidget):
     def ver_durumu(self):
         ###  Seçilen kitap ve üyenin bilgilerini göster; ödünç verilebiliyorsa butonu aç  ###
         kitap_id, uye_id = self.kitap.currentData(), self.uye.currentData()
-        engel = None
+        hata = odunc_servisi.verme_engeli(kitap_id, uye_id)      # kurallar servis/odunc.py'de
+        engel = str(hata) if hata else None
         if kitap_id is None:
             renkli(self.kitap_bilgi, "")
         else:
@@ -209,10 +212,8 @@ class OduncEkrani(QWidget):
             kopya, disarida = kopya_durumu(kitap_id)
             tanim = " · ".join(str(x) for x in (k.yazari, k.yayinevi, k.yili) if x) if k else ""
             if k is None:
-                engel = "Bu kitap silinmiş."
-                renkli(self.kitap_bilgi, engel, tema.TEHLIKE)
+                renkli(self.kitap_bilgi, "Bu kitap silinmiş.", tema.TEHLIKE)
             elif disarida >= kopya:
-                engel = "Bu kitap başka bir üyede." if kopya == 1 else f"Bu kitabın {kopya} kopyasının hepsi üyelerde."
                 renkli(self.kitap_bilgi, f"{tanim}\nMüsait kopya yok", tema.TEHLIKE)
             else:
                 renkli(self.kitap_bilgi, f"{tanim}\nMüsait kopya: {kopya - disarida} / {kopya}", tema.BASARI)
@@ -222,14 +223,10 @@ class OduncEkrani(QWidget):
             u = kullanicilar.kullanici_bul(uye_id)
             elinde, geciken = uye_durumu(uye_id)
             iletisim = " · ".join(x for x in (u.telefon, u.mail) if x) if u else ""
-            if u is None and engel is None:
-                engel = "Bu üye silinmiş."
             durum = f"Elinde {elinde} kitap var" if elinde else "Elinde kitap yok"
             if geciken:
                 durum += f", {geciken} tanesinin teslim süresi geçmiş"
             renkli(self.uye_bilgi, f"{iletisim}\n{durum}" if iletisim else durum, tema.TEHLIKE if geciken else None)
-            if engel is None and kitap_id is not None and uyede_mi(uye_id, kitap_id):
-                engel = "Bu kitabın bir kopyası zaten bu üyede. Önce iade alın."
         hazir = kitap_id is not None and uye_id is not None and engel is None
         if engel:
             renkli(self.ver_bilgi, engel, tema.TEHLIKE)
@@ -254,7 +251,11 @@ class OduncEkrani(QWidget):
         if onay(f"'{self.kitap.currentText()}' kitabı {self.uye.currentText()} adlı üyeye verilsin mi?") != QMessageBox.Yes:
             return
         simdi = datetime.datetime.today()
-        odunc_ver(uye_id, kitap_id, simdi)
+        try:
+            odunc_servisi.ver(kitap_id, uye_id, simdi)
+        except KuralHatasi as hata:
+            QMessageBox.information(self, "Uyarı!", str(hata))
+            return
         for cmb in (self.kitap, self.uye):
             cmb.setCurrentIndex(0)
         self._degisiklik_sonrasi()
@@ -329,7 +330,12 @@ class OduncEkrani(QWidget):
         r = self.tablo.selectionModel().selectedRows()[0].row()
         kitap, durum = self.tablo.item(r, 0).text(), self.tablo.item(r, 6).text()
         user_id, book_id = secili
-        kayit_no = iade_al(user_id, book_id)
+        try:
+            kayit_no = odunc_servisi.iade_al(user_id, book_id)
+        except KuralHatasi as hata:
+            self.mesaj(str(hata), "uyari")
+            self._degisiklik_sonrasi()          # liste eskimiş: güncel hali göster
+            return
         self.tablo.clearSelection()
         self._degisiklik_sonrasi()
         self.bildir(f"'{kitap}' iade alındı" + (f" ({durum})." if durum.endswith("gecikti") else "."),
@@ -337,11 +343,11 @@ class OduncEkrani(QWidget):
 
     def iadeyi_geri_al(self, kayit_no, user_id, book_id, kitap):
         """İade alınan ödünç yeniden dışarıda olur (bu arada kitap başka üyeye verildiyse geri alınamaz)."""
-        kopya, disarida = kopya_durumu(book_id)
-        if kayit_no is None or disarida >= kopya or uyede_mi(user_id, book_id):
-            self.mesaj("İade geri alınamaz: kitap bu arada yeniden ödünç verilmiş!", "uyari")
+        try:
+            odunc_servisi.iadeyi_geri_al(kayit_no, user_id, book_id)
+        except KuralHatasi as hata:
+            self.mesaj(str(hata), "uyari")
             return
-        iade_geri_al(kayit_no)
         self._degisiklik_sonrasi()
         self._satiri_sec(user_id, book_id)
         hareket.secili_satiri_parlat(self.tablo)

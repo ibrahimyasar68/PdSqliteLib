@@ -4,7 +4,7 @@ from dataclasses import replace
 
 import pytest
 
-from acodes.ek_bilgi import isbn_gecerli, isbn_normal
+from servis.dogrulama import isbn_gecerli, isbn_normal
 from acodes.guest import Guest
 from acodes.library import Library
 from database.kitaplar import kitap_ara, kitap_bul, kitap_ekle, kitap_guncelle

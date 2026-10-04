@@ -3,30 +3,12 @@ from PyQt5.QtWidgets import (QComboBox, QHBoxLayout, QLabel, QLineEdit, QListVie
                              QPushButton, QVBoxLayout, QWidget)
 from PyQt5.QtCore import Qt, QTimer, pyqtSignal
 from acodes import ikonlar, tema
-from database.kullanicilar import kullanici_ekle, kullanici_var_mi
+from database.kullanicilar import kullanici_var_mi
 from database.modeller import Kullanici
 from acodes.onay import onay
-import re
-
-SIFRE_EN_AZ = 6
-
-
-def telefon_gecerli(tel):
-    return re.fullmatch(r"\d{10}", tel) is not None
-
-
-def mail_gecerli(mail):
-    return re.fullmatch(r"[\w.+-]+@[\w-]+(\.[\w-]+)*\.[a-zA-Z]{2,}", mail) is not None
-
-
-def sifre_hatasi(sifre, tekrar=None):
-    """Şifre kurallara uymuyorsa hata mesajını, uyuyorsa None döndürür."""
-    if len(sifre) < SIFRE_EN_AZ:
-        return f"Şifre en az {SIFRE_EN_AZ} karakter olmalıdır!"
-    if tekrar is not None and sifre != tekrar:
-        return "Şifreler birbiriyle aynı değil!"
-    return None
-
+from servis import KuralHatasi
+from servis import kullanici as kullanici_servisi
+from servis.dogrulama import SIFRE_EN_AZ, mail_gecerli, sifre_hatasi, telefon_gecerli
 
 class User(QMainWindow):
     kaydedildi = pyqtSignal(str)      # kullanıcı adı: panel listeleri yeniler ve bildirim gösterir
@@ -182,29 +164,27 @@ QLineEdit, QComboBox {{ font-size: {tema.YAZI.metin}px; padding: 4px 10px; borde
             self.QtUser.lineEdit_mail.clear()
 
     def save_user(self):
-        if self.QtUser.comboBox_yetki.currentText()=="Yetki Seçin...":
-            QMessageBox.information(self,"Uyarı!","Kayıt oluşturmak için yetki seçimini belirtin!")
-            self.QtUser.comboBox_yetki.setCurrentIndex(0)
-        else:
-            if not self.QtUser.lineEdit_kullanici_adi.text() or not self.QtUser.lineEdit_sifre.text() or not self.QtUser.lineEdit_adi_soyadi.text():
-                QMessageBox.information(self,"Uyarı!","Kullanıcı Adı, Şifre ve Adı Soyadı boş olamaz!")
-            elif sifre_hatasi(self.QtUser.lineEdit_sifre.text()):
-                QMessageBox.information(self,"Uyarı!",sifre_hatasi(self.QtUser.lineEdit_sifre.text()))
-            elif self.QtUser.lineEdit_telefon.text().strip() and not telefon_gecerli(self.QtUser.lineEdit_telefon.text().strip()):
-                QMessageBox.information(self,"Uyarı!","Uygun telefon numarası girilmedi. Kontrol edin!")
-            elif self.QtUser.lineEdit_mail.text().strip() and not mail_gecerli(self.QtUser.lineEdit_mail.text().strip()):
-                QMessageBox.information(self,"Uyarı!","Uygun mail adresi girilmedi. Kontrol edin!")
-            else:
-                ui=self.QtUser
-                yeni=Kullanici(None,ui.lineEdit_kullanici_adi.text(),ui.lineEdit_adi_soyadi.text(),
-                               ui.lineEdit_telefon.text().strip(),ui.lineEdit_mail.text().strip(),
-                               ui.comboBox_yetki.currentText())
-                cvb=onay(f"{yeni.kullanici} kaydı yapılsın mı?",self)
-                if cvb==QMessageBox.Yes:
-                    kullanici_ekle(yeni,ui.lineEdit_sifre.text())
-                    self.clear_form()
-                    self.close()                     # form kapanır, kalınan menüye dönülür
-                    self.kaydedildi.emit(yeni.kullanici)
+        ui=self.QtUser
+        yetki=ui.comboBox_yetki.currentText()
+        yeni=Kullanici(None,ui.lineEdit_kullanici_adi.text(),ui.lineEdit_adi_soyadi.text(),
+                       ui.lineEdit_telefon.text().strip(),ui.lineEdit_mail.text().strip(),yetki)
+        sifre=ui.lineEdit_sifre.text()
+        engel=kullanici_servisi.ekleme_engeli(yeni,sifre)      # kurallar servis/kullanici.py'de
+        if engel:
+            QMessageBox.information(self,"Uyarı!",str(engel))
+            if engel.alan=="yetki":
+                ui.comboBox_yetki.setCurrentIndex(0)
+            return
+        if onay(f"{yeni.kullanici} kaydı yapılsın mı?",self)!=QMessageBox.Yes:
+            return
+        try:
+            kullanici_servisi.ekle(yeni,sifre)
+        except KuralHatasi as hata:
+            QMessageBox.information(self,"Uyarı!",str(hata))
+            return
+        self.clear_form()
+        self.close()                     # form kapanır, kalınan menüye dönülür
+        self.kaydedildi.emit(yeni.kullanici)
 
     def cmb_yetki(self):
         cmb=["Yetki Seçin...","admin","guest"]
