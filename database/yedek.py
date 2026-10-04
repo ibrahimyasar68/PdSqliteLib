@@ -10,7 +10,7 @@ import glob
 import os
 import sqlite3
 
-from database.dbbase import DB_YOLU, baglantı
+from database.baglanti import DB_YOLU, baglantı
 from database.sema import GEREKLI_TABLOLAR, sema_olustur, tablolar
 
 OTOMATIK_SAKLA = 10

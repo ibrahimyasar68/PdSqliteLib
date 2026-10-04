@@ -8,7 +8,9 @@ from acodes import kilavuz
 from acodes.ana_sayfa import AnaSayfa, ana_sayfayi_yerlestir
 from acodes import arka_plan, bildirim, ikonlar, kisayollar
 from acodes.yan_menu import YanMenu, menuyu_yerlestir, segmente_cevir
-from database.dbframe import genel_ozet, kullanici_bilgisi, son_eklenenler
+from database.istatistik import genel_ozet
+from database.kitaplar import son_eklenenler
+from database.kullanicilar import kullanici_adiyla_bul
 from database.odunc import gecikme_gunu, kalan_gun_yazi, tarih_yazi, teslim_tarihi, uye_odunc
 from acodes import tema
 
@@ -111,9 +113,8 @@ class Guest(OrtakSekmeler, QMainWindow):
         self.listele()
 
     def hesap_bilgisi(self):
-        kayit=kullanici_bilgisi(self.aktif_kullanici) if self.aktif_kullanici else None
-        if kayit is None:
+        k=kullanici_adiyla_bul(self.aktif_kullanici) if self.aktif_kullanici else None
+        if k is None:
             return []
-        kullanici,adi_soyadi,telefon,mail,_=kayit
-        return [("Kullanıcı adı",kullanici),("Adı soyadı",adi_soyadi or "-"),
-                ("Telefon",telefon or "-"),("Mail",mail or "-")]
+        return [("Kullanıcı adı",k.kullanici),("Adı soyadı",k.adi_soyadi or "-"),
+                ("Telefon",k.telefon or "-"),("Mail",k.mail or "-")]

@@ -16,12 +16,13 @@ from acodes import arka_plan, bildirim, ikonlar, kisayollar
 from acodes.yan_menu import YanMenu, menuyu_yerlestir, segmente_cevir
 from acodes.ortak import OrtakSekmeler
 from acodes.tablo import satir_verisi
-from database.dbframe import (df_book_find_by_id, df_user_id_list, df_work_table_book, genel_ozet, kopya_durumu,
-                              son_eklenenler)
+from database.istatistik import genel_ozet
+from database.kitaplar import kitap_bul, son_eklenenler
+from database.kullanicilar import secim_listesi as uye_secim_listesi
 from database.yedek import geri_yukle, otomatik_yedekler, son_otomatik_yedek, yedek_al, yedek_hatasi, yedek_klasoru
-from database.dbbase import DB_YOLU
-from database.odunc import (ODUNC_SURESI_GUN, gecikme_gunu, geciken_sayisi, kalan_gun_yazi, odunc_gecmisi,
-                            tarih_yazi, teslim_tarihi, yaklasan_teslimler)
+from database.baglanti import DB_YOLU
+from database.odunc import (ODUNC_SURESI_GUN, disaridakiler, gecikme_gunu, geciken_sayisi, kalan_gun_yazi, kopya_durumu,
+                            odunc_gecmisi, tarih_yazi, teslim_tarihi, yaklasan_teslimler)
 from acodes.komut_paleti import eslesir
 from PyQt5.QtCore import Qt, pyqtSignal
 import os
@@ -242,12 +243,12 @@ class Library(OrtakSekmeler, QMainWindow):
 
     def kitap_iade_ekrani(self,kitap_id):
         ###  Dışarıdaki tek kopya ise o ödünç seçili açılır; birden fazlaysa liste kitap adıyla süzülür  ###
-        odunclar=[(u,b,adi) for adi,_,_,_,_,_,_,u,b in df_work_table_book() if str(b)==str(kitap_id)]
+        odunclar=[o for o in disaridakiler() if o.kitap_id==kitap_id]
         if len(odunclar)==1:
-            self.iade_ekrani(odunclar[0][0],odunclar[0][1])
+            self.iade_ekrani(odunclar[0].uye_id,odunclar[0].kitap_id)
         elif odunclar:
             self.disaridakileri_goster()
-            self.odunc.arama.setText(odunclar[0][2])
+            self.odunc.arama.setText(odunclar[0].kitap)
             self.bildirim.mesaj(f"Bu kitabın {len(odunclar)} kopyası dışarıda; iade alınacak olanı seçin.","bilgi",self.dur_msj*3)
 
     def kitap_gecmisi(self,kitap_id):
@@ -281,7 +282,7 @@ class Library(OrtakSekmeler, QMainWindow):
 
     def ek_arama_gruplari(self,metin):
         uyeler=[(adi,f"{kullanici} · ödünç ver","kullanicilar",lambda uye_id=id: self.uye_ile_odunc(uye_id))
-                for id,adi,kullanici in df_user_id_list() if eslesir(metin,adi,kullanici)][:6]
+                for id,adi,kullanici in uye_secim_listesi() if eslesir(metin,adi,kullanici)][:6]
         return [("Üyeler",uyeler)]
 
     def kitap_duzenle(self,kitap_id):
@@ -289,7 +290,7 @@ class Library(OrtakSekmeler, QMainWindow):
         q=self.QtLibrary
         q.tabWidget.setCurrentWidget(q.tab_3)
         q.tabWidget_3.setCurrentWidget(self.kitaplar)
-        if df_book_find_by_id(kitap_id) is None:
+        if kitap_bul(kitap_id) is None:
             self.bildirim.mesaj("Kitap bulunamadı (silinmiş olabilir).","uyari",self.dur_msj)
             return
         self.kitaplar.sec(kitap_id)

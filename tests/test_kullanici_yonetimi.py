@@ -5,7 +5,7 @@ from conftest import ADMIN_SIFRE, UYE_SIFRE
 from acodes.guest import Guest
 from acodes.kullanici_yonetimi import KullaniciDuzenle, KullaniciYonetimi, SifreDegistir
 from acodes.library import Library
-from database.dbframe import giris_kontrol
+from database.kullanicilar import giris_kontrol
 
 
 @pytest.fixture
@@ -14,7 +14,7 @@ def yonetim(app, uyarilar):
 
 
 def kayit(yonetim, kullanici):
-    return next(k for k in yonetim.kayitlar if k[1] == kullanici)
+    return next(k for k in yonetim.kayitlar if k.kullanici == kullanici)
 
 
 def duzenle(yonetim, kullanici, aktif="admin", **alanlar):
@@ -44,7 +44,7 @@ def test_liste_sifre_gostermez(yonetim):
 def test_secim_olmadan_butonlar_pasif(yonetim):
     assert not yonetim.btn_sil.isEnabled()
     yonetim.sec("ayse1")
-    assert yonetim.btn_sil.isEnabled() and yonetim.secili()[1] == "ayse1"
+    assert yonetim.btn_sil.isEnabled() and yonetim.secili().kullanici == "ayse1"
 
 
 # --- Düzenleme ---

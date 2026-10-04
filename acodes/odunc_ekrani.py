@@ -14,11 +14,11 @@ from acodes import hareket, tema
 from acodes.aranabilir import aranabilir_yap, secili_veri
 from acodes.tablo import satir_verisi, tablo_ayarla, tabloya_yaz
 from acodes.yerlesim import baslik_satiri, etiketli
-from database.dbbase import iade_geri_al, save_work_to_db, update_work_to_db
-from database.dbframe import (df_book_find_by_id, df_book_id_list, df_user_find_by_id, df_user_id_list,
-                              df_work_table_book, katla, kopya_durumu, uyede_mi)
-from database.odunc import (ODUNC_SURESI_GUN, gecikme_gunu, kalan_gun_yazi, tarih_yazi, teslim_tarihi,
-                            uye_durumu)
+from database import kitaplar, kullanicilar
+from database.metin import katla
+from database.modeller import id_sayi
+from database.odunc import (ODUNC_SURESI_GUN, disaridakiler, gecikme_gunu, iade_al, iade_geri_al, kalan_gun_yazi,
+                            kopya_durumu, odunc_ver, tarih_yazi, teslim_tarihi, uye_durumu, uyede_mi)
 
 SECINIZ = ' Seçiniz...'
 LISTE_KOLONLARI = ["Kitap", "Yazarı", "Üye", "Telefon", "Veriliş", "Teslim", "Durum"]
@@ -26,23 +26,18 @@ LISTE_KOLONLARI = ["Kitap", "Yazarı", "Üye", "Telefon", "Veriliş", "Teslim", 
 
 def kitap_listesi(cmb):
     """Açılır listeyi kitap id'leriyle doldurur. Aynı adlı kitaplara yayınevi ve yıl eklenir."""
-    kitaplar = df_book_id_list()
-    adlar = [adi for _, adi, _, _ in kitaplar]
+    secenekler = kitaplar.secim_listesi()
+    adlar = [adi for _, adi, _, _ in secenekler]
     cmb.addItem(SECINIZ)
-    for id, adi, yayinevi, yili in kitaplar:
+    for id, adi, yayinevi, yili in secenekler:
         cmb.addItem(f"{adi} ({yayinevi}, {yili})" if adlar.count(adi) > 1 else adi, id)
 
 
 def uye_listesi(cmb):
     # Aynı isimde iki üye olabileceği için kullanıcı adı da yazılır, her satırda id saklanır
     cmb.addItem(SECINIZ)
-    for id, adi, kullanici in df_user_id_list():
+    for id, adi, kullanici in kullanicilar.secim_listesi():
         cmb.addItem(f"{adi} ({kullanici})", id)
-
-
-def sayi(deger):
-    # follow tablosunda id'ler metin olarak saklanır
-    return int(deger) if str(deger).isdigit() else deger
 
 
 def hatirlatma_metni(kitap, uye, teslim, durum, kutuphane="Yaşar Kütüphanesi"):
@@ -181,17 +176,17 @@ class OduncEkrani(QWidget):
         kelimeler = katla(self.arama.text()).split()
         satirlar, idler, gecikenler = [], [], set()
         toplam = geciken = 0
-        for kitap, yazar, _, kisi, telefon, _, verilis, user_id, book_id in df_work_table_book():
+        for o in disaridakiler():
             toplam += 1
-            gecikmis = gecikme_gunu(verilis) > 0
+            gecikmis = gecikme_gunu(o.verilis) > 0
             geciken += gecikmis
-            if not all(k in katla(f"{kitap} {yazar} {kisi}") for k in kelimeler):
+            if not all(k in katla(f"{o.kitap} {o.yazar} {o.uye}") for k in kelimeler):
                 continue
             if gecikmis:
                 gecikenler.add(len(satirlar))
-            satirlar.append([kitap, yazar, kisi, telefon, tarih_yazi(verilis), tarih_yazi(teslim_tarihi(verilis)),
-                             kalan_gun_yazi(verilis)])
-            idler.append((sayi(user_id), sayi(book_id)))
+            satirlar.append([o.kitap, o.yazar, o.uye, o.telefon, tarih_yazi(o.verilis),
+                             tarih_yazi(teslim_tarihi(o.verilis)), kalan_gun_yazi(o.verilis)])
+            idler.append((o.uye_id, o.kitap_id))
         tabloya_yaz(self.tablo, satirlar, vurgulu=gecikenler, veri=idler)
         ozet = f"Dışarıda {toplam} kitap" + (f", {geciken} tanesinin teslim süresi geçmiş" if geciken else "")
         if kelimeler:
@@ -210,9 +205,9 @@ class OduncEkrani(QWidget):
         if kitap_id is None:
             renkli(self.kitap_bilgi, "")
         else:
-            k = df_book_find_by_id(kitap_id)
+            k = kitaplar.kitap_bul(kitap_id)
             kopya, disarida = kopya_durumu(kitap_id)
-            tanim = " · ".join(str(x) for x in (k[2], k[5], k[6]) if x) if k else ""
+            tanim = " · ".join(str(x) for x in (k.yazari, k.yayinevi, k.yili) if x) if k else ""
             if k is None:
                 engel = "Bu kitap silinmiş."
                 renkli(self.kitap_bilgi, engel, tema.TEHLIKE)
@@ -224,9 +219,9 @@ class OduncEkrani(QWidget):
         if uye_id is None:
             renkli(self.uye_bilgi, "")
         else:
-            u = df_user_find_by_id(uye_id)
+            u = kullanicilar.kullanici_bul(uye_id)
             elinde, geciken = uye_durumu(uye_id)
-            iletisim = " · ".join(x for x in (u[4], u[5]) if x) if u else ""
+            iletisim = " · ".join(x for x in (u.telefon, u.mail) if x) if u else ""
             if u is None and engel is None:
                 engel = "Bu üye silinmiş."
             durum = f"Elinde {elinde} kitap var" if elinde else "Elinde kitap yok"
@@ -259,7 +254,7 @@ class OduncEkrani(QWidget):
         if onay(f"'{self.kitap.currentText()}' kitabı {self.uye.currentText()} adlı üyeye verilsin mi?") != QMessageBox.Yes:
             return
         simdi = datetime.datetime.today()
-        save_work_to_db([str(uye_id), str(kitap_id), simdi.date(), simdi.strftime('%X '), "out", "", ""])
+        odunc_ver(uye_id, kitap_id, simdi)
         for cmb in (self.kitap, self.uye):
             cmb.setCurrentIndex(0)
         self._degisiklik_sonrasi()
@@ -283,7 +278,7 @@ class OduncEkrani(QWidget):
 
     def sec(self, user_id, book_id):
         """Ana sayfadan gelince: bu ödüncü listede seç (arama gizliyorsa temizlenir)."""
-        user_id, book_id = sayi(user_id), sayi(book_id)
+        user_id, book_id = id_sayi(user_id), id_sayi(book_id)
         if not self._satiri_sec(user_id, book_id) and self.arama.text():
             self.arama.clear()
         if not self._satiri_sec(user_id, book_id):
@@ -333,9 +328,8 @@ class OduncEkrani(QWidget):
             return
         r = self.tablo.selectionModel().selectedRows()[0].row()
         kitap, durum = self.tablo.item(r, 0).text(), self.tablo.item(r, 6).text()
-        simdi = datetime.datetime.today()
         user_id, book_id = secili
-        kayit_no = update_work_to_db([str(user_id), str(book_id), "", "", "in", simdi.date(), simdi.strftime('%X ')])
+        kayit_no = iade_al(user_id, book_id)
         self.tablo.clearSelection()
         self._degisiklik_sonrasi()
         self.bildir(f"'{kitap}' iade alındı" + (f" ({durum})." if durum.endswith("gecikti") else "."),

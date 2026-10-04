@@ -8,7 +8,7 @@ from acodes.library import Library
 from acodes.guest import Guest
 from acodes import hareket, ikonlar, kilavuz, tema
 from bforms.login_py import Ui_MainWindow
-from database.dbframe import giris_kontrol
+from database.kullanicilar import giris_kontrol
 
 
 def panel_goster(panel):

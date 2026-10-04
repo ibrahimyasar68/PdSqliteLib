@@ -3,7 +3,8 @@ import pytest
 
 from acodes.guest import Guest
 from acodes.library import Library
-from database.dbframe import katla, kitap_ara
+from database.kitaplar import kitap_ara
+from database.metin import katla
 
 
 @pytest.mark.parametrize("girdi,beklenen", [

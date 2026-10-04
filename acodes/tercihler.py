@@ -6,7 +6,7 @@ import os
 
 from PyQt5.QtCore import QSettings
 
-from database.dbbase import DB_YOLU
+from database.baglanti import DB_YOLU
 
 
 def _dosya():

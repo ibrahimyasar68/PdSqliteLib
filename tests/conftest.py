@@ -15,7 +15,8 @@ sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."
 import pytest  # noqa: E402
 from PyQt5.QtWidgets import QApplication, QMessageBox  # noqa: E402
 
-from database.dbbase import baglantı, sifre_hashle  # noqa: E402
+from database.baglanti import baglantı  # noqa: E402
+from database.kullanicilar import sifre_hashle  # noqa: E402
 from acodes import hareket  # noqa: E402
 
 hareket.ANIMASYON = False       # sayfa geçişleri ve menü genişliği testlerde hemen sonuçlansın

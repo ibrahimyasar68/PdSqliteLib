@@ -5,7 +5,7 @@
 from PyQt5.QtCore import QModelIndex, QSortFilterProxyModel
 from PyQt5.QtWidgets import QComboBox, QCompleter
 
-from database.dbframe import katla
+from database.metin import katla
 
 
 class TurkceSuzgec(QSortFilterProxyModel):

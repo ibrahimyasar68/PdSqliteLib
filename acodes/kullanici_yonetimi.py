@@ -2,6 +2,8 @@
 # Admin panelinden: kullanıcıları listeleme, düzenleme, şifre değiştirme ve silme.
 # Guest panelinden: kendi şifresini değiştirme (SifreDegistir, eski şifre sorulur).
 
+from dataclasses import replace
+
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import (QAbstractItemView, QComboBox, QDialog, QDialogButtonBox, QFormLayout,
                              QHBoxLayout, QHeaderView, QLineEdit, QMessageBox, QPushButton,
@@ -11,8 +13,9 @@ from acodes.yerlesim import ustte_etiketli_form
 from acodes.onay import onay
 from acodes import ikonlar, tema
 from acodes.user import mail_gecerli, sifre_hatasi, telefon_gecerli
-from database.dbbase import kullanici_guncelle, kullanici_sil, sifre_guncelle
-from database.dbframe import admin_sayisi, df_user_all, giris_kontrol, kullanici_odunc_sayisi
+from database.kullanicilar import (admin_sayisi, giris_kontrol, kullanici_guncelle, kullanici_sil, kullanicilar,
+                                   sifre_guncelle)
+from database.odunc import kullanici_odunc_sayisi
 
 YETKILER = ["admin", "guest"]
 
@@ -68,8 +71,11 @@ class KullaniciDuzenle(QDialog):
     """Ad soyad, telefon, mail ve yetki düzenleme (kullanıcı adı değiştirilemez)."""
 
     def __init__(self, kayit, aktif_kullanici, parent=None):
+        """kayit: düzenlenen Kullanici."""
         super().__init__(parent)
-        self.id, self.kullanici, adi_soyadi, telefon, mail, self.eski_yetki = kayit
+        self.kayit = kayit
+        self.kullanici, self.eski_yetki = kayit.kullanici, kayit.yetki
+        adi_soyadi, telefon, mail = kayit.adi_soyadi, kayit.telefon, kayit.mail
         self.setWindowTitle(f"Kullanıcı Düzenle: {self.kullanici}")
         self.setStyleSheet(pencere_stili())
         form = ustte_etiketli_form(QFormLayout(self))
@@ -115,7 +121,7 @@ class KullaniciDuzenle(QDialog):
         if hata:
             QMessageBox.warning(self, "Uyarı!", hata)
             return
-        kullanici_guncelle(self.id, adi_soyadi, telefon, mail, yetki)
+        kullanici_guncelle(replace(self.kayit, adi_soyadi=adi_soyadi, telefon=telefon, mail=mail, yetki=yetki))
         self.accept()
 
 
@@ -158,9 +164,10 @@ class KullaniciYonetimi(QDialog):
         self.yukle()
 
     def yukle(self):
-        self.kayitlar = df_user_all()
+        self.kayitlar = kullanicilar()
         # Kayıt satırın içinde saklanır; başlığa tıklanıp sıralansa da doğru kullanıcı seçilir
-        tabloya_yaz(self.tablo, [[d or "" for d in k[1:]] for k in self.kayitlar], veri=list(range(len(self.kayitlar))))
+        tabloya_yaz(self.tablo, [[k.kullanici, k.adi_soyadi, k.telefon, k.mail, k.yetki] for k in self.kayitlar],
+                    veri=list(range(len(self.kayitlar))))
         self.tablo.clearSelection()
         self.butonlari_ayarla()
 
@@ -185,21 +192,20 @@ class KullaniciYonetimi(QDialog):
         kayit = self.secili()
         if kayit and KullaniciDuzenle(kayit, self.aktif_kullanici, self).exec_():
             self.yukle()
-            self.sec(kayit[1])
+            self.sec(kayit.kullanici)
 
     def sifre_degistir(self):
         kayit = self.secili()
         if kayit:
-            SifreDegistir(kayit[1], parent=self).exec_()
+            SifreDegistir(kayit.kullanici, parent=self).exec_()
 
     def silme_engeli(self, kayit):
         """Kullanıcı silinemiyorsa nedenini, silinebiliyorsa None döndürür."""
-        id, kullanici, _, _, _, yetki = kayit
-        if kullanici == self.aktif_kullanici:
+        if kayit.kullanici == self.aktif_kullanici:
             return "Kendi hesabınızı silemezsiniz!"
-        if yetki == "admin" and admin_sayisi() <= 1:
+        if kayit.yetki == "admin" and admin_sayisi() <= 1:
             return "Son admin kullanıcı silinemez!"
-        odunc = kullanici_odunc_sayisi(id)
+        odunc = kullanici_odunc_sayisi(kayit.id)
         if odunc:
             return f"Bu kullanıcının elinde iade edilmemiş {odunc} kitap var. Önce iade alın!"
         return None
@@ -212,8 +218,8 @@ class KullaniciYonetimi(QDialog):
         if engel:
             QMessageBox.warning(self, "Uyarı!", engel)
             return
-        if onay(f"'{kayit[1]}' ({kayit[2]}) kullanıcısı silinsin mi?\nBu işlem geri alınamaz.") == QMessageBox.Yes:
-            kullanici_sil(kayit[0])
+        if onay(f"'{kayit.kullanici}' ({kayit.adi_soyadi}) kullanıcısı silinsin mi?\nBu işlem geri alınamaz.") == QMessageBox.Yes:
+            kullanici_sil(kayit.id)
             self.yukle()
 
 

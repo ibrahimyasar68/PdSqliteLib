@@ -1,22 +1,30 @@
 ## Veritabanı katmanı (database/) testleri ##
+import datetime
 import sqlite3
 
 import pytest
 
 from conftest import ADMIN_SIFRE, ESKI_SIFRE
-from database.dbbase import (degistir_kayit, ekle_kayit, save_work_to_db, sifre_dogrula,
-                             sifre_hashle, update_work_to_db, user_ekle)
-from database.dbframe import (df_book_id_list, df_sort_list,
-                              df_user_query, df_work_table_book,
-                              giris_kontrol, kitap_ara, kitap_filtrele, kitap_oduncte, rapor)
+from database import odunc
+from database.istatistik import BELIRTILMEMIS, rapor
+from database.kitaplar import (farkli_degerler, kitap_ara, kitap_bul, kitap_ekle, kitap_filtrele, kitap_guncelle,
+                               secim_listesi)
+from database.kullanicilar import (giris_kontrol, kullanici_bul, kullanici_ekle, kullanici_var_mi, sifre_dogrula,
+                                   sifre_hashle)
+from database.modeller import Kitap, Kullanici, Odunc
+from database.odunc import disaridakiler, kitap_oduncte
 
 
 def odunc_ver(user_id, book_id, tarih="2026-01-01"):
-    save_work_to_db([str(user_id), str(book_id), tarih, "10:00 ", "out", "", ""])
+    odunc.odunc_ver(user_id, book_id, datetime.datetime.fromisoformat(f"{tarih}T10:00"))
 
 
 def iade_al(user_id, book_id, tarih="2026-01-15"):
-    update_work_to_db([str(user_id), str(book_id), "", "", "in", tarih, "11:00 "])
+    return odunc.iade_al(user_id, book_id, datetime.datetime.fromisoformat(f"{tarih}T11:00"))
+
+
+def yeni_uye(kullanici="yeni", sifre="parola1"):
+    return kullanici_ekle(Kullanici(None, kullanici, "Yeni Üye"), sifre)
 
 
 # --- Şifreler ---
@@ -43,46 +51,47 @@ def test_eski_duz_metin_sifre_ilk_giriste_hashlenir(db):
 
 
 def test_yeni_kullanici_sifresi_hashli_kaydedilir(db):
-    user_ekle(["yeni", "parola1", "Yeni Üye", "", "", "guest"])
+    yeni_uye()
     kayitli = db.execute("SELECT sifre FROM users WHERE kullanici='yeni'").fetchone()[0]
     assert kayitli.startswith("pbkdf2$") and sifre_dogrula("parola1", kayitli)
 
 
 def test_ayni_isimde_birden_fazla_kullanici_bulunur():
     # Eskiden 2+ eşleşmede None dönüp uyarı atlanıyordu
-    assert df_user_query("adi_soyadi", "Ayşe Yılmaz") is True
-    assert df_user_query("adi_soyadi", "Olmayan Kişi") is False
+    assert kullanici_var_mi("adi_soyadi", "Ayşe Yılmaz") is True
+    assert kullanici_var_mi("adi_soyadi", "Olmayan Kişi") is False
 
 
 # --- Kitaplar, tırnak işareti ve SQL injection ---
 
 def test_tirnakli_degerler_eklenir_bulunur_guncellenir(db):
-    ekle_kayit(["Çocuk'un Kitabı", "D'Artagnan", "", "Roman", "L'Harmattan", "2021", "99"])
+    kitap_ekle(Kitap("Çocuk'un Kitabı", "D'Artagnan", "", "Roman", "L'Harmattan", "2021", "99"))
     satir = kitap_filtrele({"Yazari": ["D'Artagnan"]})
     assert len(satir) == 1 and satir[0][1] == "Çocuk'un Kitabı"
-    degistir_kayit([satir[0][0], "Çocuk'un Kitabı", "D'Artagnan", "", "Roman", "O'Reilly", "2021", "100"])
+    kitap_guncelle(Kitap("Çocuk'un Kitabı", "D'Artagnan", "", "Roman", "O'Reilly", "2021", "100", id=satir[0][0]))
     assert db.execute("SELECT Yayinevi FROM kayitlistesi WHERE Id=?", (satir[0][0],)).fetchone()[0] == "O'Reilly"
 
 
 def test_sql_injection_etkisiz(db):
-    degistir_kayit([1, "x'; DROP TABLE users; --", "", "", "", "", "", ""])
+    kitap_guncelle(Kitap("x'; DROP TABLE users; --", id=1))
     assert db.execute("SELECT COUNT(*) FROM users").fetchone()[0] == 4
     assert kitap_filtrele({"Adi": ["' OR '1'='1"]}) == []
 
 
 def test_filtre_listesi_bos_degerleri_icermez():
-    yillar = df_sort_list("Yili")
+    yillar = farkli_degerler("Yili")
     assert "" not in yillar and yillar == sorted(yillar)
 
 
 def test_gecersiz_kolon_reddedilir():
-    import pytest
     with pytest.raises(ValueError):
-        df_sort_list("Adi; DROP TABLE users")
+        farkli_degerler("Adi; DROP TABLE users")
+    with pytest.raises(ValueError):
+        kullanici_var_mi("sifre", "x")
 
 
 def test_ayni_adli_kitaplar_ayri_idlerle_listelenir():
-    iklimler = [k for k in df_book_id_list() if k[1] == "İklimler"]
+    iklimler = [k for k in secim_listesi() if k[1] == "İklimler"]
     assert len(iklimler) == 2 and iklimler[0][0] != iklimler[1][0]
 
 
@@ -98,9 +107,10 @@ def test_istatistik_sayilari():
 def test_odunc_ve_iade(db):
     odunc_ver(3, 1)
     assert kitap_oduncte(1)
-    assert [s[7:] for s in df_work_table_book()] == [["3", "1"]]
-    iade_al(3, 1)
-    assert not kitap_oduncte(1) and df_work_table_book() == []
+    assert [(o.uye_id, o.kitap_id) for o in disaridakiler()] == [(3, 1)]
+    assert iade_al(3, 1) is not None
+    assert not kitap_oduncte(1) and disaridakiler() == []
+    assert iade_al(3, 1) is None                     # dışarıda değilse kapatılacak ödünç yok
 
 
 def test_iade_gecmis_kayitlari_bozmaz(db):
@@ -114,12 +124,11 @@ def test_iade_gecmis_kayitlari_bozmaz(db):
 
 def test_silinmis_kitap_ve_uye_listeyi_bozmaz(db):
     odunc_ver(999, 9999)
-    satir = df_work_table_book()[0]
-    assert satir[0] == "(silinmiş kitap)" and satir[3] == "(silinmiş üye)"
+    o = disaridakiler()[0]
+    assert isinstance(o, Odunc) and o.kitap == "(silinmiş kitap)" and o.uye == "(silinmiş üye)"
 
 
 def test_istatistik_her_kitabi_sayar_bos_degerler_belirtilmemis(db):
-    from database.dbframe import BELIRTILMEMIS
     db.execute("INSERT INTO kayitlistesi (Adi, Turu, Yili) VALUES ('Yılsız', 'Roman', NULL), ('Türsüz', '', '2000')")
     db.commit()
     turler = rapor("Turu", 35)
@@ -129,18 +138,25 @@ def test_istatistik_her_kitabi_sayar_bos_degerler_belirtilmemis(db):
 
 
 def test_olmayan_kayit_none_dondurur():
-    from database.dbframe import df_book_find_by_id, df_user_find_by_id
-    assert df_book_find_by_id(999) is None and df_user_find_by_id(999) is None
+    assert kitap_bul(999) is None and kullanici_bul(999) is None
 
 
-def test_ekle_kayit_yeni_numarayi_dondurur(db):
-    yeni = ekle_kayit(["Numaralı", "", "", "", "", "", ""])
+def test_kayitlar_model_olarak_doner():
+    k = kitap_bul(7)
+    assert k == Kitap("Kuyucaklı Yusuf", "Sabahattin ALİ", turu="Roman", yayinevi="YKY", sayfa="220", id=7)
+    u = kullanici_bul(3)
+    assert u == Kullanici(3, "ayse1", "Ayşe Yılmaz", "5551112233", "ayse@ornek.com", "guest")
+    assert not hasattr(u, "sifre")                   # şifre modele girmez
+
+
+def test_kitap_ekle_yeni_numarayi_dondurur(db):
+    yeni = kitap_ekle(Kitap("Numaralı"))
     assert db.execute("SELECT Adi FROM kayitlistesi WHERE Id=?", (yeni,)).fetchone()[0] == "Numaralı"
 
 
 def test_hatali_yazma_yarim_kalmaz(db):
     # Kullanıcı adı benzersizdir: ikinci kayıt hata verir, bağlantıda bekleyen yazma kalmaz
-    user_ekle(["tek", "sifre123", "Tek Kişi", "", "", "guest"])
+    yeni_uye("tek")
     with pytest.raises(sqlite3.IntegrityError):
-        user_ekle(["tek", "sifre123", "Tek Kişi", "", "", "guest"])
+        yeni_uye("tek")
     assert not db.in_transaction

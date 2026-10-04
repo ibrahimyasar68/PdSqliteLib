@@ -3,8 +3,8 @@ from PyQt5.QtWidgets import (QComboBox, QHBoxLayout, QLabel, QLineEdit, QListVie
                              QPushButton, QVBoxLayout, QWidget)
 from PyQt5.QtCore import Qt, QTimer, pyqtSignal
 from acodes import ikonlar, tema
-from database.dbframe import df_user_query
-from database.dbbase import user_ekle
+from database.kullanicilar import kullanici_ekle, kullanici_var_mi
+from database.modeller import Kullanici
 from acodes.onay import onay
 import re
 
@@ -144,7 +144,7 @@ QLineEdit, QComboBox {{ font-size: {tema.YAZI.metin}px; padding: 4px 10px; borde
             panel.activateWindow()
 
     def chk_kullanici_adi(self):
-        if df_user_query('kullanici',self.QtUser.lineEdit_kullanici_adi.text()):
+        if kullanici_var_mi('kullanici',self.QtUser.lineEdit_kullanici_adi.text()):
             self.QtUser.lineEdit_kullanici_adi.clear()
             QMessageBox.information(self,"Uyarı!","Kullanıcı adı kullanılmaktadır!")
             self.mesaj_goster("Kullanıcı adı kullanılmaktadır. Lütfen yeni bir kayıt deneyin",self.dur_msj)
@@ -162,7 +162,7 @@ QLineEdit, QComboBox {{ font-size: {tema.YAZI.metin}px; padding: 4px 10px; borde
             QMessageBox.information(self,"Uyarı!","Önce kullanıcı adı ve şifre girilmelidir")
             self.QtUser.lineEdit_adi_soyadi.clear()
         else:
-            if df_user_query('adi_soyadi',self.QtUser.lineEdit_adi_soyadi.text()):
+            if kullanici_var_mi('adi_soyadi',self.QtUser.lineEdit_adi_soyadi.text()):
                 cvb=onay('Bu adda bir kullanıcı var. Devam etmek İstiyor musun?')
                 if cvb==QMessageBox.No:
                     self.mesaj_goster("Lütfen yeni bir isim giriniz",self.dur_msj)
@@ -195,19 +195,16 @@ QLineEdit, QComboBox {{ font-size: {tema.YAZI.metin}px; padding: 4px 10px; borde
             elif self.QtUser.lineEdit_mail.text().strip() and not mail_gecerli(self.QtUser.lineEdit_mail.text().strip()):
                 QMessageBox.information(self,"Uyarı!","Uygun mail adresi girilmedi. Kontrol edin!")
             else:
-                kayit=[]
-                kayit.append(self.QtUser.lineEdit_kullanici_adi.text())
-                kayit.append(self.QtUser.lineEdit_sifre.text())
-                kayit.append(self.QtUser.lineEdit_adi_soyadi.text())
-                kayit.append(self.QtUser.lineEdit_telefon.text().strip())
-                kayit.append(self.QtUser.lineEdit_mail.text().strip())
-                kayit.append(self.QtUser.comboBox_yetki.currentText())
-                cvb=onay(f"{kayit[0]} kaydı yapılsın mı?",self)
+                ui=self.QtUser
+                yeni=Kullanici(None,ui.lineEdit_kullanici_adi.text(),ui.lineEdit_adi_soyadi.text(),
+                               ui.lineEdit_telefon.text().strip(),ui.lineEdit_mail.text().strip(),
+                               ui.comboBox_yetki.currentText())
+                cvb=onay(f"{yeni.kullanici} kaydı yapılsın mı?",self)
                 if cvb==QMessageBox.Yes:
-                    user_ekle(kayit)
+                    kullanici_ekle(yeni,ui.lineEdit_sifre.text())
                     self.clear_form()
                     self.close()                     # form kapanır, kalınan menüye dönülür
-                    self.kaydedildi.emit(kayit[0])
+                    self.kaydedildi.emit(yeni.kullanici)
 
     def cmb_yetki(self):
         cmb=["Yetki Seçin...","admin","guest"]

@@ -4,7 +4,8 @@
 
 import datetime
 
-from database.dbbase import baglantı
+from database.baglanti import baglantı
+from database.modeller import Odunc
 
 ODUNC_SURESI_GUN = 15
 
@@ -121,3 +122,76 @@ def odunc_verilen_kitaplar():
 def uye_durumu(user_id, bugun=None):
     satirlar = baglantı.execute("SELECT outdate FROM follow WHERE userId=? AND status='out'", (str(user_id),)).fetchall()
     return len(satirlar), sum(1 for (verilis,) in satirlar if gecikme_gunu(verilis, bugun=bugun) > 0)
+
+
+######################
+###  Kayıt         ####
+######################
+# follow tablosunda id'ler metin, saat "10:00:00 " biçiminde saklanır (eski kayıtlarla aynı)
+
+def _zaman(zaman):
+    zaman = zaman or datetime.datetime.today()
+    return str(zaman.date()), zaman.strftime("%X ")
+
+
+def odunc_ver(uye_id, kitap_id, zaman=None):
+    tarih_, saat = _zaman(zaman)
+    with baglantı:
+        baglantı.execute("INSERT INTO follow (userId,bookId,outdate,outtime,status,indate,intime) VALUES (?,?,?,?,'out','','')",
+                         (str(uye_id), str(kitap_id), tarih_, saat))
+
+
+def iade_al(uye_id, kitap_id, zaman=None):
+    """Dışarıdaki ödüncü kapatır (geçmiş iadelere dokunmaz); ödünç kaydının numarası (rowid) döner,
+    iade geri alınırken kullanılır. Dışarıda böyle bir ödünç yoksa None."""
+    tarih_, saat = _zaman(zaman)
+    with baglantı:
+        satir = baglantı.execute("SELECT rowid FROM follow WHERE userId=? AND bookId=? AND status='out'",
+                                 (str(uye_id), str(kitap_id))).fetchone()
+        baglantı.execute("UPDATE follow SET status='in', indate=?, intime=? WHERE userId=? AND bookId=? AND status='out'",
+                         (tarih_, saat, str(uye_id), str(kitap_id)))
+    return satir[0] if satir else None
+
+
+def iade_geri_al(rowid):
+    """İadeyi geri alma ("Geri Al"): ödünç kaydı yeniden dışarıda olur."""
+    with baglantı:
+        baglantı.execute("UPDATE follow SET status='out', indate='', intime='' WHERE rowid=? AND status='in'", (rowid,))
+
+
+######################
+###  Durum         ####
+######################
+
+def disaridakiler():
+    """Dışarıdaki ödünçler (Odunc), en eski veriliş en üstte."""
+    return [Odunc(*satir) for satir in baglantı.execute(
+        """SELECT COALESCE(k.Adi,'(silinmiş kitap)'), COALESCE(k.Yazari,''), COALESCE(k.Turu,''),
+                  COALESCE(u.adi_soyadi,'(silinmiş üye)'), COALESCE(u.telefon,''), COALESCE(u.mail,''), f.outdate,
+                  f.userId, f.bookId
+           FROM follow f
+           LEFT JOIN kayitlistesi k ON k.Id=f.bookId
+           LEFT JOIN users u ON u.id=f.userId
+           WHERE f.status='out' ORDER BY f.outdate, f.rowid""")]
+
+
+def kitap_oduncte(kitap_id):
+    return baglantı.execute("SELECT COUNT(*) FROM follow WHERE bookId=? AND status='out'", (str(kitap_id),)).fetchone()[0] > 0
+
+
+def kopya_durumu(kitap_id):
+    """(kopya sayısı, dışarıdaki kopya sayısı); kitap yoksa kopya 0."""
+    kopya = baglantı.execute("SELECT COALESCE(Kopya,1) FROM kayitlistesi WHERE Id=?", (kitap_id,)).fetchone()
+    disarida = baglantı.execute("SELECT COUNT(*) FROM follow WHERE bookId=? AND status='out'", (str(kitap_id),)).fetchone()[0]
+    return (kopya[0] if kopya else 0), disarida
+
+
+def uyede_mi(uye_id, kitap_id):
+    """Üyede bu kitabın iade edilmemiş bir kopyası var mı?"""
+    return baglantı.execute("SELECT COUNT(*) FROM follow WHERE userId=? AND bookId=? AND status='out'",
+                            (str(uye_id), str(kitap_id))).fetchone()[0] > 0
+
+
+def kullanici_odunc_sayisi(uye_id):
+    """Kullanıcının elinde iade edilmemiş kitap sayısı."""
+    return baglantı.execute("SELECT COUNT(*) FROM follow WHERE userId=? AND status='out'", (str(uye_id),)).fetchone()[0]

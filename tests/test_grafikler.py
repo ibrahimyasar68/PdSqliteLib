@@ -3,7 +3,7 @@ from acodes.grafikler import (DikeyCubukGrafik, GrafikPaneli, PastaGrafik, Yatay
                               tur_dagilimi)
 from acodes.guest import Guest
 from acodes.library import Library
-from database.dbframe import yil_dagilimi
+from database.istatistik import yil_dagilimi
 
 
 def test_yil_dagilimi_turkce_eklerle():

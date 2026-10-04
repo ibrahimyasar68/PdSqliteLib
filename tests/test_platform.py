@@ -6,7 +6,7 @@ import sys
 
 import pytest
 
-from database import dbbase
+from database import baglanti
 
 PROJE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..")
 
@@ -26,7 +26,7 @@ def paketli(monkeypatch, tmp_path):
 def test_windows_appdata_altina_kopyalanir(paketli, monkeypatch):
     monkeypatch.setattr(sys, "platform", "win32")
     monkeypatch.setenv("APPDATA", str(paketli / "AppData" / "Roaming"))
-    yol = dbbase.db_yolu()
+    yol = baglanti.db_yolu()
     assert yol == os.path.join(str(paketli / "AppData" / "Roaming"), "PdSqliteLib", "DBL_Kayit.db")
     assert open(yol, "rb").read() == b"paketteki veritabani"
 
@@ -34,7 +34,7 @@ def test_windows_appdata_altina_kopyalanir(paketli, monkeypatch):
 def test_mac_application_support_altina_kopyalanir(paketli, monkeypatch):
     monkeypatch.setattr(sys, "platform", "darwin")
     monkeypatch.setenv("HOME", str(paketli / "ev"))
-    yol = dbbase.db_yolu()
+    yol = baglanti.db_yolu()
     assert yol == str(paketli / "ev" / "Library" / "Application Support" / "PdSqliteLib" / "DBL_Kayit.db")
     assert os.path.exists(yol)
 
@@ -42,16 +42,16 @@ def test_mac_application_support_altina_kopyalanir(paketli, monkeypatch):
 def test_mevcut_veritabaninin_uzerine_yazilmaz(paketli, monkeypatch):
     monkeypatch.setattr(sys, "platform", "win32")
     monkeypatch.setenv("APPDATA", str(paketli / "AppData"))
-    yol = dbbase.db_yolu()
+    yol = baglanti.db_yolu()
     open(yol, "wb").write(b"kullanicinin verisi")
-    assert dbbase.db_yolu() == yol
+    assert baglanti.db_yolu() == yol
     assert open(yol, "rb").read() == b"kullanicinin verisi"
 
 
 def test_gelistirmede_proje_data_klasoru(monkeypatch):
     monkeypatch.delenv("PDSQLITE_DB", raising=False)
     monkeypatch.setattr(sys, "frozen", False, raising=False)
-    assert os.path.normpath(dbbase.db_yolu()) == os.path.normpath(os.path.join(PROJE, "data", "DBL_Kayit.db"))
+    assert os.path.normpath(baglanti.db_yolu()) == os.path.normpath(os.path.join(PROJE, "data", "DBL_Kayit.db"))
 
 
 # --- Paketleme betikleri birbiriyle uyumlu kalsın ---

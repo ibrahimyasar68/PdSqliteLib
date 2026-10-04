@@ -5,8 +5,8 @@ import re
 import unicodedata
 from collections import Counter
 
-from database.dbbase import baglantı
-from database.dbframe import KITAP_KOLON, kolon
+from database.baglanti import baglantı
+from database.kitaplar import KITAP_KOLON, kolon
 
 _KATLAMA = str.maketrans("ÇĞIİÖŞÜçğıöşü", "CGIIOSUcgiosu")
 

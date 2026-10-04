@@ -8,7 +8,7 @@ from PyQt5.QtGui import QColor, QPainter, QPen
 from PyQt5.QtWidgets import QGridLayout, QWidget
 
 from acodes import hareket, tema
-from database.dbframe import rapor, yil_dagilimi
+from database.istatistik import rapor, yil_dagilimi
 
 PASTA_DILIM = 7        # en büyük 7 tür, gerisi "Diğer"
 CUBUK_SAYISI = 10

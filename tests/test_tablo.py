@@ -11,7 +11,8 @@ from acodes.guest import Guest
 from acodes.kullanici_yonetimi import KullaniciYonetimi
 from acodes.library import Library
 from acodes.tablo import SATIR_BOY, siralama_anahtari, tablo_ayarla, tabloya_yaz
-from database.dbframe import df_sort_list, tr_sirala
+from database.kitaplar import farkli_degerler
+from database.metin import tr_sirala
 
 
 def kolon(tablo, c):
@@ -29,7 +30,7 @@ def test_turk_alfabesi_sirasi():
 def test_filtre_listeleri_turk_alfabesiyle_sirali(db):
     db.execute("INSERT INTO kayitlistesi (Adi,Turu) VALUES ('x','Şiir'), ('y','Çocuk'), ('z','Tarih')")
     db.commit()
-    assert df_sort_list("Turu") == ["Anı", "Çocuk", "Deneme", "Roman", "Şiir", "Tarih"]
+    assert farkli_degerler("Turu") == ["Anı", "Çocuk", "Deneme", "Roman", "Şiir", "Tarih"]
 
 
 @pytest.mark.parametrize("kucuk,buyuk", [
@@ -111,9 +112,9 @@ def test_kullanici_tablosu_siralaninca_dogru_kullanici_secilir(app, uyarilar):
     y = KullaniciYonetimi("admin")
     y.tablo.sortItems(0, Qt.DescendingOrder)
     y.sec("ayse1")
-    assert y.secili()[1] == "ayse1"
+    assert y.secili().kullanici == "ayse1"
     y.tablo.selectRow(0)
-    assert y.secili()[1] == y.tablo.item(0, 0).text()
+    assert y.secili().kullanici == y.tablo.item(0, 0).text()
 
 
 # --- Görünüm: satır renkleri, satır numarası, boş tablo mesajı ---

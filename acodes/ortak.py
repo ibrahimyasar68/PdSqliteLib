@@ -4,7 +4,9 @@
 
 from PyQt5.QtCore import QEvent, Qt
 from PyQt5.QtWidgets import QGroupBox, QHeaderView, QLabel, QLineEdit, QVBoxLayout
-from database.dbframe import katla, kitap_ara, kitap_durumlari, rapor
+from database.istatistik import rapor
+from database.kitaplar import kitap_ara, kitap_durumlari
+from database.metin import katla
 from acodes.grafikler import GrafikPaneli
 from acodes.filtre_paneli import FiltrePaneli
 from acodes.yerlesim import baslik_satiri, liste_sayfasi

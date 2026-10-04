@@ -8,7 +8,8 @@ from PyQt5.QtWidgets import (QAbstractItemView, QApplication, QHeaderView, QLabe
                              QStyledItemDelegate, QStyleOptionViewItem, QTableWidgetItem, QToolTip, QVBoxLayout, QWidget)
 
 from acodes import tema
-from database.dbframe import kitap_durumlari, tr_sirala
+from database.kitaplar import kitap_durumlari
+from database.metin import tr_sirala
 
 SATIR_BOY = 38          # tablo satır yüksekliği (piksel)
 _TARIH = re.compile(r"(\d{2})\.(\d{2})\.(\d{4})")

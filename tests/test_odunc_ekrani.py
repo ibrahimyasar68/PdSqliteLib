@@ -9,7 +9,7 @@ from acodes.library import Library
 from PyQt5.QtGui import QColor
 from acodes import tema
 from database import odunc
-from database.dbframe import kopya_durumu
+from database.odunc import kopya_durumu
 
 BUGUN = datetime.date.today()
 

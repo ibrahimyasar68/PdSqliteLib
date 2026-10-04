@@ -13,8 +13,10 @@ from acodes.ek_bilgi import EkBilgiler
 from acodes.kisayollar import arama_kutusu_yap, kisayol, metin
 from acodes.tablo import KolonSecici, durum_ekle, durum_rozeti_kur, satir_verisi, tablo_ayarla, tabloya_yaz
 from acodes.yerlesim import baslik_satiri, etiketli
-from database.dbbase import degistir_kayit, ekle_kayit, geri_ekle_kayit, sil_kayit
-from database.dbframe import df_book_find_by_id, df_sort_list, kitap_ara, kitap_oduncte, kopya_durumu
+from database.kitaplar import (farkli_degerler, kitap_ara, kitap_bul, kitap_ekle, kitap_geri_ekle, kitap_guncelle,
+                               kitap_sil)
+from database.modeller import Kitap
+from database.odunc import kitap_oduncte, kopya_durumu
 
 # (veritabanı kolonu, etiket, önerilecek mevcut değerler var mı)
 ALANLAR = [("Adi", "Kitap adı (zorunlu)", False), ("Yazari", "Yazarı", True), ("Ceviren", "Çevirmen", True),
@@ -153,7 +155,7 @@ class KitapEkrani(QWidget):
         """Listeyi ve alan önerilerini veritabanından yeniden yükler; seçili kitap korunur."""
         for kolon, _, oneri in ALANLAR:
             if oneri:
-                tamamlayici = QCompleter(df_sort_list(kolon), self.alan[kolon])
+                tamamlayici = QCompleter(farkli_degerler(kolon), self.alan[kolon])
                 tamamlayici.setCaseSensitivity(Qt.CaseInsensitive)
                 tamamlayici.setFilterMode(Qt.MatchContains)
                 self.alan[kolon].setCompleter(tamamlayici)
@@ -194,14 +196,14 @@ class KitapEkrani(QWidget):
     # --- Form
 
     def goster(self, kitap_id):
-        kayit = df_book_find_by_id(kitap_id) if kitap_id is not None else None
-        if kayit is None:
+        kitap = kitap_bul(kitap_id) if kitap_id is not None else None
+        if kitap is None:
             self.yeni()
             return
         self.kitap_id = kitap_id
-        for i, (kolon, _, _) in enumerate(ALANLAR, start=1):
-            self.alan[kolon].setText("" if kayit[i] is None else str(kayit[i]))
-        self.ek.doldur(*kayit[8:12])
+        for kolon, _, _ in ALANLAR:
+            self.alan[kolon].setText(str(getattr(kitap, kolon.lower())))
+        self.ek.doldur(kitap.isbn, kitap.kopya, kitap.raf, kitap.notlar)
         kopya, disarida = kopya_durumu(kitap_id)
         self.kopya_bilgi.setText(f"{kopya} kopyadan {disarida} tanesi şu an üyelerde." if disarida
                                  else "Tüm kopyaları kütüphanede.")
@@ -229,34 +231,36 @@ class KitapEkrani(QWidget):
             self.goster(self.kitap_id)
 
     def degerler(self):
-        kayit = [buyuk_harf(self.alan[k].text().strip()) if k in BUYUK_HARFLI else self.alan[k].text().strip()
-                 for k, _, _ in ALANLAR]
-        return kayit + list(self.ek.degerler())
+        """Formdaki kitap (id: seçili kitabın numarası, yeni kitapta None)."""
+        alanlar = {k.lower(): buyuk_harf(self.alan[k].text().strip()) if k in BUYUK_HARFLI else self.alan[k].text().strip()
+                   for k, _, _ in ALANLAR}
+        isbn, kopya, raf, notlar = self.ek.degerler()
+        return Kitap(**alanlar, isbn=isbn, kopya=kopya, raf=raf, notlar=notlar, id=self.kitap_id)
 
     def kaydet(self):
-        kayit = self.degerler()
+        kitap = self.degerler()
         # Hatalı alanın çerçevesi kırmızı yanıp söner; uyarıdan sonra imleç o alana gider
-        if not kayit[0]:
+        if not kitap.adi:
             self._hatali(self.alan["Adi"], "Kitap adı boş olamaz.")
             return
         if self.ek.hata():
             self._hatali(self.ek.isbn, self.ek.hata())
             return
         if self.kitap_id is None:
-            if onay(f"'{kayit[0]}' kaydedilsin mi?") != QMessageBox.Yes:
+            if onay(f"'{kitap.adi}' kaydedilsin mi?") != QMessageBox.Yes:
                 return
-            self.kitap_id = ekle_kayit(kayit)
-            self.mesaj(f"'{kayit[0]}' kaydedildi", "basari")
+            self.kitap_id = kitap_ekle(kitap)
+            self.mesaj(f"'{kitap.adi}' kaydedildi", "basari")
         else:
             disarida = kopya_durumu(self.kitap_id)[1]
-            if kayit[8] < disarida:
+            if kitap.kopya < disarida:
                 self._hatali(self.ek.kopya, f"Bu kitabın {disarida} kopyası şu an üyelerde. "
                                             f"Kopya sayısı {disarida}'den az olamaz.")
                 return
             if onay("Kayıt değiştirilsin mi?") != QMessageBox.Yes:
                 return
-            degistir_kayit([self.kitap_id] + kayit)
-            self.mesaj(f"'{kayit[0]}' güncellendi.", "basari")
+            kitap_guncelle(kitap)
+            self.mesaj(f"'{kitap.adi}' güncellendi.", "basari")
         self._degisiklik_sonrasi()
         hareket.secili_satiri_parlat(self.tablo)              # kaydedilen satır kısa süre parlar
 
@@ -274,22 +278,22 @@ class KitapEkrani(QWidget):
         adi = self.alan["Adi"].text()
         if onay(f"'{adi}' silinsin mi?\nSildikten sonra kısa bir süre \"Geri Al\" ile geri getirebilirsiniz.") != QMessageBox.Yes:
             return
-        kayit = df_book_find_by_id(self.kitap_id)
-        sil_kayit(self.kitap_id)
+        kitap = kitap_bul(self.kitap_id)
+        kitap_sil(self.kitap_id)
         self.kitap_id = None
         self._degisiklik_sonrasi()
         self.yeni()
-        self.bildir(f"{adi} silindi", "Geri Al", lambda: self.silmeyi_geri_al(kayit))
+        self.bildir(f"{adi} silindi", "Geri Al", lambda: self.silmeyi_geri_al(kitap))
 
-    def silmeyi_geri_al(self, kayit):
+    def silmeyi_geri_al(self, kitap):
         """Silinen kitabı aynı numara ve bilgilerle geri getirir, formda açar."""
-        if kayit is None or df_book_find_by_id(kayit[0]) is not None:
+        if kitap is None or kitap_bul(kitap.id) is not None:
             return
-        geri_ekle_kayit(kayit)
-        self.kitap_id = kayit[0]
+        kitap_geri_ekle(kitap)
+        self.kitap_id = kitap.id
         self._degisiklik_sonrasi()
         hareket.secili_satiri_parlat(self.tablo)
-        self.mesaj(f"'{kayit[1]}' geri getirildi.", "basari")
+        self.mesaj(f"'{kitap.adi}' geri getirildi.", "basari")
 
     def _degisiklik_sonrasi(self):
         if self.degisti:

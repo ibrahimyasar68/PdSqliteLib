@@ -7,7 +7,7 @@ from PyQt5.QtCore import QEvent, QSize, Qt, QTimer
 from PyQt5.QtWidgets import QDialog, QFrame, QLabel, QLineEdit, QListWidget, QListWidgetItem, QVBoxLayout
 
 from acodes import hareket, ikonlar, tema
-from database.dbframe import katla
+from database.metin import katla
 
 EN = 680
 ISLEV = Qt.UserRole
