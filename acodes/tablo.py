@@ -271,6 +271,11 @@ def tabloya_yaz(tablo, satirlar, vurgulu=(), veri=None, renkler=None):
             baslik.setSectionResizeMode(c,kip)
     basliklari_hizala(tablo,satirlar)
     tablo.setSortingEnabled(siralama)
+    # Yeni içerikle kolonlar çizimden önce yerleşsin (ertelenince liste bir kare eski genişliklerle görünüyordu)
+    if hasattr(tablo,"kolon_secici"):
+        tablo.kolon_secici.denetle()
+    elif hasattr(tablo,"orantili"):
+        tablo.orantili.dagit()
 
 
 def basliklari_hizala(tablo, satirlar):
@@ -325,6 +330,15 @@ class OrantiliKolonlar(QObject):
 
     def dagit(self):
         self.bekliyor = False
+        if getattr(self, "dagitiyor", False):     # genişlik değişimi kaydırma çubuğunu açıp kapatırsa iç içe çağrılır
+            return
+        self.dagitiyor = True
+        try:
+            self._dagit()
+        finally:
+            self.dagitiyor = False
+
+    def _dagit(self):
         gorunen = [c for c in range(self.tablo.columnCount()) if not self.tablo.isColumnHidden(c)]
         oranli = [c for c in gorunen if c in self.agirliklar]
         if not oranli:
@@ -339,8 +353,9 @@ class OrantiliKolonlar(QObject):
             self.tablo.setColumnWidth(c, en)
 
     def eventFilter(self, nesne, olay):
+        # Ertelenirse bir kare eski genişliklerle çiziliyor (yatay kaydırma çubuğu bir an görünüp kayboluyordu)
         if olay.type() in (QEvent.Resize, QEvent.Show):
-            self.dagit_sonra()
+            self.dagit()
         return False
 
 
@@ -363,6 +378,7 @@ class KolonSecici(QObject):
     sorulur ("Bir daha sorma" ile kapatılabilir)."""
     MAKUL_EN = 160          # kısa kolonlarda beklenen en fazla genişlik (uzun değerler "..." ile kısalabilir)
     PAY_EN = 80             # oranlı (uzun metinli) kolonlarda ağırlık başına beklenen genişlik (Adı 3 → 240 px)
+    GERI_PAY = 24           # gizlenen kolon ancak bu kadar boş yer de kalıyorsa geri gelir (sınırda gidip gelmesin)
 
     def __init__(self, tablo, anahtar, zorunlu=(1,), varsayilan_gizli=(), otomatik=(), parent=None):
         """zorunlu: gizlenemeyen kolonlar (kitap adı). varsayilan_gizli: kullanıcı henüz seçim yapmadıysa gizli
@@ -374,7 +390,10 @@ class KolonSecici(QObject):
         self.tablo, self.anahtar, self.zorunlu = tablo, anahtar, set(zorunlu)
         self.otomatik = [c for c in otomatik if c not in self.zorunlu]
         self.oto_gizli = set()        # sığmadığı için kendiliğinden gizlenenler (kaydedilmez)
+        self.baslik_olcu = {}         # kolon başlıklarının görünürken ölçülen genişliği (gizliyken Qt 0 verir)
         self.istenen = set()          # kullanıcının bu oturumda açıkça gösterdiği kolonlar (kendiliğinden gizlenmez)
+        self.denetleniyor = False
+        tablo.kolon_secici = self     # tabloya_yaz doldurduktan sonra çizimden önce denetletir
         self.tercihler = tercihler
         self.buton = QPushButton("Kolonlar")
         self.buton.setProperty("rol", "ikincil")
@@ -457,15 +476,28 @@ class KolonSecici(QObject):
         baslik = self.tablo.horizontalHeader()
         return {c: 2 for c in range(self.tablo.columnCount()) if baslik.sectionResizeMode(c) == QHeaderView.Stretch}
 
+    def _baslik_eni(self, c):
+        """Başlığın gereken genişliği. Qt gizli kolonda 0 verir: kolon gizlenince "artık sığıyor" sanılıp geri
+        açılıyor, açılınca sığmayıp yeniden gizleniyordu (liste titriyordu). Görünürken ölçülen değer saklanır;
+        hiç görünmemiş kolonda yazının genişliğinden tahmin edilir."""
+        baslik = self.tablo.horizontalHeader()
+        if not self.tablo.isColumnHidden(c):
+            olcu = baslik.sectionSizeHint(c)
+            if olcu > 0:
+                self.baslik_olcu[c] = olcu
+        if c not in self.baslik_olcu:
+            hucre = self.tablo.horizontalHeaderItem(c)
+            return QFontMetrics(baslik.font()).horizontalAdvance(hucre.text() if hucre else "") + 40
+        return self.baslik_olcu[c]
+
     def _ihtiyac(self, kolonlar):
         agirlik = self._agirliklar()
-        baslik = self.tablo.horizontalHeader()
         toplam = 0
         for c in kolonlar:
             if c in agirlik:
                 toplam += self.PAY_EN * agirlik[c]
             else:
-                toplam += min(self.MAKUL_EN, max(baslik.sectionSizeHint(c), self.tablo.sizeHintForColumn(c)))
+                toplam += min(self.MAKUL_EN, max(self._baslik_eni(c), self.tablo.sizeHintForColumn(c)))
         return toplam
 
     def _bos_kolon(self, c):
@@ -473,12 +505,14 @@ class KolonSecici(QObject):
                    for r in range(self.tablo.rowCount()))
 
     def sigmiyor(self, kolonlar=None):
-        """Görünen kolonların (verilmezse şu an görünenler) makul genişlikleri tablonun genişliğini aşıyor mu?"""
+        """Görünen kolonların (verilmezse şu an görünenler) makul genişlikleri tablonun genişliğini aşıyor mu?
+        Kendiliğinden gizlenmiş bir kolonun geri gelmesi için GERI_PAY kadar fazladan yer gerekir."""
         if self.tablo.rowCount() == 0 or not self.tablo.isVisible():
             return False
         if kolonlar is None:
             kolonlar = [c for c in range(self.tablo.columnCount()) if not self.tablo.isColumnHidden(c)]
-        return self._ihtiyac(kolonlar) > self.tablo.viewport().width()
+        pay = self.GERI_PAY if self.oto_gizli & set(kolonlar) else 0
+        return self._ihtiyac(kolonlar) + pay > self.tablo.viewport().width()
 
     def yerlestir(self):
         """Sığmıyorsa boş, sonra öncelikli kolonları kendiliğinden gizler; yer açılınca geri getirir."""
@@ -501,7 +535,7 @@ class KolonSecici(QObject):
             self.tablo.setColumnHidden(c, True)
         self.oto_gizli = gizlenecek
         if hasattr(self.tablo, "orantili"):
-            self.tablo.orantili.dagit_sonra()
+            self.tablo.orantili.dagit()       # kalan kolonlar aynı karede yeni genişliğini alır
 
     def denetle_sonra(self, *_):
         if not self.bekliyor:
@@ -510,11 +544,21 @@ class KolonSecici(QObject):
 
     def denetle(self):
         self.bekliyor = False
+        if self.denetleniyor:                 # kolon gizlemek tabloyu yeniden boyutlandırırsa iç içe çağrılır
+            return
+        self.denetleniyor = True
+        try:
+            self._denetle()
+        finally:
+            self.denetleniyor = False
+
+    def _denetle(self):
         self.yerlestir()
         sor = not self.tercihler.mantiksal(f"kolonlar/{self.anahtar}_sorma") and self.sigmiyor()
         self.soru.setVisible(sor)
 
     def eventFilter(self, nesne, olay):
+        # Ertelenirse önce sığmayan liste çizilir, sonra kolon gizlenir: bir kare titrer
         if olay.type() in (QEvent.Resize, QEvent.Show):
-            self.denetle_sonra()
+            self.denetle()
         return False

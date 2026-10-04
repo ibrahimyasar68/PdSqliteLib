@@ -138,6 +138,30 @@ def test_sigmayan_listede_kolonlar_kendiliginden_gizlenir_ve_geri_gelir(app, uya
     l.close()
 
 
+def test_sinirdaki_listede_kolonlar_gidip_gelmez(app, uyarilar):
+    """Qt gizli kolonun başlık genişliğini 0 verir; gizlenen kolon "artık sığıyor" sanılıp geri açılıyor,
+    açılınca sığmayıp yeniden gizleniyordu (liste titriyordu)."""
+    import time
+    l = Library()
+    q = l.QtLibrary
+    t, s = q.tableWidget_2, l.liste_kolonlari
+    l.show()
+    q.tabWidget.setCurrentWidget(q.tab_2)
+    QApplication.processEvents()
+    gorunen = lambda: tuple(c for c in range(t.columnCount()) if not t.isColumnHidden(c))
+    for en in range(1300, 1700, 20):              # sığma sınırı bu aralıkta bir yerde
+        l.resize(en, 700)
+        QApplication.processEvents()
+        once = (gorunen(), s.soru.isVisible())
+        durumlar = set()
+        bitis = time.time() + 0.3
+        while time.time() < bitis:
+            QApplication.processEvents()
+            durumlar.add((gorunen(), s.soru.isVisible()))
+        assert durumlar == {once}, en
+    l.close()
+
+
 def test_yine_sigmayan_listede_soru_cikar_ve_bir_daha_sorulmaz(app, uyarilar):
     l = Library()
     q = l.QtLibrary
