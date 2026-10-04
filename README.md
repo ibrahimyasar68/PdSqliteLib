@@ -332,6 +332,7 @@ acodes/aranabilir.py          Yazdıkça süzülen açılır listeler
 acodes/ikonlar.py             Buton ve sekme ikonları (Qt ile çizilir, dosya gerektirmez)
 acodes/bildirim.py            Kısa süre görünen bildirimler (sağ altta kart; başarı yeşil, uyarı kırmızı; "Geri Al" butonlu)
 acodes/hareket.py             Sayfa geçişi ve menü daralma animasyonları
+acodes/olaylar.py             Değişiklik sinyalleri (kitaplar, odunc, kullanicilar): ekranlar bağlanıp kendini yeniler
 acodes/onay.py                Evet / Hayır onay kutusu
 acodes/kisayollar.py          Klavye kısayolları (menü, arama, Kitap Kayıt)
 acodes/yerlesim.py            Esnek yerleşim kalıpları (sayfaları pencereyle büyüyen düzene alır)

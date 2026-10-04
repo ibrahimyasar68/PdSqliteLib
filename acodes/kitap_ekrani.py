@@ -11,6 +11,7 @@ from acodes.onay import onay
 from acodes import hareket, tema
 from acodes.ek_bilgi import EkBilgiler
 from acodes.kisayollar import arama_kutusu_yap, kisayol, metin
+from acodes.olaylar import olaylar
 from acodes.tablo import KolonSecici, durum_ekle, durum_rozeti_kur, satir_verisi, tablo_ayarla, tabloya_yaz
 from acodes.yerlesim import baslik_satiri, etiketli
 from database.kitaplar import farkli_degerler, kitap_ara, kitap_bul
@@ -40,13 +41,12 @@ def buyuk_harf(metin):
 
 
 class KitapEkrani(QWidget):
-    def __init__(self, mesaj=None, degisti=None, bildir=None, parent=None):
-        """mesaj(metin, tur): panelin bildirimine yazar (tur: "basari", "uyari", "bilgi"). degisti(): kitap eklenince/değişince/silinince çağrılır.
+    def __init__(self, mesaj=None, bildir=None, parent=None):
+        """mesaj(metin, tur): panelin bildirimine yazar (tur: "basari", "uyari", "bilgi").
         bildir(metin, eylem adı, işlev): eylem butonlu bildirim (silmeden sonra "Geri Al")."""
         super().__init__(parent)
         self.mesaj = mesaj or (lambda metin, tur=None: None)
         self.bildir = bildir or (lambda metin, *_: self.mesaj(metin))
-        self.degisti = degisti
         self.kitap_id = None
         self.setObjectName("kitap_ekrani")
         self.setStyleSheet(f"""
@@ -149,6 +149,8 @@ class KitapEkrani(QWidget):
         self.alan["Adi"].returnPressed.connect(self.kaydet)
         self.yenile()
         self.yeni()
+        olaylar.kitaplar.connect(self.yenile)        # nereden değişirse değişsin liste güncel kalır
+        olaylar.odunc.connect(self.listele)          # Durum kolonu
 
     # --- Liste
 
@@ -299,9 +301,6 @@ class KitapEkrani(QWidget):
         self.mesaj(f"'{kitap.adi}' geri getirildi.", "basari")
 
     def _degisiklik_sonrasi(self):
-        if self.degisti:
-            self.degisti()        # panel listeleri ve istatistikleri yeniler (bu ekran dahil)
-        else:
-            self.yenile()
+        # Liste olaylar.kitaplar ile yenilendi; kaydedilen / geri getirilen kitap seçili kalır
         if self.kitap_id is not None:
             self.sec(self.kitap_id)

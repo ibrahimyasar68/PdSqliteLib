@@ -13,6 +13,7 @@ from acodes.aranabilir import aranabilir_yap
 from acodes.kisayollar import arama_kutusu_yap
 from acodes.tablo import KolonSecici, OrantiliKolonlar, durum_ekle, durum_rozeti_kur, tablo_ayarla, tabloya_yaz
 from acodes.yerlesim import AkisDuzeni, baslik_satiri
+from acodes.olaylar import olaylar
 from database.kitaplar import filtre_secenekleri, kitap_filtrele
 from database.metin import tr_sirala
 
@@ -85,6 +86,8 @@ class FiltrePaneli(QWidget):
         duzen.addWidget(self.kolonlar.soru)
         duzen.addWidget(self.tablo, 1)
         self.yenile()
+        olaylar.kitaplar.connect(self.yenile)
+        olaylar.odunc.connect(self.yenile)           # Durum kolonu
 
     def yenile(self):
         ###  Veritabanı değişince seçenekleri ve sonuçları yeniden oku (seçimler ve aramalar korunur)  ###

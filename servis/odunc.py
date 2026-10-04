@@ -4,7 +4,7 @@ from database import odunc
 from database.baglanti import islem
 from database.kitaplar import kitap_bul
 from database.kullanicilar import kullanici_bul
-from servis import KuralHatasi, engel_varsa
+from servis import ODUNC, KuralHatasi, bildir, engel_varsa
 
 
 def verme_engeli(kitap_id=None, uye_id=None):
@@ -31,6 +31,7 @@ def ver(kitap_id, uye_id, zaman=None):
     with islem():
         engel_varsa(verme_engeli(kitap_id, uye_id))
         odunc.odunc_ver(uye_id, kitap_id, zaman)
+    bildir(ODUNC)
 
 
 def iade_al(uye_id, kitap_id, zaman=None):
@@ -39,6 +40,7 @@ def iade_al(uye_id, kitap_id, zaman=None):
         kayit_no = odunc.iade_al(uye_id, kitap_id, zaman)
         if kayit_no is None:
             raise KuralHatasi("Bu ödünç bulunamadı (iade alınmış olabilir).")
+    bildir(ODUNC)
     return kayit_no
 
 
@@ -49,3 +51,4 @@ def iadeyi_geri_al(kayit_no, uye_id, kitap_id):
         if disarida >= kopya or odunc.uyede_mi(uye_id, kitap_id):
             raise KuralHatasi("İade geri alınamaz: kitap bu arada yeniden ödünç verilmiş!")
         odunc.iade_geri_al(kayit_no)
+    bildir(ODUNC)

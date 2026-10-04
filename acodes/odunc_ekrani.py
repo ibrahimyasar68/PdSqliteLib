@@ -9,6 +9,7 @@ from PyQt5.QtWidgets import (QApplication, QComboBox, QGridLayout, QGroupBox, QH
                              QLineEdit, QMessageBox, QPushButton, QTableWidget, QVBoxLayout, QWidget)
 
 from acodes.kisayollar import arama_kutusu_yap
+from acodes.olaylar import olaylar
 from acodes.onay import onay
 from acodes import hareket, tema
 from acodes.aranabilir import aranabilir_yap, secili_veri
@@ -63,12 +64,11 @@ def renkli(etiket, metin, renk=None):
 
 
 class OduncEkrani(QWidget):
-    def __init__(self, mesaj=None, degisti=None, bildir=None, parent=None):
+    def __init__(self, mesaj=None, bildir=None, parent=None):
         """bildir(metin, eylem adı, işlev): eylem butonlu bildirim (iadeden sonra "Geri Al")."""
         super().__init__(parent)
         self.mesaj = mesaj or (lambda metin, tur=None: None)
         self.bildir = bildir or (lambda metin, *_: self.mesaj(metin))
-        self.degisti = degisti
 
         # --- Sol: dışarıdaki kitaplar
         self.arama = arama_kutusu_yap(QLineEdit(objectName="odunc_arama"))
@@ -157,6 +157,8 @@ class OduncEkrani(QWidget):
         duzen.addWidget(self.tablo, 1)
         duzen.addLayout(alt)
         self.yenile()
+        for olay in (olaylar.kitaplar, olaylar.odunc, olaylar.kullanicilar):
+            olay.connect(self.yenile)
 
     # --- Yenileme
 
@@ -257,7 +259,6 @@ class OduncEkrani(QWidget):
             return
         for cmb in (self.kitap, self.uye):
             cmb.setCurrentIndex(0)
-        self._degisiklik_sonrasi()
         self._satiri_sec(uye_id, kitap_id)
         hareket.secili_satiri_parlat(self.tablo)              # yeni ödünç listede kısa süre parlar
         self.mesaj(f"İşlem kaydedildi. Teslim tarihi: {tarih_yazi(teslim_tarihi(simdi.date()))}", "basari")
@@ -332,10 +333,9 @@ class OduncEkrani(QWidget):
             kayit_no = odunc_servisi.iade_al(user_id, book_id)
         except KuralHatasi as hata:
             self.mesaj(str(hata), "uyari")
-            self._degisiklik_sonrasi()          # liste eskimiş: güncel hali göster
+            self.yenile()                       # liste eskimiş: güncel hali göster
             return
         self.tablo.clearSelection()
-        self._degisiklik_sonrasi()
         self.bildir(f"'{kitap}' iade alındı" + (f" ({durum})." if durum.endswith("gecikti") else "."),
                     "Geri Al", lambda: self.iadeyi_geri_al(kayit_no, user_id, book_id, kitap))
 
@@ -346,7 +346,6 @@ class OduncEkrani(QWidget):
         except KuralHatasi as hata:
             self.mesaj(str(hata), "uyari")
             return
-        self._degisiklik_sonrasi()
         self._satiri_sec(user_id, book_id)
         hareket.secili_satiri_parlat(self.tablo)
         self.mesaj(f"'{kitap}' iadesi geri alındı; kitap yeniden üyede görünüyor.", "basari")
@@ -360,8 +359,3 @@ class OduncEkrani(QWidget):
         QApplication.clipboard().setText(hatirlatma_metni(hucre(0), hucre(2), hucre(5), hucre(6)))
         self.mesaj(f"Hatırlatma metni panoya kopyalandı: {hucre(2)}", "basari")
 
-    def _degisiklik_sonrasi(self):
-        if self.degisti:
-            self.degisti()      # panel tüm listeleri (bu ekran dahil) yeniler
-        else:
-            self.yenile()

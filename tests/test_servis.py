@@ -161,3 +161,30 @@ def test_birlestirmeden_once_bir_kez_yedek_alinir(db):
     assert duzeltme.birlestir("Yayinevi", ["Cem Yayınevi"], "Cem", onceki_yedek=yedek)[1] == yedek
     with pytest.raises(KuralHatasi):
         duzeltme.birlestir("Yayinevi", ["Cem"], "  ")
+
+
+# --- Değişiklik bildirimleri ---
+
+@pytest.fixture
+def bildirilen(monkeypatch):
+    import servis
+    konular = []
+    monkeypatch.setattr(servis, "_dinleyiciler", [konular.append])
+    return konular
+
+
+def test_basarili_yazma_konusuyla_bildirilir(db, bildirilen):
+    kitap.sil(kitap.kaydet(Kitap("Geçici")))
+    odunc.ver(1, 3)
+    odunc.iade_al(3, 1)
+    kullanici.ekle(uye(), "parola1")
+    duzeltme.birlestir("Yayinevi", ["YKY"], "Yapı Kredi")
+    assert bildirilen == ["kitaplar", "kitaplar", "odunc", "odunc", "kullanicilar", "kitaplar"]
+
+
+def test_basarisiz_yazma_bildirilmez(db, bildirilen):
+    for islev in (lambda: kitap.kaydet(Kitap("")), lambda: odunc.ver(999, 3), lambda: kullanici.ekle(uye(), "kisa"),
+                  lambda: kitap.sil(999)):
+        with pytest.raises(KuralHatasi):
+            islev()
+    assert bildirilen == []

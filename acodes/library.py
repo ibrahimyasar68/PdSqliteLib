@@ -15,6 +15,7 @@ from acodes.ana_sayfa import AnaSayfa, ana_sayfayi_yerlestir
 from acodes import arka_plan, bildirim, ikonlar, kisayollar
 from acodes.yan_menu import YanMenu, menuyu_yerlestir, segmente_cevir
 from acodes.ortak import OrtakSekmeler
+from acodes.olaylar import olaylar
 from acodes.tablo import satir_verisi
 from database.istatistik import genel_ozet
 from database.kitaplar import kitap_bul, son_eklenenler
@@ -63,7 +64,7 @@ class Library(OrtakSekmeler, QMainWindow):
         ###  Kitap Verme: ödünç verme, iade alma ve dışarıdaki kitaplar tek ekranda  ###
         ui=self.QtLibrary
         self.odunc=OduncEkrani(mesaj=lambda metin,tur=None: self.bildirim.mesaj(metin,tur,8000),
-                               degisti=self.yenile,bildir=self.bildirim.eylemli)
+                               bildir=self.bildirim.eylemli)
         ui.tabWidget_6.addTab(self.odunc,"Ödünç ve İade")
         self.odunc.btn_aktar.clicked.connect(lambda: disa_aktar(self,self.odunc.tablo,"Dışarıdaki Kitaplar"))
         sag_tik_menusu(self,self.odunc.tablo,"Dışarıdaki Kitaplar")
@@ -114,10 +115,10 @@ class Library(OrtakSekmeler, QMainWindow):
         ###  Kitap Kayıt: ekleme / düzenleme / silme tek ekranda; Veri Düzeltme sadece açıkken yenilenir  ###
         ui=self.QtLibrary
         self.kitaplar=KitapEkrani(mesaj=lambda metin,tur=None: self.bildirim.mesaj(metin,tur,self.dur_msj),
-                                  degisti=self.yenile,bildir=self.bildirim.eylemli)
+                                  bildir=self.bildirim.eylemli)
         sag_tik_menusu(self,self.kitaplar.tablo,"Kitaplar")
         ui.tabWidget_3.addTab(self.kitaplar,"Kitaplar")
-        self.duzeltme=VeriDuzeltme(kitap_duzenle=self.kitap_duzenle, degisti=self.yenile)
+        self.duzeltme=VeriDuzeltme(kitap_duzenle=self.kitap_duzenle)
         self.QtLibrary.tabWidget_3.addTab(self.duzeltme,"Veri Düzeltme")
         self.QtLibrary.tabWidget_3.currentChanged.connect(self.kayit_sekmesi_degisti)
 
@@ -130,8 +131,14 @@ class Library(OrtakSekmeler, QMainWindow):
         self.kitaplar.tablo.sag_tik_eylemleri.append(
             lambda satir: self.kitap_eylemleri(self.kitaplar.tablo,satir,duzenle=False))
 
-        # Sekme değişince listeler güncellensin (ör. Tab 1'den eklenen yeni üye)
-        self.QtLibrary.tabWidget.currentChanged.connect(self.yenile)
+        # Kayıtlar değişince panelin özetleri (istatistik, ana sayfa, bilgiler, gecikme rozeti) güncellenir;
+        # ekranlar (Kitap Kayıt, Kitap Verme, Filtre ...) olaylara kendileri bağlıdır
+        olaylar.kitaplar.connect(self.kitaplar_degisti)
+        olaylar.odunc.connect(self.odunc_degisti)
+        olaylar.kullanicilar.connect(self.ozetleri_yenile)
+        # Ana sayfa açılınca da güncellenir: program günlerce açık kalırsa gecikmeler tarihle değişir
+        self.QtLibrary.tabWidget.currentChanged.connect(
+            lambda: self.ana_sayfa_yenile() if self.QtLibrary.tabWidget.currentWidget() is self.QtLibrary.tab_1 else None)
 
         ###  İkonlar  ###
         ikonlar.butonlara_uygula(self)
@@ -148,13 +155,18 @@ class Library(OrtakSekmeler, QMainWindow):
             segmente_cevir(alt_sekmeler,baslik)
 
     def yenile(self):
-        ###  Kayıt/üye/ödünç değişikliklerinden sonra listeleri ve istatistikleri güncelleme  ###
-        self.kitaplar.yenile()
-        self.filtre.yenile()
+        ###  Her şeyi yenile: veritabanı topluca değişince (ör. yedekten geri yükleme)  ###
+        olaylar.hepsini_yayinla()
+
+    def kitaplar_degisti(self):
         self.create_tab_5()
-        self.odunc.yenile()
-        self.gecmis.yenile()
+        self.ozetleri_yenile()
+
+    def odunc_degisti(self):
         self.gecikme_bildir()
+        self.ozetleri_yenile()
+
+    def ozetleri_yenile(self):
         self.ayarlar.yenile()
         self.ana_sayfa_yenile()
 
@@ -318,13 +330,11 @@ class Library(OrtakSekmeler, QMainWindow):
                 ("Veritabanı", os.path.normpath(DB_YOLU))]
 
     def kullanici_eklendi(self,kullanici):
-        ###  Yeni kullanıcı kaydından sonra: listeler (ödünç verme, bilgiler) yenilenir, aynı menüde kalınır  ###
-        self.yenile()
+        ###  Yeni kullanıcı kaydından sonra aynı menüde kalınır (listeler olaylar.kullanicilar ile yenilendi)  ###
         self.bildirim.mesaj(f"'{kullanici}' kullanıcısı kaydedildi.","basari",self.dur_msj*2)
 
     def kullanici_yonetimi(self):
         KullaniciYonetimi(self.aktif_kullanici, self).exec_()
-        self.yenile()
 
     def yedek_al_ekrani(self):
         varsayilan=os.path.join(yedek_klasoru(), f"DBL_Kayit_yedek_{datetime.date.today():%Y%m%d}.db")

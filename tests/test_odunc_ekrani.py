@@ -9,7 +9,10 @@ from acodes.library import Library
 from PyQt5.QtGui import QColor
 from acodes import tema
 from database import odunc
+from database.modeller import Kitap, Kullanici
 from database.odunc import kopya_durumu
+from servis import kitap as kitap_servisi
+from servis import kullanici as kullanici_servisi
 
 BUGUN = datetime.date.today()
 
@@ -169,10 +172,8 @@ def test_geciken_kitabi_olan_uye_uyarisi(o, db):
 
 def test_yeni_kitap_ve_uye_listelere_gelir(lib, o, db):
     sec(o.kitap, "Satranç")
-    db.execute("INSERT INTO kayitlistesi (Adi) VALUES ('Yeni Gelen')")
-    db.execute("INSERT INTO users (kullanici,sifre,adi_soyadi,yetki) VALUES ('veli','x','Veli Can','guest')")
-    db.commit()
-    lib.QtLibrary.tabWidget.setCurrentWidget(lib.QtLibrary.tab_6)     # sekme değişince yenilenir
+    kitap_servisi.kaydet(Kitap("Yeni Gelen"))                         # başka ekranlarda eklendi:
+    kullanici_servisi.ekle(Kullanici(None, "veli", "Veli Can"), "parola1")   # olaylar listeleri yeniler
     assert o.kitap.findText("Yeni Gelen") > 0 and o.uye.findText("Veli Can (veli)") > 0
     assert o.kitap.currentText() == "Satranç"                        # yarım kalan seçim korunur
 

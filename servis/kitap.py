@@ -5,7 +5,7 @@ from dataclasses import replace
 from database.baglanti import islem
 from database.kitaplar import kitap_bul, kitap_ekle, kitap_geri_ekle, kitap_guncelle, kitap_sil
 from database.odunc import kitap_oduncte, kopya_durumu
-from servis import KuralHatasi, engel_varsa
+from servis import KITAPLAR, KuralHatasi, bildir, engel_varsa
 from servis.dogrulama import isbn_gecerli, isbn_normal
 
 
@@ -29,9 +29,12 @@ def kaydet(kitap):
     with islem():
         engel_varsa(kayit_engeli(kitap))
         if kitap.id is None:
-            return kitap_ekle(kitap)
-        kitap_guncelle(kitap)
-        return kitap.id
+            kitap_id = kitap_ekle(kitap)
+        else:
+            kitap_guncelle(kitap)
+            kitap_id = kitap.id
+    bildir(KITAPLAR)
+    return kitap_id
 
 
 def silme_engeli(kitap_id):
@@ -48,6 +51,7 @@ def sil(kitap_id):
         if kitap is None:
             raise KuralHatasi("Kitap bulunamadı (silinmiş olabilir).")
         kitap_sil(kitap_id)
+    bildir(KITAPLAR)
     return kitap
 
 
@@ -57,3 +61,4 @@ def geri_getir(kitap):
         if kitap_bul(kitap.id) is not None:
             raise KuralHatasi("Kitap geri getirilemez: bu kayıt numarası yeniden kullanılmış.")
         kitap_geri_ekle(kitap)
+    bildir(KITAPLAR)

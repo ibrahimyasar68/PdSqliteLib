@@ -5,7 +5,7 @@
 from database import kullanicilar
 from database.baglanti import islem
 from database.odunc import kullanici_odunc_sayisi
-from servis import KuralHatasi, engel_varsa
+from servis import KULLANICILAR, KuralHatasi, bildir, engel_varsa
 from servis.dogrulama import mail_gecerli, sifre_hatasi, telefon_gecerli
 
 YETKILER = ["admin", "guest"]
@@ -32,7 +32,9 @@ def ekle(kullanici, sifre):
     """Yeni kullanıcı; numarası döner. Şifre hash'lenerek saklanır."""
     with islem():
         engel_varsa(ekleme_engeli(kullanici, sifre))
-        return kullanicilar.kullanici_ekle(kullanici, sifre)
+        kullanici_id = kullanicilar.kullanici_ekle(kullanici, sifre)
+    bildir(KULLANICILAR)
+    return kullanici_id
 
 
 def guncelleme_engeli(kullanici, aktif_kullanici):
@@ -60,6 +62,7 @@ def guncelle(kullanici, aktif_kullanici):
     with islem():
         engel_varsa(guncelleme_engeli(kullanici, aktif_kullanici))
         kullanicilar.kullanici_guncelle(kullanici)
+    bildir(KULLANICILAR)
 
 
 def silme_engeli(kullanici, aktif_kullanici):
@@ -78,6 +81,7 @@ def sil(kullanici, aktif_kullanici):
     with islem():
         engel_varsa(silme_engeli(kullanici, aktif_kullanici))
         kullanicilar.kullanici_sil(kullanici.id)
+    bildir(KULLANICILAR)
 
 
 def sifre_degistir(kullanici, yeni, tekrar=None, eski=None):

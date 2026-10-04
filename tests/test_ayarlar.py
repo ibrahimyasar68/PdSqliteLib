@@ -8,6 +8,9 @@ from acodes import kullanici_yonetimi
 from acodes.guest import Guest
 from acodes.library import Library
 from database import yedek
+from database.modeller import Kullanici
+from servis import kitap as kitap_servisi
+from servis import kullanici as kullanici_servisi
 
 
 def sekmeler(panel):
@@ -101,12 +104,12 @@ def test_guest_hesabim(app):
                                                "Telefon:": "5551112233", "Mail:": "ayse@ornek.com"}
 
 
-def test_sekme_degisince_bilgiler_yenilenir(lib, db):
-    lib.ayarlar.yenile()
-    db.execute("DELETE FROM kayitlistesi WHERE Id>4")
-    db.commit()
-    lib.QtLibrary.tabWidget.setCurrentWidget(lib.ayarlar)
+def test_kayitlar_degisince_bilgiler_yenilenir(lib, db):
+    for kitap_id in (5, 6, 7, 8):
+        kitap_servisi.sil(kitap_id)                     # başka ekrandan silindi: olaylar.kitaplar
     assert bilgiler(lib.ayarlar.bolumler[2])["Kitap:"] == "4 kayıt, 4 kopya"
+    kullanici_servisi.ekle(Kullanici(None, "veli", "Veli Can"), "parola1")
+    assert bilgiler(lib.ayarlar.bolumler[2])["Kullanıcı:"].startswith("4 üye")
 
 
 def test_klasoru_ac_yoksa_olusturur(tmp_path, monkeypatch):

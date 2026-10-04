@@ -17,11 +17,11 @@ EKSIK_ALANLAR = [("Yili", "Basım yılı"), ("Yayinevi", "Yayınevi"), ("Yazari"
 
 
 class VeriDuzeltme(QWidget):
-    def __init__(self, kitap_duzenle=None, degisti=None, parent=None):
-        """kitap_duzenle(id): kitabı düzenleme ekranında açar. degisti(): veri değişince çağrılır."""
+    def __init__(self, kitap_duzenle=None, parent=None):
+        """kitap_duzenle(id): kitabı düzenleme ekranında açar.
+        Benzer yazım taraması pahalı olduğu için olaylara bağlanmaz; panel bu sekme açılınca yeniler."""
         super().__init__(parent)
         self.kitap_duzenle = kitap_duzenle
-        self.degisti = degisti
         self.yedek_alindi = None
         self.setObjectName("tab_3_4")
         self.setStyleSheet(f"QGroupBox {{ font-weight: {tema.YARI_KALIN}; }}")
@@ -171,8 +171,6 @@ class VeriDuzeltme(QWidget):
         degisen, self.yedek_alindi = duzeltme_servisi.birlestir(self.alan.currentData(), eskiler, yeni, self.yedek_alindi)
         self.gruplari_yukle()
         self.eksikleri_yukle()
-        if self.degisti:
-            self.degisti()
         QMessageBox.information(self, "Bilgi", f"{degisen} kitap güncellendi.\n\nDeğişiklik öncesi yedek:\n{self.yedek_alindi}")
 
     def yoksay(self):

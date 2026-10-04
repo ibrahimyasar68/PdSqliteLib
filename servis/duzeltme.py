@@ -2,7 +2,7 @@
 
 from database import duzeltme
 from database.yedek import guvenlik_yedegi_al
-from servis import KuralHatasi
+from servis import KITAPLAR, KuralHatasi, bildir
 
 
 def birlestir(kolon, eskiler, yeni, onceki_yedek=None):
@@ -13,7 +13,10 @@ def birlestir(kolon, eskiler, yeni, onceki_yedek=None):
     if not yeni:
         raise KuralHatasi("Doğru yazım boş olamaz.")
     yedek = onceki_yedek or guvenlik_yedegi_al("duzeltme_oncesi_")
-    return duzeltme.birlestir(kolon, eskiler, yeni), yedek
+    degisen = duzeltme.birlestir(kolon, eskiler, yeni)
+    if degisen:
+        bildir(KITAPLAR)
+    return degisen, yedek
 
 
 def yoksay(kolon, degerler):

@@ -5,6 +5,7 @@ from PyQt5.QtWidgets import (QComboBox, QHBoxLayout, QHeaderView, QLabel, QPushB
                              QVBoxLayout, QWidget)
 from acodes.disa_aktar import disa_aktar, sag_tik_menusu
 from acodes.tablo import tablo_ayarla, tabloya_yaz
+from acodes.olaylar import olaylar
 from database.odunc import (gecikme_gunu, gun_sayisi, odunc_alan_uyeler, odunc_gecmisi,
                             odunc_verilen_kitaplar, tarih_yazi, teslim_tarihi)
 
@@ -57,6 +58,8 @@ class OduncGecmisi(QWidget):
         for kutu in (self.uye, self.kitap, self.durum):
             kutu.currentIndexChanged.connect(self.listele)
         self.yenile()
+        for olay in (olaylar.kitaplar, olaylar.odunc, olaylar.kullanicilar):
+            olay.connect(self.yenile)
 
     def yenile(self):
         ###  Filtre listelerini güncelle (seçimler korunur) ve tabloyu yeniden doldur  ###
