@@ -38,7 +38,7 @@ def test_liste_ve_arama(k):
 
 def test_secince_formda_acilir(k, db):
     db.execute("UPDATE kayitlistesi SET Kopya=2, Raf='A-1' WHERE Id=1")
-    db.execute("INSERT INTO follow VALUES ('3','1','2026-01-01','10:00','out','','')")
+    db.execute("INSERT INTO follow (userId, bookId, outdate, outtime, status, indate, intime) VALUES ('3','1','2026-01-01','10:00','out','','')")
     db.commit()
     k.yenile()
     k.sec(1)
@@ -97,7 +97,7 @@ def test_guncelleme_mevcut_yazimi_bozmaz(k, db):
 
 def test_kopya_disaridakinden_az_olamaz(k, db, uyarilar):
     db.execute("UPDATE kayitlistesi SET Kopya=3 WHERE Id=1")
-    db.executemany("INSERT INTO follow VALUES (?,'1','2026-01-01','10:00','out','','')", [("3",), ("4",)])
+    db.executemany("INSERT INTO follow (userId, bookId, outdate, outtime, status, indate, intime) VALUES (?,'1','2026-01-01','10:00','out','','')", [("3",), ("4",)])
     db.commit()
     k.sec(1)
     k.ek.kopya.setValue(1)
@@ -134,7 +134,7 @@ def test_silme_geri_alinir(lib, k, db):
 
 
 def test_oduncteki_kitap_silinemez(k, db, uyarilar):
-    db.execute("INSERT INTO follow VALUES ('3','1','2026-01-01','10:00','out','','')")
+    db.execute("INSERT INTO follow (userId, bookId, outdate, outtime, status, indate, intime) VALUES ('3','1','2026-01-01','10:00','out','','')")
     db.commit()
     k.sec(1)
     k.sil()

@@ -227,8 +227,9 @@ Herkes **Ayarlar → Şifremi Değiştir** ile kendi şifresini değiştirebilir
 - **Elle:** Admin panelinde **Ayarlar → Yedek Al** ile istenen yere (ör. USB bellek) yedek alınır.
 - **Geri yükleme:** **Ayarlar → Yedekten Geri Yükle**. Dosya önce doğrulanır (PdSqliteLib veritabanı mı,
   içinde admin kullanıcı var mı); geri yüklemeden önce mevcut halin yedeği otomatik alınır.
-- **Güvenlik yedekleri:** Veri Düzeltme'de birleştirmeden önce (`duzeltme_oncesi_...`) ve geri yüklemeden
-  önce (`geri_yukleme_oncesi_...`) alınan yedeklerin her türünden son 10 tanesi saklanır, eskileri silinir.
+- **Güvenlik yedekleri:** Veri Düzeltme'de birleştirmeden önce (`duzeltme_oncesi_...`), geri yüklemeden
+  önce (`geri_yukleme_oncesi_...`) ve şema göçünden önce (`goc_oncesi_...`) alınan yedeklerin her türünden
+  son 10 tanesi saklanır, eskileri silinir.
 
 Yedekler veritabanının yanındaki `yedekler/` klasöründedir
 (`data/yedekler/` veya `~/Library/Application Support/PdSqliteLib/yedekler/`).
@@ -392,8 +393,16 @@ etkinleştirmek gerekmez.
 kayitlistesi (Id INTEGER PRIMARY KEY, Adi, Yazari, Ceviren, Turu, Yayinevi, Yili, Sayfa,
               ISBN, Kopya INTEGER DEFAULT 1, Raf, Notlar)
 users        (id INTEGER PRIMARY KEY, kullanici UNIQUE, sifre, adi_soyadi, telefon, mail, yetki)
-follow       (userId, bookId, outdate, outtime, status, indate, intime)
+follow       (id INTEGER PRIMARY KEY, userId INTEGER, bookId INTEGER, outdate, outtime, status, indate, intime)
+duzeltme_yoksay (kolon, imza)
 ```
+
+- Şema sürümü `PRAGMA user_version`'da tutulur. Yapı değişiklikleri `database/sema.py`'deki `GOCLER` listesine
+  yeni adım olarak eklenir; açılışta eksik adımlar sırayla ve her biri tek işlemde uygulanır (önce
+  `goc_oncesi_...` yedeği alınır). Yedekten geri yüklenen eski veritabanları da böyle güncellenir; programdan
+  yeni bir veritabanı veya yedek açılmaz.
+- `follow` tablosunda yabancı anahtar bilerek yoktur: silinen üyenin ödünç geçmişi korunur, silinen kitap
+  "Geri Al" ile aynı numarayla geri gelir.
 
 - `users.yetki`: `admin` veya `guest`
 - `users.sifre`: PBKDF2-SHA256 hash'i (`pbkdf2$tekrar$tuz$hash`). Eski düz metin şifreler

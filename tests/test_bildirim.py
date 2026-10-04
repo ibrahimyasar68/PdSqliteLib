@@ -64,7 +64,7 @@ def test_gercek_islemde_bildirim(lib):
 
 def test_geciken_kitap_acilista_uyari(app, uyarilar, db):
     eski = str(datetime.date.today() - datetime.timedelta(days=30))
-    db.execute("INSERT INTO follow VALUES ('3','1',?,'10:00','out','','')", (eski,))
+    db.execute("INSERT INTO follow (userId, bookId, outdate, outtime, status, indate, intime) VALUES ('3','1',?,'10:00','out','','')", (eski,))
     db.commit()
     l = Library()
     assert "geçmiş 1 kitap" in l.bildirim.kutu.text() and l.bildirim.tur == "uyari"
@@ -155,7 +155,7 @@ def test_geri_al_suresi_cubukta_gorunur_ve_fare_ustundeyken_durur(lib):
 def test_acilista_gosterilen_bildirim_sag_altta(app, uyarilar, db):
     """Pencere görünmeden önce gelen bildirim (açılıştaki gecikme uyarısı) pencere açılınca sağ alttadır."""
     eski = str(datetime.date.today() - datetime.timedelta(days=30))
-    db.execute("INSERT INTO follow VALUES ('3','1',?,'10:00','out','','')", (eski,))
+    db.execute("INSERT INTO follow (userId, bookId, outdate, outtime, status, indate, intime) VALUES ('3','1',?,'10:00','out','','')", (eski,))
     db.commit()
     l = Library()
     l.resize(1200, 700)

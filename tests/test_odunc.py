@@ -17,7 +17,7 @@ def gun_once(n):
 
 
 def odunc_ekle(db, user_id, book_id, verilis, durum="out", iade=""):
-    db.execute("INSERT INTO follow VALUES (?,?,?,?,?,?,?)",
+    db.execute("INSERT INTO follow (userId, bookId, outdate, outtime, status, indate, intime) VALUES (?,?,?,?,?,?,?)",
                (str(user_id), str(book_id), verilis, "10:00 ", durum, iade, "11:00 " if iade else ""))
     db.commit()
 

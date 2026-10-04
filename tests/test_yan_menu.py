@@ -61,7 +61,7 @@ def test_daralt_ve_hatirla(app, uyarilar, lib):
 
 def test_gecikme_rozeti(app, uyarilar, db):
     eski = str(datetime.date.today() - datetime.timedelta(days=30))
-    db.execute("INSERT INTO follow VALUES ('3','1',?,'10:00','out','','')", (eski,))
+    db.execute("INSERT INTO follow (userId, bookId, outdate, outtime, status, indate, intime) VALUES ('3','1',?,'10:00','out','','')", (eski,))
     db.commit()
     l = Library()
     buton, rozet = l.yan_menu.ogeler[5]

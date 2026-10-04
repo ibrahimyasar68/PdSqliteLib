@@ -57,10 +57,10 @@ def odunc_gecmisi(user_id=None, book_id=None):
     kosullar, parametreler = [], []
     if user_id is not None:
         kosullar.append("f.userId=?")
-        parametreler.append(str(user_id))
+        parametreler.append(user_id)
     if book_id is not None:
         kosullar.append("f.bookId=?")
-        parametreler.append(str(book_id))
+        parametreler.append(book_id)
     where = f"WHERE {' AND '.join(kosullar)}" if kosullar else ""
     return baglantı.execute(f"""SELECT COALESCE(k.Adi,'(silinmiş kitap)'), COALESCE(u.adi_soyadi,'(silinmiş üye)'),
                                        f.outdate, f.status, f.indate
@@ -68,7 +68,7 @@ def odunc_gecmisi(user_id=None, book_id=None):
                                 LEFT JOIN kayitlistesi k ON k.Id=f.bookId
                                 LEFT JOIN users u ON u.id=f.userId
                                 {where}
-                                ORDER BY f.outdate DESC, f.rowid DESC""", parametreler).fetchall()
+                                ORDER BY f.outdate DESC, f.id DESC""", parametreler).fetchall()
 
 
 ## Ana sayfa: teslim tarihi geçmiş veya önümüzdeki `gun` gün içinde dolacak ödünçler
@@ -93,7 +93,7 @@ def uye_odunc(kullanici):
                                JOIN users u ON u.id=f.userId
                                LEFT JOIN kayitlistesi k ON k.Id=f.bookId
                                WHERE u.kullanici=?
-                               ORDER BY f.status='in', f.outdate DESC, f.rowid DESC""", (kullanici,)).fetchall()
+                               ORDER BY f.status='in', f.outdate DESC, f.id DESC""", (kullanici,)).fetchall()
 
 
 def kalan_gun_yazi(verilis, bugun=None):
@@ -120,14 +120,14 @@ def odunc_verilen_kitaplar():
 
 ## Ödünç verirken üye bilgisi: elindeki kitap sayısı ve bunlardan kaçının teslim süresi geçmiş
 def uye_durumu(user_id, bugun=None):
-    satirlar = baglantı.execute("SELECT outdate FROM follow WHERE userId=? AND status='out'", (str(user_id),)).fetchall()
+    satirlar = baglantı.execute("SELECT outdate FROM follow WHERE userId=? AND status='out'", (user_id,)).fetchall()
     return len(satirlar), sum(1 for (verilis,) in satirlar if gecikme_gunu(verilis, bugun=bugun) > 0)
 
 
 ######################
 ###  Kayıt         ####
 ######################
-# follow tablosunda id'ler metin, saat "10:00:00 " biçiminde saklanır (eski kayıtlarla aynı)
+# Saat "10:00:00 " biçiminde saklanır (eski kayıtlarla aynı)
 
 def _zaman(zaman):
     zaman = zaman or datetime.datetime.today()
@@ -138,25 +138,25 @@ def odunc_ver(uye_id, kitap_id, zaman=None):
     tarih_, saat = _zaman(zaman)
     with islem():
         baglantı.execute("INSERT INTO follow (userId,bookId,outdate,outtime,status,indate,intime) VALUES (?,?,?,?,'out','','')",
-                         (str(uye_id), str(kitap_id), tarih_, saat))
+                         (uye_id, kitap_id, tarih_, saat))
 
 
 def iade_al(uye_id, kitap_id, zaman=None):
-    """Dışarıdaki ödüncü kapatır (geçmiş iadelere dokunmaz); ödünç kaydının numarası (rowid) döner,
+    """Dışarıdaki ödüncü kapatır (geçmiş iadelere dokunmaz); ödünç kaydının numarası (id) döner,
     iade geri alınırken kullanılır. Dışarıda böyle bir ödünç yoksa None."""
     tarih_, saat = _zaman(zaman)
     with islem():
-        satir = baglantı.execute("SELECT rowid FROM follow WHERE userId=? AND bookId=? AND status='out'",
-                                 (str(uye_id), str(kitap_id))).fetchone()
+        satir = baglantı.execute("SELECT id FROM follow WHERE userId=? AND bookId=? AND status='out'",
+                                 (uye_id, kitap_id)).fetchone()
         baglantı.execute("UPDATE follow SET status='in', indate=?, intime=? WHERE userId=? AND bookId=? AND status='out'",
-                         (tarih_, saat, str(uye_id), str(kitap_id)))
+                         (tarih_, saat, uye_id, kitap_id))
     return satir[0] if satir else None
 
 
-def iade_geri_al(rowid):
+def iade_geri_al(odunc_id):
     """İadeyi geri alma ("Geri Al"): ödünç kaydı yeniden dışarıda olur."""
     with islem():
-        baglantı.execute("UPDATE follow SET status='out', indate='', intime='' WHERE rowid=? AND status='in'", (rowid,))
+        baglantı.execute("UPDATE follow SET status='out', indate='', intime='' WHERE id=? AND status='in'", (odunc_id,))
 
 
 ######################
@@ -172,26 +172,26 @@ def disaridakiler():
            FROM follow f
            LEFT JOIN kayitlistesi k ON k.Id=f.bookId
            LEFT JOIN users u ON u.id=f.userId
-           WHERE f.status='out' ORDER BY f.outdate, f.rowid""")]
+           WHERE f.status='out' ORDER BY f.outdate, f.id""")]
 
 
 def kitap_oduncte(kitap_id):
-    return baglantı.execute("SELECT COUNT(*) FROM follow WHERE bookId=? AND status='out'", (str(kitap_id),)).fetchone()[0] > 0
+    return baglantı.execute("SELECT COUNT(*) FROM follow WHERE bookId=? AND status='out'", (kitap_id,)).fetchone()[0] > 0
 
 
 def kopya_durumu(kitap_id):
     """(kopya sayısı, dışarıdaki kopya sayısı); kitap yoksa kopya 0."""
     kopya = baglantı.execute("SELECT COALESCE(Kopya,1) FROM kayitlistesi WHERE Id=?", (kitap_id,)).fetchone()
-    disarida = baglantı.execute("SELECT COUNT(*) FROM follow WHERE bookId=? AND status='out'", (str(kitap_id),)).fetchone()[0]
+    disarida = baglantı.execute("SELECT COUNT(*) FROM follow WHERE bookId=? AND status='out'", (kitap_id,)).fetchone()[0]
     return (kopya[0] if kopya else 0), disarida
 
 
 def uyede_mi(uye_id, kitap_id):
     """Üyede bu kitabın iade edilmemiş bir kopyası var mı?"""
     return baglantı.execute("SELECT COUNT(*) FROM follow WHERE userId=? AND bookId=? AND status='out'",
-                            (str(uye_id), str(kitap_id))).fetchone()[0] > 0
+                            (uye_id, kitap_id)).fetchone()[0] > 0
 
 
 def kullanici_odunc_sayisi(uye_id):
     """Kullanıcının elinde iade edilmemiş kitap sayısı."""
-    return baglantı.execute("SELECT COUNT(*) FROM follow WHERE userId=? AND status='out'", (str(uye_id),)).fetchone()[0]
+    return baglantı.execute("SELECT COUNT(*) FROM follow WHERE userId=? AND status='out'", (uye_id,)).fetchone()[0]

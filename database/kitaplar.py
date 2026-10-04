@@ -94,9 +94,8 @@ def son_eklenenler(adet=10):
 def kitap_durumlari(kitap_idler):
     kopyalar=dict(baglantı.execute("SELECT Id, COALESCE(Kopya,1) FROM kayitlistesi"))
     disarida={}
-    for (b,) in baglantı.execute("SELECT bookId FROM follow WHERE status='out'"):
-        if str(b).isdigit():
-            disarida[int(b)]=disarida.get(int(b),0)+1
+    for b,sayi in baglantı.execute("SELECT bookId, COUNT(*) FROM follow WHERE status='out' GROUP BY bookId"):
+        disarida[b]=sayi
     return [durum_yazi(kopyalar.get(i,1),disarida.get(i,0)) for i in kitap_idler]
 
 def durum_yazi(kopya, disarida):

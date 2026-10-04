@@ -6,11 +6,6 @@ from dataclasses import dataclass
 from typing import Optional
 
 
-def id_sayi(deger):
-    # follow tablosunda id'ler metin olarak saklanır
-    return int(deger) if str(deger).isdigit() else deger
-
-
 @dataclass
 class Kitap:
     adi: str
@@ -71,6 +66,3 @@ class Odunc:
     verilis: str
     uye_id: int
     kitap_id: int
-
-    def __post_init__(self):
-        self.uye_id, self.kitap_id = id_sayi(self.uye_id), id_sayi(self.kitap_id)

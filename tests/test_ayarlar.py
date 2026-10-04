@@ -71,7 +71,7 @@ def bilgiler(bolum):
 
 def test_kutuphane_bilgileri(lib, db):
     db.execute("UPDATE kayitlistesi SET Kopya=3 WHERE Id=1")
-    db.execute("INSERT INTO follow VALUES ('3','1','2026-01-01','10:00','out','','')")
+    db.execute("INSERT INTO follow (userId, bookId, outdate, outtime, status, indate, intime) VALUES ('3','1','2026-01-01','10:00','out','','')")
     db.commit()
     lib.ayarlar.yenile()
     b = bilgiler(lib.ayarlar.bolumler[2])

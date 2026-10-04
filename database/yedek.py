@@ -11,13 +11,13 @@ import os
 import sqlite3
 
 from database.baglanti import DB_YOLU, baglantı
-from database.sema import GEREKLI_TABLOLAR, sema_olustur, tablolar
+from database.sema import GEREKLI_TABLOLAR, SURUM, sema_olustur, surum, tablolar
 
 OTOMATIK_SAKLA = 10
 OTOMATIK_ONEK = "DBL_Kayit_"      # otomatik yedekler: DBL_Kayit_20260929_101500.db
 # Riskli işlemlerden önce alınan güvenlik yedekleri: her türden son GUVENLIK_SAKLA tanesi tutulur
 GUVENLIK_SAKLA = 10
-GUVENLIK_ONEKLERI = ("duzeltme_oncesi_", "geri_yukleme_oncesi_")
+GUVENLIK_ONEKLERI = ("duzeltme_oncesi_", "geri_yukleme_oncesi_", "goc_oncesi_v")
 
 
 def yedek_klasoru():
@@ -98,6 +98,8 @@ def yedek_hatasi(yol):
     try:
         kaynak = sqlite3.connect(f"file:{yol}?mode=ro", uri=True)
         try:
+            if surum(kaynak) > SURUM:
+                return "Bu yedek programın daha yeni bir sürümüyle alınmış; geri yüklemek için programı güncelleyin."
             eksik = GEREKLI_TABLOLAR - tablolar(kaynak)
             if eksik:
                 return f"Bu dosya PdSqliteLib veritabanı değil (eksik tablolar: {', '.join(sorted(eksik))})."

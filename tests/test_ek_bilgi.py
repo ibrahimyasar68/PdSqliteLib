@@ -64,7 +64,7 @@ def test_aramada_isbn_raf_ve_notlar(db):
 
 def test_kopya_durumu(db):
     db.execute("UPDATE kayitlistesi SET Kopya=2 WHERE Id=1")
-    db.execute("INSERT INTO follow VALUES ('3','1','2026-01-01','10:00','out','','')")
+    db.execute("INSERT INTO follow (userId, bookId, outdate, outtime, status, indate, intime) VALUES ('3','1','2026-01-01','10:00','out','','')")
     db.commit()
     assert kopya_durumu(1) == (2, 1) and kopya_durumu(2) == (1, 0)
     assert uyede_mi(3, 1) and not uyede_mi(4, 1)
@@ -101,8 +101,8 @@ def test_durum_yazisi():
 def test_listelerde_durum_kolonu_renkli(app, uyarilar, db, panel):
     from acodes import tema
     db.execute("UPDATE kayitlistesi SET Kopya=2 WHERE Id=1")
-    db.execute("INSERT INTO follow VALUES ('3','1','2026-01-01','10:00 ','out','','')")
-    db.execute("INSERT INTO follow VALUES ('3','6','2026-01-01','10:00 ','out','','')")
+    db.execute("INSERT INTO follow (userId, bookId, outdate, outtime, status, indate, intime) VALUES ('3','1','2026-01-01','10:00 ','out','','')")
+    db.execute("INSERT INTO follow (userId, bookId, outdate, outtime, status, indate, intime) VALUES ('3','6','2026-01-01','10:00 ','out','','')")
     db.commit()
     p = panel()
     t = p.QtLibrary.tableWidget_2

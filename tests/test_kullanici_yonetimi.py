@@ -104,7 +104,7 @@ def test_silme_engelleri(app, uyarilar, db, kullanici, aktif, mesaj):
 
 
 def test_elinde_kitap_olan_silinemez(yonetim, db, uyarilar):
-    db.execute("INSERT INTO follow VALUES ('3','1','2026-01-01','10:00','out','','')")
+    db.execute("INSERT INTO follow (userId, bookId, outdate, outtime, status, indate, intime) VALUES ('3','1','2026-01-01','10:00','out','','')")
     db.commit()
     yonetim.sec("ayse1")
     yonetim.sil()
@@ -113,7 +113,7 @@ def test_elinde_kitap_olan_silinemez(yonetim, db, uyarilar):
 
 
 def test_silme_gecmisi_korur(yonetim, db):
-    db.execute("INSERT INTO follow VALUES ('3','1','2025-01-01','10:00','in','2025-01-10','10:00')")
+    db.execute("INSERT INTO follow (userId, bookId, outdate, outtime, status, indate, intime) VALUES ('3','1','2025-01-01','10:00','in','2025-01-10','10:00')")
     db.commit()
     yonetim.sec("ayse1")
     yonetim.sil()

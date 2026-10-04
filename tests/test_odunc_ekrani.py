@@ -19,7 +19,7 @@ def gun_once(n):
 
 
 def odunc_ekle(db, user_id, book_id, verilis):
-    db.execute("INSERT INTO follow VALUES (?,?,?,'10:00 ','out','','')", (str(user_id), str(book_id), verilis))
+    db.execute("INSERT INTO follow (userId, bookId, outdate, outtime, status, indate, intime) VALUES (?,?,?,'10:00 ','out','','')", (str(user_id), str(book_id), verilis))
     db.commit()
 
 
@@ -103,7 +103,7 @@ def test_secince_bilgiler_gelir_ve_buton_acilir(o):
 
 def test_odunc_verme(lib, o, db):
     odunc_ver(o, "Satranç", 4)
-    assert db.execute("SELECT userId, bookId, status FROM follow").fetchall() == [("4", "6", "out")]
+    assert db.execute("SELECT userId, bookId, status FROM follow").fetchall() == [(4, 6, "out")]
     teslim = odunc.tarih_yazi(BUGUN + datetime.timedelta(days=15))
     assert lib.QtLibrary.statusbar.currentMessage() == f"İşlem kaydedildi. Teslim tarihi: {teslim}"
     assert o.kitap.currentIndex() == 0 and o.uye.currentIndex() == 0 and not o.btn_ver.isEnabled()
@@ -115,14 +115,14 @@ def test_odunc_verme(lib, o, db):
 def test_ayni_isimli_uyelerden_dogru_kisiye(o, db):
     assert "Ayşe Yılmaz (ayse1)" in [o.uye.itemText(i) for i in range(o.uye.count())]
     odunc_ver(o, "Yol Ayrımı", 4)
-    assert db.execute("SELECT userId FROM follow").fetchall() == [("4",)]
+    assert db.execute("SELECT userId FROM follow").fetchall() == [(4,)]
 
 
 def test_yazilan_adla_da_verilir(o, db):
     o.kitap.setEditText("satranç")                    # listeden seçmeden yazıldı
     uye_sec(o, 3)
     o.odunc_ver()
-    assert db.execute("SELECT bookId FROM follow").fetchall() == [("6",)]
+    assert db.execute("SELECT bookId FROM follow").fetchall() == [(6,)]
 
 
 def test_seçim_eksikse_uyarir(lib, o):
@@ -255,7 +255,7 @@ def test_siralanmis_listede_dogru_odunc_iade_edilir(o, db):
     o.tablo.sortItems(0, Qt.DescendingOrder)
     satiri_sec(o, "Satranç")
     o.iade_al()
-    assert db.execute("SELECT bookId FROM follow WHERE status='in'").fetchall() == [("6",)]
+    assert db.execute("SELECT bookId FROM follow WHERE status='in'").fetchall() == [(6,)]
 
 
 def test_silinmis_uyenin_oduncu_iade_alinabilir(o, db):

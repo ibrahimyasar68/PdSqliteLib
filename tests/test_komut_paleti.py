@@ -119,7 +119,7 @@ def test_kitap_listesinde_sag_tik_islemleri(lib, db):
 
 
 def test_sag_tik_iade_ve_gecmis(lib, db):
-    db.execute("INSERT INTO follow VALUES ('3','6',?,'10:00','out','','')", (str(datetime.date.today()),))
+    db.execute("INSERT INTO follow (userId, bookId, outdate, outtime, status, indate, intime) VALUES ('3','6',?,'10:00','out','','')", (str(datetime.date.today()),))
     db.commit()
     lib.yenile()
     t = lib.filtre.tablo
@@ -133,7 +133,7 @@ def test_sag_tik_iade_ve_gecmis(lib, db):
 
 
 def test_odunc_listesinde_sag_tik(lib, db):
-    db.execute("INSERT INTO follow VALUES ('3','1',?,'10:00','out','','')", (str(datetime.date.today()),))
+    db.execute("INSERT INTO follow (userId, bookId, outdate, outtime, status, indate, intime) VALUES ('3','1',?,'10:00','out','','')", (str(datetime.date.today()),))
     db.commit()
     lib.odunc.yenile()
     e = menu_metinleri(lib.odunc.tablo, 0)

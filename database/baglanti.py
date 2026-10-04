@@ -7,8 +7,9 @@ import shutil
 import sqlite3
 import sys
 from contextlib import contextmanager
+from datetime import datetime
 
-from database.sema import sema_olustur
+from database.sema import SURUM, sema_olustur, surum, tablolar
 
 def db_yolu():
     """Geliştirmede proje içindeki data/ klasörü kullanılır.
@@ -37,7 +38,26 @@ DB_YOLU = db_yolu()
 # Uygulama tek bir bağlantı kullanır.
 os.makedirs(os.path.dirname(os.path.abspath(DB_YOLU)), exist_ok=True)
 baglantı = sqlite3.connect(DB_YOLU)
-sema_olustur(baglantı)  # Eksik tablo varsa oluşturulur
+
+
+def goc_oncesi_yedek(baglanti, yol):
+    """Eski sürümdeki dolu bir veritabanı güncellenecekse önce yanındaki yedekler/ klasörüne kopyalanır
+    (goc_oncesi_v0_20261004_101500.db). Yedeğin yolunu, gerek yoksa None döndürür."""
+    if surum(baglanti) >= SURUM or not tablolar(baglanti):
+        return None
+    klasor = os.path.join(os.path.dirname(os.path.abspath(yol)), "yedekler")
+    os.makedirs(klasor, exist_ok=True)
+    hedef = os.path.join(klasor, f"goc_oncesi_v{surum(baglanti)}_{datetime.now():%Y%m%d_%H%M%S}.db")
+    kopya = sqlite3.connect(hedef)
+    try:
+        baglanti.backup(kopya)
+    finally:
+        kopya.close()
+    return hedef
+
+
+goc_oncesi_yedek(baglantı, DB_YOLU)
+sema_olustur(baglantı)  # Eksik tablolar oluşturulur, veritabanı son sürüme getirilir (database/sema.py)
 
 
 _derinlik = 0

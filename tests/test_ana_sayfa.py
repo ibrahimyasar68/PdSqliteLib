@@ -18,7 +18,7 @@ def gun_once(n):
 
 
 def odunc_ekle(db, user_id, book_id, verilis):
-    db.execute("INSERT INTO follow VALUES (?,?,?,'10:00','out','','')", (str(user_id), str(book_id), verilis))
+    db.execute("INSERT INTO follow (userId, bookId, outdate, outtime, status, indate, intime) VALUES (?,?,?,'10:00','out','','')", (str(user_id), str(book_id), verilis))
     db.commit()
 
 
@@ -45,7 +45,7 @@ def lib(app, uyarilar, veri):
 
 def test_yaklasan_teslimler(veri):
     assert [k[0] for k in odunc.yaklasan_teslimler()] == ["Yol Ayrımı", "Satranç"]
-    assert odunc.yaklasan_teslimler()[0][3:] == ("3", "1")
+    assert odunc.yaklasan_teslimler()[0][3:] == (3, 1)
 
 
 def test_eski_ana_sayfa_icerigi_yok(lib):

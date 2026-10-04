@@ -16,7 +16,6 @@ from acodes.tablo import satir_verisi, tablo_ayarla, tabloya_yaz
 from acodes.yerlesim import baslik_satiri, etiketli
 from database import kitaplar, kullanicilar
 from database.metin import katla
-from database.modeller import id_sayi
 from database.odunc import (ODUNC_SURESI_GUN, disaridakiler, gecikme_gunu, kalan_gun_yazi, kopya_durumu, tarih_yazi,
                             teslim_tarihi, uye_durumu)
 from servis import KuralHatasi
@@ -279,7 +278,6 @@ class OduncEkrani(QWidget):
 
     def sec(self, user_id, book_id):
         """Ana sayfadan gelince: bu ödüncü listede seç (arama gizliyorsa temizlenir)."""
-        user_id, book_id = id_sayi(user_id), id_sayi(book_id)
         if not self._satiri_sec(user_id, book_id) and self.arama.text():
             self.arama.clear()
         if not self._satiri_sec(user_id, book_id):

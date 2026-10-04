@@ -203,7 +203,7 @@ def test_hizli_arama_kayarak_acilir(lib):
 def test_gecikme_rozeti_bir_kez_atar(app, uyarilar, animasyonlu, db):
     import datetime
     eski = str(datetime.date.today() - datetime.timedelta(days=30))
-    db.execute("INSERT INTO follow VALUES ('3','1',?,'10:00','out','','')", (eski,))
+    db.execute("INSERT INTO follow (userId, bookId, outdate, outtime, status, indate, intime) VALUES ('3','1',?,'10:00','out','','')", (eski,))
     db.commit()
     l = Library()
     l.show()

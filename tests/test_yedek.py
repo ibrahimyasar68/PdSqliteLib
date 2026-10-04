@@ -123,7 +123,7 @@ def test_guvenlik_yedekleri_sinirli_sayida_tutulur():
         for i in range(yedek.GUVENLIK_SAKLA + 4):
             open(os.path.join(klasor, f"{onek}20250101_{i:06d}.db"), "w").close()
     open(os.path.join(klasor, "elle_alinan.db"), "w").close()       # başka yedeklere dokunulmaz
-    assert yedek.guvenlik_yedeklerini_temizle() == 8
+    assert yedek.guvenlik_yedeklerini_temizle() == 4 * len(yedek.GUVENLIK_ONEKLERI)
     for onek in yedek.GUVENLIK_ONEKLERI:
         kalan = sorted(f for f in os.listdir(klasor) if f.startswith(onek))
         assert len(kalan) == yedek.GUVENLIK_SAKLA and kalan[-1].endswith("000013.db")   # en yeniler kalır
