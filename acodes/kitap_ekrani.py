@@ -12,12 +12,12 @@ from acodes import hareket, tema
 from acodes.ek_bilgi import EkBilgiler
 from acodes.kisayollar import arama_kutusu_yap, kisayol, metin
 from acodes.tablo import KolonSecici, durum_ekle, durum_rozeti_kur, satir_verisi, tablo_ayarla, tabloya_yaz
-from acodes.yerlesim import baslik_satiri
+from acodes.yerlesim import baslik_satiri, etiketli
 from database.dbbase import baglantı, degistir_kayit, ekle_kayit, geri_ekle_kayit, sil_kayit
 from database.dbframe import df_book_find_by_id, df_sort_list, kitap_ara, kitap_oduncte, kopya_durumu
 
 # (veritabanı kolonu, etiket, önerilecek mevcut değerler var mı)
-ALANLAR = [("Adi", "Kitap adı *", False), ("Yazari", "Yazarı", True), ("Ceviren", "Çevirmen", True),
+ALANLAR = [("Adi", "Kitap adı (zorunlu)", False), ("Yazari", "Yazarı", True), ("Ceviren", "Çevirmen", True),
            ("Turu", "Türü", True), ("Yayinevi", "Yayınevi", True), ("Yili", "Basım yılı", False),
            ("Sayfa", "Sayfa", False)]
 BUYUK_HARFLI = {"Adi", "Yazari", "Ceviren", "Turu", "Yayinevi"}
@@ -75,48 +75,47 @@ class KitapEkrani(QWidget):
         for kolon in (2, 3):
             baslik.setSectionResizeMode(kolon, QHeaderView.Stretch)
         self.tablo.setSelectionMode(QTableWidget.SingleSelection)
-        self.kolonlar = KolonSecici(self.tablo, "kitaplar", varsayilan_gizli=(0,))
+        self.kolonlar = KolonSecici(self.tablo, "kitaplar", varsayilan_gizli=(0,), otomatik=(5, 4))   # sığmazsa Kopya, Yılı
         ust = baslik_satiri(sayac=self.sonuc, butonlar=[self.btn_yeni, self.kolonlar.buton])
         self.arama.setMinimumHeight(38)
 
-        # --- Alt: form (Kitap bilgileri ve Ek Bilgiler yan yana, alanlar iki sütunda)
+        # --- Alt: form (Kitap bilgileri ve Ek bilgiler yan yana; etiketler alanların üstünde, alanlar üç sütunda)
         self.form_baslik = QLabel(objectName="form_baslik")
         self.alan = {}
         kutu = QGroupBox("Kitap bilgileri")
         izgara = QGridLayout(kutu)
-        izgara.setHorizontalSpacing(10)
-        izgara.setVerticalSpacing(8)
-        # (kolon, satır, sütun, genişlik): kitap adı tam satır, diğerleri ikişer
-        yerler = {"Adi": (0, 0, 3), "Yazari": (1, 0, 1), "Ceviren": (1, 2, 1), "Turu": (2, 0, 1),
-                  "Yayinevi": (2, 2, 1), "Yili": (3, 0, 1), "Sayfa": (3, 2, 1)}
+        izgara.setHorizontalSpacing(12)
+        izgara.setVerticalSpacing(10)
+        # (satır, sütun, genişlik): kitap adı iki sütun, yanında yazar; altında üçer alan
+        yerler = {"Adi": (0, 0, 2), "Yazari": (0, 2, 1), "Ceviren": (1, 0, 1), "Turu": (1, 1, 1),
+                  "Yayinevi": (1, 2, 1), "Yili": (2, 0, 1), "Sayfa": (2, 1, 1)}
         for kolon, etiket, oneri in ALANLAR:
             alan = QLineEdit()
             alan.setMinimumHeight(30)
             self.alan[kolon] = alan
             satir, sutun, genislik = yerler[kolon]
-            izgara.addWidget(QLabel(etiket + ":"), satir, sutun, Qt.AlignRight | Qt.AlignVCenter)
-            izgara.addWidget(alan, satir, sutun + 1, 1, genislik)
-        izgara.setColumnStretch(1, 1)
-        izgara.setColumnStretch(3, 1)
-        self.alan["Yili"].setMaximumWidth(120)
-        self.alan["Sayfa"].setMaximumWidth(120)
+            izgara.addLayout(etiketli(etiket, alan), satir, sutun, 1, genislik)
+        for sutun in range(3):
+            izgara.setColumnStretch(sutun, 1)
         self.ek = EkBilgiler(izgara=True)
         self.ek.notlar.setMaximumHeight(64)
         self.kopya_bilgi = QLabel(objectName="kopya_bilgi")
-        self.ek.layout().addWidget(self.kopya_bilgi, 3, 1, 1, 3)
+        self.ek.layout().addWidget(self.kopya_bilgi, 3, 0, 1, 3)
         self.btn_kaydet = QPushButton("Kaydet")
         self.btn_sil = QPushButton("Sil", objectName="kitap_sil")
         self.btn_vazgec = QPushButton("Vazgeç")
-        for b in (self.btn_kaydet, self.btn_sil, self.btn_vazgec):
+        for b in (self.btn_kaydet, self.btn_vazgec):
             b.setMinimumSize(110, 38)
-        # Form başlığı ve butonlar bir satırda: solda "Kitap #12" / "Yeni kitap", sağda Kaydet, Vazgeç, Sil
+        self.btn_sil.setMinimumHeight(38)
+        # Form başlığı ve butonlar bir satırda: solda "Kitap #12" / "Yeni kitap" ve (kayıtlı kitapta) zeminsiz kırmızı
+        # Sil, asıl işlemden uzakta; sağda Vazgeç ve en sağda asıl işlem Kaydet
         islem = QHBoxLayout()
         islem.addWidget(self.form_baslik)
-        islem.addStretch()
-        islem.addWidget(self.btn_kaydet)
-        islem.addWidget(self.btn_vazgec)
-        islem.addSpacing(16)
+        islem.addSpacing(12)
         islem.addWidget(self.btn_sil)
+        islem.addStretch()
+        islem.addWidget(self.btn_vazgec)
+        islem.addWidget(self.btn_kaydet)
         kartlar = QHBoxLayout()
         kartlar.setSpacing(16)
         kartlar.addWidget(kutu, 3)
@@ -208,6 +207,7 @@ class KitapEkrani(QWidget):
                                  else "Tüm kopyaları kütüphanede.")
         self.form_baslik.setText(f"Kitap #{kitap_id}")
         self.btn_sil.setEnabled(True)
+        self.btn_sil.show()
 
     def yeni(self):
         self.kitap_id = None
@@ -217,6 +217,7 @@ class KitapEkrani(QWidget):
         self.kopya_bilgi.clear()
         self.form_baslik.setText("Yeni kitap")
         self.btn_sil.setEnabled(False)
+        self.btn_sil.hide()                   # kaydedilmemiş kitapta silinecek bir şey yok
         self._satiri_sec(None)
         self.alan["Adi"].setFocus()
 

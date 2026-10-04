@@ -164,7 +164,8 @@ def butonlara_uygula(pencere):
         ikincil = buton.property("rol") == "ikincil"
         ad = BUTON_IKONLARI.get(buton.text())
         if ad and buton.icon().isNull():
-            yazili_ikon(buton, ad, tema.ETIKET if ikincil else BUTON_RENGI)
+            renk = tema.TEHLIKE_YAZI if buton.objectName() in tema.TEHLIKELI_BUTONLAR else tema.ETIKET if ikincil else BUTON_RENGI
+            yazili_ikon(buton, ad, renk)
 
 
 def sekmelere_uygula(sekmeler, sayfa_adlari):

@@ -33,12 +33,13 @@ ORTAK_ARAMA = (
 KITAP_LISTESI = (
     "Sekmeye gelince bütün kitaplar kendiliğinden listelenir. Üstteki kutuya yazdıkça liste süzülür; kitap adı, "
     "yazar, çevirmen, tür, yayınevi, yıl, ISBN, raf yeri ve notlarda aranır. " + ORTAK_ARAMA + "<br><br>"
-    "<b>Durum</b> kolonu kitabın şu an rafta mı ödünçte mi olduğunu gösterir: <i>Rafta</i> yeşil, "
-    "<i>Ödünçte</i> kırmızı; birden fazla kopyası olan kitaplarda kaç kopyanın rafta olduğu turuncu yazar "
+    "<b>Durum</b> kolonu kitabın şu an rafta mı ödünçte mi olduğunu gösterir: rafta olan kitapta küçük "
+    "yeşil bir nokta durur, <i>Ödünçte</i> kırmızı; birden fazla kopyası olan kitaplarda kaç kopyanın rafta olduğu turuncu yazar "
     "(<i>1/2 kopya rafta</i>). Filtre sonuçlarında da aynı kolon vardır.<br><br>"
     "Kolon başlığına tıklayınca liste o kolona göre sıralanır (tekrar tıklayınca ters sırada). "
-    "<b>Kolonlar</b> butonu (veya kolon başlığına sağ tık) listede gösterilecek kolonları seçtirir; liste "
-    "pencereye sığmazsa tablonun üstünde hangi kolonların gizleneceği sorulur. Seçim hatırlanır. "
+    "<b>Kolonlar</b> butonu (veya kolon başlığına sağ tık) listede gösterilecek kolonları seçtirir. Liste "
+    "pencereye sığmazsa boş ve az önemli kolonlar (raf, kopya, çevirmen) kendiliğinden gizlenir, pencere büyüyünce "
+    "geri gelir. Seçim hatırlanır. "
     "Başlangıçta <i>Kayıt No</i> (soldaki sıra numarası aynı işi görür) ve <i>ISBN</i> gizlidir; "
     "<b>Kolonlar</b>'dan açılabilir. "
     "<b>Temizle</b> aramayı silip tüm listeye döner. <b>Dışa Aktar</b> listeyi ekranda göründüğü haliyle "
@@ -114,7 +115,7 @@ def kisayollar_ve_gorunum(yonetici):
             "aramaya gider.</li>" + kayit + "</ul>"
             "<b>Görünüm:</b> <b>Ayarlar → Görünüm</b> bölümünden açık veya koyu renkler seçilebilir; "
             "<b>Sistemle aynı</b> bilgisayarın açık/koyu ayarını izler. Seçim hemen uygulanır ve hatırlanır. "
-            "<b>Hareketi azalt</b> geçiş animasyonlarını kapatır.")
+            "<b>Hareketi azalt</b> düğmesi açılınca geçiş animasyonları kapanır.")
 
 
 YONETICI = [
@@ -145,7 +146,7 @@ YONETICI = [
      "numara ve bilgilerle geri getirebilirsiniz.</li>"
      "<li>Yazar, çevirmen, tür ve yayınevi alanlarına yazarken var olan değerler önerilir; öneriden seçmek "
      "aynı adın farklı yazımlarını önler.</li>"
-     "<li><b>Ek Bilgiler:</b> ISBN (yazılırsa doğruluğu kontrol edilir), kopya sayısı, raf yeri ve notlar. "
+     "<li><b>Ek bilgiler:</b> ISBN (yazılırsa doğruluğu kontrol edilir), kopya sayısı, raf yeri ve notlar. "
      "Kopya sayısı kadar üyeye aynı kitap aynı anda verilebilir.</li></ul>"
      "<b>Veri Düzeltme</b> alt sekmesi aynı yazar, yayınevi, çevirmen veya türün farklı yazımlarını "
      "(<i>Adam Yayınları</i> / <i>Adam yayınları</i>) bulur. Doğru yazımı seçip "

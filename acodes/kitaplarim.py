@@ -38,6 +38,7 @@ class Kitaplarim(QWidget):
         kutu2 = QGroupBox("Daha önce aldığım kitaplar")
         QVBoxLayout(kutu2).addWidget(self.gecmis)
         duzen = QVBoxLayout(self)
+        duzen.addWidget(QLabel("Kitaplarım", objectName="sayfa_baslik"))
         duzen.addWidget(self.ozet)
         duzen.addWidget(kutu1, 1)
         duzen.addWidget(kutu2, 1)

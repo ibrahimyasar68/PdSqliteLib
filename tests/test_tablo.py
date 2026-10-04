@@ -207,7 +207,7 @@ def test_istatistik_cizelgeleri_kartlarda_ve_sayilar_sigar(app, uyarilar):
     lib = Library()
     q = lib.QtLibrary
     t = q.tableWidget_5_1_2
-    assert isinstance(t.parentWidget(), QGroupBox) and t.parentWidget().title() == "Yazarlara Göre"
+    assert isinstance(t.parentWidget(), QGroupBox) and t.parentWidget().title() == "Yazarlara göre"
     assert not hasattr(q, "label_56") and t.horizontalScrollBarPolicy() == Qt.ScrollBarAlwaysOff
     assert t.horizontalHeader().sectionResizeMode(1) == QHeaderView.Fixed and t.columnWidth(1) == 170
     from acodes.tablo import OranCubugu

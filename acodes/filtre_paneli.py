@@ -41,7 +41,7 @@ class FiltrePaneli(QWidget):
         self.btn_aktar = QPushButton("Dışa Aktar")
         self.btn_aktar.setToolTip("Sonuçları Excel veya CSV olarak kaydet")
         self.tablo = QTableWidget(0, len(SONUC_KOLONLARI))
-        self.kolonlar = KolonSecici(self.tablo, "filtre", varsayilan_gizli=(0,))
+        self.kolonlar = KolonSecici(self.tablo, "filtre", varsayilan_gizli=(0,), otomatik=(3, 7))   # sığmazsa Çeviren, Sayfa
         ust = baslik_satiri("Filtre", self.sonuc, [self.btn_temizle, self.btn_aktar, self.kolonlar.buton], bilgi=ACIKLAMA)
 
         # --- Ölçütler tek satırda yan yana; seçilen değerler kutunun altında etiket olur

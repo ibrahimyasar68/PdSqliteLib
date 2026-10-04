@@ -20,6 +20,7 @@ LISTE_KOLONLARI = [(70,"Kayıt No"),(200,"Adı"),(160,"Yazarı"),(120,"Çeviren"
                    (160,"Yayınevi"),(50,"Yılı"),(55,"Sayfa"),(120,"ISBN"),(55,"Kopya"),(60,"Raf"),(150,"Durum")]
 GENIS_KOLONLAR = {1:3,2:2,3:1.5,5:2}  # Adı, Yazarı, Çeviren, Yayınevi kalan yeri bu oranlarla paylaşır
 VARSAYILAN_GIZLI = (0,8)            # Kayıt No (sıra numarası var) ve ISBN; Kolonlar'dan açılabilir
+OTOMATIK_GIZLI = (10,9,3,7)         # liste sığmazsa sırayla gizlenir: Raf, Kopya, Çeviren, Sayfa
 
 # Tab 5 istatistikleri: (tablo no, veritabanı kolonu, başlık, gösterilecek en fazla satır)
 ISTATISTIKLER = [(1,'Turu','Yayın Türü',35), (2,'Yazari','Yazar',40),
@@ -70,7 +71,8 @@ class OrtakSekmeler:
             sag_tik_menusu(self,getattr(ui,f"tableWidget_5_1_{no}"),f"İstatistik - {baslik}")
 
         ###  Kitap Listesi: üstte başlık, sonuç sayısı ve butonlar; altında arama; tablo pencereyle büyür  ###
-        self.liste_kolonlari=KolonSecici(ui.tableWidget_2,"kitap_listesi",varsayilan_gizli=VARSAYILAN_GIZLI)
+        self.liste_kolonlari=KolonSecici(ui.tableWidget_2,"kitap_listesi",varsayilan_gizli=VARSAYILAN_GIZLI,
+                                         otomatik=OTOMATIK_GIZLI)
         ust=baslik_satiri("Kitap Listesi",self.arama_sonuc,
                           [ui.pushButton_2_temizle,self.aktar_liste,self.liste_kolonlari.buton])
         liste_sayfasi(ui.tab_2,ust,self.arama,ui.tableWidget_2,uyari=self.liste_kolonlari.soru)
@@ -204,7 +206,7 @@ class OrtakSekmeler:
     def cizelgeleri_kartla(self):
         ###  Dört çizelge: başlıklı beyaz kartlar; ad kolonu kalan yeri alır, sayılar sığar, yatay kaydırma yok  ###
         ui=self.QtLibrary
-        basliklar={1:"Türlere Göre",2:"Yazarlara Göre",3:"Yayınevlerine Göre",4:"Basım Yıllarına Göre"}
+        basliklar={1:"Türlere göre",2:"Yazarlara göre",3:"Yayınevlerine göre",4:"Basım yıllarına göre"}
         self.cizelge_kartlari=[]
         for no,*_ in ISTATISTIKLER:
             tablo=getattr(ui,f"tableWidget_5_1_{no}")
@@ -253,5 +255,6 @@ class OrtakSekmeler:
             tabloya_yaz(tablo, kayit)
             for r in range(tablo.rowCount()):
                 tablo.item(r,0).setTextAlignment(Qt.AlignLeft | Qt.AlignVCenter)   # yıllar da adlar gibi sola yaslı
+            tablo.horizontalHeaderItem(0).setTextAlignment(Qt.AlignLeft | Qt.AlignVCenter)
         if hasattr(self,"grafikler"):
             self.grafikler.yenile()

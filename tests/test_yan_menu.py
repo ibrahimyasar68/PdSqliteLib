@@ -109,7 +109,36 @@ def test_kayit_no_ve_isbn_varsayilan_gizli_secim_yapilinca_hatirlanir(app, uyari
     l.liste_kolonlari.hepsini_goster()
 
 
-def test_sigmayan_listede_soru_cikar_ve_bir_daha_sorulmaz(app, uyarilar):
+def test_sigmayan_listede_kolonlar_kendiliginden_gizlenir_ve_geri_gelir(app, uyarilar):
+    from acodes import tercihler
+    l = Library()
+    q = l.QtLibrary
+    t, s = q.tableWidget_2, l.liste_kolonlari
+    l.resize(1100, 700)
+    l.show()
+    q.tabWidget.setCurrentWidget(q.tab_2)
+    QApplication.processEvents()
+    s.denetle()
+    assert s.oto_gizli and not s.sigmiyor() and not s.soru.isVisible()      # yer açıldı, soru sorulmaz
+    assert 10 in s.oto_gizli and t.isColumnHidden(10)                         # önce boş Raf kolonu
+    assert not t.isColumnHidden(1) and not t.isColumnHidden(11)               # Adı ve Durum kalır
+    kayitli = tercihler.oku("kolonlar/kitap_listesi") or ""
+    assert "10" not in kayitli.split(",")                                     # kendiliğinden gizleme kaydedilmez
+    l.resize(2600, 900)
+    QApplication.processEvents()
+    s.denetle()
+    assert not s.oto_gizli and not t.isColumnHidden(10)                       # pencere büyüyünce geri gelir
+    l.resize(1100, 700)
+    QApplication.processEvents()
+    s.goster(10, True)                                                        # kullanıcı açıkça isterse gizlenmez
+    s.denetle()
+    assert not t.isColumnHidden(10)
+    s.goster(10, False)
+    s.hepsini_goster()
+    l.close()
+
+
+def test_yine_sigmayan_listede_soru_cikar_ve_bir_daha_sorulmaz(app, uyarilar):
     l = Library()
     q = l.QtLibrary
     l.resize(1100, 700)
@@ -117,6 +146,7 @@ def test_sigmayan_listede_soru_cikar_ve_bir_daha_sorulmaz(app, uyarilar):
     q.tabWidget.setCurrentWidget(q.tab_2)
     QApplication.processEvents()
     s = l.liste_kolonlari
+    s.PAY_EN = 400                  # uzun kolonlar çok yer istesin: gizlenecek kolon kalmayınca da sığmaz
     s.denetle()
     assert s.sigmiyor() and s.soru.isVisible()
     s.btn_sorma.click()

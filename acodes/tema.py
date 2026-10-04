@@ -37,6 +37,7 @@ ACIK = dict(
     TEHLIKE="#DC2626",         # geri alınamayan işlemler (Sil)
     TEHLIKE_KOYU="#B91C1C",
     TEHLIKE_ACIK="#FEE2E2",
+    TEHLIKE_YAZI="#B91C1C",    # zeminsiz Sil butonunun yazısı (sayfa ve açık kırmızı zeminde 4,5:1)
     BASARI="#15803D",          # olumlu durum (ör. kitap rafta)
     UYARI="#B45309",           # kısmi durum (ör. kopyaların bir kısmı ödünçte)
     BILGI="#0EA5E9",           # ana sayfa kartları
@@ -65,7 +66,7 @@ KOYU = dict(
     YUZEY="#273449", YUZEY_2="#334155", SEKME="#1E293B", SEKME_HOVER="#273449", SATIR_HOVER="#24324A",
     IZGARA="#273449",
     VURGU="#3B82F6", VURGU_KOYU="#2563EB", VURGU_BASILI="#1D4ED8", VURGU_YAZI="#93C5FD", VURGU_ACIK="#1E3A5F",
-    TEHLIKE="#EF4444", TEHLIKE_KOYU="#DC2626", TEHLIKE_ACIK="#4C1D1D",
+    TEHLIKE="#EF4444", TEHLIKE_KOYU="#DC2626", TEHLIKE_ACIK="#4C1D1D", TEHLIKE_YAZI="#FCA5A5",
     BASARI="#4ADE80", UYARI="#FBBF24", BILGI="#38BDF8", YESIL="#22C55E",
     GECIKME_ARKA="#4C1D1D", GECIKME_YAZI="#FCA5A5",
     UYARI_ARKA="#422006", UYARI_KENAR="#A16207", UYARI_METIN="#FDE68A",
@@ -162,7 +163,7 @@ YAZI_PX = YAZI.metin
 YARI_KALIN = 500
 ORTA = 460
 
-# Geri alınamayan işlem butonları kırmızı gösterilir
+# Geri alınamayan işlem butonları zeminsiz, kırmızı yazılı gösterilir (asıl işlemle yarışmasın diye dolu değil)
 TEHLIKELI_BUTONLAR = ["kitap_sil", "kullanici_sil"]
 
 def _tema():
@@ -190,15 +191,17 @@ QPushButton[rol="ikincil"]:hover {{ background-color: {YUZEY}; border-color: {SO
 QPushButton[rol="ikincil"]:pressed {{ background-color: {YUZEY_2}; }}
 QPushButton[rol="ikincil"]:checked {{ background-color: {VURGU_ACIK}; color: {VURGU_YAZI}; border-color: {VURGU}; }}
 QPushButton[rol="ikincil"]:disabled {{ background-color: {KART}; color: {SOLUK}; border-color: {YUZEY_2}; }}
-{", ".join("#" + ad for ad in TEHLIKELI_BUTONLAR)} {{ background-color: {TEHLIKE}; }}
-{", ".join("#" + ad + ":hover" for ad in TEHLIKELI_BUTONLAR)} {{ background-color: {TEHLIKE_KOYU}; }}
-{", ".join("#" + ad + ":disabled" for ad in TEHLIKELI_BUTONLAR)} {{ background-color: {YUZEY_2}; color: {PASIF}; }}
+{", ".join("#" + ad for ad in TEHLIKELI_BUTONLAR)} {{ background-color: transparent; color: {TEHLIKE_YAZI}; }}
+{", ".join("#" + ad + ":hover" for ad in TEHLIKELI_BUTONLAR)} {{ background-color: {TEHLIKE_ACIK}; }}
+{", ".join("#" + ad + ":pressed" for ad in TEHLIKELI_BUTONLAR)} {{ background-color: {TEHLIKE_ACIK}; }}
+{", ".join("#" + ad + ":disabled" for ad in TEHLIKELI_BUTONLAR)} {{ background-color: transparent; color: {PASIF}; }}
 QPushButton#filtre_etiketi {{ background-color: {VURGU_ACIK}; color: {VURGU_YAZI}; border-radius: 12px;
                padding: 4px 10px; }}
 QPushButton#filtre_etiketi:hover {{ background-color: {TEHLIKE_ACIK}; color: {TEHLIKE}; }}
 #sayfa_baslik {{ font-size: {YAZI.baslik}px; font-weight: {YARI_KALIN}; color: {METIN}; }}
 QLabel[rol="sayac"] {{ font-size: {YAZI.metin}px; font-weight: {ORTA}; color: {VURGU_YAZI}; }}
 QLabel[rol="bilgi_simgesi"] {{ color: {SOLUK}; font-size: {YAZI.alt_baslik}px; }}
+QLabel[rol="alan_etiketi"] {{ color: {ETIKET}; font-size: {YAZI.ince}px; font-weight: {ORTA}; }}
 
 QLineEdit, QComboBox, QSpinBox, QPlainTextEdit {{ background-color: {KART}; color: {METIN};
                border: 1px solid {KENAR_GIRDI}; border-radius: {KOSE.kucuk}px; padding: 3px 6px; }}

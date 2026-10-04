@@ -34,6 +34,27 @@ def baslik_satiri(baslik=None, sayac=None, butonlar=(), bilgi=None):
     return satir
 
 
+def etiketli(etiket, alan, bosluk=4):
+    """Form alanı ve üstünde, sola yaslı, iki noktasız etiketi (dikey düzen). Izgaraya addLayout ile eklenir."""
+    kutu = QVBoxLayout()
+    kutu.setSpacing(bosluk)
+    yazi = QLabel(etiket)
+    yazi.setProperty("rol", "alan_etiketi")
+    yazi.setBuddy(alan)
+    kutu.addWidget(yazi)
+    kutu.addWidget(alan)
+    return kutu
+
+
+def ustte_etiketli_form(form):
+    """QFormLayout'ta etiketler alanların üstünde (iki noktasız, sola yaslı); formla aynı biçim."""
+    from PyQt5.QtWidgets import QFormLayout
+    form.setRowWrapPolicy(QFormLayout.WrapAllRows)
+    form.setLabelAlignment(Qt.AlignLeft)
+    form.setVerticalSpacing(10)
+    return form
+
+
 def liste_sayfasi(sayfa, ust, arama, tablo, uyari=None):
     """Üstte başlık satırı, altında tam genişlikte arama kutusu, (varsa) uyarı şeridi ve pencereyle büyüyen tablo."""
     duzen = QVBoxLayout(sayfa)

@@ -64,18 +64,18 @@ class User(QMainWindow):
             pushButton_temizle=QPushButton(objectName="pushButton_temizle"),
             pushButton_kaydet=QPushButton(objectName="pushButton_kaydet"))
         ui.lineEdit_sifre.setEchoMode(QLineEdit.PasswordEchoOnEdit)
-        alanlar=[(ui.lineEdit_kullanici_adi,"Kullanıcı adı *","ör. ayse"),
-                 (ui.lineEdit_sifre,"Şifre *",f"En az {SIFRE_EN_AZ} karakter"),
-                 (ui.lineEdit_adi_soyadi,"Adı soyadı *","ör. Ayşe Yılmaz"),
-                 (ui.lineEdit_telefon,"Telefon","10 hane, ör. 5321234567"),
-                 (ui.lineEdit_mail,"E-posta","ör. ayse@ornek.com"),
-                 (ui.comboBox_yetki,"Yetki *",None)]
+        alanlar=[(ui.lineEdit_kullanici_adi,"Kullanıcı adı","ör. ayse"),
+                 (ui.lineEdit_sifre,"Şifre",f"En az {SIFRE_EN_AZ} karakter"),
+                 (ui.lineEdit_adi_soyadi,"Adı soyadı","ör. Ayşe Yılmaz"),
+                 (ui.lineEdit_telefon,"Telefon (isteğe bağlı)","10 hane, ör. 5321234567"),
+                 (ui.lineEdit_mail,"E-posta (isteğe bağlı)","ör. ayse@ornek.com"),
+                 (ui.comboBox_yetki,"Yetki",None)]
         kart=QWidget(objectName="kullanici_karti")
         duzen=QVBoxLayout(kart)
         duzen.setContentsMargins(36,30,36,26)
         duzen.setSpacing(4)
         duzen.addWidget(QLabel("Yeni Kullanıcı",objectName="form_baslik"))
-        alt=QLabel("Üye (guest) veya yönetici (admin) kaydı oluşturun. * işaretli alanlar zorunludur.",
+        alt=QLabel("Üye (guest) veya yönetici (admin) kaydı oluşturun.",
                    objectName="form_alt")
         alt.setWordWrap(True)
         duzen.addWidget(alt)

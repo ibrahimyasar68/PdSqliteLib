@@ -13,7 +13,7 @@ from acodes.onay import onay
 from acodes import hareket, tema
 from acodes.aranabilir import aranabilir_yap, secili_veri
 from acodes.tablo import satir_verisi, tablo_ayarla, tabloya_yaz
-from acodes.yerlesim import baslik_satiri
+from acodes.yerlesim import baslik_satiri, etiketli
 from database.dbbase import iade_geri_al, save_work_to_db, update_work_to_db
 from database.dbframe import (df_book_find_by_id, df_book_id_list, df_user_find_by_id, df_user_id_list,
                               df_work_table_book, katla, kopya_durumu, uyede_mi)
@@ -116,16 +116,15 @@ class OduncEkrani(QWidget):
         izgara = QGridLayout(ver)
         izgara.setHorizontalSpacing(10)
         izgara.setVerticalSpacing(6)
-        izgara.addWidget(QLabel("Kitap:"), 0, 0)
-        izgara.addWidget(self.kitap, 0, 1)
-        izgara.addWidget(QLabel("Üye:"), 0, 2)
-        izgara.addWidget(self.uye, 0, 3)
-        izgara.addWidget(self.kitap_bilgi, 1, 1, Qt.AlignTop)
-        izgara.addWidget(self.uye_bilgi, 1, 3, Qt.AlignTop)
-        izgara.addWidget(self.ver_bilgi, 2, 0, 1, 3)
-        izgara.addWidget(self.btn_ver, 2, 3, Qt.AlignRight)
+        izgara.setHorizontalSpacing(12)
+        izgara.addLayout(etiketli("Kitap", self.kitap), 0, 0)          # etiketler alanların üstünde
+        izgara.addLayout(etiketli("Üye", self.uye), 0, 1)
+        izgara.addWidget(self.kitap_bilgi, 1, 0, Qt.AlignTop)
+        izgara.addWidget(self.uye_bilgi, 1, 1, Qt.AlignTop)
+        izgara.addWidget(self.ver_bilgi, 2, 0)
+        izgara.addWidget(self.btn_ver, 2, 1, Qt.AlignRight)
+        izgara.setColumnStretch(0, 1)
         izgara.setColumnStretch(1, 1)
-        izgara.setColumnStretch(3, 1)
 
         # --- Alt sağ: iade al (listeden seçilen ödünç)
         self.iade_bilgi = QLabel(wordWrap=True, objectName="iade_bilgi")

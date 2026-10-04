@@ -5,7 +5,7 @@ import re
 from PyQt5.QtCore import QEvent, QObject, QRectF, QSize, Qt, QTimer
 from PyQt5.QtGui import QColor, QFont, QFontMetrics, QPainter
 from PyQt5.QtWidgets import (QAbstractItemView, QApplication, QHeaderView, QLabel, QPushButton, QStyle,
-                             QStyledItemDelegate, QStyleOptionViewItem, QTableWidgetItem, QVBoxLayout, QWidget)
+                             QStyledItemDelegate, QStyleOptionViewItem, QTableWidgetItem, QToolTip, QVBoxLayout, QWidget)
 
 from acodes import tema
 from database.dbframe import kitap_durumlari, tr_sirala
@@ -126,7 +126,10 @@ def _rozet_yazisi(secenek):
 
 
 class DurumRozeti(QStyledItemDelegate):
-    """Durum kolonu ("Rafta", "Ödünçte", "1/2 kopya rafta"): yazı kendi renginin açık tonundaki yuvarlak rozette."""
+    """Durum kolonu ("Ödünçte", "1/2 kopya rafta"): yazı kendi renginin açık tonundaki yuvarlak rozette.
+    Olağan durum ("Rafta") her satırda rozet olup dikkati dağıtmasın diye yalnızca küçük bir nokta olarak çizilir;
+    hücrenin metni (arama, sıralama, dışa aktarma için) değişmez."""
+    SESSIZ = "Rafta"
 
     def paint(self, ressam, secenek, indeks):
         metin = indeks.data() or ""
@@ -135,6 +138,15 @@ class DurumRozeti(QStyledItemDelegate):
             return super().paint(ressam, secenek, indeks)
         _zemin_ciz(self, ressam, secenek, indeks)
         renk = QColor(firca.color())
+        if metin == self.SESSIZ:
+            alan = secenek.rect
+            ressam.save()
+            ressam.setRenderHint(QPainter.Antialiasing)
+            ressam.setPen(Qt.NoPen)
+            ressam.setBrush(renk)
+            ressam.drawEllipse(QRectF(alan.x() + 10, alan.center().y() - 3.5 + 0.5, 7, 7))
+            ressam.restore()
+            return
         yazi = _rozet_yazisi(secenek)
         olcu = QFontMetrics(yazi)
         alan = secenek.rect
@@ -152,6 +164,12 @@ class DurumRozeti(QStyledItemDelegate):
         ressam.setFont(yazi)
         ressam.drawText(kutu, Qt.AlignCenter, olcu.elidedText(metin, Qt.ElideRight, int(kutu.width()) - 12))
         ressam.restore()
+
+    def helpEvent(self, olay, gorunum, secenek, indeks):
+        if olay.type() == QEvent.ToolTip and indeks.data() == self.SESSIZ:
+            QToolTip.showText(olay.globalPos(), self.SESSIZ, gorunum)     # nokta yazısız çizildiği için adı ipucunda
+            return True
+        return super().helpEvent(olay, gorunum, secenek, indeks)
 
     def sizeHint(self, secenek, indeks):
         boyut = super().sizeHint(secenek, indeks)
@@ -208,6 +226,8 @@ def tablo_ayarla(tablo, siralama=True, bos_metin=None, sira_no=True, bos_simge="
     tablo.verticalHeader().setDefaultSectionSize(SATIR_BOY)
     tablo.horizontalHeader().setStretchLastSection(True)
     tablo.horizontalHeader().setHighlightSections(False)
+    # Başlık, kolonun hücreleriyle aynı hizada: metinler solda (sayı kolonlarını tabloya_yaz sağa alır)
+    tablo.horizontalHeader().setDefaultAlignment(Qt.AlignLeft | Qt.AlignVCenter)
     if bos_metin:
         tablo.bos_durum = BosDurum(tablo, bos_metin, bos_simge, bos_eylem)
     if siralama:
@@ -249,7 +269,20 @@ def tabloya_yaz(tablo, satirlar, vurgulu=(), veri=None, renkler=None):
     for c,kip in enumerate(kipler):
         if kip==QHeaderView.ResizeToContents:
             baslik.setSectionResizeMode(c,kip)
+    basliklari_hizala(tablo,satirlar)
     tablo.setSortingEnabled(siralama)
+
+
+def basliklari_hizala(tablo, satirlar):
+    """Boş olmayan değerlerinin çoğu (%80) sayı olan kolonların başlığı, sayılar gibi sağa yaslanır; diğerleri solda.
+    (Basım yılında "1985-1990" gibi tek tük metinler başlığı sola kaydırmasın.)"""
+    for c in range(tablo.columnCount()):
+        degerler=[str(s[c]).strip() for s in satirlar if c<len(s) and s[c] is not None and str(s[c]).strip()]
+        sayi=bool(degerler) and sum(1 for d in degerler if _SAYI.fullmatch(d))>=0.8*len(degerler)
+        hucre=tablo.horizontalHeaderItem(c)
+        if hucre is None:
+            continue
+        hucre.setTextAlignment((Qt.AlignRight if sayi else Qt.AlignLeft) | Qt.AlignVCenter)
 
 
 def durum_ekle(satirlar):
@@ -324,16 +357,24 @@ def satir_verisi(tablo, satir):
 
 class KolonSecici(QObject):
     """Kitap listelerinde gösterilecek kolonların seçimi (seçim hatırlanır).
-    "Kolonlar" butonu ve kolon başlığına sağ tık aynı seçim listesini açar. Liste pencereye sığmazsa tablonun
-    üstünde kullanıcıya hangi kolonları gizlemek istediği sorulur ("Bir daha sorma" ile kapatılabilir)."""
+    "Kolonlar" butonu ve kolon başlığına sağ tık aynı seçim listesini açar. Liste pencereye sığmazsa önce
+    tamamen boş kolonlar, sonra otomatik (öncelik sırasıyla) kolonlar kendiliğinden gizlenir; pencere büyüyünce
+    geri gelir (bu gizleme kaydedilmez). Yine de sığmazsa tablonun üstünde hangi kolonları gizlemek istediği
+    sorulur ("Bir daha sorma" ile kapatılabilir)."""
+    MAKUL_EN = 160          # kısa kolonlarda beklenen en fazla genişlik (uzun değerler "..." ile kısalabilir)
+    PAY_EN = 80             # oranlı (uzun metinli) kolonlarda ağırlık başına beklenen genişlik (Adı 3 → 240 px)
 
-    def __init__(self, tablo, anahtar, zorunlu=(1,), varsayilan_gizli=(), parent=None):
+    def __init__(self, tablo, anahtar, zorunlu=(1,), varsayilan_gizli=(), otomatik=(), parent=None):
         """zorunlu: gizlenemeyen kolonlar (kitap adı). varsayilan_gizli: kullanıcı henüz seçim yapmadıysa gizli
-        kolonlar (ör. sıra numarasıyla aynı işi gören Kayıt No)."""
+        kolonlar (ör. sıra numarasıyla aynı işi gören Kayıt No). otomatik: liste sığmazsa kendiliğinden
+        gizlenecek kolonlar, önce gizlenecek olan başta."""
         super().__init__(parent or tablo)
         from PyQt5.QtWidgets import QFrame, QHBoxLayout, QPushButton
         from acodes import tercihler
         self.tablo, self.anahtar, self.zorunlu = tablo, anahtar, set(zorunlu)
+        self.otomatik = [c for c in otomatik if c not in self.zorunlu]
+        self.oto_gizli = set()        # sığmadığı için kendiliğinden gizlenenler (kaydedilmez)
+        self.istenen = set()          # kullanıcının bu oturumda açıkça gösterdiği kolonlar (kendiliğinden gizlenmez)
         self.tercihler = tercihler
         self.buton = QPushButton("Kolonlar")
         self.buton.setProperty("rol", "ikincil")
@@ -373,7 +414,8 @@ class KolonSecici(QObject):
         menu = QMenu(self.tablo)
         for c in range(self.tablo.columnCount()):
             baslik = self.tablo.horizontalHeaderItem(c)
-            eylem = menu.addAction(baslik.text() if baslik else str(c + 1))
+            ad = baslik.text() if baslik else str(c + 1)
+            eylem = menu.addAction(ad + (" (yer yok)" if c in self.oto_gizli else ""))
             eylem.setCheckable(True)
             eylem.setChecked(not self.tablo.isColumnHidden(c))
             eylem.setEnabled(c not in self.zorunlu)
@@ -383,11 +425,14 @@ class KolonSecici(QObject):
         return menu
 
     def gizli(self):
-        return [c for c in range(self.tablo.columnCount()) if self.tablo.isColumnHidden(c)]
+        """Kullanıcının gizlediği kolonlar (yer olmadığı için kendiliğinden gizlenenler hariç)."""
+        return [c for c in range(self.tablo.columnCount()) if self.tablo.isColumnHidden(c) and c not in self.oto_gizli]
 
     def goster(self, kolon, gorunsun):
         if kolon in self.zorunlu:
             return
+        self.oto_gizli.discard(kolon)
+        (self.istenen.add if gorunsun else self.istenen.discard)(kolon)
         self.tablo.setColumnHidden(kolon, not gorunsun)
         if hasattr(self.tablo, "orantili"):
             self.tablo.orantili.dagit_sonra()
@@ -395,36 +440,68 @@ class KolonSecici(QObject):
         self.denetle_sonra()
 
     def hepsini_goster(self):
-        for c in self.gizli():
+        for c in self.gizli() + sorted(self.oto_gizli):
             self.goster(c, True)
 
     def sorma(self):
         self.tercihler.yaz(f"kolonlar/{self.anahtar}_sorma", "1")
         self.soru.hide()
 
-    def sigmiyor(self):
-        """Yatay kaydırma çıkıyorsa ya da bir kolon içeriğinin %60'ından dar kaldıysa liste sığmıyor sayılır.
-        Uzun metinli kolonlarda (ör. kitap adı) en uzun değerin tamamı değil makul bir genişlik (160 px) beklenir;
-        kalan yeri oranla paylaşan kolonlar (OrantiliKolonlar) ancak en dar hallerine indiklerinde sayılır."""
+    # --- Sığma hesabı: gerçek kolon genişlikleri yerine içeriklerden hesaplanır (gizleyip denemeye gerek kalmaz)
+
+    def _agirliklar(self):
+        """Kalan yeri paylaşan uzun metinli kolonlar ve ağırlıkları (Qt'nin Stretch kolonları 2 sayılır)."""
+        orantili = getattr(self.tablo, "orantili", None)
+        if orantili is not None:
+            return orantili.agirliklar
+        baslik = self.tablo.horizontalHeader()
+        return {c: 2 for c in range(self.tablo.columnCount()) if baslik.sectionResizeMode(c) == QHeaderView.Stretch}
+
+    def _ihtiyac(self, kolonlar):
+        agirlik = self._agirliklar()
+        baslik = self.tablo.horizontalHeader()
+        toplam = 0
+        for c in kolonlar:
+            if c in agirlik:
+                toplam += self.PAY_EN * agirlik[c]
+            else:
+                toplam += min(self.MAKUL_EN, max(baslik.sectionSizeHint(c), self.tablo.sizeHintForColumn(c)))
+        return toplam
+
+    def _bos_kolon(self, c):
+        return all(not (self.tablo.item(r, c) and self.tablo.item(r, c).text().strip())
+                   for r in range(self.tablo.rowCount()))
+
+    def sigmiyor(self, kolonlar=None):
+        """Görünen kolonların (verilmezse şu an görünenler) makul genişlikleri tablonun genişliğini aşıyor mu?"""
         if self.tablo.rowCount() == 0 or not self.tablo.isVisible():
             return False
-        kaydirma = self.tablo.horizontalScrollBar()
-        if kaydirma.isVisible() and kaydirma.maximum() > 0:
-            return True
-        baslik = self.tablo.horizontalHeader()
-        orantili = getattr(self.tablo, "orantili", None)
-        for c in range(self.tablo.columnCount()):
-            if self.tablo.isColumnHidden(c):
-                continue
-            if orantili is not None and c in orantili.agirliklar:
-                # Payını alan uzun metinli kolon "..." ile kısalır; ancak en dar haline indiyse sığmıyor sayılır
-                if self.tablo.columnWidth(c) <= orantili.EN_AZ:
-                    return True
-                continue
-            icerik = min(160, max(baslik.sectionSizeHint(c), self.tablo.sizeHintForColumn(c)))
-            if self.tablo.columnWidth(c) < 0.6 * icerik:
-                return True
-        return False
+        if kolonlar is None:
+            kolonlar = [c for c in range(self.tablo.columnCount()) if not self.tablo.isColumnHidden(c)]
+        return self._ihtiyac(kolonlar) > self.tablo.viewport().width()
+
+    def yerlestir(self):
+        """Sığmıyorsa boş, sonra öncelikli kolonları kendiliğinden gizler; yer açılınca geri getirir."""
+        if self.tablo.rowCount() == 0 or not self.tablo.isVisible():
+            return
+        gorunen = [c for c in range(self.tablo.columnCount())
+                   if not self.tablo.isColumnHidden(c) or c in self.oto_gizli]
+        adaylar = [c for c in gorunen if c not in self.zorunlu and c not in self.istenen and self._bos_kolon(c)]
+        adaylar += [c for c in self.otomatik if c in gorunen and c not in self.istenen and c not in adaylar]
+        gizlenecek = set()
+        for c in adaylar:
+            if not self.sigmiyor([k for k in gorunen if k not in gizlenecek]):
+                break
+            gizlenecek.add(c)
+        if gizlenecek == self.oto_gizli:
+            return
+        for c in self.oto_gizli - gizlenecek:
+            self.tablo.setColumnHidden(c, False)
+        for c in gizlenecek - self.oto_gizli:
+            self.tablo.setColumnHidden(c, True)
+        self.oto_gizli = gizlenecek
+        if hasattr(self.tablo, "orantili"):
+            self.tablo.orantili.dagit_sonra()
 
     def denetle_sonra(self, *_):
         if not self.bekliyor:
@@ -433,6 +510,7 @@ class KolonSecici(QObject):
 
     def denetle(self):
         self.bekliyor = False
+        self.yerlestir()
         sor = not self.tercihler.mantiksal(f"kolonlar/{self.anahtar}_sorma") and self.sigmiyor()
         self.soru.setVisible(sor)
 

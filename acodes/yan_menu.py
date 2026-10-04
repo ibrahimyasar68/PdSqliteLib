@@ -5,8 +5,8 @@
 
 import re
 
-from PyQt5.QtCore import QSize, Qt, QTimer
-from PyQt5.QtWidgets import QButtonGroup, QFrame, QHBoxLayout, QLabel, QPushButton, QVBoxLayout, QWidget
+from PyQt5.QtCore import QSize, Qt, QTimer, pyqtSignal
+from PyQt5.QtWidgets import QButtonGroup, QFrame, QHBoxLayout, QLabel, QPushButton, QSizePolicy, QVBoxLayout, QWidget
 
 from acodes import hareket, ikonlar, tema, tercihler
 from acodes.kilavuz import IMZA
@@ -239,7 +239,7 @@ def segment_stil():
     return f"""
 #segment {{ background-color: {tema.YUZEY_2}; border-radius: {tema.KOSE.orta}px; }}
 QPushButton#segment_ogesi {{ background: transparent; color: {tema.IKON}; border: none; border-radius: {tema.KOSE.kucuk}px;
-               padding: 7px 18px; font-size: {tema.YAZI.metin}px; font-weight: {tema.ORTA}; }}
+               padding: 7px 18px; min-width: 0; font-size: {tema.YAZI.metin}px; font-weight: {tema.ORTA}; }}
 QPushButton#segment_ogesi:hover {{ color: {tema.METIN}; }}
 QPushButton#segment_ogesi:checked {{ background: transparent; color: {tema.VURGU_YAZI}; }}
 #segment_vurgu {{ background-color: {tema.KART}; border-radius: {tema.KOSE.kucuk}px; }}
@@ -247,31 +247,45 @@ QPushButton#segment_ogesi:checked {{ background: transparent; color: {tema.VURGU
 
 
 class SegmentAnahtari(QFrame):
-    """Alt sekmelerin (ör. Kitaplar | Veri Düzeltme) yerine sayfanın üstünde iki-üç seçenekli anahtar."""
+    """Alt sekmelerin (ör. Kitaplar | Veri Düzeltme) yerine sayfanın üstünde iki-üç seçenekli anahtar.
+    sekmeler verilmezse adlar listesindeki seçenekler gösterilir (ör. Ayarlar > Görünüm); seçim secildi(i) ile
+    bildirilir."""
+    secildi = pyqtSignal(int)
 
-    def __init__(self, sekmeler, parent=None):
+    def __init__(self, sekmeler=None, parent=None, adlar=(), secili=0):
         super().__init__(parent)
         self.setObjectName("segment")
         self.setStyleSheet(segment_stil())
+        self.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Fixed)
         self.sekmeler = sekmeler
+        if sekmeler is not None:
+            adlar = [sekmeler.tabText(i) for i in range(sekmeler.count())]
+            secili = sekmeler.currentIndex()
         yatay = QHBoxLayout(self)
         yatay.setContentsMargins(4, 4, 4, 4)
         yatay.setSpacing(4)
         self.grup = QButtonGroup(self)
-        for i in range(sekmeler.count()):
-            b = QPushButton(sekmeler.tabText(i), objectName="segment_ogesi")
+        for i, ad in enumerate(adlar):
+            b = QPushButton(ad, objectName="segment_ogesi")
             b.setCheckable(True)
             b.setCursor(Qt.PointingHandCursor)
-            b.clicked.connect(lambda _, i=i: sekmeler.setCurrentIndex(i))
+            b.clicked.connect(lambda _, i=i: self._tiklandi(i))
             self.grup.addButton(b, i)
             yatay.addWidget(b)
-        self.grup.button(max(0, sekmeler.currentIndex())).setChecked(True)
+        self.grup.button(max(0, secili)).setChecked(True)
         self.vurgu = hareket.KayanVurgu(self, self.grup, "segment_vurgu")     # seçili zemin kayarak gider
-        sekmeler.currentChanged.connect(lambda i: self.grup.button(i) and self.grup.button(i).setChecked(True))
+        if sekmeler is not None:
+            sekmeler.currentChanged.connect(lambda i: self.grup.button(i) and self.grup.button(i).setChecked(True))
+
+    def _tiklandi(self, i):
+        if self.sekmeler is not None:
+            self.sekmeler.setCurrentIndex(i)
+        self.secildi.emit(i)
 
 
-def segmente_cevir(sekmeler):
-    """Alt sekme çubuğunu gizler, sayfanın üstüne segment anahtarı koyar."""
+def segmente_cevir(sekmeler, baslik=None):
+    """Alt sekme çubuğunu gizler, sayfanın üstüne segment anahtarı koyar. baslik: anahtarın solundaki sayfa adı
+    (her sayfanın üstünde aynı düzen: solda sayfa adı, yanında alt bölümler)."""
     sekmeler.tabBar().hide()
     sekmeler.setStyleSheet("QTabWidget::pane { border: none; background: transparent; }")
     sayfa = sekmeler.parentWidget()
@@ -279,7 +293,10 @@ def segmente_cevir(sekmeler):
     duzen.removeWidget(sekmeler)
     anahtar = SegmentAnahtari(sekmeler)
     ust = QHBoxLayout()
-    ust.setContentsMargins(12, 10, 12, 0)
+    ust.setContentsMargins(14, 10, 12, 0)
+    if baslik:
+        ust.addWidget(QLabel(baslik, objectName="sayfa_baslik"))
+        ust.addSpacing(16)
     ust.addWidget(anahtar)
     ust.addStretch()
     yeni = QVBoxLayout()

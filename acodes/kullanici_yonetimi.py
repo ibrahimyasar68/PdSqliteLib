@@ -7,6 +7,7 @@ from PyQt5.QtWidgets import (QAbstractItemView, QComboBox, QDialog, QDialogButto
                              QHBoxLayout, QHeaderView, QLineEdit, QMessageBox, QPushButton,
                              QTableWidget, QVBoxLayout)
 from acodes.tablo import satir_verisi, tablo_ayarla, tabloya_yaz
+from acodes.yerlesim import ustte_etiketli_form
 from acodes.onay import onay
 from acodes import ikonlar, tema
 from acodes.user import mail_gecerli, sifre_hatasi, telefon_gecerli
@@ -33,15 +34,15 @@ class SifreDegistir(QDialog):
         self.kullanici = kullanici
         self.setWindowTitle(f"Şifre Değiştir: {kullanici}")
         self.setStyleSheet(pencere_stili())
-        form = QFormLayout(self)
+        form = ustte_etiketli_form(QFormLayout(self))
         self.eski = None
         if eski_sor:
             self.eski = QLineEdit(echoMode=QLineEdit.Password)
-            form.addRow("Mevcut şifre:", self.eski)
+            form.addRow("Mevcut şifre", self.eski)
         self.yeni = QLineEdit(echoMode=QLineEdit.Password)
         self.tekrar = QLineEdit(echoMode=QLineEdit.Password)
-        form.addRow("Yeni şifre:", self.yeni)
-        form.addRow("Yeni şifre (tekrar):", self.tekrar)
+        form.addRow("Yeni şifre", self.yeni)
+        form.addRow("Yeni şifre (tekrar)", self.tekrar)
         butonlar = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
         butonlar.button(QDialogButtonBox.Ok).setText("Kaydet")
         butonlar.button(QDialogButtonBox.Cancel).setText("Vazgeç")
@@ -71,7 +72,7 @@ class KullaniciDuzenle(QDialog):
         self.id, self.kullanici, adi_soyadi, telefon, mail, self.eski_yetki = kayit
         self.setWindowTitle(f"Kullanıcı Düzenle: {self.kullanici}")
         self.setStyleSheet(pencere_stili())
-        form = QFormLayout(self)
+        form = ustte_etiketli_form(QFormLayout(self))
         self.adi_soyadi = QLineEdit(adi_soyadi or "")
         self.telefon = QLineEdit(telefon or "")
         self.telefon.setPlaceholderText("10 hane, örn. 5551234567")
@@ -83,11 +84,11 @@ class KullaniciDuzenle(QDialog):
             # Kendi yetkisini düşüren admin oturum ortasında kilitlenmesin
             self.yetki.setEnabled(False)
             self.yetki.setToolTip("Kendi yetkinizi değiştiremezsiniz.")
-        form.addRow("Kullanıcı adı:", QLineEdit(self.kullanici, readOnly=True, enabled=False))
-        form.addRow("Adı soyadı:", self.adi_soyadi)
-        form.addRow("Telefon:", self.telefon)
-        form.addRow("Mail:", self.mail)
-        form.addRow("Yetki:", self.yetki)
+        form.addRow("Kullanıcı adı", QLineEdit(self.kullanici, readOnly=True, enabled=False))
+        form.addRow("Adı soyadı", self.adi_soyadi)
+        form.addRow("Telefon", self.telefon)
+        form.addRow("E-posta", self.mail)
+        form.addRow("Yetki", self.yetki)
         butonlar = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
         butonlar.button(QDialogButtonBox.Ok).setText("Kaydet")
         butonlar.button(QDialogButtonBox.Cancel).setText("Vazgeç")

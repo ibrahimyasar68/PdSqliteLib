@@ -114,6 +114,8 @@ def test_yazi_renkleri_okunur(palet):
              for yazi in ("METIN", "ETIKET", "IKINCIL_METIN", "SOLUK", "BOS_METIN", "VURGU_YAZI")
              for zemin in ("KART", "KART_2", "SAYFA") if kontrast(p[yazi], p[zemin]) < 4.5]
     assert zayif == []
+    assert kontrast(p["TEHLIKE_YAZI"], p["TEHLIKE_ACIK"]) >= 4.5      # zeminsiz Sil: üstüne gelince de okunur
+    assert min(kontrast(p["TEHLIKE_YAZI"], p[z]) for z in ("KART", "SAYFA", "ZEMIN")) >= 4.5
 
 
 def test_modullerde_sabit_animasyon_suresi_yok():
@@ -189,7 +191,7 @@ def _yerlesim(app, gorunum):
         t.setCurrentIndex(i)
         QApplication.processEvents()
         for j, x in enumerate(t.currentWidget().findChildren(QWidget)):
-            if x.isVisible():
+            if x.isVisible() and x.objectName() != "segment_vurgu":     # seçili tema vurgusu temaya göre yer değiştirir
                 p = x.mapTo(w, QPoint())
                 olculer[(i, j, type(x).__name__)] = (p.x(), p.y(), x.width(), x.height())
     w.close()
@@ -205,7 +207,7 @@ def test_acik_ve_koyu_temada_yerlesim_ayni(app, uyarilar, monkeypatch):
         monkeypatch.setattr(tema, "_ILK_STIL", "macintosh")
     acik, koyu = _yerlesim(app, "acik"), _yerlesim(app, "koyu")
     assert acik.keys() == koyu.keys()
-    assert [k for k in acik if acik[k] != koyu[k]] == []
+    assert [(k, acik[k], koyu[k]) for k in acik if acik[k] != koyu[k]] == []
 
 
 def test_tema_degisince_kaydirma_ve_pencere_korunur(app, uyarilar):

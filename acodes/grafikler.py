@@ -161,10 +161,10 @@ def tur_dagilimi():
 class GrafikPaneli(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
-        self.turler = PastaGrafik("Türlere Göre Dağılım")
-        self.yazarlar = YatayCubukGrafik(f"En Çok Kitabı Olan {CUBUK_SAYISI} Yazar")
-        self.yayinevleri = YatayCubukGrafik(f"En Çok Kitabı Olan {CUBUK_SAYISI} Yayınevi")
-        self.yillar = DikeyCubukGrafik("Basım Yıllarına Göre (on yıllık)")
+        self.turler = PastaGrafik("Türlere göre dağılım")
+        self.yazarlar = YatayCubukGrafik(f"En çok kitabı olan {CUBUK_SAYISI} yazar")
+        self.yayinevleri = YatayCubukGrafik(f"En çok kitabı olan {CUBUK_SAYISI} yayınevi")
+        self.yillar = DikeyCubukGrafik("Basım yıllarına göre (on yıllık)")
         duzen = QGridLayout(self)
         duzen.setContentsMargins(0, 0, 0, 0)
         duzen.addWidget(self.turler, 0, 0)

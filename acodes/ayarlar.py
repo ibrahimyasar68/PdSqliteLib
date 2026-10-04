@@ -4,11 +4,11 @@
 
 import os
 
-from PyQt5.QtCore import Qt, QUrl, pyqtSignal
-from PyQt5.QtGui import QDesktopServices
+from PyQt5.QtCore import QEasingCurve, QPropertyAnimation, QRectF, QSize, Qt, QUrl, pyqtProperty, pyqtSignal
+from PyQt5.QtGui import QColor, QDesktopServices, QPainter
 from acodes import hareket, tema, tercihler
 from acodes.kilavuz import Kilavuz
-from PyQt5.QtWidgets import (QApplication, QButtonGroup, QDialog, QFormLayout, QGroupBox, QHBoxLayout, QLabel,
+from PyQt5.QtWidgets import (QAbstractButton, QApplication, QDialog, QFormLayout, QGroupBox, QHBoxLayout, QLabel,
                              QPushButton, QScrollArea, QSizePolicy, QToolTip, QVBoxLayout, QWidget)
 
 def stil():
@@ -17,6 +17,7 @@ def stil():
 QGroupBox {{ font-size: {tema.YAZI.alt_baslik}px; font-weight: {tema.YARI_KALIN}; border-radius: {tema.KOSE.orta}px; padding: 48px 14px 14px 14px; }}
 QLabel {{ color: {tema.IKINCIL_METIN}; }}
 QLabel[rol="deger"] {{ color: {tema.METIN}; }}
+#sayfa_baslik {{ color: {tema.METIN}; }}
 QPushButton {{ padding: 9px 16px; min-width: 150px; }}
 """
 
@@ -29,19 +30,38 @@ IPUCU_YONETICI = ("İpucu: Ctrl+K (Mac'te ⌘K) her yerden hızlı arama açar: 
 
 
 class TamDeger(QLabel):
-    """Bilgi değeri ekranda tam yazılır; uzun klasör yolları sığmazsa "/" işaretlerinden alt satıra geçer.
-    Tıklanınca değer panoya kopyalanır (ör. yolu Finder'daki "Klasöre Git" kutusuna yapıştırmak için)."""
+    """Bilgi değeri tek satırda; sığmazsa ortadan kısalır ("~/Library/…/PdSqliteLib/yedekler"), tamamı ipucunda.
+    Klasör yollarının sağında kopyala simgesi durur. Tıklanınca değerin tamamı panoya kopyalanır (ör. yolu Finder'daki
+    "Klasöre Git" kutusuna yapıştırmak için)."""
+    SIMGE = 14
 
     def __init__(self, metin, parent=None):
         super().__init__(parent)
         self.tam = metin
+        self.yol = os.sep in metin or "/" in metin
         self.setProperty("rol", "deger")
-        self.setWordWrap(True)
-        self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Preferred)
+        self.setSizePolicy(QSizePolicy.Ignored, QSizePolicy.Preferred)   # uzun yol sayfayı genişletmez
         self.setCursor(Qt.PointingHandCursor)
-        self.setToolTip("Kopyalamak için tıklayın")
-        # Görünmez kırılma noktası: kelime aralığı olmayan uzun yollar da satıra sığar (kopyalanan metinde yoktur)
-        self.setText(metin.replace("/", "/\u200b").replace("\\", "\\\u200b"))
+        self.setToolTip(f"{metin}\nKopyalamak için tıklayın")
+        if self.yol:
+            self.setContentsMargins(0, 0, self.SIMGE + 8, 0)
+        self.setText(metin)
+
+    def resizeEvent(self, olay):
+        super().resizeEvent(olay)
+        en = self.contentsRect().width()
+        self.setText(self.fontMetrics().elidedText(self.tam, Qt.ElideMiddle, en))
+
+    def paintEvent(self, olay):
+        super().paintEvent(olay)
+        if not self.yol:
+            return
+        from PyQt5.QtGui import QPainter
+        from acodes import ikonlar
+        yazi_en = self.fontMetrics().horizontalAdvance(self.text())
+        x = min(yazi_en, self.contentsRect().width()) + 6
+        y = (self.height() - self.SIMGE) // 2
+        QPainter(self).drawPixmap(x, y, ikonlar.ikon("kopyala", tema.SOLUK).pixmap(self.SIMGE, self.SIMGE))
 
     def mousePressEvent(self, olay):
         QApplication.clipboard().setText(self.tam)
@@ -88,6 +108,69 @@ class Bolum(QGroupBox):
             self.form.addRow(f"{etiket}:", TamDeger(kisa_yol(str(deger))))
 
 
+class Anahtar(QAbstractButton):
+    """Açma/kapama düğmesi: yuvarlak iz üstünde kayan topuz, sağında yazı. Onay kutusu yerine kendisi çizilir:
+    macOS stili sarmalandığında (tema._sabit_aralikli) onay kutusu çizilirken program çöküyordu."""
+    IZ_EN, IZ_BOY = 38, 22
+
+    def __init__(self, metin, parent=None):
+        super().__init__(parent)
+        self.setText(metin)
+        self.setCheckable(True)
+        self.setCursor(Qt.PointingHandCursor)
+        self._konum = 0.0
+        self.animasyon = QPropertyAnimation(self, b"konum", self)
+        self.animasyon.setDuration(tema.SURE.kisa)
+        self.animasyon.setEasingCurve(QEasingCurve.OutCubic)
+        self.toggled.connect(self._kay)
+
+    def _kay(self, acik):
+        hedef = 1.0 if acik else 0.0
+        self.animasyon.stop()
+        if hareket.izinli() and self.isVisible():
+            self.animasyon.setStartValue(self._konum)
+            self.animasyon.setEndValue(hedef)
+            self.animasyon.start()
+        else:
+            self.konum = hedef
+
+    def _konum_al(self):
+        return self._konum
+
+    def _konum_yaz(self, deger):
+        self._konum = deger
+        self.update()
+
+    konum = pyqtProperty(float, _konum_al, _konum_yaz)
+
+    def sizeHint(self):
+        return QSize(self.IZ_EN + 10 + self.fontMetrics().horizontalAdvance(self.text()), max(self.IZ_BOY, 26))
+
+    def paintEvent(self, olay):
+        p = QPainter(self)
+        p.setRenderHint(QPainter.Antialiasing)
+        y = (self.height() - self.IZ_BOY) / 2
+        iz = QRectF(0.5, y + 0.5, self.IZ_EN - 1, self.IZ_BOY - 1)
+        kapali, acik = QColor(tema.YUZEY_2), QColor(tema.VURGU)
+        renk = QColor(*(round(k + (a - k) * self._konum) for k, a in zip(kapali.getRgb()[:3], acik.getRgb()[:3])))
+        p.setPen(QColor(tema.KENAR_IKINCIL) if self._konum < 0.5 else Qt.NoPen)
+        p.setBrush(renk)
+        p.drawRoundedRect(iz, iz.height() / 2, iz.height() / 2)
+        cap = self.IZ_BOY - 6
+        x = 3 + (self.IZ_EN - cap - 6) * self._konum
+        p.setPen(Qt.NoPen)
+        from acodes.ikonlar import BUTON_RENGI
+        p.setBrush(QColor(BUTON_RENGI))                 # topuz: mavi zemin üstündeki ikonlar gibi beyaz
+        p.drawEllipse(QRectF(x, y + 3, cap, cap))
+        if self.hasFocus():
+            p.setPen(QColor(tema.VURGU))
+            p.setBrush(Qt.NoBrush)
+            p.drawRoundedRect(iz.adjusted(-2, -2, 2, 2), self.IZ_BOY / 2 + 2, self.IZ_BOY / 2 + 2)
+        p.setPen(QColor(tema.METIN))
+        p.drawText(QRectF(self.IZ_EN + 10, 0, self.width() - self.IZ_EN - 10, self.height()),
+                   Qt.AlignLeft | Qt.AlignVCenter, self.text())
+
+
 class GorunumBolumu(QGroupBox):
     """Açık / koyu / sistemle aynı görünüm seçimi. Seçim değişince degisti(görünüm) yayınlanır.
     "Hareketi azalt" geçiş animasyonlarını kapatır (hemen uygulanır, panel yeniden kurulmaz)."""
@@ -95,39 +178,26 @@ class GorunumBolumu(QGroupBox):
 
     def __init__(self, parent=None):
         super().__init__("Görünüm", parent)
+        from acodes.yan_menu import SegmentAnahtari
         duzen = QVBoxLayout(self)
-        satir = QHBoxLayout()
-        self.grup = QButtonGroup(self)
-        self.butonlar = {}
-        for anahtar, ad in tema.GORUNUMLER.items():
-            b = QPushButton(ad, checkable=True)
-            b.setCursor(Qt.PointingHandCursor)
-            b.setProperty("rol", "ikincil")
-            b.setChecked(anahtar == tema.GORUNUM)
-            b.clicked.connect(lambda _, a=anahtar: self.sec(a))
-            self.grup.addButton(b)
-            satir.addWidget(b)
-            self.butonlar[anahtar] = b
-        satir.addStretch()
-        duzen.addLayout(satir)
+        duzen.setSpacing(8)
+        # Tema: alt sekmelerdeki gibi tek parça segment anahtarı (seçili zemin kayarak gider)
+        anahtarlar = list(tema.GORUNUMLER)
+        self.secici = SegmentAnahtari(adlar=list(tema.GORUNUMLER.values()), secili=anahtarlar.index(tema.GORUNUM))
+        self.butonlar = {a: self.secici.grup.button(i) for i, a in enumerate(anahtarlar)}
+        self.secici.secildi.connect(lambda i: self.sec(anahtarlar[i]))
+        duzen.addWidget(self.secici, 0, Qt.AlignLeft)
         aciklama = QLabel("“Sistemle aynı” bilgisayarın açık/koyu görünümünü izler. Tercih hatırlanır.")
         aciklama.setWordWrap(True)
         duzen.addWidget(aciklama)
-        # Onay kutusu yerine basılı kalan düğme: macOS stili sarmalandığında (tema._sabit_aralikli) onay kutusu
-        # çizilirken program çöküyordu; görünüm düğmeleriyle de aynı biçimde durur
-        self.hareket = QPushButton("Hareketi azalt", checkable=True)
-        self.hareket.setProperty("rol", "ikincil")
+        duzen.addSpacing(8)
+        self.hareket = Anahtar("Hareketi azalt")
         self.hareket.setToolTip("Sayfa geçişleri, menü, bildirim ve tema geçişindeki animasyonlar kapanır; "
                                 "değişiklikler hemen görünür.")
-        self.hareket.setCursor(Qt.PointingHandCursor)
         self.hareket.setChecked(hareket.AZALT)
         self.hareket.toggled.connect(self.hareket_degisti)
-        alt = QHBoxLayout()
-        alt.addWidget(self.hareket)
-        alt.addSpacing(8)
-        alt.addWidget(QLabel("Geçiş animasyonlarını kapatır; değişiklikler hemen görünür."))
-        alt.addStretch()
-        duzen.addLayout(alt)
+        duzen.addWidget(self.hareket, 0, Qt.AlignLeft)
+        duzen.addWidget(QLabel("Geçiş animasyonlarını kapatır; değişiklikler hemen görünür."))
 
     def hareket_degisti(self, azalt):
         hareket.AZALT = azalt
@@ -179,6 +249,7 @@ class Ayarlar(QScrollArea):
         dikey = QVBoxLayout(sutun)
         dikey.setContentsMargins(0, 10, 0, 10)
         dikey.setSpacing(12)
+        dikey.addWidget(QLabel("Ayarlar", objectName="sayfa_baslik"))     # diğer sayfalardaki gibi üstte sayfa adı
         self.bolumler = []
         for baslik, butonlar, bilgiler in bolumler:
             bolum = Bolum(baslik, butonlar, bilgiler)

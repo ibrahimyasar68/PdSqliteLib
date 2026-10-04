@@ -30,13 +30,20 @@ düğme menüyü daraltır (yalnızca simgeler kalır) ve yeniden açar; tercih 
 kitap sayısı menüde kırmızı rozetle görünür. Alt bölümler (Kitaplar / Veri Düzeltme, Çizelgeler / Grafikler,
 Ödünç ve İade / Ödünç Geçmişi) sayfanın üstündeki anahtarla seçilir.
 
-Sayfaların üstünde aynı düzen vardır: solda sayfa adı ve sonuç sayısı, sağda butonlar, altında tam
-genişlikte arama kutusu.
+Sayfaların üstünde aynı düzen vardır: solda sayfa adı (alt bölümü olan sayfalarda yanında anahtar) ve sonuç
+sayısı, sağda butonlar, altında tam genişlikte arama kutusu. Bölüm başlıkları cümle düzeninde yazılır
+("Ek bilgiler"), butonlar başlık düzeninde ("Yeni Kitap"). Form etiketleri alanların üstündedir, iki noktasızdır;
+zorunlu alan "(zorunlu)", isteğe bağlı alan "(isteğe bağlı)" diye belirtilir.
+
+Tablo başlıkları kolonun hizasındadır: metin kolonlarında solda, sayı kolonlarında (Yılı, Sayfa, Kopya ...) sağda.
 
 Kitap listelerinde **Kolonlar** butonu (veya kolon başlığına sağ tık) gösterilecek kolonları seçtirir;
 başlangıçta *Kayıt No* (soldaki sıra numarası aynı işi görür) ve Kitap Listesi'nde *ISBN* gizlidir.
 Adı, yazar, çevirmen ve yayınevi kolonları kalan genişliği oranla paylaşır (kitap adı en geniş); sığmayan
-metin "…" ile kısalır. Liste yine de sığmazsa tablonun üstünde hangi kolonların gizleneceği sorulur. Menü ve
+metin "…" ile kısalır. Liste pencereye sığmazsa önce tamamen boş kolonlar, sonra sırasıyla Raf, Kopya, Çeviren
+ve Sayfa kendiliğinden gizlenir (Kitap Kayıt'ta Kopya ve Yılı, Filtre'de Çeviren ve Sayfa); pencere büyüyünce
+geri gelir. Bu gizleme kaydedilmez; **Kolonlar** listesinde "(yer yok)" diye görünür, oradan açılan kolon bir daha
+kendiliğinden gizlenmez. Liste yine de sığmazsa tablonun üstünde hangi kolonların gizleneceği sorulur. Menü ve
 kolon tercihleri veritabanının yanındaki `tercihler.ini` dosyasında tutulur.
 
 Programdan çıkmak için giriş ekranının sağ üstündeki **×** kullanılır. Giriş ekranı açılınca ekranın ortasındadır;
@@ -45,11 +52,14 @@ pencerede (küçültülebilir, diğer programlara geçilebilir), Windows'ta tam 
 Giriş sekmesinin arka planı yaprak fotoğrafıdır (`media/autumn.jpg`); diğer sayfalar sade, düz tema
 zeminindedir (`acodes/arka_plan.py`). Yazı ağırlıkları `acodes/tema.py`'deki `YARI_KALIN` (başlıklar) ve
 `ORTA` (etiketler, menü) değerlerinden gelir; kalın yazı yalnızca vurgu içindir.
+Ana sayfadaki **Kitap** kartının alt satırında raftaki kopya sayısı yazar ("hepsi rafta", "733 rafta"); toplam
+kopya sayısı yalnızca kayıt sayısından farklıysa eklenir ("9 kopya, 6 rafta").
 
 **Ayarlar → Yardım → Kullanma Kılavuzu** ayrı bir pencerede açılır: program hakkında kısa bilgi ve her
 sekmenin nasıl kullanıldığını anlatan, tıklanınca açılan başlıklar (yönetici ve üye panellerinde kendi
 sekmelerine göre). Ayarlar'daki her bölümde ilk buton asıl işlemdir (mavi), diğerleri çerçevelidir; uzun
-klasör yolları tam yazılır (sığmazsa alt satıra geçer), tıklanınca panoya kopyalanır.
+klasör yolları tek satırda, sığmazsa ortadan kısaltılarak yazılır (tamamı ipucunda), yanlarında kopyala simgesi
+durur; tıklanınca yolun tamamı panoya kopyalanır.
 
 Yeni kullanıcı ve üye kayıtlarını (`admin` veya `guest`) sadece giriş yapmış bir admin,
 **Ayarlar → Yeni Kullanıcı Ekle** ile oluşturabilir.
@@ -57,7 +67,9 @@ Yeni kullanıcı ve üye kayıtlarını (`admin` veya `guest`) sadece giriş yap
 ### Durum, kısayollar ve görünüm
 
 - Kitap Listesi, Filtre sonuçları ve Kitap Kayıt listesindeki **Durum** kolonu kitabın rafta mı ödünçte mi
-  olduğunu gösterir: *Rafta* (yeşil), *Ödünçte* (kırmızı), çok kopyalı kitaplarda *1/2 kopya rafta* (turuncu).
+  olduğunu gösterir: *Ödünçte* (kırmızı rozet), çok kopyalı kitaplarda *1/2 kopya rafta* (turuncu rozet). Olağan
+  durum *Rafta* her satırda rozet olup dikkati dağıtmasın diye yalnızca küçük yeşil noktadır (adı ipucunda; arama,
+  sıralama ve dışa aktarmada "Rafta" yazar).
 - Klavye kısayolları (Mac'te Ctrl yerine ⌘): **Ctrl+1 … Ctrl+9** menü bölümleri, **Ctrl+F** açık sayfanın
   arama kutusu; Kitap Kayıt'ta **Ctrl+N** yeni kitap, **Ctrl+S** kaydet, **Esc** vazgeç (`acodes/kisayollar.py`).
 - **Hızlı arama (Ctrl+K)** veya menüdeki **Hızlı ara**: tek kutudan bölümler, işlemler (*Yeni kitap*,
@@ -82,7 +94,8 @@ Yeni kullanıcı ve üye kayıtlarını (`admin` veya `guest`) sadece giriş yap
   durur; altındaki ince çubuk kalan süreyi gösterir, fare bildirimin üstündeyken süre durur. Silinen kitap aynı numara ve bilgilerle geri gelir; iade alma onay sormaz, yanlış iade geri alınır
   (bu arada kitap başka üyeye verildiyse geri alınmaz).
 - **Ayarlar → Görünüm:** *Sistemle aynı*, *Açık* veya *Koyu*. Seçim hemen uygulanır (panel aynı sayfada
-  yeniden açılır) ve `tercihler.ini`'de hatırlanır. **Hareketi azalt** düğmesi geçiş animasyonlarını kapatır
+  yeniden açılır) ve `tercihler.ini`'de hatırlanır; seçim alt sekmelerdeki gibi segment anahtarıyla yapılır.
+  **Hareketi azalt** açma/kapama düğmesi geçiş animasyonlarını kapatır
   (değişiklikler hemen görünür). Yazı renkleri zeminde en az 4,5:1 kontrastlıdır (WCAG AA; test denetler). Renkler (kenar menüsü, bildirimler ve grafik serileri dahil)
   `acodes/tema.py`'deki iki palettedir; yazı boyutları `tema.YAZI`, köşe yuvarlaklıkları `tema.KOSE` ölçeğinden
   gelir. Modüllerde sabit renk ve yazı boyutu yazılmaz (`tests/test_gorunum.py` denetler).
@@ -97,9 +110,11 @@ tür, yayınevi ve yılda arar; büyük/küçük harf ve Türkçe karakter fark�
 ### Kitap kayıt ekranı
 
 **Kitap Kayıt → Kitaplar** ekranında üstte tam genişlikte aranabilir kitap listesi, altta seçili kitabın formu
-(Kitap bilgileri ve Ek Bilgiler yan yana) vardır; Kitap Verme ekranıyla aynı düzen.
+(Kitap bilgileri ve Ek bilgiler yan yana) vardır; Kitap Verme ekranıyla aynı düzen.
 Listeden bir kitap seçince bilgileri forma gelir; değiştirip **Kaydet**'e basmak günceller, **Sil**
-siler (ödünçteki kitap iade alınmadan silinemez), **Vazgeç** kaydedilmemiş değişiklikleri geri alır.
+siler (ödünçteki kitap iade alınmadan silinemez), **Vazgeç** kaydedilmemiş değişiklikleri geri alır. **Sil**
+zeminsiz kırmızı yazılıdır, form başlığının yanında, asıl işlem Kaydet'ten uzakta durur; yeni (kaydedilmemiş)
+kitapta görünmez.
 **Yeni Kitap** formu boşaltır; Kaydet yeni kitabı ekler ve listede seçili bırakır. Yazar, çevirmen,
 tür ve yayınevi alanlarında yazdıkça mevcut değerler önerilir (yazım farklılıklarını önler).
 
@@ -145,7 +160,7 @@ karakter farkı gözetilmez.
 
 ### Ek bilgiler: ISBN, kopya sayısı, raf yeri, notlar
 
-Kitap Kayıt formundaki **Ek Bilgiler** kutusunda girilir; Kitap Listesi'nde ISBN, Kopya ve Raf
+Kitap Kayıt formundaki **Ek bilgiler** kutusunda girilir; Kitap Listesi'nde ISBN, Kopya ve Raf
 kolonları görünür, arama bu alanlarda ve notlarda da yapılır.
 
 - **ISBN** isteğe bağlıdır; yazılırsa ISBN-10 / ISBN-13 kontrol basamağı doğrulanır, tiresiz saklanır.
@@ -323,7 +338,7 @@ acodes/disa_aktar.py          Tabloları Excel / CSV olarak kaydetme
 acodes/kitap_ekrani.py        Kitap Kayıt > Kitaplar (liste ve form tek ekranda)
 acodes/veri_duzeltme.py       Kitap Kayıt > Veri Düzeltme sekmesi
 acodes/filtre_paneli.py       Filtre sekmesi (dört ölçüt üstte tek satırda)
-acodes/ek_bilgi.py            Kitap formundaki Ek Bilgiler kutusu, ISBN doğrulama
+acodes/ek_bilgi.py            Kitap formundaki Ek bilgiler kutusu, ISBN doğrulama
 acodes/kitaplarim.py          Guest paneli > Kitaplarım sekmesi
 acodes/ana_sayfa.py           Ana sayfa özet panosu (kartlar ve listeler)
 acodes/arka_plan.py           Giriş sekmesinin arka plan fotoğrafı

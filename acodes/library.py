@@ -28,6 +28,13 @@ import os
 import datetime
 
 
+def kitap_karti_alti(kitap, kopya, disarida):
+    """Ana sayfadaki Kitap kartının alt satırı: kopya sayısı yalnızca kayıt sayısından farklıysa yazılır
+    (aynı sayıyı iki kez göstermesin), yanında raftaki kopya sayısı."""
+    rafta = "hepsi rafta" if disarida <= 0 else f"{kopya - disarida} rafta"
+    return f"{kopya} kopya, {rafta}" if kopya != kitap else rafta
+
+
 ## Admin paneli: ortak sekmelere ek olarak Kitap Kayıt ve Kitap Verme sekmeleri
 class Library(OrtakSekmeler, QMainWindow):
     oturum_kapandi = pyqtSignal()
@@ -77,7 +84,7 @@ class Library(OrtakSekmeler, QMainWindow):
                 ("Yedekten Geri Yükle", self.geri_yukle_ekrani, "Önceki bir yedeğe dönün"),
                 ("Yedek Klasörünü Aç", lambda: klasoru_ac(yedek_klasoru()), "Otomatik yedeklerin bulunduğu klasör")],
                 self.yedek_bilgisi),
-            ("Kütüphane Bilgileri", [], self.kutuphane_bilgisi),
+            ("Kütüphane bilgileri", [], self.kutuphane_bilgisi),
         ], kilavuz=kilavuz.YONETICI, ipucu=IPUCU_YONETICI)
         self.QtLibrary.tabWidget.addTab(self.ayarlar,"Ayarlar")
 
@@ -136,8 +143,8 @@ class Library(OrtakSekmeler, QMainWindow):
         menuyu_yerlestir(self,self.yan_menu)
         kisayollar.panele_kur(self,ui.tabWidget,ui.tab_2,self.arama)   # Ctrl+1..9 menü, Ctrl+F arama
         self.hizli_arama_kur(sayfalar)                                 # Ctrl+K
-        for alt_sekmeler in (ui.tabWidget_3,ui.tabWidget_5,ui.tabWidget_6):
-            segmente_cevir(alt_sekmeler)
+        for alt_sekmeler,baslik in ((ui.tabWidget_3,"Kitap Kayıt"),(ui.tabWidget_5,"İstatistik"),(ui.tabWidget_6,"Kitap Verme")):
+            segmente_cevir(alt_sekmeler,baslik)
 
     def yenile(self):
         ###  Kayıt/üye/ödünç değişikliklerinden sonra listeleri ve istatistikleri güncelleme  ###
@@ -154,7 +161,7 @@ class Library(OrtakSekmeler, QMainWindow):
         o=genel_ozet()
         gecikmis=geciken_sayisi()
         k=self.ana_sayfa.kartlar
-        k["kitap"].ayarla(o["kitap"],f"{o['kopya']} kopya")
+        k["kitap"].ayarla(o["kitap"],kitap_karti_alti(o["kitap"],o["kopya"],o["disarida"]))
         k["disarida"].ayarla(o["disarida"],"şu an ödünçte")
         k["geciken"].ayarla(gecikmis,"teslim süresi geçmiş",renk=None if gecikmis else tema.SOLUK)
         k["uye"].ayarla(o["uye"],f"{o['admin']} yönetici")

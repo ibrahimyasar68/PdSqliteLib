@@ -60,10 +60,17 @@ def test_eski_ana_sayfa_icerigi_yok(lib):
 
 
 def test_admin_kartlari(lib):
-    assert kart(lib, "kitap") == ("8", "9 kopya")
+    assert kart(lib, "kitap") == ("8", "9 kopya, 6 rafta")
     assert kart(lib, "disarida") == ("3", "şu an ödünçte")
     assert kart(lib, "geciken") == ("1", "teslim süresi geçmiş")
     assert kart(lib, "uye") == ("3", "1 yönetici")
+
+
+def test_kitap_karti_ayni_sayiyi_iki_kez_yazmaz():
+    from acodes.library import kitap_karti_alti
+    assert kitap_karti_alti(737, 737, 0) == "hepsi rafta"
+    assert kitap_karti_alti(737, 737, 4) == "733 rafta"
+    assert kitap_karti_alti(8, 9, 3) == "9 kopya, 6 rafta"
 
 
 def test_admin_listeleri(lib):

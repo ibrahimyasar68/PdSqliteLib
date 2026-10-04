@@ -37,7 +37,7 @@ def test_ayarlar_son_sekme(lib, app):
 
 
 def test_admin_ayarlar_bolumleri(lib):
-    assert [b.title() for b in lib.ayarlar.bolumler] == ["Kullanıcılar", "Yedekleme", "Kütüphane Bilgileri"]
+    assert [b.title() for b in lib.ayarlar.bolumler] == ["Kullanıcılar", "Yedekleme", "Kütüphane bilgileri"]
     for metin in ("Yeni Kullanıcı Ekle", "Kullanıcı Yönetimi", "Şifremi Değiştir",
                   "Yedek Al", "Yedekten Geri Yükle", "Yedek Klasörünü Aç"):
         assert lib.ayarlar.buton(metin).toolTip()
@@ -123,19 +123,23 @@ def test_bolumde_ilk_buton_asil_digerleri_ikincil(lib):
     assert all(not b.icon().isNull() for b in yedek_bolumu.butonlar.values())
 
 
-def test_uzun_yol_tam_gorunur_tiklaninca_kopyalanir(app):
+def test_uzun_yol_ortadan_kisalir_tiklaninca_tamami_kopyalanir(app):
     from PyQt5.QtCore import QPoint, Qt
     from PyQt5.QtTest import QTest
     from PyQt5.QtWidgets import QApplication
     yol = "/Users/biri/Library/Application Support/PdSqliteLib/yedekler/cok/uzun/bir/klasor/adi"
     etiket = ayarlar_modulu.TamDeger(yol)
-    etiket.resize(160, 24)
+    etiket.resize(220, 24)
     etiket.show()
     QApplication.processEvents()
-    assert "…" not in etiket.text() and etiket.text().replace("\u200b", "") == yol   # kısaltılmaz, tamamı yazılır
-    assert etiket.wordWrap() and etiket.heightForWidth(160) > etiket.fontMetrics().height() * 2   # alt satıra geçer
+    metin = etiket.text()
+    assert "…" in metin and metin.startswith("/Users") and metin.endswith("adi")   # ortadan kısalır, tek satır
+    assert yol in etiket.toolTip()                                                 # tamamı ipucunda
     QTest.mouseClick(etiket, Qt.LeftButton, pos=QPoint(5, 5))
-    assert QApplication.clipboard().text() == yol                         # kopyada görünmez işaret yok
+    assert QApplication.clipboard().text() == yol
+    etiket.resize(2000, 24)
+    QApplication.processEvents()
+    assert etiket.text() == yol                                                    # yer varsa tamamı yazılır
     etiket.close()
 
 
