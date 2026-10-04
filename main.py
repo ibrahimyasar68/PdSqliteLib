@@ -1,5 +1,5 @@
 import sys
-from PyQt5 import QtWidgets
+from PySide6 import QtWidgets
 from acodes import hareket, tema, tercihler
 from acodes.login import Login
 from database.yedek import otomatik_yedek
@@ -16,7 +16,7 @@ def app():
         print(f"Otomatik yedek alınamadı: {hata}")
     win = Login()
     win.show()
-    sys.exit(app.exec_())
+    sys.exit(app.exec())
 
 if __name__ == "__main__":
     app()
