@@ -142,7 +142,8 @@ def test_onay_kutusu_acik_pencereye_baglanir(app, monkeypatch):
     from PySide6.QtWidgets import QMessageBox, QWidget
     from acodes import onay as onay_modulu
     ebeveynler = []
-    monkeypatch.setattr(QMessageBox, "exec", lambda self: ebeveynler.append(self.parentWidget()) or QMessageBox.Yes)
+    monkeypatch.setattr(onay_modulu.OnayPenceresi, "exec",
+                        lambda self: ebeveynler.append(self.parentWidget()) or QMessageBox.Yes)
     w = QWidget()
     assert onay_modulu.onay("Emin misiniz?", w) == QMessageBox.Yes and ebeveynler == [w]
 

@@ -308,7 +308,7 @@ class Library(Panel):
             QMessageBox.warning(self,"Uyarı!",hata)
             return
         cvb=onay(f"Mevcut tüm kayıtlar bu yedektekilerle değiştirilecek:\n{os.path.basename(yol)}\n\n"
-                 "Mevcut halin yedeği önce otomatik olarak alınacak. Devam edilsin mi?")
+                 "Mevcut halin yedeği önce otomatik olarak alınacak. Devam edilsin mi?",tehlikeli=True)
         if cvb!=QMessageBox.Yes:
             return
         onceki=geri_yukle(yol)

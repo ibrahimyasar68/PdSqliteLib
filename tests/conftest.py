@@ -100,7 +100,7 @@ def uyarilar(monkeypatch):
     mesajlar = []
     for modul in (acodes.library, acodes.user, acodes.kullanici_yonetimi, acodes.veri_duzeltme,
                   acodes.kitap_ekrani, acodes.odunc_ekrani):
-        monkeypatch.setattr(modul, "onay", lambda *a: QMessageBox.Yes)
+        monkeypatch.setattr(modul, "onay", lambda *a, **k: QMessageBox.Yes)
     monkeypatch.setattr(QMessageBox, "information", staticmethod(lambda *a: mesajlar.append(a[-1])))
     monkeypatch.setattr(QMessageBox, "warning", staticmethod(lambda *a: mesajlar.append(a[-1])))
     return mesajlar

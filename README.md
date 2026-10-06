@@ -82,11 +82,18 @@ Yeni kullanıcı ve üye kayıtlarını (`admin` veya `guest`) sadece giriş yap
 - **Animasyonlar** (`acodes/hareket.py`; testlerde kapalıdır): menüden sayfa değişince yeni sayfa hafifçe belirir,
   kenar menüsü daralıp açılırken genişliği yumuşakça değişir. Kaydedilen kitap, verilen ödünç ve geri alınan
   satır listede kısa süre parlayıp söner. Tema değişince eski görünüm yeni görünümün üstünde solarak kaybolur.
-  Seçili menü bölümünün ve alt sekme anahtarının zemini kayarak yer değiştirir. Ana sayfa sayıları ilk açılışta
+  Seçili menü bölümünün ve alt sekme anahtarının zemini kayarak yer değiştirir; alt bölümün içeriği de aynı yönden
+  kayarak gelir. Giriş sekmesinden çıkınca yaprak fotoğrafı düz zemine solarak geçer (dönünce yeniden belirir).
+  Kullanma Kılavuzu'nda konular yumuşakça açılıp kapanır, başlığın solundaki ok döner. Ana sayfa sayıları ilk açılışta
   sayarak gelir, kartların gölgesi üstüne gelince yumuşakça büyür; grafikler büyüyerek çizilir (çubuklar sırayla
   uzar, pasta dilimleri dönerek açılır). Hızlı arama aşağıdan kayarak açılır, gecikme rozeti panel açılınca bir kez
   nabız gibi atar. Girişte yanlış parolada kart sallanır; boş veya hatalı alanın (giriş, kitap adı, ISBN, kopya
   sayısı) çerçevesi kırmızı yanıp söner. Panel giriş ekranından belirerek açılır.
+  Kitaplarım'da her ödüncün kalan gün yazısının yanında teslim süresinin geçen kısmını gösteren çubuk sayfa
+  açılınca dolarak gelir: süre boldayken yeşil, teslime 3 gün veya daha az kalınca turuncu, gecikince kırmızı.
+- **Onay pencereleri** (`acodes/onay.py`) panelin üstünü karartır, kart hafifçe büyüyerek gelir. Geri alınamayan
+  veya veri silen işlemlerde (kitap ve kullanıcı silme, yedekten geri yükleme) ikon ve **Evet** kırmızıdır ve
+  Enter yanlışlıkla onaylamasın diye **Hayır** seçili gelir; Esc her zaman Hayır'dır.
   Süreler `tema.SURE` ölçeğindedir; modüllerde sabit süre yazılmaz.
 - **Bildirim yığını:** Yeni mesaj gelince "Geri Al"lı bildirim kaybolmaz, yukarı kayar ve süresi bitene kadar
   kullanılabilir; yeni bildirim altına gelir (aynı anda en fazla 3).

@@ -128,6 +128,22 @@ def ikon(ad, renk=BUTON_RENGI, pasif=None, bosluk=False):
     return simge
 
 
+def donmus_ikon(ad, renk, aci):
+    """Ortası çevresinde aci derece döndürülmüş ikon; sağında yazılı butonlar için boşluk payı vardır
+    (kılavuzda açılan konunun oku dönerken her adımda yeniden çizilir)."""
+    boyut = 64
+    resim = QPixmap(round(boyut * BOSLUK_ORANI), boyut)
+    resim.fill(Qt.transparent)
+    p = QPainter(resim)
+    p.setRenderHints(QPainter.Antialiasing | QPainter.SmoothPixmapTransform)
+    p.translate(boyut / 2, boyut / 2)
+    p.rotate(aci)
+    p.translate(-boyut / 2, -boyut / 2)
+    p.drawPixmap(0, 0, _resim(ad, renk, boyut))
+    p.end()
+    return QIcon(resim)
+
+
 def yazili_ikon(buton, ad, renk=BUTON_RENGI, pasif=None, boy=16):
     """Yazılı butona ikon: ikonla yazı arasında boşluk kalır."""
     buton.setIcon(ikon(ad, renk, pasif, bosluk=True))

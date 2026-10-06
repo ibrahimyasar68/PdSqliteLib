@@ -2,10 +2,10 @@
 # En üstte program hakkında kısa bilgi, altında her sekme için tıklanınca açılan konu başlıkları.
 # Yönetici ve üye panelleri kendi sekmelerine göre farklı konular gösterir.
 
-from PySide6.QtCore import Qt
+from PySide6.QtCore import QEasingCurve, QSize, Qt, QVariantAnimation
 from PySide6.QtWidgets import QGroupBox, QLabel, QPushButton, QVBoxLayout
 
-from acodes import tema
+from acodes import hareket, ikonlar, tema
 from database.odunc import ODUNC_SURESI_GUN
 from database.yedek import GUVENLIK_SAKLA, OTOMATIK_SAKLA
 
@@ -223,8 +223,45 @@ QPushButton#kilavuz_konu {{ background: transparent; color: {tema.METIN}; border
                font-size: {tema.YAZI.alt_baslik}px; font-weight: {tema.YARI_KALIN}; }}
 QPushButton#kilavuz_konu:hover {{ color: {tema.VURGU_YAZI}; }}
 QPushButton#kilavuz_konu:checked {{ color: {tema.VURGU_YAZI}; }}
-#kilavuz_metin {{ color: {tema.METIN}; font-size: {tema.YAZI.metin}px; font-weight: normal; padding: 0 8px 10px 22px; }}
+#kilavuz_metin {{ color: {tema.METIN}; font-size: {tema.YAZI.metin}px; font-weight: normal; padding: 0 8px 10px 26px; }}
 """
+
+OK_BOY = 14
+KAPALI_ACI, ACIK_ACI = -90, 0       # "asagi" oku -90° dönünce sağı gösterir (kapalı konu)
+
+
+class KonuBasligi(QPushButton):
+    """Kılavuz konusunun başlığı: solunda konu açılınca sağı göstermekten aşağıyı göstermeye dönen ok."""
+
+    def __init__(self, baslik, parent=None):
+        super().__init__(baslik, parent, objectName="kilavuz_konu")
+        self.setCheckable(True)
+        self.setCursor(Qt.PointingHandCursor)
+        self.setIconSize(QSize(round(OK_BOY * ikonlar.BOSLUK_ORANI), OK_BOY))
+        self.aci = KAPALI_ACI
+        self.donus = QVariantAnimation(self)
+        self.donus.setDuration(tema.SURE.orta)
+        self.donus.setEasingCurve(QEasingCurve.OutCubic)
+        self.donus.valueChanged.connect(self._ciz)
+        self._ciz(KAPALI_ACI)
+
+    def _ciz(self, aci):
+        self.aci = aci
+        self.setIcon(ikonlar.donmus_ikon("asagi", tema.VURGU_YAZI if self.isChecked() else tema.SOLUK, aci))
+
+    def acik_goster(self, acik):
+        """Oku açık / kapalı yönüne çevirir (sinyal göndermeden işaretler)."""
+        self.blockSignals(True)
+        self.setChecked(acik)
+        self.blockSignals(False)
+        hedef = ACIK_ACI if acik else KAPALI_ACI
+        self.donus.stop()
+        if hareket.acik_mi(self) and self.aci != hedef:
+            self.donus.setStartValue(self.aci)
+            self.donus.setEndValue(hedef)
+            self.donus.start()
+        else:
+            self._ciz(hedef)
 
 
 class Kilavuz(QGroupBox):
@@ -241,9 +278,7 @@ class Kilavuz(QGroupBox):
         duzen.addWidget(hakkinda)
         self.konular = []
         for baslik, metin in konular:
-            buton = QPushButton(f"▸  {baslik}", objectName="kilavuz_konu")
-            buton.setCheckable(True)
-            buton.setCursor(Qt.PointingHandCursor)
+            buton = KonuBasligi(baslik)
             yazi = QLabel(metin, objectName="kilavuz_metin")
             yazi.setWordWrap(True)
             yazi.setTextFormat(Qt.RichText)
@@ -256,11 +291,8 @@ class Kilavuz(QGroupBox):
     def ac(self, secilen, acik=True):
         for i, (baslik, buton, yazi) in enumerate(self.konular):
             goster = acik and i == secilen
-            buton.blockSignals(True)
-            buton.setChecked(goster)
-            buton.blockSignals(False)
-            buton.setText(f"{'▾' if goster else '▸'}  {baslik}")
-            yazi.setVisible(goster)
+            buton.acik_goster(goster)
+            hareket.yukseklikle_goster(yazi, goster)     # açılan konu yumuşakça açılır, önceki kapanır
 
     def yenile(self):
         pass    # Ayarlar sekmesi yenilenirken diğer bölümlerle aynı arayüz

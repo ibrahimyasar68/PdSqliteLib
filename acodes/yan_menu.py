@@ -260,8 +260,16 @@ class SegmentAnahtari(QFrame):
             yatay.addWidget(b)
         self.grup.button(max(0, secili)).setChecked(True)
         self.vurgu = hareket.KayanVurgu(self, self.grup, "segment_vurgu")     # seçili zemin kayarak gider
+        self._onceki = max(0, secili)
         if sekmeler is not None:
             sekmeler.currentChanged.connect(lambda i: self.grup.button(i) and self.grup.button(i).setChecked(True))
+            sekmeler.currentChanged.connect(self._icerigi_kaydir)
+
+    def _icerigi_kaydir(self, i):
+        # İçerik vurguyla aynı yöne akar: sağdaki bölüme geçince sağdan, soldakine geçince soldan gelir
+        yon = (i > self._onceki) - (i < self._onceki)
+        self._onceki = i
+        hareket.kayarak_belir(self.sekmeler.widget(i), yon)
 
     def _tiklandi(self, i):
         if self.sekmeler is not None:

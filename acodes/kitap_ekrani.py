@@ -276,7 +276,7 @@ class KitapEkrani(QWidget):
             QMessageBox.information(self, "Uyarı!", str(engel))
             return
         adi = self.alan["Adi"].text()
-        if onay(f"'{adi}' silinsin mi?\nSildikten sonra kısa bir süre \"Geri Al\" ile geri getirebilirsiniz.") != QMessageBox.Yes:
+        if onay(f"'{adi}' silinsin mi?\nSildikten sonra kısa bir süre \"Geri Al\" ile geri getirebilirsiniz.", tehlikeli=True) != QMessageBox.Yes:
             return
         try:
             kitap = kitap_servisi.sil(self.kitap_id)

@@ -251,3 +251,77 @@ def test_en_fazla_uc_kart(lib):
         b.eylemli(f"'Kitap {i}' silindi", "Geri Al", lambda: None)
     QTest.qWait(tema.SURE.uzun + 150)
     assert len([k for k in b.kartlar() if k.kutu.isVisible()]) == bildirim.UST_USTE
+
+
+# --- 3. aşama: alt bölüm kayması, arka plan geçişi, kılavuz, onay penceresi ---
+
+def test_alt_bolum_secilen_yonden_kayarak_gelir(lib):
+    sayfa = lib.kayit
+    lib.sekmeler.setCurrentWidget(sayfa)
+    alt = lib.alt_sekmeler[sayfa]
+    QTest.qWait(tema.SURE.orta + 100)
+    hedef = alt.widget(1)
+    alt.setCurrentIndex(1)                                              # sağdaki bölüm: sağdan gelir
+    yer = alt.widget(0).pos()
+    assert hedef.graphicsEffect() is not None and hedef.x() > yer.x()
+    QTest.qWait(tema.SURE.orta + 150)
+    assert hedef.graphicsEffect() is None and hedef.pos() == yer        # yerine oturur, efekt kalkar
+    alt.setCurrentIndex(0)                                              # soldaki bölüm: soldan gelir
+    assert alt.widget(0).x() < yer.x()
+    QTest.qWait(tema.SURE.orta + 150)
+
+
+def test_giris_fotografi_solarak_gecer(lib):
+    a = lib.arka_plan
+    assert a.gorunurluk == 1.0
+    lib.sekmeler.setCurrentWidget(lib.liste)
+    assert a.gecis.state() == CALISIYOR                                 # birden kaybolmaz
+    QTest.qWait(tema.SURE.orta + 150)
+    assert a.gorunurluk == 0.0
+    lib.sekmeler.setCurrentIndex(0)
+    QTest.qWait(tema.SURE.orta + 150)
+    assert a.gorunurluk == 1.0
+
+
+def test_kilavuz_konusu_yukseklikle_acilir_ok_doner(lib):
+    from acodes import kilavuz
+    pencere = lib.ayarlar.kilavuz_penceresi
+    pencere.show()
+    k = lib.ayarlar.kilavuz
+    _, buton, yazi = k.konular[1]
+    buton.click()
+    assert yazi.isVisible() and yazi._yukseklik_animasyonu is not None
+    assert buton.donus.state() == CALISIYOR
+    QTest.qWait(tema.SURE.orta + 150)
+    assert yazi.height() > 0 and yazi.maximumHeight() == hareket.SINIRSIZ and buton.aci == kilavuz.ACIK_ACI
+    k.konular[2][1].click()
+    assert yazi.isVisible()                                             # önceki konu kapanarak gider
+    QTest.qWait(tema.SURE.orta + 150)
+    assert yazi.isHidden() and buton.aci == kilavuz.KAPALI_ACI and not k.konular[2][2].isHidden()
+    pencere.close()
+
+
+def test_onay_penceresi_buyuyerek_gelir_ve_cevap_doner(lib):
+    from PySide6.QtCore import QTimer
+    from PySide6.QtWidgets import QMessageBox
+    from acodes.onay import OnayPenceresi
+    d = OnayPenceresi("Devam edilsin mi?", lib)
+    goruldu = []
+
+    def bak():
+        goruldu.append((d.geometry() == lib.geometry(), d.resim is not None, 0 < d.guc < 1))
+        QTimer.singleShot(tema.SURE.orta + 100, d.btn_evet.click)
+
+    QTimer.singleShot(tema.SURE.orta // 3, bak)
+    assert d.exec() == QMessageBox.Yes
+    assert goruldu == [(True, True, True)]                              # paneli kaplar, kart büyürken çizilir
+
+
+def test_tehlikeli_onayda_hayir_secili_esc_hayir(app, uyarilar):
+    from PySide6.QtCore import Qt, QTimer
+    from PySide6.QtWidgets import QMessageBox
+    from acodes.onay import OnayPenceresi
+    d = OnayPenceresi("Silinsin mi?", tehlikeli=True)
+    assert d.btn_hayir.isDefault() and not d.btn_evet.isDefault() and d.btn_evet.property("tehlikeli")
+    QTimer.singleShot(50, lambda: QTest.keyClick(d, Qt.Key_Escape))
+    assert d.exec() == QMessageBox.No                                   # testlerde animasyon kapalı: hemen kapanır

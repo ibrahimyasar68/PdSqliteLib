@@ -95,3 +95,22 @@ def test_giris_yapan_uye_kendi_kitaplarini_gorur(app, db):
     w.QtLogin.lineEdit_parola.setText(UYE_SIFRE)
     w.giris()
     assert w.guest.kitaplarim.elimdeki.item(0, 0).text() == "Satranç"
+
+
+def test_teslim_cubugu(guest, monkeypatch):
+    from PySide6.QtCore import QAbstractAnimation
+    from acodes import hareket, kitaplarim
+    k = guest.kitaplarim
+    satir = {k.elimdeki.item(r, 0).text(): k.elimdeki.item(r, kitaplarim.DURUM_KOLONU) for r in range(2)}
+    gecikmis, suresi_var = satir["Esir Şehrin İnsanları"], satir["Satranç"]
+    assert gecikmis.data(kitaplarim.GECEN_ORAN) == 1.0 and gecikmis.data(kitaplarim.CUBUK_RENGI) == tema.TEHLIKE
+    assert suresi_var.data(kitaplarim.GECEN_ORAN) == 4 / odunc.ODUNC_SURESI_GUN
+    assert suresi_var.data(kitaplarim.CUBUK_RENGI) == tema.BASARI and "4 günü geçti" in suresi_var.toolTip()
+    assert kitaplarim.teslim_rengi(gun_once(odunc.ODUNC_SURESI_GUN - 2)) == tema.UYARI     # teslime 2 gün var
+    assert k.ilerleme == 1.0                                            # animasyon kapalı: hemen dolu
+    monkeypatch.setattr(hareket, "ANIMASYON", True)
+    monkeypatch.setattr(hareket, "AZALT", False)
+    guest.show()
+    guest.sekmeler.setCurrentWidget(k)
+    assert k.dolma.state() == QAbstractAnimation.Running and k.ilerleme < 1   # sayfa açılınca dolarak gelir
+    guest.close()

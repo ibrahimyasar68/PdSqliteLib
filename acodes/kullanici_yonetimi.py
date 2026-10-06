@@ -192,7 +192,7 @@ class KullaniciYonetimi(QDialog):
         if engel:
             QMessageBox.warning(self, "Uyarı!", str(engel))
             return
-        if onay(f"'{kayit.kullanici}' ({kayit.adi_soyadi}) kullanıcısı silinsin mi?\nBu işlem geri alınamaz.") == QMessageBox.Yes:
+        if onay(f"'{kayit.kullanici}' ({kayit.adi_soyadi}) kullanıcısı silinsin mi?\nBu işlem geri alınamaz.", tehlikeli=True) == QMessageBox.Yes:
             try:
                 kullanici_servisi.sil(kayit, self.aktif_kullanici)
             except KuralHatasi as hata:

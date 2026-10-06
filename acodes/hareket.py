@@ -2,7 +2,8 @@
 # Sayfa değişince yeni sayfa hafifçe belirir, kenar menüsü daralıp açılırken genişliği yumuşakça değişir,
 # tema değişince eski görünüm solarak kaybolur, kaydedilen / ödünç verilen satır kısa süre parlayıp söner.
 # Ayrıca: yanlış girişte kart sallanır, hatalı alanın çerçevesi kırmızıdan söner, seçili menü / segment vurgusu
-# kayarak gider, sayılar sayarak gelir, gecikme rozeti bir kez nabız gibi atar.
+# kayarak gider, sayılar sayarak gelir, gecikme rozeti bir kez nabız gibi atar. Alt bölüm değişince yeni bölüm
+# seçilen yönden kayarak gelir, kılavuz konuları yükseklikleri değişerek açılıp kapanır.
 # Süreler tema.SURE ölçeğinden gelir. Animasyonlar yalnızca pencere ekrandayken çalışır.
 # ANIMASYON = False testlerde kapatır; AZALT kullanıcının "Hareketi azalt" tercihidir (Ayarlar > Görünüm).
 
@@ -16,6 +17,7 @@ from acodes import tema
 ANIMASYON = True
 AZALT = False
 TERCIH = "gorunum/hareketi_azalt"
+SINIRSIZ = 16777215          # Qt'nin en büyük bileşen boyutu (QWIDGETSIZE_MAX)
 
 
 def izinli():
@@ -40,6 +42,84 @@ def belir(sayfa):
     animasyon.setEasingCurve(QEasingCurve.OutCubic)
     animasyon.finished.connect(lambda: sayfa.graphicsEffect() is efekt and sayfa.setGraphicsEffect(None))
     animasyon.start()
+
+
+def kayarak_belir(sayfa, yon, kayma=16):
+    """Sayfa yon tarafından (1: sağdan, -1: soldan) birkaç piksel kayarak ve belirerek gelir (alt bölüm anahtarı:
+    içerik, seçili zeminin kaydığı yöne akar). Bitince sayfa yerine döner, efekt kaldırılır."""
+    if not yon or not acik_mi(sayfa) or sayfa.graphicsEffect() is not None:
+        return None
+    yer = sayfa.pos()
+    efekt = QGraphicsOpacityEffect(sayfa)
+    efekt.setOpacity(0.0)
+    sayfa.setGraphicsEffect(efekt)
+    animasyon = QVariantAnimation(efekt)
+    animasyon.setDuration(tema.SURE.orta)
+    animasyon.setStartValue(0.0)
+    animasyon.setEndValue(1.0)
+    animasyon.setEasingCurve(QEasingCurve.OutCubic)
+
+    def adim(t):
+        efekt.setOpacity(t)
+        sayfa.move(yer.x() + round(yon * kayma * (1 - t)), yer.y())
+
+    def bitti():
+        sayfa.move(yer)
+        if sayfa.graphicsEffect() is efekt:
+            sayfa.setGraphicsEffect(None)
+
+    animasyon.valueChanged.connect(adim)
+    animasyon.finished.connect(bitti)
+    adim(0.0)
+    animasyon.start()
+    return animasyon
+
+
+def yukseklikle_goster(bilesen, goster):
+    """Bileşen yüksekliği sıfırdan açılarak görünür veya kapanarak gizlenir (kılavuz konuları). Altındakiler
+    birden zıplamaz, yumuşakça yer değiştirir. Animasyon kapalıysa hemen gösterilir / gizlenir."""
+    eski = getattr(bilesen, "_yukseklik_animasyonu", None)
+    if eski is not None:
+        eski.stop()
+        bilesen._yukseklik_animasyonu = None
+    kap = bilesen.parentWidget()
+    if not acik_mi(kap):
+        bilesen.setMaximumHeight(SINIRSIZ)
+        bilesen.setVisible(goster)
+        return None
+    if goster:
+        bas = bilesen.height() if bilesen.isVisible() else 0
+        bilesen.setMaximumHeight(bas)
+        bilesen.show()
+        if kap.layout() is not None:
+            kap.layout().activate()         # gizliyken bilinmeyen genişlik yerleşsin (yükseklik ona bağlı)
+        en = bilesen.width()
+        hedef = bilesen.heightForWidth(en) if bilesen.hasHeightForWidth() else -1
+        hedef = hedef if hedef > 0 else bilesen.sizeHint().height()
+    else:
+        if bilesen.isHidden():
+            return None
+        bas, hedef = bilesen.height(), 0
+    if bas == hedef:
+        bilesen.setMaximumHeight(SINIRSIZ)
+        bilesen.setVisible(goster)
+        return None
+    animasyon = QVariantAnimation(bilesen)
+    animasyon.setDuration(tema.SURE.orta)
+    animasyon.setStartValue(bas)
+    animasyon.setEndValue(hedef)
+    animasyon.setEasingCurve(QEasingCurve.OutCubic)
+    animasyon.valueChanged.connect(bilesen.setMaximumHeight)
+
+    def bitti():
+        bilesen._yukseklik_animasyonu = None
+        bilesen.setMaximumHeight(SINIRSIZ)      # pencere daralınca yazı yeniden kırılabilsin
+        bilesen.setVisible(goster)
+
+    animasyon.finished.connect(bitti)
+    bilesen._yukseklik_animasyonu = animasyon
+    animasyon.start()
+    return animasyon
 
 
 def genislige_kay(bilesen, hedef, bitince=None):

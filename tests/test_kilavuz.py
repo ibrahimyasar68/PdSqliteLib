@@ -54,7 +54,8 @@ def test_konular_tiklaninca_acilir_ve_tek_konu_acik(panel):
     k = panel.ayarlar.kilavuz
     assert all(yazi.isHidden() for _, _, yazi in k.konular)          # başlangıçta hepsi kapalı
     k.konular[1][1].click()
-    assert not k.konular[1][2].isHidden() and k.konular[1][1].text().startswith("▾")
+    assert not k.konular[1][2].isHidden() and k.konular[1][1].isChecked()
+    assert k.konular[1][1].aci == kilavuz.ACIK_ACI and k.konular[2][1].aci == kilavuz.KAPALI_ACI   # ok aşağıyı gösterir
     k.konular[2][1].click()
     assert k.konular[1][2].isHidden() and not k.konular[2][2].isHidden()   # öncekini kapatır
     k.konular[2][1].click()
