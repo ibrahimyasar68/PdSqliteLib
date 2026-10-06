@@ -2,6 +2,7 @@
 import pytest
 
 from acodes.library import Library
+from database.kitaplar import kitap_bul
 
 
 @pytest.fixture
@@ -153,3 +154,20 @@ def test_alanlarda_mevcut_degerler_onerilir(k):
     tamamlayici.setCompletionPrefix("mal ta")      # kelimenin ortasından da bulur
     assert tamamlayici.currentCompletion() == "Kemal TAHİR"
     assert k.alan["Adi"].completer() is None
+
+
+def test_kaydedilmemis_degisiklik_isareti(k):
+    k.sec(1)
+    assert k.degisiklik.isHidden() and not k.btn_vazgec.isEnabled()   # açılan kitapta değişiklik yok
+    k.alan["Sayfa"].setText("999")
+    assert not k.degisiklik.isHidden() and k.btn_vazgec.isEnabled()
+    k.alan["Sayfa"].setText(kitap_bul(1).sayfa)                          # eski haline dönünce işaret kalkar
+    assert k.degisiklik.isHidden()
+    k.ek.kopya.setValue(3)
+    assert not k.degisiklik.isHidden()
+    k.vazgec()
+    assert k.degisiklik.isHidden() and k.ek.kopya.value() == 1
+    k.yeni()
+    assert k.degisiklik.isHidden()
+    k.alan["Adi"].setText("Yeni")
+    assert not k.degisiklik.isHidden()

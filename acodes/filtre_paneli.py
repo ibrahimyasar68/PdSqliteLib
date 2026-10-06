@@ -9,6 +9,7 @@ from PySide6.QtCore import Qt
 from PySide6.QtWidgets import (QComboBox, QGroupBox, QHBoxLayout, QLabel, QPushButton, QTableWidget,
                              QVBoxLayout, QWidget)
 
+from acodes import hareket
 from acodes.aranabilir import aranabilir_yap
 from acodes.kisayollar import arama_kutusu_yap
 from acodes.tablo import KolonSecici, OrantiliKolonlar, durum_ekle, durum_rozeti_kur, tablo_ayarla, tabloya_yaz
@@ -165,17 +166,35 @@ class FiltrePaneli(QWidget):
         satirlar_durumlu, renkler = durum_ekle(satirlar)
         tabloya_yaz(self.tablo, satirlar_durumlu, renkler=renkler)
         self.tablo.bos_durum.etiket.setText(SONUC_YOK if secim_var else SECIM_YOK)
-        self.sonuc.setText(f"{len(satirlar)} kitap bulundu" if secim_var else "")
+        hareket.sayi_yaz(self.sonuc, f"{len(satirlar)} kitap bulundu" if secim_var else "")   # sayı akarak değişir
         self.btn_temizle.setEnabled(secim_var)
 
     def _etiketleri_yaz(self, kolon):
-        duzen = self.etiketler[kolon].layout()
-        while duzen.count():
-            duzen.takeAt(0).widget().deleteLater()
-        for deger in sorted(self.secimler[kolon], key=tr_sirala):
+        """Seçimlerle etiketleri eşitler: yalnızca yeni seçim açılarak eklenir, kaldırılan daralarak gider; diğer
+        etiketler yerinde kalır (hepsini silip yeniden kurmak her değişiklikte titretiyordu)."""
+        kap = self.etiketler[kolon]
+        duzen = kap.layout()
+        secili = sorted(self.secimler[kolon], key=tr_sirala)
+        mevcut = [duzen.itemAt(i).widget() for i in range(duzen.count())]
+        kalan = [e for e in mevcut if e.isEnabled()]                  # daralarak gidenler devre dışıdır
+        for etiket in kalan:
+            if etiket.deger not in secili:
+                hareket.daralarak_sil(etiket, lambda: self._etiket_kabini_goster(kolon))
+        degerler = [e.deger for e in kalan]
+        for deger in secili:
+            if deger in degerler:
+                continue
             etiket = QPushButton(f"{deger}  ✕", objectName="filtre_etiketi")
+            etiket.deger = deger
             etiket.setCursor(Qt.PointingHandCursor)
             etiket.setToolTip("Seçimi kaldırmak için tıklayın")
             etiket.clicked.connect(lambda _, deger=deger: self.cikar(kolon, deger))
-            duzen.addWidget(etiket)
+            # Alfabetik yerine: kendinden sonra gelen ilk etiketin önüne
+            sonraki = [i for i in range(duzen.count()) if tr_sirala(duzen.itemAt(i).widget().deger) > tr_sirala(deger)]
+            duzen.ekle(etiket, sonraki[0] if sonraki else duzen.count())
+            hareket.genisleyerek_ekle(etiket)
+        self._etiket_kabini_goster(kolon)
+
+    def _etiket_kabini_goster(self, kolon):
+        duzen = self.etiketler[kolon].layout()
         self.etiketler[kolon].setVisible(duzen.count() > 0)

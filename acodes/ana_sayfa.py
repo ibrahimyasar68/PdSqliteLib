@@ -2,6 +2,8 @@
 # Üstte başlık şeridi (panelin arka plan fotoğrafı üzerinde), altında tıklanabilir özet kartları ve iki kısa liste.
 # Yönetici ve üye panelleri aynı bileşeni farklı kartlar/listelerle kurar.
 
+import datetime
+
 from PySide6.QtCore import QEasingCurve, Qt, QVariantAnimation, Signal
 from PySide6.QtGui import QColor
 from PySide6.QtWidgets import (QFrame, QGraphicsDropShadowEffect, QGridLayout, QGroupBox, QHBoxLayout, QHeaderView,
@@ -9,6 +11,18 @@ from PySide6.QtWidgets import (QFrame, QGraphicsDropShadowEffect, QGridLayout, Q
 
 from acodes import hareket, ikonlar, tema
 from acodes.tablo import tablo_ayarla, tabloya_yaz
+
+def selamlama(saat=None):
+    """Günün saatine göre karşılama: sabah Günaydın, akşam İyi akşamlar ..."""
+    saat = datetime.datetime.now().hour if saat is None else saat
+    if 5 <= saat < 11:
+        return "Günaydın"
+    if 11 <= saat < 17:
+        return "İyi günler"
+    if 17 <= saat < 22:
+        return "İyi akşamlar"
+    return "İyi geceler"
+
 
 def stil():
     return f"""
@@ -18,6 +32,7 @@ def stil():
 #karsilama {{ color: rgba(255, 255, 255, 0.88); font-size: {tema.YAZI.alt_baslik}px; font-weight: {tema.ORTA}; }}
 #kart {{ background-color: {tema.KART}; border: 1px solid {tema.KENAR}; border-radius: {tema.KOSE.orta}px; }}
 #kart:hover {{ border-color: {tema.VURGU}; }}
+#kart[parla="true"] {{ border-color: {tema.TEHLIKE}; }}
 #kart_baslik {{ font-size: {tema.YAZI.ince}px; font-weight: {tema.ORTA}; color: {tema.IKINCIL_METIN}; }}
 #kart_sayi {{ font-size: {tema.YAZI.gosterge}px; font-weight: {tema.YARI_KALIN}; color: {tema.METIN}; }}
 #kart_alt {{ font-size: {tema.YAZI.ince}px; color: {tema.IKINCIL_METIN}; }}
@@ -52,18 +67,15 @@ class Kart(QFrame):
         duzen.addLayout(metin, 1)
         duzen.addWidget(self.ikon, 0, Qt.AlignTop)
         self.setMinimumHeight(105)
-        self.golge = QGraphicsDropShadowEffect(self)
-        self.golge.setBlurRadius(22)
-        self.golge.setOffset(0, 4)
-        self.golge.setColor(QColor(0, 0, 0, 90 if tema.KOYU_MU else 40))
-        self.golge.setEnabled(False)
-        self.setGraphicsEffect(self.golge)
+        self.parla = False          # dikkat isteyen kart (gecikmiş kitap var): kırmızı ışıkla durur
+        self.golge = None
         self.golge_guc = 0.0
         self.golge_animasyonu = QVariantAnimation(self)
         self.golge_animasyonu.setDuration(tema.SURE.kisa)
         self.golge_animasyonu.setEasingCurve(QEasingCurve.OutCubic)
         self.golge_animasyonu.valueChanged.connect(self._golge_ciz)
-        self.golge_animasyonu.finished.connect(lambda: self.golge.setEnabled(self.golge_guc > 0))
+        self.golge_animasyonu.finished.connect(lambda: self.golge and self.golge.setEnabled(self.golge_guc > 0))
+        self.golge_kur()
         self.hedef = None
         self.sayildi = False
         self._renklendir(renk)
@@ -76,7 +88,32 @@ class Kart(QFrame):
         self.ikon.setPixmap(ikonlar.ikon(self.ikon_adi, renk).pixmap(22, 22))
         self.ikon.renk = renk
 
-    def ayarla(self, sayi, alt="", renk=None):
+    def golge_kur(self):
+        """Üstüne gelince büyüyen gölge (parlayan kartta kırmızı ışık). Sırayla gelirken saydamlık efekti için
+        kaldırılır (bir bileşenin tek efekti olabilir), yerine oturunca yeniden kurulur."""
+        self.golge = QGraphicsDropShadowEffect(self)
+        self.golge.setOffset(0, 0)
+        self.setGraphicsEffect(self.golge)
+        self._golge_ciz(self.golge_guc or self.taban())
+        self.golge.setEnabled(self.golge_guc > 0)
+
+    def golgeyi_kaldir(self):
+        self.golge_animasyonu.stop()
+        self.golge = None
+        self.setGraphicsEffect(None)
+
+    def taban(self):
+        """Fare üstünde değilken gölgenin gücü: parlayan kartta hafif kırmızı ışık, diğerlerinde yok."""
+        return 0.8 if self.parla else 0.0
+
+    def ayarla(self, sayi, alt="", renk=None, parla=False):
+        if parla != self.parla:
+            self.parla = parla
+            self.setProperty("parla", parla)
+            self.style().unpolish(self)
+            self.style().polish(self)
+            if not self.underMouse():
+                self._golgeye_git(self.taban())
         self.hedef = sayi
         self.alt.setText(alt)
         self._renklendir(renk or self.renk)
@@ -106,11 +143,23 @@ class Kart(QFrame):
 
     def _golge_ciz(self, guc):
         self.golge_guc = guc
-        self.golge.setBlurRadius(22 * guc)
-        self.golge.setOffset(0, 4 * guc)
-        self.golge.setColor(QColor(0, 0, 0, round((90 if tema.KOYU_MU else 40) * guc)))
+        if self.golge is None:
+            return
+        if self.parla:
+            renk = QColor(tema.TEHLIKE)
+            renk.setAlphaF(min(1.0, 0.95 * guc))
+            self.golge.setBlurRadius(32 * guc)
+            self.golge.setOffset(0, 0)
+        else:
+            renk = QColor(0, 0, 0, round((90 if tema.KOYU_MU else 40) * guc))
+            self.golge.setBlurRadius(22 * guc)
+            self.golge.setOffset(0, 4 * guc)
+        self.golge.setColor(renk)
 
     def _golgeye_git(self, hedef):
+        if self.golge is None:
+            self.golge_guc = hedef
+            return
         if not hareket.acik_mi(self):
             self._golge_ciz(hedef)
             self.golge.setEnabled(hedef > 0)
@@ -127,7 +176,7 @@ class Kart(QFrame):
         super().enterEvent(olay)
 
     def leaveEvent(self, olay):
-        self._golgeye_git(0.0)
+        self._golgeye_git(self.taban())
         super().leaveEvent(olay)
 
     def tiklanabilir(self, islev, ipucu):
@@ -162,7 +211,7 @@ class AnaSayfa(QWidget):
         # Başlık şeridi: ortada "Hoş geldiniz", altında kullanıcı adı · yetki (fotoğrafın üzerinde)
         baslik = QFrame(objectName="ana_baslik")
         baslik.setFixedHeight(150)
-        self.hosgeldin = QLabel("Hoş geldiniz", objectName="hosgeldin")
+        self.hosgeldin = QLabel(selamlama(), objectName="hosgeldin")
         self.karsilama = QLabel("", objectName="karsilama")
         yazi = QVBoxLayout()
         yazi.setSpacing(2)
@@ -201,8 +250,22 @@ class AnaSayfa(QWidget):
         duzen.addLayout(kart_satiri)
         duzen.addLayout(alt, 1)
 
+        self.geldi = False          # kartlar ilk açılışta sırayla gelir
+
     def karsila(self, kullanici, rol):
+        self.hosgeldin.setText(selamlama())
         self.karsilama.setText(f"{kullanici}  ·  {rol}")
+
+    def showEvent(self, olay):
+        super().showEvent(olay)
+        if self.geldi or not hareket.acik_mi(self):
+            return
+        self.geldi = True
+        kartlar = list(self.kartlar.values())
+        for kart in kartlar:
+            kart.golgeyi_kaldir()           # sırayla gelirken saydamlık efekti kullanılır
+        hareket.sirayla_belir(kartlar + list(self.listeler.values()),
+                              bitince=lambda b: isinstance(b, Kart) and b.golge_kur())
 
 
 def ana_sayfayi_yerlestir(ui, ana_sayfa):

@@ -7,7 +7,7 @@ from database.yedek import otomatik_yedek
 ## Programın sürekli çalıştırılması  ##
 def app():
     app = QtWidgets.QApplication(sys.argv)
-    tema.ayarla(tercihler.oku("gorunum/tema", "sistem"))   # Ayarlar > Görünüm
+    tema.ayarla(tercihler.oku("gorunum/tema", "sistem"), tercihler.oku("gorunum/vurgu", "mavi"))   # Ayarlar > Görünüm
     tema.uygulamaya_uygula(app)
     hareket.AZALT = tercihler.mantiksal(hareket.TERCIH)        # Ayarlar > Görünüm > Hareketi azalt
     try:

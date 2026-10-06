@@ -91,6 +91,19 @@ Yeni kullanıcı ve üye kayıtlarını (`admin` veya `guest`) sadece giriş yap
   sayısı) çerçevesi kırmızı yanıp söner. Panel giriş ekranından belirerek açılır.
   Kitaplarım'da her ödüncün kalan gün yazısının yanında teslim süresinin geçen kısmını gösteren çubuk sayfa
   açılınca dolarak gelir: süre boldayken yeşil, teslime 3 gün veya daha az kalınca turuncu, gecikince kırmızı.
+  Menüden geçilen sayfa menüdeki yönünden (aşağıdaki bölüm aşağıdan) birkaç piksel kayarak gelir. Sonuç sayıları
+  ("12 kitap bulundu") eski değerden yenisine akarak değişir. Filtre etiketleri açılarak eklenir, daralarak gider;
+  diğer etiketler yerinde kalır. Boş tablo mesajı hafifçe aşağıdan belirir.
+  Giriş ekranında fotoğraf çok yavaşça yakınlaşıp uzaklaşır, kartın öğeleri sırayla gelir; doğru girişte buton
+  yeşile döner ve panel kurulurken "✓ Giriş başarılı" yazar. Ana sayfada kartlar ve listeler sırayla gelir, başlık
+  günün saatine göre karşılar (Günaydın, İyi günler, İyi akşamlar, İyi geceler); gecikmiş kitap varsa Geciken
+  kartının çerçevesi kırmızıdır ve çevresinde kırmızı ışık durur.
+  Grafiklerde üstüne gelinen pasta dilimi dışarı çıkar, çubuk koyulaşır, ipucunda değer ve yüzde yazar; veri
+  değişince grafik sıfırdan çizilmez, değerler eskisinden yenisine akar.
+  Kitap Kayıt'ta başka kitaba geçince form yumuşakça yenilenir; kaydedilmemiş değişiklik varsa form başlığının
+  yanında mavi nokta belirir ve yalnızca o zaman **Vazgeç** açıktır.
+  Butonların üstüne gelince renk bir anda değil kısa bir geçişle değişir; odaklanan yazı alanının çevresinde
+  vurgu renginde yumuşak bir ışık belirir.
 - **Onay pencereleri** (`acodes/onay.py`) panelin üstünü karartır, kart hafifçe büyüyerek gelir. Geri alınamayan
   veya veri silen işlemlerde (kitap ve kullanıcı silme, yedekten geri yükleme) ikon ve **Evet** kırmızıdır ve
   Enter yanlışlıkla onaylamasın diye **Hayır** seçili gelir; Esc her zaman Hayır'dır.
@@ -102,6 +115,8 @@ Yeni kullanıcı ve üye kayıtlarını (`admin` veya `guest`) sadece giriş yap
   (bu arada kitap başka üyeye verildiyse geri alınmaz).
 - **Ayarlar → Görünüm:** *Sistemle aynı*, *Açık* veya *Koyu*. Seçim hemen uygulanır (panel aynı sayfada
   yeniden açılır) ve `tercihler.ini`'de hatırlanır; seçim alt sekmelerdeki gibi segment anahtarıyla yapılır.
+  **Vurgu rengi** (mavi, turkuaz, yeşil, mor) butonları, seçili öğeleri ve vurgulu yazıları boyar; seçim hemen
+  uygulanır ve hatırlanır. Grafiklerin ilk serisi de bu renkte çizilir.
   **Hareketi azalt** açma/kapama düğmesi geçiş animasyonlarını kapatır
   (değişiklikler hemen görünür). Yazı renkleri zeminde en az 4,5:1 kontrastlıdır (WCAG AA; test denetler). Renkler (kenar menüsü, bildirimler ve grafik serileri dahil)
   `acodes/tema.py`'deki iki palettedir; yazı boyutları `tema.YAZI`, köşe yuvarlaklıkları `tema.KOSE` ölçeğinden

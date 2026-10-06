@@ -7,7 +7,7 @@ from PySide6.QtGui import QColor, QFont, QFontMetrics, QPainter
 from PySide6.QtWidgets import (QAbstractItemView, QApplication, QHeaderView, QLabel, QPushButton, QStyle,
                              QStyledItemDelegate, QStyleOptionViewItem, QTableWidgetItem, QToolTip, QVBoxLayout, QWidget)
 
-from acodes import tema
+from acodes import hareket, tema
 from database.kitaplar import kitap_durumlari
 from database.metin import tr_sirala
 
@@ -100,9 +100,12 @@ class BosDurum(QObject):
     def guncelle(self):
         self.bekliyor = False
         bos = self.bos_mu()
+        yeni_bos = bos and self.kap.isHidden()
+        self.kap.setGeometry(self.tablo.viewport().rect().adjusted(20, 20, -20, -20))
         for parca in (self.kap, self.etiket):
             parca.setVisible(bos)
-        self.kap.setGeometry(self.tablo.viewport().rect().adjusted(20, 20, -20, -20))
+        if yeni_bos:            # boş durum birden çıkmaz: hafifçe aşağıdan kayarak belirir
+            hareket.kayarak_belir(self.kap, 1, kayma=6, dikey=True, sure=tema.SURE.orta)
 
     def eventFilter(self, nesne, olay):
         if olay.type() == QEvent.Resize:

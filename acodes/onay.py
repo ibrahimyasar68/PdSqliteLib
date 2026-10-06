@@ -96,6 +96,7 @@ class OnayPenceresi(QDialog):
         dis = QVBoxLayout(self)
         dis.setContentsMargins(24, 24, 24, 24)
         dis.addWidget(self.kart, 0, Qt.AlignCenter)
+        hareket.etkilesimleri_kur(self)
 
     def yerlestir(self):
         """Açık pencerenin iç alanını kaplar (kart sığmıyorsa kartın boyuna büyür, pencerenin ortasında kalır)."""

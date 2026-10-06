@@ -25,9 +25,10 @@ def acik_temaya_don(app):
     pencereleri_sil(app)
     yield
     pencereleri_sil(app)
-    tema.ayarla("acik")
+    tema.ayarla("acik", vurgu="mavi")
     tema.uygulamaya_uygula(app)
     tercihler.yaz("gorunum/tema", "sistem")
+    tercihler.yaz("gorunum/vurgu", "mavi")
 
 
 def test_paletler_ayni_renkleri_tanimlar():
@@ -223,4 +224,46 @@ def test_tema_degisince_kaydirma_ve_pencere_korunur(app, uyarilar):
     yeni = w.library
     assert yeni.ayarlar.verticalScrollBar().value() == deger and yeni.geometry() == geometri
     assert yeni.bildirim.kutu.isHidden()                     # gecikme uyarısı her geçişte tekrar çıkmaz
+    yeni.close()
+
+
+# --- Vurgu rengi ---
+
+@pytest.mark.parametrize("vurgu", list(tema.VURGULAR))
+@pytest.mark.parametrize("palet", ["ACIK", "KOYU"])
+def test_vurgu_renkleri_okunur(vurgu, palet):
+    """Her vurgu renginin yazı tonu kart, satır ve sayfa zemininde ve kendi açık tonunda (etiketler) 4,5:1."""
+    p = getattr(tema, palet)
+    v = tema.VURGULAR[vurgu][2 if palet == "ACIK" else 3]
+    assert min(kontrast(v["VURGU_YAZI"], p[z]) for z in ("KART", "KART_2", "SAYFA")) >= 4.5
+    assert kontrast(v["VURGU_YAZI"], v["VURGU_ACIK"]) >= 4.5
+    if palet == "ACIK":
+        assert kontrast("#FFFFFF", v["VURGU"]) >= 4.5                    # mavi butonlardaki beyaz yazı
+    assert set(v) == set(tema.VURGULAR["mavi"][2])                      # hepsi aynı renkleri tanımlar
+
+
+def test_vurgu_paleti_uygular_grafik_rengi_tekrarlanmaz():
+    tema.ayarla("acik", vurgu="mor")
+    assert tema.VURGU_ADI == "mor" and tema.VURGU == tema.VURGULAR["mor"][2]["VURGU"]
+    assert tema.KART == tema.ACIK["KART"]                               # vurgu dışındaki renkler aynı
+    assert tema.GRAFIK[0] == tema.GRAFIK_ACIK[5] and len(set(tema.GRAFIK)) == len(tema.GRAFIK)
+    tema.ayarla("koyu")                                                 # görünüm değişince vurgu kalır
+    assert tema.VURGU == tema.VURGULAR["mor"][3]["VURGU"] and tema.GRAFIK[0] == tema.GRAFIK_KOYU[5]
+    tema.ayarla("acik", vurgu="bilinmeyen")
+    assert tema.VURGU_ADI == "mavi" and tema.GRAFIK == tema.GRAFIK_ACIK
+
+
+def test_vurgu_secilince_panel_yeni_renkle_kurulur(app, uyarilar):
+    w = Login()
+    w.QtLogin.lineEdit_kullanci_adi.setText("admin")
+    w.QtLogin.lineEdit_parola.setText(ADMIN_SIFRE)
+    w.giris()
+    eski = w.library
+    secici = eski.ayarlar.gorunum.vurgu
+    assert secici.butonlar["mavi"].isChecked() and len(secici.butonlar) == len(tema.VURGULAR)
+    secici.butonlar["yesil"].click()
+    yeni = w.library
+    assert yeni is not eski and tema.VURGU_ADI == "yesil" and tercihler.oku("gorunum/vurgu") == "yesil"
+    assert yeni.ayarlar.gorunum.vurgu.butonlar["yesil"].isChecked()
+    assert tema.VURGULAR["yesil"][2]["VURGU"] in yeni.styleSheet()     # yeni panel yeni renkte
     yeni.close()

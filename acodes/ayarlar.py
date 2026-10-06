@@ -6,11 +6,12 @@ import os
 
 from PySide6.QtCore import QEasingCurve, QPropertyAnimation, QRectF, QSize, Qt, QUrl, Property, Signal
 from PySide6.QtGui import QColor, QDesktopServices, QPainter
-from acodes import hareket, tema, tercihler
+from acodes import hareket, ikonlar, tema, tercihler
 from acodes.kilavuz import Kilavuz
 from acodes.yerlesim import form_duzeni
-from PySide6.QtWidgets import (QAbstractButton, QApplication, QDialog, QFormLayout, QGroupBox, QHBoxLayout, QLabel,
-                             QPushButton, QScrollArea, QSizePolicy, QToolTip, QVBoxLayout, QWidget)
+from PySide6.QtWidgets import (QAbstractButton, QApplication, QButtonGroup, QDialog, QFormLayout, QGroupBox,
+                             QHBoxLayout, QLabel, QPushButton, QScrollArea, QSizePolicy, QToolTip, QVBoxLayout,
+                             QWidget)
 
 def stil():
     return f"""
@@ -168,6 +169,52 @@ class Anahtar(QAbstractButton):
                    Qt.AlignLeft | Qt.AlignVCenter, self.text())
 
 
+class RenkOrnegi(QPushButton):
+    """Yuvarlak renk örneği; seçiliyken ortasında ✓. İşaret ikon olarak verilmez: Qt ikonlu düğmenin köşe
+    yuvarlaklığını düşürüp kare çiziyor."""
+
+    def paintEvent(self, olay):
+        super().paintEvent(olay)
+        if self.isChecked():
+            p = QPainter(self)
+            p.setRenderHint(QPainter.SmoothPixmapTransform)
+            p.drawPixmap(self.rect().adjusted(7, 7, -7, -7), ikonlar.ikon("kontrol").pixmap(QSize(32, 32)))
+            p.end()
+
+
+class VurguSecici(QWidget):
+    """Vurgu rengi seçimi: yan yana yuvarlak renk örnekleri, seçilinin içinde ✓. secildi(anahtar) yayınlar."""
+    secildi = Signal(str)
+    BOY = 30
+
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        yatay = QHBoxLayout(self)
+        yatay.setContentsMargins(0, 0, 0, 0)
+        yatay.setSpacing(10)
+        self.grup = QButtonGroup(self)
+        self.butonlar = {}
+        for ad, (baslik, _, acik, koyu) in tema.VURGULAR.items():
+            renk = (koyu if tema.KOYU_MU else acik)["VURGU"]
+            b = RenkOrnegi(objectName="vurgu_ornegi")
+            b.setCheckable(True)
+            b.setCursor(Qt.PointingHandCursor)
+            b.setToolTip(baslik)
+            b.setAccessibleName(f"Vurgu rengi: {baslik}")
+            b.setFixedSize(self.BOY, self.BOY)
+            # Her durumda bütün kural yazılır: Qt yalnızca rengi veren :checked kuralında yuvarlaklığı düşürüyor
+            yuvarlak = f"background-color: {renk}; border-radius: {self.BOY // 2}px; padding: 0; min-width: 0;"
+            b.setStyleSheet(f"QPushButton {{ {yuvarlak} border: 2px solid {tema.KART}; }}"
+                            f"QPushButton:hover {{ {yuvarlak} border: 2px solid {tema.SOLUK}; }}"
+                            f"QPushButton:checked {{ {yuvarlak} border: 2px solid {tema.METIN}; }}")
+            b.setChecked(ad == tema.VURGU_ADI)
+            b.clicked.connect(lambda _, ad=ad: self.secildi.emit(ad))
+            self.grup.addButton(b)
+            self.butonlar[ad] = b
+            yatay.addWidget(b)
+        yatay.addStretch()
+
+
 class GorunumBolumu(QGroupBox):
     """Açık / koyu / sistemle aynı görünüm seçimi. Seçim değişince degisti(görünüm) yayınlanır.
     "Hareketi azalt" geçiş animasyonlarını kapatır (hemen uygulanır, panel yeniden kurulmaz)."""
@@ -188,6 +235,14 @@ class GorunumBolumu(QGroupBox):
         aciklama.setWordWrap(True)
         duzen.addWidget(aciklama)
         duzen.addSpacing(8)
+        vurgu_etiketi = QLabel("Vurgu rengi")
+        vurgu_etiketi.setProperty("rol", "alan_etiketi")
+        duzen.addWidget(vurgu_etiketi)
+        self.vurgu = VurguSecici()
+        self.vurgu.secildi.connect(self.vurgu_sec)
+        duzen.addWidget(self.vurgu, 0, Qt.AlignLeft)
+        duzen.addWidget(QLabel("Butonlar, seçili öğeler ve vurgulu yazılar bu renkte görünür."))
+        duzen.addSpacing(8)
         self.hareket = Anahtar("Hareketi azalt")
         self.hareket.setToolTip("Sayfa geçişleri, menü, bildirim ve tema geçişindeki animasyonlar kapanır; "
                                 "değişiklikler hemen görünür.")
@@ -199,6 +254,13 @@ class GorunumBolumu(QGroupBox):
     def hareket_degisti(self, azalt):
         hareket.AZALT = azalt
         tercihler.yaz(hareket.TERCIH, "1" if azalt else "0")
+
+    def vurgu_sec(self, ad):
+        """Vurgu rengi hemen uygulanır: panel tema değişimindeki gibi aynı yerde yeniden kurulur."""
+        if ad != tema.VURGU_ADI:
+            tercihler.yaz("gorunum/vurgu", ad)
+            tema.ayarla(tema.GORUNUM, vurgu=ad)
+            self.degisti.emit(tema.GORUNUM)
 
     def sec(self, gorunum):
         if gorunum != tema.GORUNUM:

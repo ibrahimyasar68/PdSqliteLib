@@ -7,7 +7,7 @@ from PySide6.QtCore import Qt
 from acodes.guest import Guest
 from acodes.library import Library
 from PySide6.QtGui import QColor
-from acodes import tema
+from acodes import ana_sayfa, tema
 from database import odunc
 
 BUGUN = datetime.date.today()
@@ -54,7 +54,7 @@ def test_eski_ana_sayfa_icerigi_yok(lib):
     assert q.btn_cikis.isVisibleTo(lib) and q.btn_cikis.text() == "Oturumu Kapat"
     assert q.btn_cikis.parentWidget() is lib.yan_menu.kart                    # Oturumu Kapat menüde
     a = lib.ana_sayfa
-    assert a.hosgeldin.text() == "Hoş geldiniz" and a.karsilama.text() == "admin  ·  Yönetici"
+    assert a.hosgeldin.text() == ana_sayfa.selamlama() and a.karsilama.text() == "admin  ·  Yönetici"
     assert a.hosgeldin.alignment() & Qt.AlignHCenter
     assert not hasattr(a, "baslik_yazi")                         # "Yaşar Kütüphanesi" sadece menüde
 

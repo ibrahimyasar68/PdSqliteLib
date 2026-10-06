@@ -3,7 +3,7 @@
 # Buradaki kalıplar mevcut bileşenleri yerleşim düzenlerine (layout) alır: tablolar ve alanlar pencereyle büyür.
 
 from PySide6.QtCore import QPoint, QRect, QSize, Qt
-from PySide6.QtWidgets import QHBoxLayout, QLabel, QLayout, QVBoxLayout
+from PySide6.QtWidgets import QHBoxLayout, QLabel, QLayout, QVBoxLayout, QWidgetItem
 
 SINIRSIZ = 16777215
 
@@ -94,6 +94,12 @@ class AkisDuzeni(QLayout):
 
     def addItem(self, oge):
         self.ogeler.append(oge)
+
+    def ekle(self, bilesen, sira):
+        """Bileşeni sira'ya ekler (addWidget her zaman sona ekler)."""
+        self.addChildWidget(bilesen)
+        self.ogeler.insert(sira, QWidgetItem(bilesen))
+        self.invalidate()
 
     def count(self):
         return len(self.ogeler)

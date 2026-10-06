@@ -3,12 +3,16 @@
 # tema değişince eski görünüm solarak kaybolur, kaydedilen / ödünç verilen satır kısa süre parlayıp söner.
 # Ayrıca: yanlış girişte kart sallanır, hatalı alanın çerçevesi kırmızıdan söner, seçili menü / segment vurgusu
 # kayarak gider, sayılar sayarak gelir, gecikme rozeti bir kez nabız gibi atar. Alt bölüm değişince yeni bölüm
-# seçilen yönden kayarak gelir, kılavuz konuları yükseklikleri değişerek açılıp kapanır.
+# seçilen yönden kayarak gelir, kılavuz konuları yükseklikleri değişerek açılıp kapanır. Kartlar ve giriş formu
+# sırayla gelir, filtre etiketleri açılarak eklenip daralarak gider, sonuç sayıları akarak değişir. Butonların
+# üstüne gelince renk kısa bir geçişle değişir, odaklanan yazı alanının çevresinde yumuşak bir ışık belirir.
 # Süreler tema.SURE ölçeğinden gelir. Animasyonlar yalnızca pencere ekrandayken çalışır.
 # ANIMASYON = False testlerde kapatır; AZALT kullanıcının "Hareketi azalt" tercihidir (Ayarlar > Görünüm).
 
+import re
+
 from PySide6.QtCore import (QEasingCurve, QEvent, QObject, QPersistentModelIndex, QPoint, QPropertyAnimation, QRect,
-                          QSequentialAnimationGroup, Qt, QTimer, QVariantAnimation)
+                          QRectF, QSequentialAnimationGroup, Qt, QTimer, QVariantAnimation)
 from PySide6.QtGui import QColor, QPainter
 from PySide6.QtWidgets import QFrame, QGraphicsOpacityEffect, QLabel, QWidget
 
@@ -44,9 +48,10 @@ def belir(sayfa):
     animasyon.start()
 
 
-def kayarak_belir(sayfa, yon, kayma=16):
-    """Sayfa yon tarafından (1: sağdan, -1: soldan) birkaç piksel kayarak ve belirerek gelir (alt bölüm anahtarı:
-    içerik, seçili zeminin kaydığı yöne akar). Bitince sayfa yerine döner, efekt kaldırılır."""
+def kayarak_belir(sayfa, yon, kayma=16, dikey=False, sure=None, bitince=None):
+    """Sayfa yon tarafından (1: sağdan / alttan, -1: soldan / üstten) birkaç piksel kayarak ve belirerek gelir
+    (alt bölüm anahtarı: içerik, seçili zeminin kaydığı yöne akar; menü: aşağıdaki bölüm aşağıdan gelir).
+    Bitince sayfa yerine döner, efekt kaldırılır."""
     if not yon or not acik_mi(sayfa) or sayfa.graphicsEffect() is not None:
         return None
     yer = sayfa.pos()
@@ -54,19 +59,27 @@ def kayarak_belir(sayfa, yon, kayma=16):
     efekt.setOpacity(0.0)
     sayfa.setGraphicsEffect(efekt)
     animasyon = QVariantAnimation(efekt)
-    animasyon.setDuration(tema.SURE.orta)
+    animasyon.setDuration(sure or tema.SURE.orta)
     animasyon.setStartValue(0.0)
     animasyon.setEndValue(1.0)
     animasyon.setEasingCurve(QEasingCurve.OutCubic)
 
+    isik = getattr(sayfa, "_odak_isigi", None)       # odaklı alanın ışığı alanla birlikte belirsin
+
     def adim(t):
         efekt.setOpacity(t)
-        sayfa.move(yer.x() + round(yon * kayma * (1 - t)), yer.y())
+        kay = round(yon * kayma * (1 - t))
+        sayfa.move(yer.x(), yer.y() + kay) if dikey else sayfa.move(yer.x() + kay, yer.y())
+        if isik is not None and isik.isVisible():
+            isik.yerles()
+            isik.update()
 
     def bitti():
         sayfa.move(yer)
         if sayfa.graphicsEffect() is efekt:
             sayfa.setGraphicsEffect(None)
+        if bitince:
+            bitince()
 
     animasyon.valueChanged.connect(adim)
     animasyon.finished.connect(bitti)
@@ -346,18 +359,19 @@ def nabiz(bilesen, tekrar=2):
     return grup
 
 
-def say(etiket, hedef, bicim=str):
-    """Etiketteki sayı 0'dan hedefe sayarak gelir; animasyon kapalıysa hemen yazılır."""
+def say(etiket, hedef, bicim=str, baslangic=0, sure=None):
+    """Etiketteki sayı baslangic'tan (0) hedefe sayarak gelir; animasyon kapalıysa hemen yazılır."""
     eski = getattr(etiket, "_sayac", None)
     if eski is not None:
         eski.stop()
         etiket._sayac = None
-    if not acik_mi(etiket) or not isinstance(hedef, int) or hedef <= 0:
+    if (not acik_mi(etiket) or not isinstance(hedef, int) or hedef == baslangic
+            or (baslangic == 0 and hedef <= 0)):
         etiket.setText(bicim(hedef))
         return None
     animasyon = QVariantAnimation(etiket)
-    animasyon.setDuration(tema.SURE.sayac)
-    animasyon.setStartValue(0)
+    animasyon.setDuration(sure or tema.SURE.sayac)
+    animasyon.setStartValue(baslangic)
     animasyon.setEndValue(hedef)
     animasyon.setEasingCurve(QEasingCurve.OutCubic)
     animasyon.valueChanged.connect(lambda d: etiket.setText(bicim(int(d))))
@@ -367,7 +381,117 @@ def say(etiket, hedef, bicim=str):
 
     animasyon.finished.connect(bitti)
     etiket._sayac = animasyon
-    etiket.setText(bicim(0))
+    etiket.setText(bicim(baslangic))
+    animasyon.start()
+    return animasyon
+
+
+_SAYI = re.compile(r"\d+")
+
+
+def sayi_yaz(etiket, metin):
+    """Sonuç sayısı gibi etiketlerde sayı eski değerinden yenisine akarak değişir ("12 kitap bulundu" →
+    "3 kitap bulundu"). Metnin kalıbı değişirse ("Toplam 8 kitap" → "2 kitap bulundu") hemen yazılır."""
+    onceki = getattr(etiket, "_sayi_hedefi", None) or etiket.text()
+    etiket._sayi_hedefi = metin
+    yeni, eski = _SAYI.search(metin), _SAYI.search(onceki)
+    if (yeni is None or eski is None
+            or (metin[:yeni.start()], metin[yeni.end():]) != (onceki[:eski.start()], onceki[eski.end():])):
+        say(etiket, None, lambda _: metin)                  # süren sayımı durdurup metni yazar
+        return None
+    on, son = metin[:yeni.start()], metin[yeni.end():]
+    return say(etiket, int(yeni.group()), lambda n: f"{on}{n}{son}", baslangic=int(eski.group()),
+               sure=tema.SURE.uzun)
+
+
+def sirayla_belir(bilesenler, kayma=10, bitince=None):
+    """Bileşenler sırayla (tema.SURE.adim arayla) birkaç piksel aşağıdan kayarak ve belirerek gelir
+    (ana sayfa kartları, giriş formu). Kendi efekti olan bileşen atlanır. bitince(bileşen): her biri yerine
+    oturunca (atlananlar için hemen) çağrılır, ör. kaldırılan gölge efekti geri kurulsun."""
+    baslayan = []
+    for i, bilesen in enumerate(bilesenler):
+        if not acik_mi(bilesen) or bilesen.graphicsEffect() is not None:
+            if bitince:
+                bitince(bilesen)
+            continue
+        efekt = QGraphicsOpacityEffect(bilesen)
+        efekt.setOpacity(0.0)                   # sırası gelene kadar görünmez
+        bilesen.setGraphicsEffect(efekt)
+        baslayan.append(bilesen)
+
+        def baslat(b=bilesen, e=efekt):
+            if b.graphicsEffect() is not e:
+                return
+            b.setGraphicsEffect(None)           # kayarak_belir kendi efektini kurar
+            if kayarak_belir(b, 1, kayma, dikey=True, bitince=bitince and (lambda: bitince(b))) is None and bitince:
+                bitince(b)
+        QTimer.singleShot(i * tema.SURE.adim, bilesen, baslat)
+    return baslayan
+
+
+def genisleyerek_ekle(bilesen):
+    """Yeni eklenen küçük öğe (filtre etiketi) sıfır genişlikten açılarak ve belirerek gelir; yanındakiler
+    birden kaymaz. Animasyon kapalıysa hemen görünür."""
+    if not izinli():
+        return None
+    hedef = bilesen.sizeHint().width()
+    efekt = QGraphicsOpacityEffect(bilesen)
+    efekt.setOpacity(0.0)
+    bilesen.setGraphicsEffect(efekt)
+    bilesen.setMaximumWidth(0)
+    animasyon = QVariantAnimation(bilesen)
+    animasyon.setDuration(tema.SURE.orta)
+    animasyon.setStartValue(0.0)
+    animasyon.setEndValue(1.0)
+    animasyon.setEasingCurve(QEasingCurve.OutBack)       # hafifçe taşıp yerine oturur
+
+    def adim(t):
+        bilesen.setMaximumWidth(max(0, round(hedef * t)))
+        efekt.setOpacity(max(0.0, min(1.0, t)))
+
+    def bitti():
+        bilesen.setMaximumWidth(SINIRSIZ)
+        if bilesen.graphicsEffect() is efekt:
+            bilesen.setGraphicsEffect(None)
+
+    animasyon.valueChanged.connect(adim)
+    animasyon.finished.connect(bitti)
+    animasyon.start()
+    return animasyon
+
+
+def daralarak_sil(bilesen, bitince=None):
+    """Kaldırılan küçük öğe daralıp solarak gider, sonra silinir. Animasyon kapalıysa hemen silinir.
+    bitince: öğe yerleşimden çıktıktan sonra çağrılır (ör. kap boş kaldıysa gizlensin)."""
+    def sil():
+        duzen = bilesen.parentWidget().layout() if bilesen.parentWidget() else None
+        if duzen is not None:
+            duzen.removeWidget(bilesen)
+        bilesen.hide()
+        bilesen.deleteLater()
+        if bitince:
+            bitince()
+
+    if not acik_mi(bilesen):
+        sil()
+        return None
+    bilesen.setEnabled(False)                   # giderken bir daha tıklanmasın
+    efekt = bilesen.graphicsEffect() or QGraphicsOpacityEffect(bilesen)
+    bilesen.setGraphicsEffect(efekt)
+    bas = bilesen.width()
+    animasyon = QVariantAnimation(bilesen)
+    animasyon.setDuration(tema.SURE.kisa)
+    animasyon.setStartValue(1.0)
+    animasyon.setEndValue(0.0)
+    animasyon.setEasingCurve(QEasingCurve.InCubic)
+
+    def adim(t):
+        bilesen.setMaximumWidth(round(bas * t))
+        if isinstance(efekt, QGraphicsOpacityEffect):
+            efekt.setOpacity(t)
+
+    animasyon.valueChanged.connect(adim)
+    animasyon.finished.connect(sil)
     animasyon.start()
     return animasyon
 
@@ -420,3 +544,195 @@ class KayanVurgu(QObject):
             if self.animasyon.state() != QPropertyAnimation.Running:
                 self.hedefle()
         return False
+
+
+# --- Üstüne gelme ve odak: renkler bir anda değil kısa bir geçişle değişir ---
+
+# Kendi özel görünümü olan butonlar (segment, etiket, menü araçları, zeminsiz Sil ...): QSS'teki gibi anında
+OZEL_BUTONLAR = {"segment_ogesi", "filtre_etiketi", "kilavuz_konu", "daralt", "menu_ara", "oturum_kapat",
+                 "pushButton_cikis"}
+
+
+def _karisim(a, b, t):
+    return QColor.fromRgbF(a.redF() + (b.redF() - a.redF()) * t, a.greenF() + (b.greenF() - a.greenF()) * t,
+                           a.blueF() + (b.blueF() - a.blueF()) * t, a.alphaF() + (b.alphaF() - a.alphaF()) * t)
+
+
+def uzerinde_renkleri(buton):
+    """Butonun (normal, üstüne gelinmiş) renkleri {QSS özelliği: QColor}; QSS'teki :hover kurallarının aynısı.
+    Özel görünümlü, devre dışı veya seçili butonlarda None (geçiş yapılmaz)."""
+    if (not buton.isEnabled() or buton.styleSheet() or (buton.isCheckable() and buton.isChecked())
+            or buton.objectName() in OZEL_BUTONLAR or buton.objectName() in tema.TEHLIKELI_BUTONLAR
+            or buton.property("tehlikeli")):
+        return None
+    if buton.objectName() == "menu_ogesi":
+        return ({"background-color": QColor(255, 255, 255, 0), "color": QColor(tema.MENU_OGE)},
+                {"background-color": QColor(255, 255, 255, 20), "color": QColor(Qt.white)})
+    if buton.property("rol") == "ikincil":
+        return ({"background-color": QColor(tema.KART), "border-color": QColor(tema.KENAR_IKINCIL)},
+                {"background-color": QColor(tema.YUZEY), "border-color": QColor(tema.SOLUK)})
+    return ({"background-color": QColor(tema.VURGU)}, {"background-color": QColor(tema.VURGU_KOYU)})
+
+
+def _qss_rengi(renk):
+    return f"rgba({renk.red()}, {renk.green()}, {renk.blue()}, {renk.alphaF():.3f})"
+
+
+class UzerindeGecisi(QObject):
+    """Butonların üstüne gelince / çıkınca zemin rengi tema.SURE.kisa içinde değişir. Geçiş sürerken buton
+    kendi stil sayfasıyla boyanır; bitince stil sayfası eski haline döner ve QSS'teki aynı renk devralır."""
+
+    def gecis(self, buton):
+        animasyon = buton.findChild(QVariantAnimation, "uzerinde_gecisi")
+        if animasyon is None:
+            animasyon = QVariantAnimation(buton, objectName="uzerinde_gecisi")
+            animasyon.setDuration(tema.SURE.kisa)
+            animasyon.setEasingCurve(QEasingCurve.OutCubic)
+            animasyon.valueChanged.connect(lambda t: self._boya(buton, animasyon, t))
+            animasyon.finished.connect(lambda: self.birak(buton))
+        return animasyon
+
+    def _boya(self, buton, animasyon, t):
+        renkler = animasyon.property("renkler")
+        if renkler is None:
+            return
+        normal, uzerinde = renkler
+        kural = "; ".join(f"{oz}: {_qss_rengi(_karisim(normal[oz], uzerinde[oz], t))}" for oz in normal)
+        buton.setStyleSheet(f"QPushButton {{ {kural}; }}")
+        animasyon.setProperty("guc", t)
+
+    def birak(self, buton):
+        """Geçişi bitirir; buton yeniden yalnızca QSS ile boyanır."""
+        animasyon = buton.findChild(QVariantAnimation, "uzerinde_gecisi")
+        if animasyon is None or animasyon.property("renkler") is None:
+            return
+        animasyon.stop()
+        animasyon.setProperty("renkler", None)
+        buton.setStyleSheet("")
+
+    def eventFilter(self, buton, olay):
+        tur = olay.type()
+        if tur in (QEvent.Enter, QEvent.Leave):
+            self._git(buton, 1.0 if tur == QEvent.Enter else 0.0)
+        elif tur in (QEvent.MouseButtonPress, QEvent.EnabledChange, QEvent.Hide):
+            self.birak(buton)               # basılı / devre dışı rengini QSS versin
+        return False
+
+    def _git(self, buton, hedef):
+        animasyon = self.gecis(buton)
+        suruyor = animasyon.property("renkler") is not None
+        renkler = animasyon.property("renkler") if suruyor else uzerinde_renkleri(buton)
+        if renkler is None or not acik_mi(buton):
+            self.birak(buton)
+            return
+        bas = animasyon.property("guc") if suruyor else 1.0 - hedef
+        animasyon.stop()
+        animasyon.setProperty("renkler", renkler)
+        animasyon.setStartValue(float(bas))
+        animasyon.setEndValue(hedef)
+        self._boya(buton, animasyon, float(bas))
+        animasyon.start()
+
+
+class OdakIsigi(QWidget):
+    """Odaklanan yazı alanının çevresinde vurgu renginde yumuşak bir ışık; odakla belirir, odak gidince söner.
+    Alanın kardeşi olarak altına yerleşir (alan kendi zeminini üstüne çizer); alanla birlikte kayar."""
+    PAY = 4
+
+    def __init__(self, alan):
+        super().__init__(alan.parentWidget())
+        self.alan = alan
+        self.guc = 0.0
+        self.setAttribute(Qt.WA_TransparentForMouseEvents)
+        self.animasyon = QVariantAnimation(self)
+        self.animasyon.setDuration(tema.SURE.kisa)
+        self.animasyon.setEasingCurve(QEasingCurve.OutCubic)
+        self.animasyon.valueChanged.connect(self._ilerle)
+        self.animasyon.finished.connect(lambda: self.guc <= 0 and self.hide())
+        self.hide()
+
+    def yerles(self):
+        self.setGeometry(self.alan.geometry().adjusted(-self.PAY, -self.PAY, self.PAY, self.PAY))
+        self.stackUnder(self.alan)
+
+    def git(self, hedef):
+        self.animasyon.stop()
+        if hedef > 0 and self.alan.isVisible():
+            self.yerles()
+            self.show()
+        if not acik_mi(self.alan) or not self.isVisible():
+            self._ilerle(hedef)
+            if hedef <= 0:
+                self.hide()
+            return
+        self.animasyon.setStartValue(self.guc)
+        self.animasyon.setEndValue(float(hedef))
+        self.animasyon.start()
+
+    def _ilerle(self, guc):
+        self.guc = guc
+        self.update()
+
+    def paintEvent(self, olay):
+        efekt = self.alan.graphicsEffect()       # alan belirirken ışık da onunla birlikte belirir
+        guc = self.guc * (efekt.opacity() if isinstance(efekt, QGraphicsOpacityEffect) else 1.0)
+        if guc <= 0:
+            return
+        p = QPainter(self)
+        p.setRenderHint(QPainter.Antialiasing)
+        p.setPen(Qt.NoPen)
+        alan = QRectF(self.rect())
+        for pay, saydamlik in ((0, 0.12), (2, 0.24)):     # dışta soluk, içte koyu: yumuşak kenar
+            renk = QColor(tema.VURGU)
+            renk.setAlphaF(saydamlik * guc)
+            p.setBrush(renk)
+            yaricap = tema.KOSE.kucuk + self.PAY - pay
+            p.drawRoundedRect(alan.adjusted(pay, pay, -pay, -pay), yaricap, yaricap)
+        p.end()
+
+
+class _OdakIzleyici(QObject):
+    def eventFilter(self, alan, olay):
+        tur = olay.type()
+        if tur in (QEvent.FocusIn, QEvent.FocusOut):
+            hedef = alan.parentWidget() if _ic_alan_mi(alan) else alan
+            isik = getattr(hedef, "_odak_isigi", None)
+            if isik is None and tur == QEvent.FocusIn and izinli():
+                isik = hedef._odak_isigi = OdakIsigi(hedef)
+            if isik is not None:
+                isik.git(1.0 if tur == QEvent.FocusIn else 0.0)
+        elif tur in (QEvent.Move, QEvent.Resize) and getattr(alan, "_odak_isigi", None) is not None:
+            if alan._odak_isigi.isVisible():
+                alan._odak_isigi.yerles()
+        elif tur == QEvent.Hide and getattr(alan, "_odak_isigi", None) is not None:
+            alan._odak_isigi.git(0.0)
+        return False
+
+
+def _ic_alan_mi(alan):
+    """Açılır liste ve sayı kutusunun içindeki yazı alanı: ışık dıştaki kutunun çevresinde yanar."""
+    from PySide6.QtWidgets import QAbstractSpinBox, QComboBox
+    return isinstance(alan.parentWidget(), (QComboBox, QAbstractSpinBox))
+
+
+def etkilesimleri_kur(kok):
+    """Kökteki butonlara yumuşak üstüne gelme, yazı alanlarına odak ışığı kurar (panel, giriş ekranı, onay).
+    Sonradan eklenen bileşenler için yeniden çağrılabilir; aynı bileşene iki kez kurulmaz."""
+    from PySide6.QtWidgets import QAbstractSpinBox, QComboBox, QLineEdit, QPlainTextEdit, QPushButton
+    uzerinde = kok.findChild(UzerindeGecisi, "uzerinde_izleyici")
+    if uzerinde is None:
+        uzerinde = UzerindeGecisi(kok)
+        uzerinde.setObjectName("uzerinde_izleyici")
+    odak = kok.findChild(_OdakIzleyici, "odak_izleyici")
+    if odak is None:
+        odak = _OdakIzleyici(kok)
+        odak.setObjectName("odak_izleyici")
+    for buton in kok.findChildren(QPushButton):
+        if not buton.property("yumusak"):
+            buton.setProperty("yumusak", True)
+            buton.installEventFilter(uzerinde)
+    for tur in (QLineEdit, QPlainTextEdit, QComboBox, QAbstractSpinBox):
+        for alan in kok.findChildren(tur):
+            if not alan.property("odak_isikli"):
+                alan.setProperty("odak_isikli", True)
+                alan.installEventFilter(odak)

@@ -25,7 +25,7 @@ QPushButton#menu_ogesi {{ background: transparent; color: {t.MENU_OGE}; border: 
                text-align: left; padding: 11px 13px; font-size: {Y.metin}px; font-weight: {t.ORTA}; }}
 QPushButton#menu_ogesi:hover {{ background-color: rgba(255,255,255,0.08); color: white; }}
 QPushButton#menu_ogesi:checked {{ background: transparent; color: white; font-weight: {t.YARI_KALIN}; }}
-#menu_vurgu {{ background-color: rgba(96,165,250,0.24); border-radius: {K.kucuk}px; }}
+#menu_vurgu {{ background-color: {t.rgba(t.menu_vurgusu(), 0.3)}; border-radius: {K.kucuk}px; }}
 QPushButton#menu_ara {{ background-color: rgba(255,255,255,0.07); color: {t.MENU_IKINCIL};
                border: 1px solid rgba(255,255,255,0.10); border-radius: {K.kucuk}px; text-align: left; padding: 8px 12px;
                font-size: {Y.metin}px; }}
@@ -148,11 +148,18 @@ class YanMenu(QFrame):
 
         sekmeler.tabBar().hide()
         sekmeler.currentChanged.connect(self.secili_yap)
-        sekmeler.currentChanged.connect(lambda i: hareket.belir(sekmeler.widget(i)))   # yeni sayfa hafifçe belirir
+        self._onceki_sayfa = sekmeler.currentIndex()
+        sekmeler.currentChanged.connect(self._sayfayi_getir)
         self.yenile()
         self.secili_yap(sekmeler.currentIndex())
         self.kapali = False
         self.daralt(tercihler.mantiksal("menu/kapali"), kaydet=False)
+
+    def _sayfayi_getir(self, i):
+        # Yeni sayfa menüdeki yönünden birkaç piksel kayarak belirir: aşağıdaki bölüm aşağıdan, yukarıdaki yukarıdan
+        yon = (i > self._onceki_sayfa) - (i < self._onceki_sayfa)
+        self._onceki_sayfa = i
+        hareket.kayarak_belir(self.sekmeler.widget(i), yon, kayma=10, dikey=True)
 
     def secili_yap(self, i):
         buton = self.grup.button(i)

@@ -3,7 +3,7 @@
 
 from PySide6.QtWidgets import QLabel, QLineEdit, QPushButton, QTableWidget, QWidget
 
-from acodes import tema
+from acodes import hareket, tema
 from acodes.disa_aktar import disa_aktar, sag_tik_menusu
 from acodes.kisayollar import arama_kutusu_yap
 from acodes.tablo import KolonSecici, OrantiliKolonlar, durum_ekle, durum_rozeti_kur, tablo_ayarla, tablo_basliklari, tabloya_yaz
@@ -53,7 +53,7 @@ class KitapListesi(QWidget):
         kitaplar=kitap_ara(sorgu)
         satirlar,renkler=durum_ekle(kitaplar)
         tabloya_yaz(self.tablo,satirlar,renkler=renkler)
-        self.sonuc.setText(f"{len(kitaplar)} kitap bulundu" if sorgu else f"Toplam {len(kitaplar)} kitap")
+        hareket.sayi_yaz(self.sonuc, f"{len(kitaplar)} kitap bulundu" if sorgu else f"Toplam {len(kitaplar)} kitap")
 
     def temizle(self):
         ###  Aramayı temizle: tüm kitaplar listelenir  ###

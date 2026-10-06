@@ -142,7 +142,7 @@ class Library(Panel):
         k=self.ana_sayfa.kartlar
         k["kitap"].ayarla(o["kitap"],kitap_karti_alti(o["kitap"],o["kopya"],o["disarida"]))
         k["disarida"].ayarla(o["disarida"],"şu an ödünçte")
-        k["geciken"].ayarla(gecikmis,"teslim süresi geçmiş",renk=None if gecikmis else tema.SOLUK)
+        k["geciken"].ayarla(gecikmis,"teslim süresi geçmiş",renk=None if gecikmis else tema.SOLUK,parla=gecikmis>0)
         k["uye"].ayarla(o["uye"],f"{o['admin']} yönetici")
         yaklasan=yaklasan_teslimler()
         self.ana_sayfa.listeler["yaklasan"].doldur(

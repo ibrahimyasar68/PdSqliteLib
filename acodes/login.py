@@ -1,8 +1,9 @@
 from PySide6.QtWidgets import QApplication, QFrame, QGraphicsDropShadowEffect, QHBoxLayout, QLabel, QLineEdit, QMainWindow, QSizePolicy, QVBoxLayout, QWidget
 from PySide6.QtGui import QAction
-from PySide6.QtCore import QEvent, QEventLoop, QSize, Qt
-from PySide6.QtGui import QColor
+from PySide6.QtCore import QElapsedTimer, QEvent, QEventLoop, QObject, QRectF, QSize, Qt, QTimer
+from PySide6.QtGui import QColor, QPainter, QPainterPath, QPixmap
 import ctypes
+import math
 import sys
 from acodes.library import Library
 from acodes.guest import Guest
@@ -34,6 +35,75 @@ def caps_lock_acik():
     return False
 
 
+class GezinenFotograf(QObject):
+    """Giriş ekranının solundaki fotoğrafı çizer ve çok yavaşça yakınlaştırıp uzaklaştırır (Ken Burns etkisi,
+    en fazla %4; bir tur tema.SURE.gezinti). Hareketi azaltınca veya pencere gizliyken durur. Saniyede 20 kare
+    yeter: hareket o kadar yavaş ki fark edilmez, işlemci boşuna yorulmaz."""
+    YAKINLASMA = 0.04
+    KARE_MS = 50
+
+    def __init__(self, etiket, resim):
+        super().__init__(etiket)
+        self.etiket = etiket
+        self.resim = QPixmap(resim)
+        self.olcekli = None
+        self.saat = QElapsedTimer()
+        self.zamanlayici = QTimer(self)
+        self.zamanlayici.setInterval(self.KARE_MS)
+        self.zamanlayici.timeout.connect(etiket.update)
+        etiket.installEventFilter(self)
+
+    def oran(self):
+        """0 (normal) ile 1 (en yakın) arasında, yumuşak gidip gelen yakınlık."""
+        if not hareket.izinli() or not self.saat.isValid():
+            return 0.0
+        t = (self.saat.elapsed() % tema.SURE.gezinti) / tema.SURE.gezinti
+        return (1 - math.cos(2 * math.pi * t)) / 2
+
+    def eventFilter(self, nesne, olay):
+        tur = olay.type()
+        if tur == QEvent.Show:
+            if not self.saat.isValid():
+                self.saat.start()
+            self.zamanlayici.start()
+        elif tur == QEvent.Hide:
+            self.zamanlayici.stop()
+        elif tur == QEvent.Paint:
+            self.ciz()
+            return True
+        return False
+
+    def ciz(self):
+        boyut = self.etiket.size()
+        if self.resim.isNull() or boyut.isEmpty():
+            return
+        if self.olcekli is None or self.olcekli[0] != boyut:
+            self.olcekli = (boyut, self.resim.scaled(boyut, Qt.KeepAspectRatioByExpanding, Qt.SmoothTransformation))
+        resim = self.olcekli[1]
+        p = QPainter(self.etiket)
+        p.setRenderHints(QPainter.Antialiasing | QPainter.SmoothPixmapTransform)
+        yol = QPainterPath()                    # sol köşeler yuvarlak (kartın sağ yarısı panelde)
+        r = tema.KOSE.buyuk
+        w, h = boyut.width(), boyut.height()
+        yol.moveTo(w, 0)
+        yol.lineTo(r, 0)
+        yol.arcTo(QRectF(0, 0, 2 * r, 2 * r), 90, 90)
+        yol.lineTo(0, h - r)
+        yol.arcTo(QRectF(0, h - 2 * r, 2 * r, 2 * r), 180, 90)
+        yol.lineTo(w, h)
+        yol.closeSubpath()
+        p.setClipPath(yol)
+        olcek = 1 + self.YAKINLASMA * self.oran()
+        p.translate(w / 2, h / 2)
+        p.scale(olcek, olcek)
+        p.translate(-w / 2, -h / 2)
+        p.drawPixmap(QRectF(0, 0, w, h), resim,
+                     QRectF((resim.width() - w * resim.devicePixelRatio()) / 2,
+                            (resim.height() - h * resim.devicePixelRatio()) / 2,
+                            w * resim.devicePixelRatio(), h * resim.devicePixelRatio()))
+        p.end()
+
+
 # Solda fotoğraf ve el yazısı başlık, sağda ortalanmış giriş kartı; yerleşim layout ile (sabit koordinat yok)
 def giris_stili():
     return f"""
@@ -50,6 +120,8 @@ def giris_stili():
 QLabel#giris_imza {{ color: {tema.IKINCIL_METIN}; font-size: {tema.YAZI.kucuk}px; font-weight: normal; }}
 #pushButton_giris {{ font-size: {tema.YAZI.metin}px; font-weight: {tema.YARI_KALIN}; padding: 10px;
                border-radius: {tema.KOSE.kucuk}px; }}
+#pushButton_giris[basari="true"], #pushButton_giris[basari="true"]:disabled {{ background-color: {tema.BASARI};
+               color: {tema.KART}; }}
 #pushButton_cikis {{ background: transparent; border: none; border-radius: {tema.KOSE.kucuk}px; padding: 0; }}
 #pushButton_cikis:hover {{ background-color: {tema.TEHLIKE_ACIK}; }}
 """
@@ -78,6 +150,7 @@ class Login(QMainWindow):
         self.QtLogin.pushButton_cikis.setToolTip("Programdan çık")
         self.QtLogin.pushButton_cikis.clicked.connect(self.close)
         self.QtLogin.lineEdit_kullanci_adi.setFocus()   # açılınca doğrudan kullanıcı adı yazılabilsin
+        hareket.etkilesimleri_kur(self)
 
     def tasarim(self):
         ###  Solda fotoğraf ve başlık, sağda panel: üstte kapatma (×), ortada giriş kartı, altta imza  ###
@@ -87,8 +160,8 @@ class Login(QMainWindow):
 
         foto=ui.label
         foto.setFixedWidth(410)
-        foto.setStyleSheet(f"QLabel#label {{ border-image: url(:/pic/login.jpeg); border-top-left-radius: {tema.KOSE.buyuk}px;"
-                           f" border-bottom-left-radius: {tema.KOSE.buyuk}px; }}")   # seçicili: başlığa geçmesin
+        foto.setStyleSheet("")
+        self.fotograf=GezinenFotograf(foto,":/pic/login.jpeg")   # yavaşça yakınlaşıp uzaklaşır
         ust_yazi=QVBoxLayout(foto)
         ust_yazi.setContentsMargins(12,60,12,0)
         ust_yazi.addWidget(ui.label_5)
@@ -102,9 +175,9 @@ class Login(QMainWindow):
 
         kart=QWidget(objectName="giris_karti")
         self.kart=kart                            # yanlış girişte sallanır
-        kart.setFixedWidth(320)
+        kart.setFixedWidth(328)
         duzen=QVBoxLayout(kart)
-        duzen.setContentsMargins(0,0,0,0)
+        duzen.setContentsMargins(4,0,4,0)         # alanlar 320 px; yanlarda odak ışığına yer
         duzen.setSpacing(8)
         alt=QLabel("Devam etmek için hesabınıza giriş yapın.",objectName="giris_alt")
         alt.setWordWrap(True)
@@ -176,6 +249,16 @@ class Login(QMainWindow):
         dis.addWidget(ui.widget)
         self.stil_uygula()
 
+    def showEvent(self,olay):
+        super().showEvent(olay)
+        # Kartın öğeleri (başlık, alanlar, buton) sırayla aşağıdan gelir; yerleşim oturduktan sonra
+        QTimer.singleShot(0,self,lambda: hareket.sirayla_belir(self._kart_ogeleri()))
+
+    def _kart_ogeleri(self):
+        duzen=self.kart.layout()
+        ogeler=[duzen.itemAt(i).widget() for i in range(duzen.count())]
+        return [o for o in ogeler if o is not None and o.isVisible() and o is not self.mesaj]
+
     def stil_uygula(self):
         ###  Temaya bağlı renkler (açılışta ve görünüm değişince)  ###
         gizli=self.QtLogin.lineEdit_parola.echoMode()==QLineEdit.Password
@@ -210,7 +293,22 @@ class Login(QMainWindow):
         buton=self.QtLogin.pushButton_giris
         buton.setEnabled(not durum)
         buton.setText("Giriş yapılıyor…" if durum else "Giriş")
+        if not durum and buton.property("basari"):
+            self._basari(False)
         if durum:       # yazı panel açılmadan görünsün; bu arada yapılan tıklama ve tuşlar işlenmez
+            QApplication.processEvents(QEventLoop.ExcludeUserInputEvents)
+
+    def _basari(self,durum):
+        ###  Doğru girişte buton yeşile döner, ✓ ve "Giriş başarılı" yazar; panel kurulurken bu görünür  ###
+        buton=self.QtLogin.pushButton_giris
+        buton.setProperty("basari",durum)
+        ikonlar.yazili_ikon(buton,"kontrol" if durum else "ok_sag",tema.KART if durum else ikonlar.BUTON_RENGI,
+                            tema.KART if durum else None)
+        if durum:
+            buton.setText("Giriş başarılı")
+        buton.style().unpolish(buton)
+        buton.style().polish(buton)
+        if durum:
             QApplication.processEvents(QEventLoop.ExcludeUserInputEvents)
 
     # Çerçevesiz pencere fareyle sürüklenerek taşınabilir
@@ -247,6 +345,7 @@ class Login(QMainWindow):
             elif yetki in ('admin','guest'):
                 # Her oturumda panel sıfırdan oluşturulur; önceki kullanıcıdan bir şey kalmaz
                 self.mesaj_goster("")
+                self._basari(True)
                 self.panel_ac(yetki,ad)
                 self.hide()
             else:
@@ -263,6 +362,7 @@ class Login(QMainWindow):
         panel.user_name(ad)
         panel.oturum_kapandi.connect(self.giris_ekranina_don)
         panel.ayarlar.gorunum.degisti.connect(self.gorunumu_degistir)
+        hareket.etkilesimleri_kur(panel)          # alt sınıfın sonradan eklediği bileşenler de
         if goster:
             panel_goster(panel)
             hareket.pencere_belir(panel)          # giriş ekranından panele yumuşak geçiş

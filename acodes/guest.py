@@ -62,7 +62,7 @@ class Guest(Panel):
         k["kitap"].ayarla(genel_ozet()["kitap"],"kitap listesinde aranabilir")
         k["elimdeki"].ayarla(len(elimdeki),"şu an sizde")
         k["geciken"].ayarla(len(gecikmis),"teslim süresi geçmiş" if gecikmis else "gecikmiş kitabınız yok",
-                            renk=None if gecikmis else tema.SOLUK)
+                            renk=None if gecikmis else tema.SOLUK,parla=bool(gecikmis))
         en_yakin=min((teslim_tarihi(v) for _,v in elimdeki if teslim_tarihi(v)),default=None)
         k["teslim"].ayarla(tarih_yazi(en_yakin) if en_yakin else "-",
                            kalan_gun_yazi(min(elimdeki,key=lambda e: teslim_tarihi(e[1]))[1]) if en_yakin else "ödünç kitabınız yok")

@@ -1,6 +1,7 @@
 ## Geçiş animasyonları: satır parlaması ve "Hareketi azalt" ##
 import pytest
-from PySide6.QtCore import QAbstractAnimation
+from PySide6.QtCore import QAbstractAnimation, Qt
+from PySide6.QtWidgets import QGraphicsOpacityEffect
 from PySide6.QtTest import QTest
 
 from conftest import sec
@@ -152,7 +153,9 @@ def bitene_kadar_bekle(animasyon, sinir_ms=3000):
 def test_kart_golgesi_yumusakca_buyur(lib):
     from PySide6.QtCore import QEvent
     from PySide6.QtWidgets import QApplication
-    kart = lib.ana_sayfa.kartlar["kitap"]
+    a = lib.ana_sayfa
+    kart = a.kartlar["kitap"]
+    QTest.qWait(tema.SURE.adim * (len(a.kartlar) + len(a.listeler)) + tema.SURE.orta + 150)   # kartlar yerine otursun
     QApplication.sendEvent(kart, QEvent(QEvent.Enter))
     assert kart.golge.isEnabled() and kart.golge_animasyonu.state() == CALISIYOR
     bitene_kadar_bekle(kart.golge_animasyonu)
@@ -325,3 +328,171 @@ def test_tehlikeli_onayda_hayir_secili_esc_hayir(app, uyarilar):
     assert d.btn_hayir.isDefault() and not d.btn_evet.isDefault() and d.btn_evet.property("tehlikeli")
     QTimer.singleShot(50, lambda: QTest.keyClick(d, Qt.Key_Escape))
     assert d.exec() == QMessageBox.No                                   # testlerde animasyon kapalı: hemen kapanır
+
+
+# --- 4. aşama: sayfa kayması, sayılar, etiketler, giriş, kartlar, grafikler, üstüne gelme, odak ---
+
+def test_menu_sayfasi_asagidan_gelir(lib):
+    sayfa = lib.filtre
+    lib.sekmeler.setCurrentWidget(sayfa)                               # menüde aşağıda: aşağıdan gelir
+    yer = lib.liste.pos()
+    assert sayfa.graphicsEffect() is not None and sayfa.y() > yer.y() and sayfa.x() == yer.x()
+    QTest.qWait(tema.SURE.orta + 150)
+    assert sayfa.pos() == yer and sayfa.graphicsEffect() is None
+
+
+def test_sonuc_sayisi_akarak_degisir(lib):
+    l = lib.liste
+    lib.sekmeler.setCurrentWidget(l)
+    QTest.qWait(tema.SURE.orta + 100)
+    hareket.sayi_yaz(l.sonuc, "8 kitap bulundu")                       # kalıp değişti: hemen
+    assert l.sonuc.text() == "8 kitap bulundu"
+    hareket.sayi_yaz(l.sonuc, "2 kitap bulundu")
+    assert l.sonuc._sayac is not None and l.sonuc.text() == "8 kitap bulundu"
+    QTest.qWait(tema.SURE.uzun + 150)
+    assert l.sonuc.text() == "2 kitap bulundu" and l.sonuc._sayac is None
+    hareket.sayi_yaz(l.sonuc, "")                                       # sayısız metin hemen yazılır
+    assert l.sonuc.text() == ""
+
+
+def test_filtre_etiketi_acilarak_gelir_daralarak_gider(lib):
+    f = lib.filtre
+    lib.sekmeler.setCurrentWidget(f)
+    QTest.qWait(tema.SURE.orta + 100)
+    f.ekle("Turu", "Roman")
+    duzen = f.etiketler["Turu"].layout()
+    [etiket] = [duzen.itemAt(i).widget() for i in range(duzen.count())]
+    assert etiket.maximumWidth() < hareket.SINIRSIZ                     # sıfırdan açılıyor
+    QTest.qWait(tema.SURE.orta + 150)
+    assert etiket.maximumWidth() == hareket.SINIRSIZ and etiket.graphicsEffect() is None
+    f.ekle("Turu", "Anı")
+    QTest.qWait(tema.SURE.orta + 150)
+    assert [duzen.itemAt(i).widget().deger for i in range(duzen.count())] == ["Anı", "Roman"]   # sırasına girer
+    f.cikar("Turu", "Roman")
+    assert duzen.count() == 2 and not etiket.isEnabled()               # daralarak gidiyor
+    QTest.qWait(tema.SURE.kisa + 150)
+    assert [duzen.itemAt(i).widget().deger for i in range(duzen.count())] == ["Anı"]
+    f.cikar("Turu", "Anı")
+    QTest.qWait(tema.SURE.kisa + 150)
+    assert duzen.count() == 0 and f.etiketler["Turu"].isHidden()
+
+
+def test_giris_formu_sirayla_gelir_ve_fotograf_gezinir(app, uyarilar, animasyonlu):
+    from acodes.login import Login
+    w = Login()
+    w.show()
+    QTest.qWait(30)
+    efektli = [o for o in w._kart_ogeleri() if o.graphicsEffect() is not None]
+    assert len(efektli) >= 3                                            # başlık, alanlar, buton sırada
+    QTest.qWait(tema.SURE.adim * 10 + tema.SURE.orta + 150)
+    assert all(o.graphicsEffect() is None for o in w._kart_ogeleri())
+    f = w.fotograf
+    assert f.zamanlayici.isActive() and 0 <= f.oran() <= 1
+    hareket.AZALT = True
+    assert f.oran() == 0                                                # hareketi azaltınca fotoğraf durur
+    hareket.AZALT = False
+    w.hide()
+    assert not f.zamanlayici.isActive()
+    w.close()
+
+
+def test_dogru_giriste_buton_yesile_doner(app, uyarilar, monkeypatch):
+    from acodes import login as login_modulu
+    from acodes.login import Login
+    from conftest import ADMIN_SIFRE
+    w = Login()
+    w.show()
+    gorulen = []
+    gercek = login_modulu.Login.panel_ac
+
+    def panel_ac(self, *a, **k):
+        b = self.QtLogin.pushButton_giris
+        gorulen.append((b.text(), b.property("basari")))
+        return gercek(self, *a, **k)
+
+    monkeypatch.setattr(login_modulu.Login, "panel_ac", panel_ac)
+    w.QtLogin.lineEdit_kullanci_adi.setText("admin")
+    w.QtLogin.lineEdit_parola.setText(ADMIN_SIFRE)
+    w.giris()
+    assert gorulen == [("Giriş başarılı", True)]                       # panel kurulurken başarı görünür
+    b = w.QtLogin.pushButton_giris
+    assert b.text() == "Giriş" and not b.property("basari")             # sonra eski haline döner
+    w.library.close()
+
+
+def test_ana_sayfa_kartlari_sirayla_gelir(lib):
+    a = lib.ana_sayfa
+    kartlar = list(a.kartlar.values())
+    assert a.geldi and any(isinstance(k.graphicsEffect(), QGraphicsOpacityEffect) for k in kartlar)
+    QTest.qWait(tema.SURE.adim * (len(kartlar) + len(a.listeler)) + tema.SURE.orta + 150)
+    assert all(k.golge is not None and k.graphicsEffect() is k.golge for k in kartlar)   # gölgeler geri gelir
+
+
+def test_selamlama_ve_gecikme_karti():
+    from acodes import ana_sayfa
+    assert [ana_sayfa.selamlama(s) for s in (6, 12, 18, 23, 3)] == \
+        ["Günaydın", "İyi günler", "İyi akşamlar", "İyi geceler", "İyi geceler"]
+    kart = ana_sayfa.Kart("Geciken", tema.TEHLIKE)
+    kart.ayarla(2, "teslim süresi geçmiş", parla=True)
+    assert kart.property("parla") and kart.golge.isEnabled() and kart.golge_guc == kart.taban() > 0
+    kart.ayarla(0, "", parla=False)
+    assert not kart.property("parla") and not kart.golge.isEnabled()
+
+
+def test_grafik_ustune_gelince_vurgulanir_veri_akarak_degisir(lib, db):
+    from PySide6.QtCore import QEvent, QPointF
+    from PySide6.QtGui import QMouseEvent
+    from PySide6.QtWidgets import QApplication
+    lib.sekmeler.setCurrentWidget(lib.istatistik)
+    lib.istatistik.sekmeler.setCurrentIndex(1)
+    g = lib.istatistik.grafikler.yazarlar
+    bitene_kadar_bekle(g.animasyon)
+    alan = g.parcalar[1][1]
+    QApplication.sendEvent(g, QMouseEvent(QEvent.MouseMove, alan.center(), g.mapToGlobal(alan.center()),
+                                          Qt.NoButton, Qt.NoButton, Qt.NoModifier))
+    assert g.uzerinde == 1 and g.guc(1) >= 0 and g.guc(0) == 0
+    assert g.ipucu(1).startswith(g.veri[1][0] + ": ")
+    bitene_kadar_bekle(g.vurgu_animasyonu)
+    assert g.vurgu == 1.0
+    once = dict(g.veri)
+    db.execute("INSERT INTO kayitlistesi (Adi,Yazari) VALUES ('Yeni 1','MONTAIGNE'), ('Yeni 2','MONTAIGNE'),"
+               " ('Yeni 3','MONTAIGNE')")
+    db.commit()
+    lib.istatistik.grafikler.yenile()
+    assert g.akiyor() and g.oran(0) == 1.0                              # sıfırdan büyümez, akar
+    assert g.deger_su_an(0) < 4 and g.veri[0] == ("MONTAIGNE", 4) and once["MONTAIGNE"] == 1
+    bitene_kadar_bekle(g.animasyon)
+    assert not g.akiyor() and g.deger_su_an(0) == 4
+
+
+def test_buton_rengi_yumusakca_degisir(lib):
+    from PySide6.QtCore import QEvent, QPointF
+    from PySide6.QtGui import QEnterEvent
+    from PySide6.QtWidgets import QApplication
+    lib.sekmeler.setCurrentWidget(lib.liste)
+    QTest.qWait(tema.SURE.orta + 100)
+    b = lib.liste.btn_aktar                                             # ikincil buton
+    assert b.property("yumusak")
+    QApplication.sendEvent(b, QEnterEvent(QPointF(3, 3), QPointF(3, 3), QPointF(3, 3)))
+    assert "background-color" in b.styleSheet()                         # geçiş sürerken kendi rengiyle
+    QTest.qWait(tema.SURE.kisa + 150)
+    assert b.styleSheet() == ""                                         # bitince QSS'teki :hover devralır
+    assert hareket.uzerinde_renkleri(lib.yan_menu.btn_daralt) is None   # özel butonlar anında
+    assert hareket.uzerinde_renkleri(b)[1]["background-color"].name().upper() == tema.YUZEY
+
+
+def test_odaklanan_alanda_isik(lib):
+    from PySide6.QtCore import QEvent
+    from PySide6.QtGui import QFocusEvent
+    from PySide6.QtWidgets import QApplication
+    l = lib.liste
+    lib.sekmeler.setCurrentWidget(l)
+    QTest.qWait(tema.SURE.orta + 100)
+    QApplication.sendEvent(l.arama, QFocusEvent(QEvent.FocusIn))
+    isik = l.arama._odak_isigi
+    assert isik.isVisible() and isik.geometry() == l.arama.geometry().adjusted(-4, -4, 4, 4)
+    QTest.qWait(tema.SURE.kisa + 150)
+    assert isik.guc == 1.0
+    QApplication.sendEvent(l.arama, QFocusEvent(QEvent.FocusOut))
+    QTest.qWait(tema.SURE.kisa + 150)
+    assert isik.guc == 0.0 and isik.isHidden()

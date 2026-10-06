@@ -53,6 +53,7 @@ class KitapEkrani(QWidget):
             #kitap_arama {{ font-size: {tema.YAZI.alt_baslik}px; padding: 4px 8px; }}
             #form_baslik {{ font-size: {tema.YAZI.alt_baslik}px; font-weight: {tema.YARI_KALIN}; }}
             #kopya_bilgi {{ color: {tema.IKINCIL_METIN}; }}
+            #degisiklik_isareti {{ color: {tema.VURGU}; font-size: {tema.YAZI.kucuk}px; }}
             QGroupBox {{ font-weight: {tema.YARI_KALIN}; }}
         """)
 
@@ -84,8 +85,18 @@ class KitapEkrani(QWidget):
 
         # --- Alt: form (Kitap bilgileri ve Ek bilgiler yan yana; etiketler alanların üstünde, alanlar üç sütunda)
         self.form_baslik = QLabel(objectName="form_baslik")
+        # Kaydedilmemiş değişiklik varken başlığın yanında küçük nokta (yeri hep ayrılı: belirince başlık kaymaz)
+        self.degisiklik = QLabel("●", objectName="degisiklik_isareti")
+        self.degisiklik.setToolTip("Kaydedilmemiş değişiklik var")
+        yer_kalsin = self.degisiklik.sizePolicy()
+        yer_kalsin.setRetainSizeWhenHidden(True)
+        self.degisiklik.setSizePolicy(yer_kalsin)
+        self.degisiklik.hide()
+        self._kayitli = None        # formun son yüklendiği / kaydedildiği hali
+        self._yukleniyor = False
         self.alan = {}
         kutu = QGroupBox("Kitap bilgileri")
+        self.form_kutusu = kutu
         izgara = QGridLayout(kutu)
         izgara.setHorizontalSpacing(12)
         izgara.setVerticalSpacing(10)
@@ -114,7 +125,8 @@ class KitapEkrani(QWidget):
         # Sil, asıl işlemden uzakta; sağda Vazgeç ve en sağda asıl işlem Kaydet
         islem = QHBoxLayout()
         islem.addWidget(self.form_baslik)
-        islem.addSpacing(12)
+        islem.addWidget(self.degisiklik)
+        islem.addSpacing(6)
         islem.addWidget(self.btn_sil)
         islem.addStretch()
         islem.addWidget(self.btn_vazgec)
@@ -147,6 +159,10 @@ class KitapEkrani(QWidget):
             kisayol(tus, self, buton.click)
             buton.setToolTip(f"{ipucu} ({metin(tus)})")
         self.alan["Adi"].returnPressed.connect(self.kaydet)
+        for alan in (*self.alan.values(), self.ek.isbn, self.ek.raf):
+            alan.textChanged.connect(self._degisiklik_denetle)
+        self.ek.notlar.textChanged.connect(self._degisiklik_denetle)
+        self.ek.kopya.valueChanged.connect(self._degisiklik_denetle)
         self.yenile()
         self.yeni()
         olaylar.kitaplar.connect(self.yenile)        # nereden değişirse değişsin liste güncel kalır
@@ -171,7 +187,7 @@ class KitapEkrani(QWidget):
         satirlar, renkler = durum_ekle([[k[0], k[1], k[2], k[5], k[6], k[9] or 1] for k in kitaplar])
         tabloya_yaz(self.tablo, satirlar, veri=[k[0] for k in kitaplar], renkler=renkler)
         self.tablo.blockSignals(False)
-        self.sonuc.setText(f"{len(kitaplar)} kitap" + (" bulundu" if self.arama.text().strip() else ""))
+        hareket.sayi_yaz(self.sonuc, f"{len(kitaplar)} kitap" + (" bulundu" if self.arama.text().strip() else ""))
         self._satiri_sec(secili)
 
     def _satiri_sec(self, kitap_id):
@@ -198,11 +214,33 @@ class KitapEkrani(QWidget):
 
     # --- Form
 
+    def _degisiklik_denetle(self):
+        """Form son yüklenen / kaydedilen halinden farklıysa nokta belirir ve Vazgeç açılır."""
+        if self._yukleniyor or self._kayitli is None:
+            return
+        degisti = self.degerler() != self._kayitli
+        if degisti and self.degisiklik.isHidden():
+            self.degisiklik.show()
+            hareket.belir(self.degisiklik)
+        elif not degisti:
+            self.degisiklik.hide()
+        self.btn_vazgec.setEnabled(degisti)
+
+    def _yuklendi(self):
+        """Form yeni bir hale geldi (kitap açıldı, boşaltıldı, kaydedildi): değişiklik yok sayılır."""
+        self._yukleniyor = False
+        self._kayitli = self.degerler()
+        self._degisiklik_denetle()
+
     def goster(self, kitap_id):
         kitap = kitap_bul(kitap_id) if kitap_id is not None else None
         if kitap is None:
             self.yeni()
             return
+        if kitap_id != self.kitap_id:       # başka kitaba geçince form yumuşakça yenilenir
+            hareket.belir(self.form_kutusu)
+            hareket.belir(self.ek)
+        self._yukleniyor = True
         self.kitap_id = kitap_id
         for kolon, _, _ in ALANLAR:
             self.alan[kolon].setText(str(getattr(kitap, kolon.lower())))
@@ -213,8 +251,13 @@ class KitapEkrani(QWidget):
         self.form_baslik.setText(f"Kitap #{kitap_id}")
         self.btn_sil.setEnabled(True)
         self.btn_sil.show()
+        self._yuklendi()
 
     def yeni(self):
+        if self.kitap_id is not None:
+            hareket.belir(self.form_kutusu)
+            hareket.belir(self.ek)
+        self._yukleniyor = True
         self.kitap_id = None
         for alan in self.alan.values():
             alan.clear()
@@ -224,6 +267,7 @@ class KitapEkrani(QWidget):
         self.btn_sil.setEnabled(False)
         self.btn_sil.hide()                   # kaydedilmemiş kitapta silinecek bir şey yok
         self._satiri_sec(None)
+        self._yuklendi()
         self.alan["Adi"].setFocus()
 
     def vazgec(self):

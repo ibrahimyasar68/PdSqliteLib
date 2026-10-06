@@ -9,7 +9,7 @@ from typing import Callable, Optional
 from PySide6.QtCore import Qt, Signal
 from PySide6.QtWidgets import QHBoxLayout, QMainWindow, QPushButton, QStatusBar, QTabWidget, QWidget
 
-from acodes import arka_plan, bildirim, ikonlar, kisayollar, tema
+from acodes import arka_plan, bildirim, hareket, ikonlar, kisayollar, tema
 from acodes.disa_aktar import disa_aktar, sag_tik_menusu
 from acodes.filtre_paneli import FiltrePaneli
 from acodes.istatistik import Istatistik
@@ -89,6 +89,7 @@ class Panel(QMainWindow):
         self.yan_menu.btn_ara.clicked.connect(self.palet.ac)
         self.yan_menu.btn_ara.setToolTip(f"Kitap, üye veya bölüm arayın ({kisayol_metni('Ctrl+K')})")
         ikonlar.butonlara_uygula(self)
+        hareket.etkilesimleri_kur(self)     # butonlarda yumuşak üstüne gelme, yazı alanlarında odak ışığı
 
     def sayfalari_kur(self):
         """Menü sırasıyla [Sayfa]; ilki Giriş (ana sayfa). Alt sayfalı sayfalar için alt_sekmeli() kullanılır."""

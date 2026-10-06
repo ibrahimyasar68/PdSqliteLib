@@ -82,6 +82,33 @@ GRAFIK_ACIK = ["#2563EB", "#F59E0B", "#10B981", "#E11D48", "#0891B2", "#7C3AED",
 GRAFIK_KOYU = ["#60A5FA", "#FBBF24", "#34D399", "#FB7185", "#22D3EE", "#A78BFA", "#A3E635", "#FB923C",
                "#F472B6", "#94A3B8"]
 
+# Vurgu rengi (Ayarlar > Görünüm): butonlar, seçili öğeler, vurgulu yazılar. Her seçeneğin açık ve koyu tonları;
+# yazı renkleri zeminde en az 4,5:1 kontrastlıdır (tests/test_gorunum.py). GRAFIK_YERI: grafik serilerinde aynı renk
+# ailesinin sırası; seçilen vurgu ilk seriye geçer, ilk serinin rengi onun yerine (renkler tekrarlanmaz).
+VURGULAR = dict(
+    mavi=("Mavi", 0,
+          dict(VURGU="#2563EB", VURGU_KOYU="#1D4ED8", VURGU_BASILI="#1E40AF", VURGU_YAZI="#1D4ED8",
+               VURGU_ACIK="#DBEAFE", SATIR_HOVER="#EEF4FF", SEKME_HOVER="#EDF2FB"),
+          dict(VURGU="#3B82F6", VURGU_KOYU="#2563EB", VURGU_BASILI="#1D4ED8", VURGU_YAZI="#93C5FD",
+               VURGU_ACIK="#1E3A5F", SATIR_HOVER="#24324A", SEKME_HOVER="#273449")),
+    turkuaz=("Turkuaz", 4,
+             dict(VURGU="#0E7490", VURGU_KOYU="#155E75", VURGU_BASILI="#164E63", VURGU_YAZI="#0E7490",
+                  VURGU_ACIK="#CFFAFE", SATIR_HOVER="#ECFEFF", SEKME_HOVER="#E6F7FA"),
+             dict(VURGU="#0891B2", VURGU_KOYU="#0E7490", VURGU_BASILI="#155E75", VURGU_YAZI="#67E8F9",
+                  VURGU_ACIK="#083344", SATIR_HOVER="#1B3440", SEKME_HOVER="#203845")),
+    yesil=("Yeşil", 2,
+           dict(VURGU="#047857", VURGU_KOYU="#065F46", VURGU_BASILI="#064E3B", VURGU_YAZI="#047857",
+                VURGU_ACIK="#D1FAE5", SATIR_HOVER="#ECFDF5", SEKME_HOVER="#E7F6EF"),
+           dict(VURGU="#059669", VURGU_KOYU="#047857", VURGU_BASILI="#065F46", VURGU_YAZI="#6EE7B7",
+                VURGU_ACIK="#064E3B", SATIR_HOVER="#1C3530", SEKME_HOVER="#213B35")),
+    mor=("Mor", 5,
+         dict(VURGU="#7C3AED", VURGU_KOYU="#6D28D9", VURGU_BASILI="#5B21B6", VURGU_YAZI="#6D28D9",
+              VURGU_ACIK="#EDE9FE", SATIR_HOVER="#F5F3FF", SEKME_HOVER="#F0EDFB"),
+         dict(VURGU="#8B5CF6", VURGU_KOYU="#7C3AED", VURGU_BASILI="#6D28D9", VURGU_YAZI="#C4B5FD",
+              VURGU_ACIK="#2E1065", SATIR_HOVER="#2A2A4A", SEKME_HOVER="#30304F")),
+)
+VURGU_ADI = "mavi"          # seçili vurgu rengi
+
 GORUNUMLER = {"sistem": "Sistemle aynı", "acik": "Açık", "koyu": "Koyu"}
 GORUNUM = "sistem"          # tercih edilen görünüm
 KOYU_MU = False             # şu an kullanılan palet koyu mu
@@ -114,13 +141,30 @@ def sistem_koyu_mu():
 _SISTEM_KOYU = None
 
 
-def ayarla(gorunum):
-    """gorunum: "sistem", "acik" veya "koyu". Paleti bu modülün değişkenlerine yazar."""
-    global GORUNUM, KOYU_MU, GRAFIK
+def ayarla(gorunum, vurgu=None):
+    """gorunum: "sistem", "acik" veya "koyu"; vurgu: VURGULAR anahtarı (verilmezse seçili olan kalır).
+    Paleti bu modülün değişkenlerine yazar."""
+    global GORUNUM, KOYU_MU, GRAFIK, VURGU_ADI
     GORUNUM = gorunum if gorunum in GORUNUMLER else "sistem"
+    if vurgu is not None:
+        VURGU_ADI = vurgu if vurgu in VURGULAR else "mavi"
     KOYU_MU = GORUNUM == "koyu" or (GORUNUM == "sistem" and sistem_koyu_mu())
     globals().update(KOYU if KOYU_MU else ACIK)
-    GRAFIK = GRAFIK_KOYU if KOYU_MU else GRAFIK_ACIK
+    _, yer, acik, koyu = VURGULAR[VURGU_ADI]
+    globals().update(koyu if KOYU_MU else acik)
+    GRAFIK = list(GRAFIK_KOYU if KOYU_MU else GRAFIK_ACIK)
+    GRAFIK[0], GRAFIK[yer] = GRAFIK[yer], GRAFIK[0]
+
+
+def menu_vurgusu():
+    """Kenar menüsü iki temada da koyudur: seçili bölümün zemini vurgunun koyu temadaki (açık) tonundan."""
+    return VURGULAR[VURGU_ADI][3]["VURGU"]
+
+
+def rgba(renk, saydamlik):
+    """Stil sayfası için "rgba(r, g, b, a)" (ör. vurgu renginin yarı saydam tonu)."""
+    r, g, b = (int(renk[i:i + 2], 16) for i in (1, 3, 5))
+    return f"rgba({r}, {g}, {b}, {saydamlik})"
 
 
 # Yazı: sistemin kendi yazı tipi (Mac: San Francisco, Windows: Segoe UI). Boyutlar piksel cinsinden
@@ -148,11 +192,13 @@ class KOSE:
 
 class SURE:
     """Animasyon süreleri (milisaniye). Modüllerde sabit süre yazılmaz; hepsi bu ölçekten gelir."""
+    adim = 40           # sırayla gelen öğeler (kartlar, giriş formu) arasındaki gecikme
     kisa = 120          # küçük öğeler: açılır pencere, düğme durumu
     orta = 200          # sayfa, menü genişliği, bildirimin belirmesi
     uzun = 450          # bildirimin solması, tema geçişindeki perde
     sayac = 600         # ana sayfa sayıları, grafiklerin çizilmesi
     parlama = 900       # değişen tablo satırının sönen vurgusu
+    gezinti = 24000     # giriş fotoğrafının bir yakınlaşıp uzaklaşması (çok yavaş, fark edilmeyecek kadar)
 
 
 YAZI_PX = YAZI.metin
