@@ -36,11 +36,15 @@ def caps_lock_acik():
 
 
 class GezinenFotograf(QObject):
-    """Giriş ekranının solundaki fotoğrafı çizer ve çok yavaşça yakınlaştırıp uzaklaştırır (Ken Burns etkisi,
-    en fazla %4; bir tur tema.SURE.gezinti). Hareketi azaltınca veya pencere gizliyken durur. Saniyede 20 kare
-    yeter: hareket o kadar yavaş ki fark edilmez, işlemci boşuna yorulmaz."""
+    """Giriş ekranının solundaki fotoğrafı kırpmadan, tamamı görünecek şekilde ortaya çizer. Fotoğraf alandan dar
+    olduğu için yanlarda kalan yeri aynı fotoğrafın bulanık ve koyulaştırılmış hali doldurur. Bu arka plan çok
+    yavaşça yakınlaşıp uzaklaşır (Ken Burns etkisi, en fazla %4; bir tur tema.SURE.gezinti); fotoğrafın kendisi
+    hiç kırpılmaz. Hareketi azaltınca veya pencere gizliyken durur. Saniyede 20 kare yeter: hareket o kadar yavaş
+    ki fark edilmez, işlemci boşuna yorulmaz."""
     YAKINLASMA = 0.04
     KARE_MS = 50
+    BULANIKLIK = 14         # arka plan bu oranda küçültülüp büyütülür (ucuz bulanıklaştırma)
+    KOYULUK = 110           # arka planı karartan siyah örtünün saydamlığı (0-255): fotoğraf öne çıksın
 
     def __init__(self, etiket, resim):
         super().__init__(etiket)
@@ -73,13 +77,27 @@ class GezinenFotograf(QObject):
             return True
         return False
 
+    def _hazirla(self, boyut):
+        """Boyuta göre bir kez: (bulanık, alanı kaplayan arka plan; kırpılmadan sığdırılmış fotoğraf)."""
+        oran = self.etiket.devicePixelRatioF()
+        piksel = boyut * oran
+        kaplayan = self.resim.scaled(piksel, Qt.KeepAspectRatioByExpanding, Qt.SmoothTransformation)
+        kucuk = kaplayan.scaled(max(1, kaplayan.width() // self.BULANIKLIK),
+                                max(1, kaplayan.height() // self.BULANIKLIK),
+                                Qt.IgnoreAspectRatio, Qt.SmoothTransformation)
+        bulanik = kucuk.scaled(kaplayan.size(), Qt.IgnoreAspectRatio, Qt.SmoothTransformation)
+        sigan = self.resim.scaled(piksel, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+        for resim in (bulanik, sigan):
+            resim.setDevicePixelRatio(oran)
+        return bulanik, sigan
+
     def ciz(self):
         boyut = self.etiket.size()
         if self.resim.isNull() or boyut.isEmpty():
             return
         if self.olcekli is None or self.olcekli[0] != boyut:
-            self.olcekli = (boyut, self.resim.scaled(boyut, Qt.KeepAspectRatioByExpanding, Qt.SmoothTransformation))
-        resim = self.olcekli[1]
+            self.olcekli = (boyut, *self._hazirla(boyut))
+        _, bulanik, sigan = self.olcekli
         p = QPainter(self.etiket)
         p.setRenderHints(QPainter.Antialiasing | QPainter.SmoothPixmapTransform)
         yol = QPainterPath()                    # sol köşeler yuvarlak (kartın sağ yarısı panelde)
@@ -93,14 +111,19 @@ class GezinenFotograf(QObject):
         yol.lineTo(w, h)
         yol.closeSubpath()
         p.setClipPath(yol)
+        # Arka plan: bulanık, koyulaştırılmış, yavaşça yakınlaşıp uzaklaşır
+        p.save()
         olcek = 1 + self.YAKINLASMA * self.oran()
         p.translate(w / 2, h / 2)
         p.scale(olcek, olcek)
         p.translate(-w / 2, -h / 2)
-        p.drawPixmap(QRectF(0, 0, w, h), resim,
-                     QRectF((resim.width() - w * resim.devicePixelRatio()) / 2,
-                            (resim.height() - h * resim.devicePixelRatio()) / 2,
-                            w * resim.devicePixelRatio(), h * resim.devicePixelRatio()))
+        bw, bh = bulanik.width() / bulanik.devicePixelRatio(), bulanik.height() / bulanik.devicePixelRatio()
+        p.drawPixmap(QRectF((w - bw) / 2, (h - bh) / 2, bw, bh), bulanik, QRectF(bulanik.rect()))
+        p.restore()
+        p.fillRect(self.etiket.rect(), QColor(0, 0, 0, self.KOYULUK))
+        # Fotoğrafın tamamı, ortada, kırpılmadan
+        sw, sh = sigan.width() / sigan.devicePixelRatio(), sigan.height() / sigan.devicePixelRatio()
+        p.drawPixmap(QRectF((w - sw) / 2, (h - sh) / 2, sw, sh), sigan, QRectF(sigan.rect()))
         p.end()
 
 
